@@ -1,0 +1,26 @@
+Setup LUA_PATH to interpret init.lua in local packages:
+
+    $ export LUA_PATH="./?.lua;./?/init.lua;/usr/share/luajit-2.0.4/?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/share/lua/5.1/?.lua;/usr/share/lua/5.1/?/init.lua"
+
+--------------------------------------------------------------------------------
+
+GNURadio Null Source to Stdout
+
+    $ python2 benchmark/gr_null_to_stdout.py | pv > /dev/null
+    20.1GiB 0:00:05 [4.52GiB/s] [             <=>   ]
+
+LuaRadio Null Source to Stdout
+
+    $ luajit benchmark/lr_null_to_stdout.lua | pv > /dev/null
+    13.9GiB 0:00:05 [2.82GiB/s] [             <=>   ]
+
+GNURadio Null Source to 5x 256-tap FIR filters to Stdout
+
+    $ python2 benchmark/gr_null_to_fir_to_stdout.py | pv > /dev/null
+     205MiB 0:00:05 [46.4MiB/s] [             <=>   ]
+
+LuaRadio Null Source to 5x 256-tap FIR filters to Stdout
+
+    $ luajit benchmark/lr_null_to_fir_to_stdout.lua | pv > /dev/null
+    50.4MiB 0:00:05 [10.1MiB/s] [             <=>   ]
+

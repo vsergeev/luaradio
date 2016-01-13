@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-local types = require('types')
+require('types')
 local pipe = require('pipe')
 local block = require('block')
 
@@ -9,7 +9,7 @@ local FileDescriptorSinkBlock = block.BlockFactory("FileDescriptorSinkBlock")
 function FileDescriptorSinkBlock:instantiate(fd)
     self.fd = fd
 
-    self.inputs = {pipe.PipeInput("in", types.AnyType)}
+    self.inputs = {pipe.PipeInput("in", AnyType)}
     self.outputs = {}
 end
 

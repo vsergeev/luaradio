@@ -1,6 +1,9 @@
-return {
-    ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type,
-    ComplexInteger32Type = require('types.complexinteger32').ComplexInteger32Type,
-    Float32Type = require('types.float32').Float32Type,
-    AnyType = require('types.anytype').AnyType,
-}
+require('types.helpers')
+
+Anytype = require('types.anytype').AnyType
+ScalarType = require('types.scalartype').ScalarType
+ComplexType = require('types.complextype').ComplexType
+FloatType = require('types.floattype').FloatType
+IntegerType = require('types.integertype').IntegerType
+ComplexFloatType = require('types.complexfloattype').ComplexFloatType
+ComplexIntegerType = require('types.complexintegertype').ComplexIntegerType

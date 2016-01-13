@@ -1,11 +1,11 @@
-local types = require('types')
+require('types')
 local pipe = require('pipe')
 local block = require('block')
 
 local PrintSinkBlock = block.BlockFactory("PrintSinkBlock")
 
 function PrintSinkBlock:instantiate()
-    self.inputs = {pipe.PipeInput("x", types.AnyType)}
+    self.inputs = {pipe.PipeInput("x", AnyType)}
     self.outputs = {}
 end
 

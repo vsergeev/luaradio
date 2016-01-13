@@ -1,5 +1,5 @@
+require('types')
 local string = require('string')
-local types = require('types')
 local pipe = require('pipe')
 
 local callable_mt = {__call = function(self, ...) return self.new(...) end}
@@ -33,7 +33,7 @@ function Pipeline:connect(src, pipeout, dst, pipein)
     dst_pipe_input = assert(lookup_pipe_by_name(dst.inputs, pipein), "Input pipe not found.")
 
     -- Assert types match
-    if dst_pipe_input.data_type ~= types.AnyType then
+    if dst_pipe_input.data_type ~= AnyType then
         assert(dst_pipe_input.data_type == src_pipe_output.data_type, "Input-output pipe type mismatch.")
     end
 

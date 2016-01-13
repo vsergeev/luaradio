@@ -22,5 +22,5 @@ GNURadio Null Source to 5x 256-tap FIR filters to Stdout
 LuaRadio Null Source to 5x 256-tap FIR filters to Stdout
 
     $ luajit benchmark/lr_null_to_fir_to_stdout.lua | pv > /dev/null
-    50.4MiB 0:00:05 [10.1MiB/s] [             <=>   ]
+    86.1MiB 0:00:05 [17.4MiB/s] [             <=>   ]
 

@@ -1,4 +1,4 @@
-local types = require('types')
+require('types')
 local pipe = require('pipe')
 local block = require('block')
 
@@ -8,12 +8,11 @@ function NullSourceBlock:instantiate(chunksize)
     self._chunksize = chunksize or 4096
 
     self.inputs = {}
-    self.outputs = {pipe.PipeOutput("out", types.ComplexFloat32Type, rate)}
+    self.outputs = {pipe.PipeOutput("out", ComplexFloatType, rate)}
 end
 
 function NullSourceBlock:process()
-    local samples = types.ComplexFloat32Type.alloc(self._chunksize)
-    return samples
+    return ComplexFloatType.alloc(self._chunksize)
 end
 
 return {NullSourceBlock = NullSourceBlock}

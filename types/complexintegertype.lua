@@ -1,6 +1,7 @@
 local ffi = require('ffi')
 
-require('types.helpers')
+require('oo')
+require('types.vector')
 local ComplexType = require('types.complextype').ComplexType
 
 ffi.cdef[[
@@ -10,8 +11,8 @@ typedef struct {
 } complex_integer32_t;
 ]]
 
-local mt = class_factory(ComplexType)
 local ComplexIntegerType
+local mt = class_factory(ComplexType)
 
 function mt.new(value)
     return ComplexIntegerType(value)

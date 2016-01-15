@@ -1,4 +1,4 @@
-require('types.helpers')
+require('oo')
 
 local AnyType = class_factory()
 

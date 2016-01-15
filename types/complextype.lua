@@ -1,6 +1,7 @@
 local math = require('math')
 
-require('types.helpers')
+require('oo')
+require('types.vector')
 local AnyType = require('types.anytype').AnyType
 
 local ComplexType = class_factory(AnyType)

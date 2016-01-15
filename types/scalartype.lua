@@ -1,4 +1,4 @@
-require('types.helpers')
+require('oo')
 local AnyType = require('types.anytype').AnyType
 
 local ScalarType = class_factory(AnyType)

@@ -1,5 +1,3 @@
-local table = require('table')
-
 require('oo')
 
 -- PipeInput class
@@ -48,20 +46,20 @@ function InternalPipe.new(producer, consumer)
     local self = setmetatable({}, InternalPipe)
     self.producer = producer
     self.consumer = consumer
-    self._data = {}
+    self._data = nil
     return self
 end
 
 function InternalPipe:read()
-    return table.remove(self._data, 1)
+    return self._data
 end
 
 function InternalPipe:write(obj)
-    table.insert(self._data, obj)
+    self._data = obj
 end
 
 function InternalPipe:has_data()
-    return #self._data > 0
+    return self._data ~= nil
 end
 
 -- Exported module

@@ -7,6 +7,7 @@ function PipeInput.new(name, data_type)
     local self = setmetatable({}, PipeInput)
     self.name = name
     self.data_type = data_type
+    self.owner = nil
     self.pipe = nil
     return self
 end
@@ -26,6 +27,7 @@ function PipeOutput.new(name, data_type, rate)
     local self = setmetatable({}, PipeOutput)
     self.name = name
     self.data_type = data_type
+    self.owner = nil
     self.pipes = {}
     self._rate = rate
     return self

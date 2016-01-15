@@ -26,6 +26,15 @@ function BlockFactory(name)
         block = setmetatable(Block.new(name), class)
 
         block:instantiate(...)
+
+        -- Associate input and outputs with block
+        for _, input in pairs(block.inputs) do
+            input.owner = block
+        end
+        for _, output in pairs(block.outputs) do
+            output.owner = block
+        end
+
         return block
     end
 

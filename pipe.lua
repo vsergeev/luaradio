@@ -44,25 +44,28 @@ end
 -- InternalPipe class
 local InternalPipe = class_factory()
 
-function InternalPipe.new(producer, consumer)
+function InternalPipe.new(pipe_output, pipe_input)
     local self = setmetatable({}, InternalPipe)
-    self.producer = producer
-    self.consumer = consumer
+    self.output = pipe_output
+    self.input = pipe_input
     self._data = nil
+
+    pipe_output.pipes[#pipe_output.pipes + 1] = self
+    pipe_input.pipe = self
+
     return self
 end
 
 function InternalPipe:read()
-    return self._data
+    local obj = self._data
+    self._data = nil
+    return obj
 end
 
 function InternalPipe:write(obj)
     self._data = obj
 end
 
-function InternalPipe:has_data()
-    return self._data ~= nil
-end
 
 -- Exported module
 return {PipeInput = PipeInput, PipeOutput = PipeOutput, InternalPipe = InternalPipe}

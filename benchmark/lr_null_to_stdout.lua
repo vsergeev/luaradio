@@ -1,10 +1,10 @@
-local pipeline = require('pipeline')
 local NullSourceBlock = require('blocks.sources.nullsource').NullSourceBlock
 local FileDescriptorSinkBlock = require('blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock
+local CompositeBlock = require('blocks.composite').CompositeBlock
 
 local src = NullSourceBlock()
 local dst = FileDescriptorSinkBlock(1)
+local top = CompositeBlock()
 
-local p = pipeline.Pipeline('test')
-p:connect(src, "out", dst, "in")
-p:run()
+top:connect(src, "out", dst, "in")
+top:run()

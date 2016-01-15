@@ -1,10 +1,9 @@
 local table = require('table')
 
-local callable_mt = {__call = function(self, ...) return self.new(...) end}
+require('oo')
 
 -- PipeInput class
-local PipeInput = setmetatable({}, callable_mt)
-PipeInput.__index = PipeInput
+local PipeInput = class_factory()
 
 function PipeInput.new(name, data_type)
     local self = setmetatable({}, PipeInput)
@@ -14,9 +13,16 @@ function PipeInput.new(name, data_type)
     return self
 end
 
+function PipeInput:get_data_type()
+    error('not implemented')
+end
+
+function PipeInput:get_rate()
+    error('not implemented')
+end
+
 -- PipeOutput class
-local PipeOutput = setmetatable({}, callable_mt)
-PipeOutput.__index = PipeOutput
+local PipeOutput = class_factory()
 
 function PipeOutput.new(name, data_type, rate)
     local self = setmetatable({}, PipeOutput)
@@ -27,21 +33,21 @@ function PipeOutput.new(name, data_type, rate)
     return self
 end
 
+function PipeOutput:get_data_type()
+    error('not implemented')
+end
+
 function PipeOutput:get_rate()
-    if type(self._rate) == "function" then
-        return self._rate()
-    end
-    return self._rate
+    error('not implemented')
 end
 
 -- InternalPipe class
-local InternalPipe = setmetatable({}, callable_mt)
-InternalPipe.__index = InternalPipe
+local InternalPipe = class_factory()
 
-function InternalPipe.new(src, dst)
+function InternalPipe.new(producer, consumer)
     local self = setmetatable({}, InternalPipe)
-    self.src = src
-    self.dst = dst
+    self.producer = producer
+    self.consumer = consumer
     self._data = {}
     return self
 end

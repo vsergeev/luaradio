@@ -109,7 +109,7 @@ function Pipeline:run()
                 for i=1, #block.outputs do
                     for j=1, #block.outputs[i].pipes do
                         -- Look up the destination block
-                        local dblock = block.outputs[i].pipes[j].dst
+                        local dblock = block.outputs[i].pipes[j].consumer
 
                         -- If we haven't visited this block
                         if not visited[dblock] then

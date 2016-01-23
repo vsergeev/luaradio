@@ -3,14 +3,6 @@ require('oo')
 -- Block base class
 local Block = class_factory()
 
-function Block.new(name)
-    local self = setmetatable({}, Block)
-    self.name = name
-    self.inputs = {}
-    self.outputs = {}
-    return self
-end
-
 function Block:initialize()
 end
 
@@ -45,19 +37,22 @@ function BlockFactory(name)
     local class = class_factory(Block)
 
     class.new = function (...)
-        block = setmetatable(Block.new(name), class)
+        local self  = setmetatable({}, class)
+        self.name = name
+        self.inputs = {}
+        self.outputs = {}
 
-        block:instantiate(...)
+        self:instantiate(...)
 
         -- Associate input and outputs with block
-        for _, input in pairs(block.inputs) do
-            input.owner = block
+        for _, input in pairs(self.inputs) do
+            input.owner = self
         end
-        for _, output in pairs(block.outputs) do
-            output.owner = block
+        for _, output in pairs(self.outputs) do
+            output.owner = self
         end
 
-        return block
+        return self
     end
 
     return class

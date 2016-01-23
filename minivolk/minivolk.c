@@ -11,6 +11,7 @@ typedef struct lv_32fc {
 } lv_32fc_t;
 
 # if 0
+
 void volk_32fc_32f_dot_prod_32fc_a_sse( lv_32fc_t* result, const  lv_32fc_t* input, const  float* taps, unsigned int num_points) {
 
   float res[2];

@@ -4,6 +4,7 @@ require('oo')
 local Block = class_factory()
 
 function Block:initialize()
+
 end
 
 function Block:process(...)
@@ -29,7 +30,9 @@ function Block:run_once()
 end
 
 function Block:run()
-    error("run() not implemented")
+    while true do
+        self:run_once()
+    end
 end
 
 -- BlockFactory derived class generator

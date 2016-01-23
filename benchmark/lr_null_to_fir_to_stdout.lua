@@ -18,7 +18,7 @@ local filter3 = FIRFilterBlock(random_taps(256))
 local filter4 = FIRFilterBlock(random_taps(256))
 local filter5 = FIRFilterBlock(random_taps(256))
 local dst = FileDescriptorSinkBlock(1)
-local top = CompositeBlock()
+local top = CompositeBlock(true)
 
 top:connect(src, "out", filter1, "in")
 top:connect(filter1, "out", filter2, "in")

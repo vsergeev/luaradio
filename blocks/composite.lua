@@ -7,7 +7,8 @@ local block = require('block')
 
 local CompositeBlock = block.BlockFactory("CompositeBlock")
 
-function CompositeBlock:instantiate()
+function CompositeBlock:instantiate(multiprocess)
+    self._multiprocess = multiprocess
     self._blocks = {}
     self._connections = {}
     self._unconnected_inputs = {}
@@ -133,7 +134,11 @@ function CompositeBlock:connect(src, output_name, dst, input_name)
     end
 
     -- Create a pipe from output to input
-    local p = pipe.InternalPipe(pipe_output, pipe_input)
+    if self._multiprocess then
+        local p = pipe.ProcessPipe(pipe_output, pipe_input)
+    else
+        local p = pipe.InternalPipe(pipe_output, pipe_input)
+    end
 
     -- Update book-keeping
     self._connections[pipe_input] = pipe_output
@@ -157,6 +162,7 @@ function CompositeBlock:_prepare_to_run()
 
     -- Build execution order
     self._execution_order = build_execution_order(dependency_graph)
+
     print("Running in order:")
     for _, k in ipairs(self._execution_order) do
         print("\t" .. tostring(k) .. " " .. k.name)
@@ -175,16 +181,43 @@ function CompositeBlock:run_once()
     end
 end
 
+local ffi = require('ffi')
+
+ffi.cdef[[
+    typedef int pid_t;
+    pid_t fork(void);
+    pid_t waitpid(pid_t pid, int *status, int options);
+]]
+
 function CompositeBlock:run()
     -- Prepare to run
     if not self._execution_order then
         self:_prepare_to_run()
     end
 
-    -- Run blocks continuously
-    while true do
+    if not self._multiprocess then
+        -- Run blocks single-threaded
+        while true do
+            for _, block in ipairs(self._execution_order) do
+                block:run_once()
+            end
+        end
+    else
+        local pids = {}
+
+        -- Fork and run blocks
         for _, block in ipairs(self._execution_order) do
-            block:run_once()
+            local pid = ffi.C.fork()
+            if pid == 0 then
+                block:run()
+            else
+                pids[#pids + 1] = pid
+            end
+        end
+
+        -- Wait for pids
+        for _, pid in pairs(pids) do
+            ffi.C.waitpid(pid, nil, 0)
         end
     end
 end

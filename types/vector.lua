@@ -6,8 +6,9 @@ ffi.cdef[[
 ]]
 
 function vector_alloc(ffi_type, n)
-    local data = ffi.cast(ffi.typeof("$ *", ffi_type), ffi.gc(ffi.C.calloc(n, ffi.sizeof(ffi_type)), ffi.C.free))
-    return {data = data, length = n, raw_length = n*ffi.sizeof(ffi_type)}
+    local buf = ffi.gc(ffi.C.calloc(n, ffi.sizeof(ffi_type)), ffi.C.free)
+    local ptr = ffi.cast(ffi.typeof("$ *", ffi_type), buf)
+    return {data = ptr, _buf = buf, length = n, raw_length = n*ffi.sizeof(ffi_type)}
 end
 
 function vector_alloc_factory(ffi_type)

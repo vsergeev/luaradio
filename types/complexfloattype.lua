@@ -22,6 +22,10 @@ function mt.alloc(n)
     return vector_alloc(ComplexFloatType, n)
 end
 
+function mt.from_buffer(buf, len)
+    return {data = ffi.cast(ffi.typeof("$ *", ComplexFloatType), buf), _buf = buf, length = len/ffi.sizeof(ComplexFloatType), raw_length = len}
+end
+
 function mt:__tostring()
     return "ComplexFloat32<real=" .. self.real .. ", imag=" .. self.imag .. ">"
 end

@@ -22,9 +22,10 @@ end
 ffi.cdef[[
 void *memmove(void *dest, const void *src, size_t n);
 
-void volk_32fc_32f_dot_prod_32fc_a_sse( complex_float32_t* result, const  complex_float32_t* input, const  float32_t* taps, unsigned int num_points);
+void (*volk_32fc_32f_dot_prod_32fc_u)(complex_float32_t* result, const complex_float32_t* input, const float32_t* taps, unsigned int num_points);
+void (*volk_32fc_32f_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const float32_t* taps, unsigned int num_points);
 ]]
-local minivolk = ffi.load("minivolk/minivolk.so")
+local volk = ffi.load("libvolk.so")
 
 function FIRFilterBlock:process(x)
     local out = ComplexFloatType.alloc(x.length)
@@ -36,7 +37,7 @@ function FIRFilterBlock:process(x)
         self.state.data[0] = x.data[i]
 
         -- Inner product of state and taps
-        minivolk.volk_32fc_32f_dot_prod_32fc_a_sse(out.data[i], self.state.data, self.taps.data, self.taps.length)
+        volk.volk_32fc_32f_dot_prod_32fc_a(out.data[i], self.state.data, self.taps.data, self.taps.length)
 
         -- Inner product of state and taps (slow Lua version)
         --for j = 0, self.state.length-1 do

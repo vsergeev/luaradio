@@ -79,6 +79,14 @@ ffi.cdef[[
     int write(int fd, const void *buf, size_t count);
     void *calloc(size_t nmemb, size_t size);
     void free(void *ptr);
+
+    void *aligned_alloc(size_t alignment, size_t size);
+
+    struct iovec {
+        void *iov_base;
+        size_t iov_len;
+    };
+    int vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned int flags);
 ]]
 
 function ProcessPipe.new(pipe_output, pipe_input)
@@ -94,8 +102,6 @@ function ProcessPipe.new(pipe_output, pipe_input)
     local pipe_fds = ffi.new("int[2]")
     assert(ffi.C.pipe(pipe_fds) == 0, "Creating pipe.")
 
-    --assert(ffi.C.socketpair(1, 1, 0, pipe_fds) == 0, "Creating socket pair.")
-
     self._rfd = pipe_fds[0]
     self._wfd = pipe_fds[1]
 
@@ -104,20 +110,23 @@ function ProcessPipe.new(pipe_output, pipe_input)
     -- FIXME resolve type
     self._type = ComplexFloatType
 
-    self.buf = ffi.gc(ffi.C.calloc(1, self._read_size), ffi.C.free)
+    -- FIXME use OS page size
+    self.buf = ffi.gc(ffi.C.aligned_alloc(4096, self._read_size), ffi.C.free)
 
     return self
 end
 
 function ProcessPipe:read()
-    local len = ffi.C.read(self._rfd, self.buf, self._read_size)
-    assert(len > 0, "Read failed.")
+    local iov = ffi.new("struct iovec", self.buf, self._read_size)
+    local len = ffi.C.vmsplice(self._rfd, iov, 1, 0)
+    assert(len == self._read_size, "Read failed.")
     return self._type.from_buffer(self.buf, len)
 end
 
 function ProcessPipe:write(obj)
-    local len = ffi.C.write(self._wfd, obj.data, obj.raw_length)
-    assert(len == obj.raw_length, "Write failed.")
+    local iov = ffi.new("struct iovec", obj.data, obj.raw_length)
+    local len = ffi.C.vmsplice(self._wfd, iov, 1, 0)
+    assert(len == obj.raw_length, "Write failed: " .. len .. " " .. obj.raw_length)
 end
 
 function ProcessPipe:fd()

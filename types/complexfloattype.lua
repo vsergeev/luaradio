@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-require('oo')
+local object = require('object')
 require('types.vector')
 local ComplexType = require('types.complextype').ComplexType
 
@@ -12,7 +12,7 @@ typedef struct {
 ]]
 
 local ComplexFloatType
-local mt = class_factory(ComplexType)
+local mt = object.class_factory(ComplexType)
 
 function mt.new(value)
     return ComplexFloatType(value)

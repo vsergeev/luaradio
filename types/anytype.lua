@@ -1,6 +1,6 @@
-require('oo')
+local object = require('object')
 
-local AnyType = class_factory()
+local AnyType = object.class_factory()
 
 function AnyType.new()
     error('Type is abstract and cannot be constructed.')

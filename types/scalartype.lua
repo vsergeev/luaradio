@@ -1,7 +1,7 @@
-require('oo')
+local object = require('object')
 local AnyType = require('types.anytype').AnyType
 
-local ScalarType = class_factory(AnyType)
+local ScalarType = object.class_factory(AnyType)
 
 function ScalarType:__add(other)
     return self.new(self.value + other.value)

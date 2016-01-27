@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-function class_factory(cls)
+local function class_factory(cls)
     cls = cls or {__call = function(self, ...) return self.new(...) end}
 
     local dcls = setmetatable({}, cls)
@@ -16,7 +16,7 @@ function class_factory(cls)
     return dcls
 end
 
-function isinstanceof(o, cls)
+local function isinstanceof(o, cls)
     -- Handle FFI objects and types
     if rawequal(getmetatable(o), "ffi") then
         if rawequal(getmetatable(cls), "ffi") then
@@ -34,3 +34,4 @@ function isinstanceof(o, cls)
     return rawequal(getmetatable(o), cls) or isinstanceof(getmetatable(o), cls)
 end
 
+return {class_factory = class_factory, isinstanceof = isinstanceof}

@@ -1,7 +1,7 @@
-require('oo')
+local object = require('object')
 
 -- Block base class
-local Block = class_factory()
+local Block = object.class_factory()
 
 function Block:initialize()
 
@@ -37,7 +37,7 @@ end
 
 -- BlockFactory derived class generator
 function BlockFactory(name)
-    local class = class_factory(Block)
+    local class = object.class_factory(Block)
 
     class.new = function (...)
         local self  = setmetatable({}, class)

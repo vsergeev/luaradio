@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-require('oo')
+local object = require('object')
 require('types.vector')
 local ScalarType = require('types.scalartype').ScalarType
 
@@ -11,7 +11,7 @@ typedef struct {
 ]]
 
 local IntegerType
-local mt = class_factory(ScalarType)
+local mt = object.class_factory(ScalarType)
 
 function mt.new(value)
     return IntegerType(value)

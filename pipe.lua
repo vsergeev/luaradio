@@ -1,9 +1,9 @@
-require('oo')
-
 local ffi = require('ffi')
 
+local object = require('object')
+
 -- PipeInput class
-local PipeInput = class_factory()
+local PipeInput = object.class_factory()
 
 function PipeInput.new(name, data_type)
     local self = setmetatable({}, PipeInput)
@@ -23,7 +23,7 @@ function PipeInput:get_rate()
 end
 
 -- PipeOutput class
-local PipeOutput = class_factory()
+local PipeOutput = object.class_factory()
 
 function PipeOutput.new(name, data_type, rate)
     local self = setmetatable({}, PipeOutput)
@@ -44,7 +44,7 @@ function PipeOutput:get_rate()
 end
 
 -- InternalPipe class
-local InternalPipe = class_factory()
+local InternalPipe = object.class_factory()
 
 function InternalPipe.new(pipe_output, pipe_input)
     local self = setmetatable({}, InternalPipe)
@@ -69,7 +69,7 @@ function InternalPipe:write(obj)
 end
 
 -- ProcessPipe class
-local ProcessPipe = class_factory()
+local ProcessPipe = object.class_factory()
 
 ffi.cdef[[
     int pipe(int pipefd[2]);

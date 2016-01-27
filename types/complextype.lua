@@ -1,10 +1,10 @@
 local math = require('math')
 
-require('oo')
+local object = require('object')
 require('types.vector')
 local AnyType = require('types.anytype').AnyType
 
-local ComplexType = class_factory(AnyType)
+local ComplexType = object.class_factory(AnyType)
 
 function ComplexType:__add(other)
     return self.new(self.real + other.real, self.imag + other.imag)

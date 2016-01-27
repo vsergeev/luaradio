@@ -1,7 +1,7 @@
 local ffi = require('ffi')
 
 local function class_factory(cls)
-    cls = cls or {__call = function(self, ...) return self.new(...) end}
+    cls = cls or {__call = function(self, ...) return self.new(...) end, _types = {}}
 
     local dcls = setmetatable({}, cls)
     dcls.__index = dcls
@@ -13,25 +13,18 @@ local function class_factory(cls)
         end
     end
 
+    -- Inherit and update types
+    dcls._types = {}
+    for k, v in pairs(cls._types) do
+        dcls._types[k] = v
+    end
+    dcls._types[dcls] = true
+
     return dcls
 end
 
 local function isinstanceof(o, cls)
-    -- Handle FFI objects and types
-    if rawequal(getmetatable(o), "ffi") then
-        if rawequal(getmetatable(cls), "ffi") then
-            return ffi.istype(cls, o)
-        else
-            return rawequal(o.__index, cls) or isinstanceof(o.__index, cls)
-        end
-    end
-
-    -- Base case, after ascending all parents
-    if rawequal(o, nil) then
-        return false
-    end
-
-    return rawequal(getmetatable(o), cls) or isinstanceof(getmetatable(o), cls)
+    return (o._types and o._types[cls]) and true or false
 end
 
 return {class_factory = class_factory, isinstanceof = isinstanceof}

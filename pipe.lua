@@ -108,7 +108,7 @@ function ProcessPipe.new(pipe_output, pipe_input)
     self._read_size = 4096*8
 
     -- FIXME resolve type
-    self._type = ComplexFloatType
+    self._type = require('types.complexfloat32').ComplexFloat32Type
 
     -- FIXME use OS page size
     self.buf = ffi.gc(ffi.C.aligned_alloc(4096, self._read_size), ffi.C.free)
@@ -120,13 +120,13 @@ function ProcessPipe:read()
     local iov = ffi.new("struct iovec", self.buf, self._read_size)
     local len = ffi.C.vmsplice(self._rfd, iov, 1, 0)
     assert(len == self._read_size, "Read failed.")
-    return self._type.from_buffer(self.buf, len)
+    return self._type.vector_from_const_buf(self.buf, len)
 end
 
 function ProcessPipe:write(obj)
-    local iov = ffi.new("struct iovec", obj.data, obj.raw_length)
+    local iov = ffi.new("struct iovec", obj.data, obj.size)
     local len = ffi.C.vmsplice(self._wfd, iov, 1, 0)
-    assert(len == obj.raw_length, "Write failed: " .. len .. " " .. obj.raw_length)
+    assert(len == obj.size, "Write failed: " .. len .. " " .. obj.size)
 end
 
 function ProcessPipe:fd()

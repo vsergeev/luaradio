@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-require('types')
+local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
 local pipe = require('pipe')
 local block = require('block')
 
@@ -15,7 +15,7 @@ function FileIQSourceBlock:instantiate(filename, format, rate, chunksize)
     self._chunksize = chunksize or 4096
 
     self.inputs = {}
-    self.outputs = {pipe.PipeOutput("out", ComplexIntegerType, rate)}
+    self.outputs = {pipe.PipeOutput("out", ComplexFloat32Type, rate)}
 end
 
 ffi.cdef[[
@@ -29,8 +29,8 @@ function FileIQSourceBlock:initialize()
 end
 
 function FileIQSourceBlock:process()
-    local samples = ComplexIntegerType.alloc(self._chunksize)
-    ffi.C.fread(samples.data, 1, samples.raw_length, self.f)
+    local samples = ComplexFloat32Typep.alloc(self._chunksize)
+    ffi.C.fread(samples.data, 1, samples.size, self.f)
     return samples
 end
 

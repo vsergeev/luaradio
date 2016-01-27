@@ -1,21 +1,22 @@
 local ffi = require('ffi')
 
-require('types')
+local Float32Type = require('types.float32').Float32Type
+local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
 local pipe = require('pipe')
 local block = require('block')
 
 local FIRFilterBlock = block.BlockFactory("FIRFilterBlock")
 
 function FIRFilterBlock:instantiate(taps)
-    self.taps = FloatType.alloc(#taps)
+    self.taps = Float32Type.vector(#taps)
     for i = 1, #taps do
         self.taps.data[i-1].value = taps[i]
     end
 
-    self.state = ComplexFloatType.alloc(#taps)
+    self.state = ComplexFloat32Type.vector(#taps)
 
-    self.inputs = {pipe.PipeInput("in", ComplexFloatType)}
-    self.outputs = {pipe.PipeOutput("out", ComplexFloatType,
+    self.inputs = {pipe.PipeInput("in", ComplexFloat32Type)}
+    self.outputs = {pipe.PipeOutput("out", ComplexFloat32Type,
                     function () return self.inputs[1].pipe.rate end)}
 end
 
@@ -28,7 +29,7 @@ void (*volk_32fc_32f_dot_prod_32fc_a)(complex_float32_t* result, const complex_f
 local volk = ffi.load("libvolk.so")
 
 function FIRFilterBlock:process(x)
-    local out = ComplexFloatType.alloc(x.length)
+    local out = ComplexFloat32Type.vector(x.length)
 
     for i = 0, x.length-1 do
         -- Shift the state samples down

@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-require('types')
+local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
 local pipe = require('pipe')
 local block = require('block')
 
@@ -9,7 +9,7 @@ local FileDescriptorSinkBlock = block.BlockFactory("FileDescriptorSinkBlock")
 function FileDescriptorSinkBlock:instantiate(fd)
     self.fd = fd
 
-    self.inputs = {pipe.PipeInput("in", AnyType)}
+    self.inputs = {pipe.PipeInput("in", ComplexFloat32Type)}
     self.outputs = {}
 end
 
@@ -18,7 +18,7 @@ ffi.cdef[[
 ]]
 
 function FileDescriptorSinkBlock:process(x)
-    ffi.C.write(self.fd, x.data, x.raw_length)
+    ffi.C.write(self.fd, x.data, x.size)
 end
 
 return {FileDescriptorSinkBlock = FileDescriptorSinkBlock}

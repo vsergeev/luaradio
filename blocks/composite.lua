@@ -1,5 +1,4 @@
 local object = require('object')
-require('types')
 
 local string = require('string')
 local pipe = require('pipe')
@@ -113,7 +112,7 @@ function CompositeBlock:connect(src, output_name, dst, input_name)
     local pipe_input = assert(lookup_pipe_by_name(dst.inputs, input_name), "Input pipe not found.")
 
     -- Assert types match
-    assert(object.isinstanceof(pipe_output.data_type, pipe_input.data_type) or object.isinstanceof(pipe_input.data_type, pipe_output.data_type), "Input-output pipe data type mismatch.")
+    --assert(object.isinstanceof(pipe_output.data_type, pipe_input.data_type) or object.isinstanceof(pipe_input.data_type, pipe_output.data_type), "Input-output pipe data type mismatch.")
 
     -- Assert input is not already connected
     assert(not self._connections[dst_pipe_input], "Input already connected.")

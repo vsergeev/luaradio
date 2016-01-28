@@ -1,9 +1,9 @@
 local ffi = require('ffi')
 local string = require('string')
+local io = require('io')
 
-local object = require('object')
-local pipe = require('pipe')
 local block = require('block')
+local pipe = require('pipe')
 local util = require('util')
 
 local CompositeBlock = block.BlockFactory("CompositeBlock")
@@ -52,6 +52,7 @@ local function build_execution_order(dependency_graph)
         count = count + 1
     end
 
+    -- While we still have blocks left to add to our order
     while #order < count do
         for block, deps in pairs(graph_copy) do
             local deps_met = true
@@ -68,7 +69,7 @@ local function build_execution_order(dependency_graph)
             if deps_met then
                 -- Add block next to the execution order
                 order[#order + 1] = block
-                -- Remove the entry from the graph
+                -- Remove the block from the dependency graph
                 graph_copy[block] = nil
 
                 break
@@ -110,12 +111,12 @@ function CompositeBlock:connect(src, output_name, dst, input_name)
     pipe_output.pipes[#pipe_output.pipes+1] = p
     pipe_input.pipe = p
 
-    -- Update book-keeping
+    -- Update connections book-keeping
     self._connections[pipe_input] = pipe_output
     self._unconnected_inputs[pipe_input] = nil
     self._unconnected_outputs[pipe_output] = nil
 
-    print(string.format("Connected source %s.%s to destination %s.%s", src.name, output_name, dst.name, input_name))
+    io.stderr:write(string.format("Connected source %s.%s to destination %s.%s\n", src.name, output_name, dst.name, input_name))
 end
 
 function CompositeBlock:_prepare_to_run()
@@ -142,16 +143,16 @@ function CompositeBlock:_prepare_to_run()
         block:initialize()
     end
 
-    print("Running in order:")
+    io.stderr:write("Running in order:\n")
     for _, k in ipairs(self._execution_order) do
-        print("\t" .. tostring(k) .. " " .. k.name)
+        io.stderr:write("\t" .. tostring(k) .. " " .. k.name .. "\n")
     end
 end
 
 function CompositeBlock:run_once()
     -- Prepare to run
     if not self._execution_order then
-        self:_prepare_tor_run()
+        self:_prepare_to_run()
     end
 
     -- Run blocks once
@@ -185,6 +186,7 @@ function CompositeBlock:run()
         -- Fork and run blocks
         for _, block in ipairs(self._execution_order) do
             local pid = ffi.C.fork()
+            assert(pid >= 0, "fork(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
             if pid == 0 then
                 block:run()
             else

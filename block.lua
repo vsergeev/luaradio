@@ -82,6 +82,13 @@ function Block:differentiate(input_data_types)
     end
 end
 
+function Block:get_rate()
+    assert(#self.inputs > 0, "get_rate() not implemented for source " .. self.name .. ".")
+
+    -- Default to copying rate from first input
+    return self.inputs[1].pipe:get_rate()
+end
+
 function Block:initialize()
     -- No operation
 end

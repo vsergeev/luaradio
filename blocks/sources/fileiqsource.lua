@@ -16,6 +16,10 @@ function FileIQSourceBlock:instantiate(filename, format, rate, chunksize)
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
 end
 
+function FileIQSourceBlock:get_rate()
+    return self._rate
+end
+
 ffi.cdef[[
     typedef struct FILE FILE;
     FILE *fopen(const char *path, const char *mode);

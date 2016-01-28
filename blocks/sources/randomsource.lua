@@ -6,9 +6,14 @@ local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
 local RandomSourceBlock = block.BlockFactory("RandomSourceBlock")
 
 function RandomSourceBlock:instantiate()
+    self._rate = rate or 1
     self._chunk_size = 8192
 
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
+end
+
+function RandomSourceBlock:get_rate()
+    return self._rate
 end
 
 function RandomSourceBlock:process()

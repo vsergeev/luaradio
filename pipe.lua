@@ -38,6 +38,10 @@ function InternalPipe.new(pipe_output, pipe_input, data_type)
     return self
 end
 
+function InternalPipe:get_rate()
+    return self.pipe_output.owner:get_rate()
+end
+
 function InternalPipe:read()
     local vec = self._data
     self._data = nil
@@ -87,6 +91,10 @@ function ProcessPipe.new(pipe_output, pipe_input, data_type)
     self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_size), ffi.C.free)
 
     return self
+end
+
+function ProcessPipe:get_rate()
+    return self.pipe_output.owner:get_rate()
 end
 
 function ProcessPipe:read()

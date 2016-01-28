@@ -3,6 +3,7 @@ local object = require('object')
 local string = require('string')
 local pipe = require('pipe')
 local block = require('block')
+local util = require('util')
 
 local CompositeBlock = block.BlockFactory("CompositeBlock")
 
@@ -12,24 +13,6 @@ function CompositeBlock:instantiate(multiprocess)
     self._connections = {}
     self._unconnected_inputs = {}
     self._unconnected_outputs = {}
-end
-
-function table_length(t)
-    local count = 0
-    for _, _ in pairs(t) do
-        count = count + 1
-    end
-    return count
-end
-
-function lookup_pipe_by_name(pipes, name)
-    for _, pipe in pairs(pipes) do
-        if pipe.name == name then
-            return pipe
-        end
-    end
-
-    return nil
 end
 
 function build_dependency_graph(blocks, connections)
@@ -68,24 +51,13 @@ function build_execution_order(dependency_graph)
         count = count + 1
     end
 
-    -- Helper function that returns boolean for existence of an element in an
-    -- array
-    function exists(array, elem)
-        for _, k in pairs(array) do
-            if k == elem then
-                return true
-            end
-        end
-        return false
-    end
-
     while #order < count do
         for block, deps in pairs(graph_copy) do
             local deps_met = true
 
             -- Check if dependencies exists in order list
             for _, dep in pairs(deps) do
-                if not exists(order, dep) then
+                if not util.array_exists(order, dep) then
                     deps_met = false
                     break
                 end
@@ -108,11 +80,10 @@ end
 
 function CompositeBlock:connect(src, output_name, dst, input_name)
     -- Look up pipe objects
-    local pipe_output = assert(lookup_pipe_by_name(src.outputs, output_name), "Output pipe not found.")
-    local pipe_input = assert(lookup_pipe_by_name(dst.inputs, input_name), "Input pipe not found.")
-
-    -- Assert types match
-    --assert(object.isinstanceof(pipe_output.data_type, pipe_input.data_type) or object.isinstanceof(pipe_input.data_type, pipe_output.data_type), "Input-output pipe data type mismatch.")
+    local pipe_output = util.array_search(src.outputs, function (p) return p.name == output_name end)
+    local pipe_input = util.array_search(dst.inputs, function (p) return p.name == input_name end)
+    assert(pipe_output, "Output pipe not found.")
+    assert(pipe_input, "Input pipe not found.")
 
     -- Assert input is not already connected
     assert(not self._connections[dst_pipe_input], "Input already connected.")
@@ -149,7 +120,7 @@ end
 
 function CompositeBlock:_prepare_to_run()
     -- Check all inputs are connected
-    assert(table_length(self._unconnected_inputs) == 0, "Unconnected inputs exist.")
+    assert(util.table_length(self._unconnected_inputs) == 0, "Unconnected inputs exist.")
 
     -- Initialize all blocks
     for block, _ in pairs(self._blocks) do

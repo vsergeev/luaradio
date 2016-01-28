@@ -1,7 +1,7 @@
-local block = require('block')
-local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('types.float32').Float32Type
-local Integer32Type = require('types.integer32').Integer32Type
+local block = require('radio.core.block')
+local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
+local Float32Type = require('radio.types.float32').Float32Type
+local Integer32Type = require('radio.types.integer32').Integer32Type
 
 local PrintSinkBlock = block.BlockFactory("PrintSinkBlock")
 

@@ -1,14 +1,15 @@
 local ffi = require('ffi')
-local object = require('object')
-local vector = require('vector')
+
+local object = require('radio.core.object')
+local vector = require('radio.core.vector')
 
 ffi.cdef[[
 typedef struct {
-    int32_t value;
-} integer32_t;
+    uint8_t value;
+} byte_t;
 ]]
 
-local Integer32Type
+local ByteType
 local mt = object.class_factory()
 
 -- Operations
@@ -42,29 +43,29 @@ function mt:__le(other)
 end
 
 function mt:__tostring()
-    return "Integer32<value=" .. self.value .. ">"
+    return "Byte<value=" .. self.value .. ">"
 end
 
 -- Constructors
 
 function mt.new(value)
-    return Integer32Type(value)
+    return ByteType(value)
 end
 
 function mt.vector(n)
-    return vector.vector_calloc("integer32_t *", n, ffi.sizeof(Integer32Type))
+    return vector.vector_calloc("byte_t *", n, ffi.sizeof(ByteType))
 end
 
 function mt.vector_from_buf(buf, size)
-    return vector.vector_cast("integer32_t *", buf, size, ffi.sizeof(Integer32Type))
+    return vector.vector_cast("byte_t *", buf, size, ffi.sizeof(ByteType))
 end
 
 function mt.vector_from_const_buf(buf, size)
-    return vector.vector_cast("const integer32_t *", buf, size, ffi.sizeof(Integer32Type))
+    return vector.vector_cast("const byte_t *", buf, size, ffi.sizeof(ByteType))
 end
 
 -- FFI type binding
 
-Integer32Type = ffi.metatype("integer32_t", mt)
+ByteType = ffi.metatype("byte_t", mt)
 
-return {Integer32Type = Integer32Type}
+return {ByteType = ByteType}

@@ -1,7 +1,8 @@
 local ffi = require('ffi')
 local bit = require('bit')
-local object = require('object')
-local vector = require('vector')
+
+local object = require('radio.core.object')
+local vector = require('radio.core.vector')
 
 ffi.cdef[[
 typedef struct {

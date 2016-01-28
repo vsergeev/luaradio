@@ -1,8 +1,8 @@
 local ffi = require('ffi')
 
-local block = require('block')
-local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('types.float32').Float32Type
+local block = require('radio.core.block')
+local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
+local Float32Type = require('radio.types.float32').Float32Type
 
 local FIRFilterBlock = block.BlockFactory("FIRFilterBlock")
 

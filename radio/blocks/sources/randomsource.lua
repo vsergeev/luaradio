@@ -1,7 +1,7 @@
 local math = require('math')
 
-local block = require('block')
-local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
+local block = require('radio.core.block')
+local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
 local RandomSourceBlock = block.BlockFactory("RandomSourceBlock")
 

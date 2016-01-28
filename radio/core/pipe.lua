@@ -1,7 +1,7 @@
 local ffi = require('ffi')
 
-local object = require('object')
-local vector = require('vector')
+local object = require('radio.core.object')
+local vector = require('radio.core.vector')
 
 -- PipeInput class
 local PipeInput = object.class_factory()

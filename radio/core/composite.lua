@@ -2,9 +2,9 @@ local ffi = require('ffi')
 local string = require('string')
 local io = require('io')
 
-local block = require('block')
-local pipe = require('pipe')
-local util = require('util')
+local block = require('radio.core.block')
+local pipe = require('radio.core.pipe')
+local util = require('radio.core.util')
 
 local CompositeBlock = block.BlockFactory("CompositeBlock")
 

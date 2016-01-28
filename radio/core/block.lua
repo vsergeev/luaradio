@@ -1,6 +1,6 @@
-local object = require('object')
-local pipe = require('pipe')
-local util = require('util')
+local object = require('radio.core.object')
+local pipe = require('radio.core.pipe')
+local util = require('radio.core.util')
 
 -- Input class
 local Input = object.class_factory()

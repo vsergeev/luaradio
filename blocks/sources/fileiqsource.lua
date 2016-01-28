@@ -1,8 +1,7 @@
 local ffi = require('ffi')
 
-local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
-local pipe = require('pipe')
 local block = require('block')
+local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
 
 local FileIQSourceBlock = block.BlockFactory("FileIQSourceBlock")
 
@@ -14,8 +13,7 @@ function FileIQSourceBlock:instantiate(filename, format, rate, chunksize)
     self._rate = rate
     self._chunksize = chunksize or 4096
 
-    self.inputs = {}
-    self.outputs = {pipe.PipeOutput("out", ComplexFloat32Type, rate)}
+    self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
 end
 
 ffi.cdef[[
@@ -26,10 +24,12 @@ ffi.cdef[[
 
 function FileIQSourceBlock:initialize()
     self.f = ffi.C.fopen(self._filename, "rb")
+    assert(self.f ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
 function FileIQSourceBlock:process()
-    local samples = ComplexFloat32Typep.alloc(self._chunksize)
+    local samples = ComplexFloat32Type.vector(self._chunksize)
+    -- FIXME interpret data
     ffi.C.fread(samples.data, 1, samples.size, self.f)
     return samples
 end

@@ -1,9 +1,8 @@
 local ffi = require('ffi')
 
-local Float32Type = require('types.float32').Float32Type
-local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
-local pipe = require('pipe')
 local block = require('block')
+local ComplexFloat32Type = require('types.complexfloat32').ComplexFloat32Type
+local Float32Type = require('types.float32').Float32Type
 
 local FIRFilterBlock = block.BlockFactory("FIRFilterBlock")
 
@@ -15,15 +14,11 @@ function FIRFilterBlock:instantiate(taps)
 
     self.state = ComplexFloat32Type.vector(#taps)
 
-    self.inputs = {pipe.PipeInput("in", ComplexFloat32Type)}
-    self.outputs = {pipe.PipeOutput("out", ComplexFloat32Type,
-                    function () return self.inputs[1].pipe.rate end)}
+    self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})
 end
 
 ffi.cdef[[
 void *memmove(void *dest, const void *src, size_t n);
-
-void (*volk_32fc_32f_dot_prod_32fc_u)(complex_float32_t* result, const complex_float32_t* input, const float32_t* taps, unsigned int num_points);
 void (*volk_32fc_32f_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const float32_t* taps, unsigned int num_points);
 ]]
 local volk = ffi.load("libvolk.so")

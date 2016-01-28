@@ -1,6 +1,7 @@
-local object = require('object')
-
+local ffi = require('ffi')
 local string = require('string')
+
+local object = require('object')
 local pipe = require('pipe')
 local block = require('block')
 local util = require('util')
@@ -15,7 +16,7 @@ function CompositeBlock:instantiate(multiprocess)
     self._unconnected_outputs = {}
 end
 
-function build_dependency_graph(blocks, connections)
+local function build_dependency_graph(blocks, connections)
     local graph = {}
 
     -- Add dependency-free sources
@@ -40,7 +41,7 @@ function build_dependency_graph(blocks, connections)
     return graph
 end
 
-function build_execution_order(dependency_graph)
+local function build_execution_order(dependency_graph)
     local order = {}
 
     -- Copy dependency graph and count the number of blocks
@@ -104,11 +105,10 @@ function CompositeBlock:connect(src, output_name, dst, input_name)
     end
 
     -- Create a pipe from output to input
-    if self._multiprocess then
-        local p = pipe.ProcessPipe(pipe_output, pipe_input)
-    else
-        local p = pipe.InternalPipe(pipe_output, pipe_input)
-    end
+    local p = self._multiprocess and pipe.ProcessPipe(pipe_output, pipe_input) or pipe.InternalPipe(pipe_output, pipe_input)
+    -- Link the pipe to the input and output ends
+    pipe_output.pipes[#pipe_output.pipes+1] = p
+    pipe_input.pipe = p
 
     -- Update book-keeping
     self._connections[pipe_input] = pipe_output
@@ -122,16 +122,25 @@ function CompositeBlock:_prepare_to_run()
     -- Check all inputs are connected
     assert(util.table_length(self._unconnected_inputs) == 0, "Unconnected inputs exist.")
 
+    -- Build dependency graph and execution order
+    self._execution_order = build_execution_order(build_dependency_graph(self._blocks, self._connections))
+
+    -- Differentiate all blocks
+    for _, block in ipairs(self._execution_order) do
+        -- Gather input data types to this block
+        local input_data_types = {}
+        for _, input in ipairs(block.inputs) do
+            input_data_types[#input_data_types+1] = input.pipe.data_type
+        end
+
+        -- Differentiate the block
+        block:differentiate(input_data_types)
+    end
+
     -- Initialize all blocks
     for block, _ in pairs(self._blocks) do
         block:initialize()
     end
-
-    -- Build dependency graph
-    local dependency_graph = build_dependency_graph(self._blocks, self._connections)
-
-    -- Build execution order
-    self._execution_order = build_execution_order(dependency_graph)
 
     print("Running in order:")
     for _, k in ipairs(self._execution_order) do
@@ -151,8 +160,6 @@ function CompositeBlock:run_once()
     end
 end
 
-local ffi = require('ffi')
-
 ffi.cdef[[
     typedef int pid_t;
     pid_t fork(void);
@@ -166,7 +173,7 @@ function CompositeBlock:run()
     end
 
     if not self._multiprocess then
-        -- Run blocks single-threaded
+        -- Run blocks single-threaded in round-robin order
         while true do
             for _, block in ipairs(self._execution_order) do
                 block:run_once()

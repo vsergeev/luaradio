@@ -105,9 +105,18 @@ function ProcessPipe:read()
 end
 
 function ProcessPipe:write(vec)
-    local iov = ffi.new("struct iovec", vec.data, vec.size)
-    local len = ffi.C.vmsplice(self._wfd, iov, 1, 0)
-    assert(len == vec.size, "Write failed: " .. len .. " " .. vec.size)
+    local iov = ffi.new("struct iovec")
+    local len = 0
+
+    while len < vec.size do
+        iov.iov_base = ffi.cast("char *", vec.data) + len
+        iov.iov_len = vec.size - len
+
+        local bytes_written = ffi.C.vmsplice(self._wfd, iov, 1, 0)
+        assert(bytes_written > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+
+        len = len + bytes_written
+    end
 end
 
 -- Exported module

@@ -16,6 +16,7 @@ return {
     FileIQSourceBlock = require('radio.blocks.sources.fileiqsource').FileIQSourceBlock,
     NullSourceBlock = require('radio.blocks.sources.nullsource').NullSourceBlock,
     RandomSourceBlock = require('radio.blocks.sources.randomsource').RandomSourceBlock,
+    SignalSourceBlock = require('radio.blocks.sources.signalsource').SignalSourceBlock,
 
     -- Types
     ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type,

@@ -110,9 +110,5 @@ function ProcessPipe:write(vec)
     assert(len == vec.size, "Write failed: " .. len .. " " .. vec.size)
 end
 
-function ProcessPipe:fd()
-    return self._rfd
-end
-
 -- Exported module
 return {PipeInput = PipeInput, PipeOutput = PipeOutput, InternalPipe = InternalPipe, ProcessPipe = ProcessPipe}

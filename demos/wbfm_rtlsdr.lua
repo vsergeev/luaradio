@@ -33,7 +33,7 @@ local b5 = radio.FrequencyDiscriminatorBlock(10.0)
 local b6 = radio.IIRFilterBlock(fm_deemph_b_taps, fm_deemph_a_taps)
 local b7 = radio.FIRFilterBlock(audio_lpf_taps)
 local b8 = radio.DownsamplerBlock(4)
-local b9 = radio.FileDescriptorSinkBlock(1)
+local b9 = radio.PulseAudioSinkBlock()
 local top = radio.CompositeBlock(true)
 
 top:connect(b0, "out", b2, "in1")

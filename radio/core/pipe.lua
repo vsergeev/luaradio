@@ -87,7 +87,7 @@ function ProcessPipe.new(pipe_output, pipe_input, data_type)
     self._wfd = pipe_fds[1]
 
     -- Pre-allocate read buffer
-    self._buf_size = 32768
+    self._buf_size = 65536
     self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_size), ffi.C.free)
 
     return self

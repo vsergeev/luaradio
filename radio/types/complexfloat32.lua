@@ -50,7 +50,7 @@ function mt:scalar_mul(other)
 end
 
 function mt:scalar_div(other)
-    return self.new(self.real / value, self.imag / value)
+    return self.new(self.real / other, self.imag / other)
 end
 
 function mt:arg()

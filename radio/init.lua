@@ -17,6 +17,7 @@ return {
     NullSourceBlock = require('radio.blocks.sources.nullsource').NullSourceBlock,
     RandomSourceBlock = require('radio.blocks.sources.randomsource').RandomSourceBlock,
     SignalSourceBlock = require('radio.blocks.sources.signalsource').SignalSourceBlock,
+    RtlSdrSourceBlock = require('radio.blocks.sources.rtlsdrsource').RtlSdrSourceBlock,
 
     -- Types
     ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type,

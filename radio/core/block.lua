@@ -98,14 +98,24 @@ function Block:process(...)
 end
 
 function Block:run_once()
-    -- Read inputs from pipes
-    local data_in = {}
-    for i=1, #self.inputs do
-        data_in[#data_in+1] = self.inputs[i].pipe:read()
-    end
+    local data_out
 
-    -- Process the inputs
-    local data_out = {self:process(unpack(data_in))}
+    -- Process inputs into outputs
+    if #self.inputs == 0 then
+        -- No inputs (source)
+        data_out = {self:process()}
+    elseif #self.inputs == 1 then
+        -- One input
+        data_out = {self:process(self.inputs[1].pipe:read())}
+    else
+        -- Multiple inputs
+        -- Do a synchronous read across all pipes
+        local pipes = {}
+        for i=1, #self.inputs do
+            pipes[i] = self.inputs[i].pipe
+        end
+        data_out = {self:process(pipe.read_synchronous(pipes))}
+    end
 
     -- Write outputs to pipes
     for i=1, #self.outputs do

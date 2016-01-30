@@ -99,9 +99,9 @@ end
 
 function ProcessPipe:read()
     local iov = ffi.new("struct iovec", self._buf, self._buf_size)
-    local len = ffi.C.vmsplice(self._rfd, iov, 1, 0)
-    assert(len == self._buf_size, "Read failed.")
-    return self.data_type.vector_from_const_buf(self._buf, len)
+    local bytes_read = ffi.C.vmsplice(self._rfd, iov, 1, 0)
+    assert(bytes_read > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    return self.data_type.vector_from_const_buf(self._buf, bytes_read)
 end
 
 function ProcessPipe:write(vec)

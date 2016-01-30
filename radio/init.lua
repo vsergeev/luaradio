@@ -7,6 +7,7 @@ return {
     CompositeBlock = require('radio.core.composite').CompositeBlock,
     FIRFilterBlock = require('radio.blocks.signal.firfilter').FIRFilterBlock,
     SummerBlock = require('radio.blocks.signal.summer').SummerBlock,
+    DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
     FileDescriptorSinkBlock = require('radio.blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock,
     PrintSinkBlock = require('radio.blocks.sinks.printsink').PrintSinkBlock,
     FileIQSourceBlock = require('radio.blocks.sources.fileiqsource').FileIQSourceBlock,

@@ -9,6 +9,7 @@ return {
     IIRFilterBlock = require('radio.blocks.signal.iirfilter').IIRFilterBlock,
     SummerBlock = require('radio.blocks.signal.summer').SummerBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
+    FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     FileDescriptorSinkBlock = require('radio.blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock,
     PrintSinkBlock = require('radio.blocks.sinks.printsink').PrintSinkBlock,
     FileIQSourceBlock = require('radio.blocks.sources.fileiqsource').FileIQSourceBlock,

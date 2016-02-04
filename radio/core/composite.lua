@@ -164,7 +164,9 @@ end
 ffi.cdef[[
     typedef int pid_t;
     pid_t fork(void);
+    pid_t wait(int *status);
     pid_t waitpid(pid_t pid, int *status, int options);
+    int kill(pid_t pid, int sig);
 ]]
 
 function CompositeBlock:run()
@@ -194,9 +196,12 @@ function CompositeBlock:run()
             end
         end
 
-        -- Wait for pids
+        -- Wait for a child to terminate
+        ffi.C.wait(nil)
+
+        -- Kill all other children
         for _, pid in pairs(pids) do
-            ffi.C.waitpid(pid, nil, 0)
+            ffi.C.kill(pid, 9)
         end
     end
 end

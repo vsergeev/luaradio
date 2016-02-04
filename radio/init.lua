@@ -21,6 +21,7 @@ return {
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
+    PLLBlock = require('radio.blocks.signal.pllblock').PLLBlock,
     FileDescriptorSinkBlock = require('radio.blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock,
     PrintSinkBlock = require('radio.blocks.sinks.printsink').PrintSinkBlock,
     PulseAudioSinkBlock = require('radio.blocks.sinks.pulseaudiosink').PulseAudioSinkBlock,

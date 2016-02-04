@@ -61,8 +61,25 @@ function mt.const_vector_from_buf(buf, size)
     return Vector.cast(BitType, buf, size)
 end
 
+-- Helper function
+
+local function bits_to_number(data, offset, length, msb_first)
+    local x = 0
+
+    msb_first = (msb_first == nil) and true or msb_first
+
+    for i = 0, length-1 do
+        if data[offset+i].value == 1 then
+            local mask = msb_first and bit.lshift(1, length-1-i) or bit.lshift(1, i)
+            x = bit.bor(x, mask)
+        end
+    end
+
+    return x
+end
+
 -- FFI type binding
 
 BitType = ffi.metatype("bit_t", mt)
 
-return {BitType = BitType}
+return {BitType = BitType, bits_to_number = bits_to_number}

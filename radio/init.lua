@@ -14,6 +14,7 @@ return {
     RootRaisedCosineFilterBlock = require('radio.blocks.signal.rootraisedcosinefilter').RootRaisedCosineFilterBlock,
     SummerBlock = require('radio.blocks.signal.summer').SummerBlock,
     MultiplierBlock = require('radio.blocks.signal.multiplier').MultiplierBlock,
+    HilbertTransformBlock = require('radio.blocks.signal.hilberttransform').HilbertTransformBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     FileDescriptorSinkBlock = require('radio.blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock,

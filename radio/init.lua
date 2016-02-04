@@ -21,6 +21,7 @@ return {
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
     SamplerBlock = require('radio.blocks.signal.sampler').SamplerBlock,
     SlicerBlock = require('radio.blocks.signal.slicer').SlicerBlock,
+    DifferentialDecoderBlock = require('radio.blocks.signal.differentialdecoder').DifferentialDecoderBlock,
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,
     DelayBlock = require('radio.blocks.signal.delay').DelayBlock,
     PhaseCorrectorBlock = require('radio.blocks.signal.phasecorrector').PhaseCorrectorBlock,

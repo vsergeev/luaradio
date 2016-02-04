@@ -1,0 +1,41 @@
+local radio = require('radio')
+
+if #arg < 1 then
+    io.stderr:write("Usage: " .. arg[0] .. " <FM radio frequency>\n")
+    os.exit(1)
+end
+
+local frequency = tonumber(arg[1])
+local offset = -600e3
+
+local top = radio.CompositeBlock()
+local a0 = radio.RtlSdrSourceBlock(frequency + offset, 2048000)
+local a1 = radio.TunerBlock(offset, 190e3, 10)
+local a2 = radio.FrequencyDiscriminatorBlock(5.0)
+local a3 = radio.HilbertTransformBlock(257)
+local f0 = radio.BandpassFilterBlock(165, {18e3, 20e3})
+local b1 = radio.PLLBlock(1000.0, 19e3-100, 19e3+100, 3.0)
+local c0 = radio.PLLBlock(1000.0, 19e3-100, 19e3+100, 1/16.0)
+local c1 = radio.DelayBlock(35)
+local c2 = radio.ComplexToRealBlock()
+local a4 = radio.MultiplyConjugateBlock()
+local a5 = radio.LowpassFilterBlock(256, 4e3)
+local a6 = radio.RootRaisedCosineFilterBlock(101, 1, 1187.5)
+local a7 = radio.PhaseCorrectorBlock(2000)
+local e0 = radio.SamplerBlock()
+local e1 = radio.ComplexToRealBlock()
+local e2 = radio.SlicerBlock()
+local e3 = radio.DifferentialDecoderBlock()
+local e4 = radio.RDSFrameBlock()
+local e5 = radio.RDSDecodeBlock()
+
+top:connect(a0, a1, a2, a3, f0)
+top:connect(f0, b1)
+top:connect(a3, 'out', a4, 'in1')
+top:connect(b1, 'out', a4, 'in2')
+top:connect(f0, c0, c1, c2)
+top:connect(a4, a5, a6, a7)
+top:connect(a7, 'out', e0, 'data')
+top:connect(c2, 'out', e0, 'clock')
+top:connect(e0, e1, e2, e3, e4, e5)
+top:run(true)

@@ -19,6 +19,7 @@ return {
     HilbertTransformBlock = require('radio.blocks.signal.hilberttransform').HilbertTransformBlock,
     MultiplyConjugateBlock = require('radio.blocks.signal.multiplyconjugate').MultiplyConjugateBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
+    SamplerBlock = require('radio.blocks.signal.sampler').SamplerBlock,
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,
     DelayBlock = require('radio.blocks.signal.delay').DelayBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,

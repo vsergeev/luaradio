@@ -18,6 +18,7 @@ return {
     FrequencyTranslateBlock = require('radio.blocks.signal.frequencytranslate').FrequencyTranslateBlock,
     HilbertTransformBlock = require('radio.blocks.signal.hilberttransform').HilbertTransformBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
+    ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     FileDescriptorSinkBlock = require('radio.blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock,
     PrintSinkBlock = require('radio.blocks.sinks.printsink').PrintSinkBlock,

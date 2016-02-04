@@ -24,7 +24,7 @@ function mt:__sub(other)
 end
 
 function mt:__mul(other)
-    return self.new(self.real * other.value, self.imag * other.value)
+    return self.new(self.real * other.real - self.imag * other.imag, self.real * other.imag + self.imag * other.real)
 end
 
 function mt:__div(other)

@@ -25,6 +25,7 @@ return {
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     PLLBlock = require('radio.blocks.signal.pllblock').PLLBlock,
     FileDescriptorSinkBlock = require('radio.blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock,
+    FileSinkBlock = require('radio.blocks.sinks.filesink').FileSinkBlock,
     PrintSinkBlock = require('radio.blocks.sinks.printsink').PrintSinkBlock,
     PulseAudioSinkBlock = require('radio.blocks.sinks.pulseaudiosink').PulseAudioSinkBlock,
     FileIQSourceBlock = require('radio.blocks.sources.fileiqsource').FileIQSourceBlock,

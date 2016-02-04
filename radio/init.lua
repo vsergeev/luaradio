@@ -20,6 +20,7 @@ return {
     MultiplyConjugateBlock = require('radio.blocks.signal.multiplyconjugate').MultiplyConjugateBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,
+    DelayBlock = require('radio.blocks.signal.delay').DelayBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     PLLBlock = require('radio.blocks.signal.pllblock').PLLBlock,
     FileDescriptorSinkBlock = require('radio.blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock,

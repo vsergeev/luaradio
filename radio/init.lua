@@ -29,6 +29,7 @@ return {
     PrintSinkBlock = require('radio.blocks.sinks.printsink').PrintSinkBlock,
     PulseAudioSinkBlock = require('radio.blocks.sinks.pulseaudiosink').PulseAudioSinkBlock,
     FileIQSourceBlock = require('radio.blocks.sources.fileiqsource').FileIQSourceBlock,
+    FileSourceBlock = require('radio.blocks.sources.filesource').FileSourceBlock,
     NullSourceBlock = require('radio.blocks.sources.nullsource').NullSourceBlock,
     RandomSourceBlock = require('radio.blocks.sources.randomsource').RandomSourceBlock,
     SignalSourceBlock = require('radio.blocks.sources.signalsource').SignalSourceBlock,

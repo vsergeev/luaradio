@@ -160,18 +160,18 @@ end
 
 local function read_synchronous(pipes)
     -- Update all pipes and gather amount available
-    local num_bytes_avail = {}
+    local num_elems_avail = {}
     for i=1, #pipes do
-        num_bytes_avail[i] = pipes[i]:update_read_buffer()
+        num_elems_avail[i] = math.floor(pipes[i]:update_read_buffer()/ffi.sizeof(pipes[i].data_type))
     end
 
     -- Compute minimum available across all pipes
-    local read_size = math.min(unpack(num_bytes_avail))
+    local num_elems = math.min(unpack(num_elems_avail))
 
     -- Read that amount from all pipes
     local data_in = {}
     for i=1, #pipes do
-        data_in[i] = pipes[i]:read_buffered(read_size)
+        data_in[i] = pipes[i]:read_buffered(num_elems*ffi.sizeof(pipes[i].data_type))
     end
 
     return unpack(data_in)

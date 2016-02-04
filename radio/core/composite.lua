@@ -169,7 +169,35 @@ ffi.cdef[[
     int kill(pid_t pid, int sig);
 ]]
 
+ffi.cdef[[
+    enum {SIGINT = 2, SIGKILL = 9, SIGTERM = 15, SIGCHLD = 17};
+
+    /* sigset handling */
+    typedef struct { uint8_t set[128]; } sigset_t;
+    int sigemptyset(sigset_t *set);
+    int sigfillset(sigset_t *set);
+    int sigaddset(sigset_t *set, int signum);
+    int sigdelset(sigset_t *set, int signum);
+    int sigismember(const sigset_t *set, int signum);
+
+    /* sigprocmask() */
+    enum {SIG_BLOCK, SIG_UNBLOCK, SIG_SETMASK};
+    int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
+
+    /* sigpending() */
+    int sigpending(sigset_t *set);
+
+    unsigned int sleep(unsigned int seconds);
+]]
+
 function CompositeBlock:run()
+    -- Block handling of SIGINT and SIGCHLD
+    local sigset = ffi.new("sigset_t[1]")
+    ffi.C.sigemptyset(sigset)
+    ffi.C.sigaddset(sigset, ffi.C.SIGINT)
+    ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
+    assert(ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) == 0, "sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+
     -- Prepare to run
     if not self._execution_order then
         self:_prepare_to_run()
@@ -180,6 +208,12 @@ function CompositeBlock:run()
         while true do
             for _, block in ipairs(self._execution_order) do
                 block:run_once()
+            end
+
+            assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
+                io.stderr:write("Received SIGINT. Shutting down...\n")
+                break
             end
         end
     else
@@ -196,12 +230,25 @@ function CompositeBlock:run()
             end
         end
 
-        -- Wait for a child to terminate
-        ffi.C.wait(nil)
+        -- Wait for SIGINT or SIGCHLD
+        while true do
+            -- FIXME cleaner check that is still portable?
+            ffi.C.sleep(1)
+            assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
-        -- Kill all other children
+            if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
+                io.stderr:write("Received SIGINT. Shutting down...\n")
+                break
+            elseif ffi.C.sigismember(sigset, ffi.C.SIGCHLD) == 1 then
+                io.stderr:write("Child exited. Shutting down...\n")
+                break
+            end
+        end
+
+        -- Kill and wait for all children
         for _, pid in pairs(pids) do
-            ffi.C.kill(pid, 9)
+            ffi.C.kill(pid, ffi.C.SIGTERM)
+            ffi.C.waitpid(pid, nil, 0)
         end
     end
 end

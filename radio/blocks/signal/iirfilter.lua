@@ -7,17 +7,9 @@ local Float32Type = require('radio.types.float32').Float32Type
 local IIRFilterBlock = block.BlockFactory("IIRFilterBlock")
 
 function IIRFilterBlock:instantiate(b_taps, a_taps)
-    self.b_taps = Float32Type.vector(#b_taps)
-    for i = 1, #b_taps do
-        self.b_taps.data[i-1].value = b_taps[i]
-    end
-
     assert(#a_taps >= 1, "Feedback taps must be at least length 1.")
-
-    self.a_taps = Float32Type.vector(#a_taps)
-    for i = 1, #a_taps do
-        self.a_taps.data[i-1].value = a_taps[i]
-    end
+    self.b_taps = Float32Type.vector_from_array(b_taps)
+    self.a_taps = Float32Type.vector_from_array(a_taps)
 
     self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)}, IIRFilterBlock.process_complex)
     self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)}, IIRFilterBlock.process_scalar)

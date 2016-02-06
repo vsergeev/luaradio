@@ -7,10 +7,7 @@ local Float32Type = require('radio.types.float32').Float32Type
 local FIRFilterBlock = block.BlockFactory("FIRFilterBlock")
 
 function FIRFilterBlock:instantiate(taps)
-    self.taps = Float32Type.vector(#taps)
-    for i = 1, #taps do
-        self.taps.data[i-1].value = taps[i]
-    end
+    self.taps = Float32Type.vector_from_array(taps)
 
     self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)}, FIRFilterBlock.process_complex)
     self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)}, FIRFilterBlock.process_float)

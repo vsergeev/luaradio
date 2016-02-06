@@ -53,7 +53,7 @@ function mt.vector_from_buf(buf, size)
     return vector.vector_cast("bit_t *", buf, size, ffi.sizeof(BitType))
 end
 
-function mt.vector_from_const_buf(buf, size)
+function mt.const_vector_from_buf(buf, size)
     return vector.vector_cast("const bit_t *", buf, size, ffi.sizeof(BitType))
 end
 

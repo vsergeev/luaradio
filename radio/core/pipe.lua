@@ -114,7 +114,7 @@ function ProcessPipe:read()
     local iov = ffi.new("struct iovec", self._buf, self._buf_capacity)
     local bytes_read = ffi.C.vmsplice(self._rfd, iov, 1, 0)
     assert(bytes_read > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    return self.data_type.vector_from_const_buf(self._buf, bytes_read)
+    return self.data_type.const_vector_from_buf(self._buf, bytes_read)
 end
 
 function ProcessPipe:write(vec)
@@ -151,7 +151,7 @@ end
 
 function ProcessPipe:read_buffered(n)
     assert((self._buf_unread_offset + n) <= self._buf_size, "Size out of bounds.")
-    local vec = self.data_type.vector_from_const_buf(ffi.cast("char *", self._buf) + self._buf_unread_offset, n)
+    local vec = self.data_type.const_vector_from_buf(ffi.cast("char *", self._buf) + self._buf_unread_offset, n)
     self._buf_unread_offset = self._buf_unread_offset + n
     return vec
 end

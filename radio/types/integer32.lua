@@ -60,7 +60,7 @@ function mt.vector_from_buf(buf, size)
     return vector.vector_cast("integer32_t *", buf, size, ffi.sizeof(Integer32Type))
 end
 
-function mt.vector_from_const_buf(buf, size)
+function mt.const_vector_from_buf(buf, size)
     return vector.vector_cast("const integer32_t *", buf, size, ffi.sizeof(Integer32Type))
 end
 

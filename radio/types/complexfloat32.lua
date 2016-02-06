@@ -83,7 +83,7 @@ function mt.vector_from_buf(buf, size)
     return vector.vector_cast("complex_float32_t *", buf, size, ffi.sizeof(ComplexFloat32Type))
 end
 
-function mt.vector_from_const_buf(buf, size)
+function mt.const_vector_from_buf(buf, size)
     return vector.vector_cast("const complex_float32_t *", buf, size, ffi.sizeof(ComplexFloat32Type))
 end
 

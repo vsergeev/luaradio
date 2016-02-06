@@ -60,7 +60,7 @@ function mt.vector_from_buf(buf, size)
     return vector.vector_cast("byte_t *", buf, size, ffi.sizeof(ByteType))
 end
 
-function mt.vector_from_const_buf(buf, size)
+function mt.const_vector_from_buf(buf, size)
     return vector.vector_cast("const byte_t *", buf, size, ffi.sizeof(ByteType))
 end
 

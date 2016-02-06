@@ -56,6 +56,14 @@ function mt.vector(n)
     return vector.vector_calloc("integer32_t *", n, ffi.sizeof(Integer32Type))
 end
 
+function mt.vector_from_array(arr)
+    local vec = mt.vector(#arr)
+    for i = 0, vec.length-1 do
+        vec.data[i] = Integer32Type(arr[i+1])
+    end
+    return vec
+end
+
 function mt.vector_from_buf(buf, size)
     return vector.vector_cast("integer32_t *", buf, size, ffi.sizeof(Integer32Type))
 end

@@ -49,6 +49,14 @@ function mt.vector(n)
     return vector.vector_calloc("bit_t *", n, ffi.sizeof(BitType))
 end
 
+function mt.vector_from_array(arr)
+    local vec = mt.vector(#arr)
+    for i = 0, vec.length-1 do
+        vec.data[i] = BitType(arr[i+1])
+    end
+    return vec
+end
+
 function mt.vector_from_buf(buf, size)
     return vector.vector_cast("bit_t *", buf, size, ffi.sizeof(BitType))
 end

@@ -79,6 +79,14 @@ function mt.vector(n)
     return vector.vector_calloc("complex_float32_t *", n, ffi.sizeof(ComplexFloat32Type))
 end
 
+function mt.vector_from_array(arr)
+    local vec = mt.vector(#arr)
+    for i = 0, vec.length-1 do
+        vec.data[i] = ComplexFloat32Type(unpack(arr[i+1]))
+    end
+    return vec
+end
+
 function mt.vector_from_buf(buf, size)
     return vector.vector_cast("complex_float32_t *", buf, size, ffi.sizeof(ComplexFloat32Type))
 end

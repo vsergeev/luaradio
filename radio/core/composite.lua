@@ -10,26 +10,20 @@ local CompositeBlock = block.factory("CompositeBlock")
 
 function CompositeBlock:instantiate(multiprocess)
     self._multiprocess = multiprocess
-    self._blocks = {}
     self._connections = {}
-    self._unconnected_inputs = {}
-    self._unconnected_outputs = {}
 end
 
-local function build_dependency_graph(blocks, connections)
+local function build_dependency_graph(connections)
     local graph = {}
-
-    -- Add dependency-free sources
-    for block, _ in pairs(blocks) do
-        if #block.inputs == 0 then
-            graph[block] = {}
-        end
-    end
 
     -- Add dependencies between connected blocks
     for pipe_input, pipe_output in pairs(connections) do
         local src = pipe_output.owner
         local dst = pipe_input.owner
+
+        if graph[src] == nil then
+            graph[src] = {}
+        end
 
         if graph[dst] == nil then
             graph[dst] = {src}
@@ -84,26 +78,11 @@ function CompositeBlock:connect(src, output_name, dst, input_name)
     -- Look up pipe objects
     local pipe_output = util.array_search(src.outputs, function (p) return p.name == output_name end)
     local pipe_input = util.array_search(dst.inputs, function (p) return p.name == input_name end)
-    assert(pipe_output, "Output pipe not found.")
-    assert(pipe_input, "Input pipe not found.")
+    assert(pipe_output, string.format("Output pipe \"%s\" of block \"%s\" not found.", output_name, src.name))
+    assert(pipe_input, string.format("Input pipe \"%s\" of block \"%s\" not found.", input_name, dst.name))
 
     -- Assert input is not already connected
     assert(not self._connections[dst_pipe_input], "Input already connected.")
-
-    -- If this is our first time seeing either of these blocks, add them to our
-    -- book-keeping data structures
-    for _, block in pairs({src, dst}) do
-        if not self._blocks[block] then
-            self._blocks[block] = true
-
-            for _, input in pairs(block.inputs) do
-                self._unconnected_inputs[input] = true
-            end
-            for _, output in pairs(block.outputs) do
-                self._unconnected_outputs[output] = true
-            end
-        end
-    end
 
     -- Create a pipe from output to input
     local p = self._multiprocess and pipe.ProcessPipe(pipe_output, pipe_input) or pipe.InternalPipe(pipe_output, pipe_input)
@@ -111,20 +90,30 @@ function CompositeBlock:connect(src, output_name, dst, input_name)
     pipe_output.pipes[#pipe_output.pipes+1] = p
     pipe_input.pipe = p
 
-    -- Update connections book-keeping
+    -- Update our connections table
     self._connections[pipe_input] = pipe_output
-    self._unconnected_inputs[pipe_input] = nil
-    self._unconnected_outputs[pipe_output] = nil
 
     io.stderr:write(string.format("Connected source %s.%s to destination %s.%s\n", src.name, output_name, dst.name, input_name))
 end
 
 function CompositeBlock:_prepare_to_run()
+    local blocks = {}
+
+    -- Build list of blocks
+    for input, output in pairs(self._connections) do
+        blocks[input.owner] = true
+        blocks[output.owner] = true
+    end
+
     -- Check all inputs are connected
-    assert(util.table_length(self._unconnected_inputs) == 0, "Unconnected inputs exist.")
+    for block, _ in pairs(blocks) do
+        for i=1, #block.inputs do
+            assert(block.inputs[i].pipe ~= nil, string.format("Block \"%s\" input \"%s\" is unconnected.", block.name, block.inputs[i].name))
+        end
+    end
 
     -- Build dependency graph and execution order
-    self._execution_order = build_execution_order(build_dependency_graph(self._blocks, self._connections))
+    self._execution_order = build_execution_order(build_dependency_graph(self._connections))
 
     -- Differentiate all blocks
     for _, block in ipairs(self._execution_order) do
@@ -139,7 +128,7 @@ function CompositeBlock:_prepare_to_run()
     end
 
     -- Initialize all blocks
-    for block, _ in pairs(self._blocks) do
+    for block, _ in pairs(blocks) do
         block:initialize()
     end
 

@@ -3,7 +3,7 @@ local math = require('math')
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
-local RandomSourceBlock = block.BlockFactory("RandomSourceBlock")
+local RandomSourceBlock = block.factory("RandomSourceBlock")
 
 function RandomSourceBlock:instantiate(rate)
     self._rate = rate or 1

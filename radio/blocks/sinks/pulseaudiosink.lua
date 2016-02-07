@@ -3,7 +3,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local Float32Type = require('radio.types.float32').Float32Type
 
-local PulseAudioSinkBlock = block.BlockFactory("PulseAudioSinkBlock")
+local PulseAudioSinkBlock = block.factory("PulseAudioSinkBlock")
 
 function PulseAudioSinkBlock:instantiate()
     self:add_type_signature({block.Input("in", Float32Type)}, {})

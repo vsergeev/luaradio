@@ -3,7 +3,7 @@ local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32T
 local Float32Type = require('radio.types.float32').Float32Type
 local Integer32Type = require('radio.types.integer32').Integer32Type
 
-local SummerBlock = block.BlockFactory("SummerBlock")
+local SummerBlock = block.factory("SummerBlock")
 
 function SummerBlock:instantiate()
     self:add_type_signature({block.Input("in1", ComplexFloat32Type), block.Input("in2", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})

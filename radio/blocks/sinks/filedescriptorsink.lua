@@ -4,7 +4,7 @@ local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 local Float32Type = require('radio.types.float32').Float32Type
 
-local FileDescriptorSinkBlock = block.BlockFactory("FileDescriptorSinkBlock")
+local FileDescriptorSinkBlock = block.factory("FileDescriptorSinkBlock")
 
 function FileDescriptorSinkBlock:instantiate(fd)
     self.fd = fd

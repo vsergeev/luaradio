@@ -4,7 +4,7 @@ local Float32Type = require('radio.types.float32').Float32Type
 local Integer32Type = require('radio.types.integer32').Integer32Type
 local BitType = require('radio.types.bit').BitType
 
-local PrintSinkBlock = block.BlockFactory("PrintSinkBlock")
+local PrintSinkBlock = block.factory("PrintSinkBlock")
 
 function PrintSinkBlock:instantiate()
     self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {})

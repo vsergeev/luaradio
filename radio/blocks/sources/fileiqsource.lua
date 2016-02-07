@@ -5,7 +5,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
-local FileIQSourceBlock = block.BlockFactory("FileIQSourceBlock")
+local FileIQSourceBlock = block.factory("FileIQSourceBlock")
 
 -- IQ Formats
 ffi.cdef[[

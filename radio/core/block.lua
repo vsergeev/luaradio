@@ -132,8 +132,8 @@ function Block:run()
     end
 end
 
--- BlockFactory derived class generator
-function BlockFactory(name)
+-- Block factory derived class generator
+function factory(name)
     local class = object.class_factory(Block)
 
     class.new = function (...)
@@ -156,4 +156,4 @@ function BlockFactory(name)
 end
 
 -- Exported module
-return {Input = Input, Output = Output, Block = Block, BlockFactory = BlockFactory}
+return {Input = Input, Output = Output, Block = Block, factory = factory}

@@ -4,7 +4,7 @@ local block = require('radio.core.block')
 local vector = require('radio.core.vector')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
-local RtlSdrSourceBlock = block.BlockFactory("RtlSdrSourceBlock")
+local RtlSdrSourceBlock = block.factory("RtlSdrSourceBlock")
 
 function RtlSdrSourceBlock:instantiate(frequency, rate)
     self._frequency = frequency

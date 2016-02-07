@@ -5,7 +5,7 @@ local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32T
 local Float32Type = require('radio.types.float32').Float32Type
 local Integer32Type = require('radio.types.integer32').Integer32Type
 
-local DownsamplerBlock = block.BlockFactory("DownsamplerBlock")
+local DownsamplerBlock = block.factory("DownsamplerBlock")
 
 function DownsamplerBlock:instantiate(factor)
     self.factor = factor

@@ -3,7 +3,7 @@ local math = require('math')
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
-local SignalSourceBlock = block.BlockFactory("SignalSourceBlock")
+local SignalSourceBlock = block.factory("SignalSourceBlock")
 
 function SignalSourceBlock:instantiate(options, rate)
     local supported_signals = {

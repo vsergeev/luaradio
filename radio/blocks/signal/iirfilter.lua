@@ -4,7 +4,7 @@ local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 local Float32Type = require('radio.types.float32').Float32Type
 
-local IIRFilterBlock = block.BlockFactory("IIRFilterBlock")
+local IIRFilterBlock = block.factory("IIRFilterBlock")
 
 function IIRFilterBlock:instantiate(b_taps, a_taps)
     assert(#a_taps >= 1, "Feedback taps must be at least length 1.")

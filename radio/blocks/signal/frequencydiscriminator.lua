@@ -4,7 +4,7 @@ local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 local Float32Type = require('radio.types.float32').Float32Type
 
-local FrequencyDiscriminatorBlock = block.BlockFactory("FrequencyDiscriminatorBlock")
+local FrequencyDiscriminatorBlock = block.factory("FrequencyDiscriminatorBlock")
 
 function FrequencyDiscriminatorBlock:instantiate(gain)
     self.prev_sample = ComplexFloat32Type()

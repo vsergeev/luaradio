@@ -1,7 +1,7 @@
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
-local NullSourceBlock = block.BlockFactory("NullSourceBlock")
+local NullSourceBlock = block.factory("NullSourceBlock")
 
 function NullSourceBlock:instantiate(rate)
     self._rate = rate or 1

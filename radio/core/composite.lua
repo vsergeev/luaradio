@@ -6,7 +6,7 @@ local block = require('radio.core.block')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
 
-local CompositeBlock = block.BlockFactory("CompositeBlock")
+local CompositeBlock = block.factory("CompositeBlock")
 
 function CompositeBlock:instantiate(multiprocess)
     self._multiprocess = multiprocess

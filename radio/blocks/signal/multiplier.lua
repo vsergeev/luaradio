@@ -4,7 +4,7 @@ local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 local Float32Type = require('radio.types.float32').Float32Type
 
-local MultiplierBlock = block.BlockFactory("MultiplierBlock")
+local MultiplierBlock = block.factory("MultiplierBlock")
 
 function MultiplierBlock:instantiate()
     self:add_type_signature({block.Input("in1", ComplexFloat32Type), block.Input("in2", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)}, MultiplierBlock.process_complex)

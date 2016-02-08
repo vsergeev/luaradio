@@ -201,6 +201,13 @@ function CompositeBlock:_prepare_to_run()
 
         -- Differentiate the block
         block:differentiate(input_data_types)
+
+        -- Set output pipe data types
+        for i = 1, #block.signature.outputs do
+            for _, pipe in ipairs(block.outputs[i].pipes) do
+                pipe.data_type = block.signature.outputs[i].data_type
+            end
+        end
     end
 
     -- Initialize all blocks

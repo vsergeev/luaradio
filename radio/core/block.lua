@@ -73,13 +73,6 @@ function Block:differentiate(input_data_types)
     self.signature, _ = next(signature_candidates)
     self.initialize = self.signature.initialize_func
     self.process = self.signature.process_func
-
-    -- Set output pipe data types (FIXME over-reaching)
-    for i = 1, #self.signature.outputs do
-        for _, pipe in ipairs(self.outputs[i].pipes) do
-            pipe.data_type = self.signature.outputs[i].data_type
-        end
-    end
 end
 
 function Block:get_rate()

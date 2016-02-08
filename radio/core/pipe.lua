@@ -26,6 +26,28 @@ function PipeOutput.new(owner, name)
     return self
 end
 
+-- AliasedPipeInput class
+local AliasedPipeInput = object.class_factory()
+
+function AliasedPipeInput.new(owner, name)
+    local self = setmetatable({}, AliasedPipeInput)
+    self.owner = owner
+    self.name = name
+    self.real_input = nil
+    return self
+end
+
+-- AliasedPipeOutput class
+local AliasedPipeOutput = object.class_factory()
+
+function AliasedPipeOutput.new(owner, name)
+    local self = setmetatable({}, AliasedPipeOutput)
+    self.owner = owner
+    self.name = name
+    self.real_output = nil
+    return self
+end
+
 -- InternalPipe class
 local InternalPipe = object.class_factory()
 
@@ -178,4 +200,4 @@ local function read_synchronous(pipes)
 end
 
 -- Exported module
-return {PipeInput = PipeInput, PipeOutput = PipeOutput, InternalPipe = InternalPipe, ProcessPipe = ProcessPipe, read_synchronous = read_synchronous}
+return {PipeInput = PipeInput, PipeOutput = PipeOutput, AliasedPipeInput = AliasedPipeInput, AliasedPipeOutput = AliasedPipeOutput, InternalPipe = InternalPipe, ProcessPipe = ProcessPipe, read_synchronous = read_synchronous}

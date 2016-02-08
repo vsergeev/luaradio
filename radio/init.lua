@@ -38,6 +38,7 @@ return {
     SignalSourceBlock = require('radio.blocks.sources.signalsource').SignalSourceBlock,
     RtlSdrSourceBlock = require('radio.blocks.sources.rtlsdrsource').RtlSdrSourceBlock,
     RDSFrameBlock = require('radio.blocks.protocol.rdsframe').RDSFrameBlock,
+    RDSDecodeBlock = require('radio.blocks.protocol.rdsdecode').RDSDecodeBlock,
 
     -- Composite Blocks
     TunerBlock = require('radio.composites.tuner').TunerBlock,

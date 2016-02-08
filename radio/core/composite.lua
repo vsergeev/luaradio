@@ -14,6 +14,40 @@ function CompositeBlock:instantiate(multiprocess)
     self._connections = {}
 end
 
+local function crawl_connections(connections)
+    local blocks = {}
+    local connections_copy = util.table_copy(connections)
+
+    local new_blocks_found
+    repeat
+        new_blocks_found = false
+
+        for pipe_input, pipe_output in pairs(connections_copy) do
+            local src = pipe_output.owner
+            local dst = pipe_input.owner
+
+            for _, block in ipairs({src, dst}) do
+                -- If we haven't seen this block before
+                if not blocks[block] then
+                    -- Add its input -> output mapping to our connections table
+                    for i=1, #block.inputs do
+                        if block.inputs[i].pipe then
+                            connections_copy[block.inputs[i]] = block.inputs[i].pipe.pipe_output
+                        end
+                    end
+
+                    -- Add it to our blocks table
+                    blocks[block] = true
+
+                    new_blocks_found = true
+                end
+            end
+        end
+    until new_blocks_found == false
+
+    return blocks, connections_copy
+end
+
 local function build_dependency_graph(connections)
     local graph = {}
 
@@ -144,13 +178,8 @@ function CompositeBlock:connect(src, src_pipe_name, dst, dst_pipe_name)
 end
 
 function CompositeBlock:_prepare_to_run()
-    local blocks = {}
-
-    -- Build list of blocks
-    for input, output in pairs(self._connections) do
-        blocks[input.owner] = true
-        blocks[output.owner] = true
-    end
+    -- Crawl our connections to get the full list of blocks and connections
+    local blocks, all_connections = crawl_connections(self._connections)
 
     -- Check all inputs are connected
     for block, _ in pairs(blocks) do
@@ -160,7 +189,7 @@ function CompositeBlock:_prepare_to_run()
     end
 
     -- Build dependency graph and execution order
-    self._execution_order = build_execution_order(build_dependency_graph(self._connections))
+    self._execution_order = build_execution_order(build_dependency_graph(all_connections))
 
     -- Differentiate all blocks
     for _, block in ipairs(self._execution_order) do

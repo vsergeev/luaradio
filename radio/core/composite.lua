@@ -2,6 +2,7 @@ local ffi = require('ffi')
 local string = require('string')
 local io = require('io')
 
+local object = require('radio.core.object')
 local block = require('radio.core.block')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
@@ -74,26 +75,72 @@ local function build_execution_order(dependency_graph)
     return order
 end
 
-function CompositeBlock:connect(src, output_name, dst, input_name)
+function CompositeBlock:add_type_signature(inputs, outputs)
+    block.Block.add_type_signature(self, inputs, outputs)
+
+    -- Replace PipeInput's with AliasedPipeInput's
+    for i = 1, #self.inputs do
+        if object.isinstanceof(self.inputs[i], pipe.PipeInput) then
+            self.inputs[i] = pipe.AliasedPipeInput(self, self.inputs[i].name)
+        end
+    end
+
+    -- Replace PipeOutput's with AliasedPipeOutput's
+    for i = 1, #self.outputs do
+        if object.isinstanceof(self.outputs[i], pipe.PipeOutput) then
+            self.outputs[i] = pipe.AliasedPipeOutput(self, self.outputs[i].name)
+        end
+    end
+end
+
+function CompositeBlock:connect(src, src_pipe_name, dst, dst_pipe_name)
     -- Look up pipe objects
-    local pipe_output = util.array_search(src.outputs, function (p) return p.name == output_name end)
-    local pipe_input = util.array_search(dst.inputs, function (p) return p.name == input_name end)
-    assert(pipe_output, string.format("Output pipe \"%s\" of block \"%s\" not found.", output_name, src.name))
-    assert(pipe_input, string.format("Input pipe \"%s\" of block \"%s\" not found.", input_name, dst.name))
+    local src_pipe = util.array_search(src.outputs, function (p) return p.name == src_pipe_name end) or
+                        util.array_search(src.inputs, function (p) return p.name == src_pipe_name end)
+    local dst_pipe = util.array_search(dst.outputs, function (p) return p.name == dst_pipe_name end) or
+                        util.array_search(dst.inputs, function (p) return p.name == dst_pipe_name end)
+    assert(src_pipe, string.format("Source pipe \"%s\" of block \"%s\" not found.", src_pipe_name, src.name))
+    assert(dst_pipe, string.format("Destination pipe \"%s\" of block \"%s\" not found.", dst_pipe_name, dst.name))
 
-    -- Assert input is not already connected
-    assert(not self._connections[dst_pipe_input], "Input already connected.")
+    -- Map aliased outputs or aliased inputs to their real pipes
+    src_pipe = (object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and src_pipe.real_pipe) and src_pipe.real_pipe or src_pipe
+    dst_pipe = (object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) and dst_pipe.real_pipe) and dst_pipe.real_pipe or dst_pipe
 
-    -- Create a pipe from output to input
-    local p = self._multiprocess and pipe.ProcessPipe(pipe_output, pipe_input) or pipe.InternalPipe(pipe_output, pipe_input)
-    -- Link the pipe to the input and output ends
-    pipe_output.pipes[#pipe_output.pipes+1] = p
-    pipe_input.pipe = p
+    if object.isinstanceof(src_pipe, pipe.PipeOutput) and object.isinstanceof(dst_pipe, pipe.PipeInput) then
+        -- If we are connecting an output pipe to an input pipe
 
-    -- Update our connections table
-    self._connections[pipe_input] = pipe_output
+        -- Assert input is not already connected
+        assert(not self._connections[dst_pipe], "Input already connected.")
 
-    io.stderr:write(string.format("Connected source %s.%s to destination %s.%s\n", src.name, output_name, dst.name, input_name))
+        -- Create a pipe from output to input
+        local p = self._multiprocess and pipe.ProcessPipe(src_pipe, dst_pipe) or pipe.InternalPipe(src_pipe, dst_pipe)
+        -- Link the pipe to the input and output ends
+        src_pipe.pipes[#src_pipe.pipes+1] = p
+        dst_pipe.pipe = p
+
+        -- Update our connections table
+        self._connections[dst_pipe] = src_pipe
+
+        io.stderr:write(string.format("Connected source %s.%s to destination %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
+    elseif object.isinstanceof(src_pipe, pipe.AliasedPipeInput) and object.isinstanceof(dst_pipe, pipe.PipeInput) then
+        -- If we are aliasing a composite block input pipe to a real input pipe
+        src_pipe.real_pipe = dst_pipe
+        io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
+    elseif object.isinstanceof(src_pipe, pipe.PipeInput) and object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) then
+        -- If we are aliasing a composite block input pipe to a real input pipe
+        dst_pipe.real_pipe = src_pipe
+        io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", dst.name, dst_pipe.name, dst.name, dst_pipe.name))
+    elseif object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(dst_pipe, pipe.PipeOutput) then
+        -- If we are aliasing a composite block input pipe to a real input pipe
+        src_pipe.real_pipe = dst_pipe
+        io.stderr:write(string.format("Aliased output %s.%s to input %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
+    elseif object.isinstanceof(src_pipe, pipe.PipeOutput) and object.isinstanceof(dst_pipe, pipe.AliasedPipeOutput) then
+        -- If we are aliasing a composite block input pipe to a real input pipe
+        dst_pipe.real_pipe = src_pipe
+        io.stderr:write(string.format("Aliased output %s.%s to input %s.%s\n", dst.name, dst_pipe.name, dst.name, dst_pipe.name))
+    else
+        error("Malformed pipe connection.")
+    end
 end
 
 function CompositeBlock:_prepare_to_run()

@@ -32,7 +32,22 @@ function CompositeBlock:add_type_signature(inputs, outputs)
     end
 end
 
-function CompositeBlock:connect(src, src_pipe_name, dst, dst_pipe_name)
+function CompositeBlock:connect(...)
+    if util.array_all({...}, function (b) return object.isinstanceof(b, block.Block) end) then
+        local blocks = {...}
+        local first, second = blocks[1], nil
+
+        for i = 2, #blocks do
+            local second = blocks[i]
+            self:connect_by_name(first, first.outputs[1].name, second, second.inputs[1].name)
+            first = blocks[i]
+        end
+    else
+        self:connect_by_name(...)
+    end
+end
+
+function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
     -- Look up pipe objects
     local src_pipe = util.array_search(src.outputs, function (p) return p.name == src_pipe_name end) or
                         util.array_search(src.inputs, function (p) return p.name == src_pipe_name end)

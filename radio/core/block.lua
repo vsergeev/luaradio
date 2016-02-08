@@ -126,11 +126,11 @@ function Block:run()
 end
 
 -- Block factory derived class generator
-function factory(name)
-    local class = object.class_factory(Block)
+function factory(name, parent_class)
+    local class = object.class_factory(parent_class or Block)
 
     class.new = function (...)
-        local self  = setmetatable({}, class)
+        local self = setmetatable({}, class)
 
         self.name = name
         self.inputs = {}

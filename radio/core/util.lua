@@ -32,4 +32,13 @@ local function array_search(array, match_func)
     return nil
 end
 
-return {table_length = table_length, table_copy = table_copy, array_exists = array_exists, array_search = array_search}
+local function array_all(array, func)
+    for _, v in pairs(array) do
+        if not func(v) then
+            return false
+        end
+    end
+    return true
+end
+
+return {table_length = table_length, table_copy = table_copy, array_exists = array_exists, array_search = array_search, array_all = array_all}

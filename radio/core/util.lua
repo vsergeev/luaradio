@@ -6,6 +6,14 @@ local function table_length(t)
     return count
 end
 
+local function table_copy(t)
+    local copy = {}
+    for k, v in pairs(t) do
+        copy[k] = v
+    end
+    return copy
+end
+
 local function array_exists(array, elem)
     for _, v in pairs(array) do
         if v == elem then
@@ -24,4 +32,4 @@ local function array_search(array, match_func)
     return nil
 end
 
-return {table_length = table_length, array_exists = array_exists, array_search = array_search}
+return {table_length = table_length, table_copy = table_copy, array_exists = array_exists, array_search = array_search}

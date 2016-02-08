@@ -26,4 +26,5 @@ return {
     Integer32Type = require('radio.types.integer32').Integer32Type,
     ByteType = require('radio.types.byte').ByteType,
     BitType = require('radio.types.bit').BitType,
+    CStructType = require('radio.types.cstruct').CStructType,
 }

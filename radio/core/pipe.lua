@@ -48,46 +48,16 @@ function AliasedPipeOutput.new(owner, name)
     return self
 end
 
--- InternalPipe class
-local InternalPipe = object.class_factory()
+-- Pipe class
+local Pipe = object.class_factory()
 
-function InternalPipe.new(pipe_output, pipe_input, data_type)
-    local self = setmetatable({}, InternalPipe)
+function Pipe.new(pipe_output, pipe_input, data_type)
+    local self = setmetatable({}, Pipe)
     self.pipe_output = pipe_output
     self.pipe_input = pipe_input
     self.data_type = data_type
-
-    self._data = nil
     return self
 end
-
-function InternalPipe:get_rate()
-    return self.pipe_output.owner:get_rate()
-end
-
-function InternalPipe:read()
-    local vec = self._data
-    self._data = nil
-    return vec
-end
-
-function InternalPipe:write(vec)
-    self._data = vec
-end
-
-function InternalPipe:update_read_buffer()
-    return self._data.size
-end
-
-function InternalPipe:read_buffered(n)
-    assert(n == self._data.size, "Partial buffered reads unsupported.")
-    local vec = self._data
-    self._data = nil
-    return vec
-end
-
--- ProcessPipe class
-local ProcessPipe = object.class_factory()
 
 -- Aligned memory allocator/deallocator
 ffi.cdef[[
@@ -107,39 +77,71 @@ ffi.cdef[[
     int vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned int flags);
 ]]
 
-function ProcessPipe.new(pipe_output, pipe_input, data_type)
-    local self = setmetatable({}, ProcessPipe)
-    self.pipe_output = pipe_output
-    self.pipe_input = pipe_input
-    self.data_type = data_type
+function Pipe:initialize(multiprocess)
+    if multiprocess then
+        -- Create UNIX pipe
+        local pipe_fds = ffi.new("int[2]")
+        assert(ffi.C.pipe(pipe_fds) == 0, "pipe(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        self._rfd = pipe_fds[0]
+        self._wfd = pipe_fds[1]
 
-    -- Create UNIX pipe
-    local pipe_fds = ffi.new("int[2]")
-    assert(ffi.C.pipe(pipe_fds) == 0, "pipe(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    self._rfd = pipe_fds[0]
-    self._wfd = pipe_fds[1]
+        -- Pre-allocate read buffer
+        self._buf_capacity = 65536
+        self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_capacity), ffi.C.free)
+        self._buf_size = 0
+        self._buf_unread_offset = 0
 
-    -- Pre-allocate read buffer
-    self._buf_capacity = 65536
-    self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_capacity), ffi.C.free)
-    self._buf_size = 0
-    self._buf_unread_offset = 0
+        self.read = self.read_multiprocess
+        self.write = self.write_multiprocess
+        self.update_read_buffer = self.update_read_buffer_multiprocess
+        self.read_buffered = self.read_buffered_multiprocess
+    else
+        self._data = nil
 
-    return self
+        self.read = self.read_singleprocess
+        self.write = self.write_singleprocess
+        self.update_read_buffer = self.update_read_buffer_singleprocess
+        self.read_buffered = self.read_buffered_singleprocess
+    end
 end
 
-function ProcessPipe:get_rate()
+function Pipe:get_rate()
     return self.pipe_output.owner:get_rate()
 end
 
-function ProcessPipe:read()
+-- Single-threaded interface
+
+function Pipe:read_singleprocess()
+    local vec = self._data
+    self._data = nil
+    return vec
+end
+
+function Pipe:write_singleprocess(vec)
+    self._data = vec
+end
+
+function Pipe:update_read_buffer_singleprocess()
+    return self._data.size
+end
+
+function Pipe:read_buffered_singleprocess(n)
+    assert(n == self._data.size, "Partial buffered reads unsupported.")
+    local vec = self._data
+    self._data = nil
+    return vec
+end
+
+-- Multi-process interface
+
+function Pipe:read_multiprocess()
     local iov = ffi.new("struct iovec", self._buf, self._buf_capacity)
     local bytes_read = ffi.C.vmsplice(self._rfd, iov, 1, 0)
     assert(bytes_read > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     return self.data_type.const_vector_from_buf(self._buf, bytes_read)
 end
 
-function ProcessPipe:write(vec)
+function Pipe:write_multiprocess(vec)
     local iov = ffi.new("struct iovec")
     local len = 0
 
@@ -154,7 +156,7 @@ function ProcessPipe:write(vec)
     end
 end
 
-function ProcessPipe:update_read_buffer()
+function Pipe:update_read_buffer_multiprocess()
     -- Shift unread samples down to beginning of buffer
     local unread_length = self._buf_size - self._buf_unread_offset
     ffi.C.memmove(self._buf, ffi.cast("char *", self._buf) + self._buf_unread_offset, unread_length)
@@ -171,7 +173,7 @@ function ProcessPipe:update_read_buffer()
     return self._buf_size
 end
 
-function ProcessPipe:read_buffered(n)
+function Pipe:read_buffered_multiprocess(n)
     assert((self._buf_unread_offset + n) <= self._buf_size, "Size out of bounds.")
     local vec = self.data_type.const_vector_from_buf(ffi.cast("char *", self._buf) + self._buf_unread_offset, n)
     self._buf_unread_offset = self._buf_unread_offset + n
@@ -200,4 +202,4 @@ local function read_synchronous(pipes)
 end
 
 -- Exported module
-return {PipeInput = PipeInput, PipeOutput = PipeOutput, AliasedPipeInput = AliasedPipeInput, AliasedPipeOutput = AliasedPipeOutput, InternalPipe = InternalPipe, ProcessPipe = ProcessPipe, read_synchronous = read_synchronous}
+return {PipeInput = PipeInput, PipeOutput = PipeOutput, AliasedPipeInput = AliasedPipeInput, AliasedPipeOutput = AliasedPipeOutput, Pipe = Pipe, read_synchronous = read_synchronous}

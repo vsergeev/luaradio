@@ -9,8 +9,7 @@ local util = require('radio.core.util')
 
 local CompositeBlock = block.factory("CompositeBlock")
 
-function CompositeBlock:instantiate(multiprocess)
-    self._multiprocess = multiprocess
+function CompositeBlock:instantiate()
     self._connections = {}
 end
 
@@ -147,7 +146,7 @@ function CompositeBlock:connect(src, src_pipe_name, dst, dst_pipe_name)
         assert(not self._connections[dst_pipe], "Input already connected.")
 
         -- Create a pipe from output to input
-        local p = self._multiprocess and pipe.ProcessPipe(src_pipe, dst_pipe) or pipe.InternalPipe(src_pipe, dst_pipe)
+        local p = pipe.Pipe(src_pipe, dst_pipe)
         -- Link the pipe to the input and output ends
         src_pipe.pipes[#src_pipe.pipes+1] = p
         dst_pipe.pipe = p
@@ -177,7 +176,7 @@ function CompositeBlock:connect(src, src_pipe_name, dst, dst_pipe_name)
     end
 end
 
-function CompositeBlock:_prepare_to_run()
+function CompositeBlock:_prepare_to_run(multiprocess)
     -- Crawl our connections to get the full list of blocks and connections
     local blocks, all_connections = crawl_connections(self._connections)
 
@@ -213,6 +212,11 @@ function CompositeBlock:_prepare_to_run()
     -- Initialize all blocks
     for block, _ in pairs(blocks) do
         block:initialize()
+    end
+
+    -- Initialize all pipes
+    for pipe_input, pipe_output in pairs(all_connections) do
+        pipe_input.pipe:initialize(multiprocess)
     end
 
     io.stderr:write("Running in order:\n")
@@ -262,7 +266,7 @@ ffi.cdef[[
     unsigned int sleep(unsigned int seconds);
 ]]
 
-function CompositeBlock:run()
+function CompositeBlock:run(multiprocess)
     -- Block handling of SIGINT and SIGCHLD
     local sigset = ffi.new("sigset_t[1]")
     ffi.C.sigemptyset(sigset)
@@ -272,10 +276,10 @@ function CompositeBlock:run()
 
     -- Prepare to run
     if not self._execution_order then
-        self:_prepare_to_run()
+        self:_prepare_to_run(multiprocess)
     end
 
-    if not self._multiprocess then
+    if not multiprocess then
         -- Run blocks single-threaded in round-robin order
         while true do
             for _, block in ipairs(self._execution_order) do

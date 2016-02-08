@@ -2,7 +2,7 @@ local radio = require('radio')
 
 local src = radio.NullSourceBlock()
 local dst = radio.FileDescriptorSinkBlock(1)
-local top = radio.CompositeBlock(true)
+local top = radio.CompositeBlock()
 
 top:connect(src, "out", dst, "in")
-top:run()
+top:run(true)

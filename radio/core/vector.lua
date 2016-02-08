@@ -16,12 +16,12 @@ ffi.cdef[[
 local PAGE_SIZE = ffi.C.sysconf(ffi.C._SC_PAGESIZE)
 
 local function vector_calloc(cptrtype, n, elem_size)
-    -- Allocate memory
+    -- Allocate buffer
     local buf = ffi.gc(ffi.C.aligned_alloc(PAGE_SIZE, n*elem_size), ffi.C.free)
+    -- Zero buffer
+    ffi.C.memset(buf, 0, n*elem_size)
     -- Cast to specified pointer type
     local ptr = ffi.cast(cptrtype, buf)
-    -- Zero memory
-    ffi.C.memset(buf, 0, n*elem_size)
 
     -- Return vector container
     return {data = ptr, length = n, size = n*elem_size, _buffer = buf}

@@ -10,6 +10,7 @@ local util = require('radio.core.util')
 local CompositeBlock = block.factory("CompositeBlock")
 
 function CompositeBlock:instantiate()
+    self._running = false
     self._connections = {}
 end
 
@@ -225,27 +226,13 @@ function CompositeBlock:_prepare_to_run(multiprocess)
     end
 end
 
-function CompositeBlock:run_once()
-    -- Prepare to run
-    if not self._execution_order then
-        self:_prepare_to_run()
-    end
-
-    -- Run blocks once
-    for _, block in ipairs(self._execution_order) do
-        block:run_once()
-    end
-end
-
 ffi.cdef[[
     typedef int pid_t;
     pid_t fork(void);
-    pid_t wait(int *status);
     pid_t waitpid(pid_t pid, int *status, int options);
-    int kill(pid_t pid, int sig);
-]]
 
-ffi.cdef[[
+    /* kill() */
+    int kill(pid_t pid, int sig);
     enum {SIGINT = 2, SIGKILL = 9, SIGTERM = 15, SIGCHLD = 17};
 
     /* sigset handling */
@@ -255,6 +242,9 @@ ffi.cdef[[
     int sigaddset(sigset_t *set, int signum);
     int sigdelset(sigset_t *set, int signum);
     int sigismember(const sigset_t *set, int signum);
+
+    /* sigwait() */
+    int sigwait(const sigset_t *set, int *sig);
 
     /* sigprocmask() */
     enum {SIG_BLOCK, SIG_UNBLOCK, SIG_SETMASK};
@@ -267,6 +257,13 @@ ffi.cdef[[
 ]]
 
 function CompositeBlock:run(multiprocess)
+    self:start(multiprocess)
+    self:wait()
+end
+
+function CompositeBlock:start(multiprocess)
+    assert(not self._running, "CompositeBlock already running!")
+
     -- Block handling of SIGINT and SIGCHLD
     local sigset = ffi.new("sigset_t[1]")
     ffi.C.sigemptyset(sigset)
@@ -274,10 +271,19 @@ function CompositeBlock:run(multiprocess)
     ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
     assert(ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) == 0, "sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
-    -- Prepare to run
-    if not self._execution_order then
-        self:_prepare_to_run(multiprocess)
+    -- Clear any pending signals
+    while true do
+        assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 or ffi.C.sigismember(sigset, ffi.C.SIGCHLD) == 1 then
+            local sig = ffi.new("int[1]")
+            assert(ffi.C.sigwait(sigset, sig) == 0, "sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        else
+            break
+        end
     end
+
+    -- Prepare to run
+    self:_prepare_to_run(multiprocess)
 
     if not multiprocess then
         -- Run blocks single-threaded in round-robin order
@@ -293,7 +299,7 @@ function CompositeBlock:run(multiprocess)
             end
         end
     else
-        local pids = {}
+        self._pids = {}
 
         -- Fork and run blocks
         for _, block in ipairs(self._execution_order) do
@@ -302,9 +308,31 @@ function CompositeBlock:run(multiprocess)
             if pid == 0 then
                 block:run()
             else
-                pids[#pids + 1] = pid
+                self._pids[#self._pids + 1] = pid
             end
         end
+
+        -- Mark ourselves as running
+        self._running = true
+    end
+end
+
+function CompositeBlock:stop()
+    if self._running and self._pids then
+        -- Kill and wait for all children
+        for _, pid in pairs(self._pids) do
+            ffi.C.kill(pid, ffi.C.SIGTERM)
+            ffi.C.waitpid(pid, nil, 0)
+        end
+
+        -- Mark ourselves as not running
+        self._running = false
+    end
+end
+
+function CompositeBlock:wait()
+    if self._running and self._pids then
+        local sigset = ffi.new("sigset_t[1]")
 
         -- Wait for SIGINT or SIGCHLD
         while true do
@@ -321,11 +349,8 @@ function CompositeBlock:run(multiprocess)
             end
         end
 
-        -- Kill and wait for all children
-        for _, pid in pairs(pids) do
-            ffi.C.kill(pid, ffi.C.SIGTERM)
-            ffi.C.waitpid(pid, nil, 0)
-        end
+        -- Kill remaining children
+        self:stop()
     end
 end
 

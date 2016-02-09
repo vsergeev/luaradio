@@ -12,6 +12,7 @@ return {
     BandpassFilterBlock = require('radio.blocks.signal.bandpassfilter').BandpassFilterBlock,
     BandstopFilterBlock = require('radio.blocks.signal.bandstopfilter').BandstopFilterBlock,
     RootRaisedCosineFilterBlock = require('radio.blocks.signal.rootraisedcosinefilter').RootRaisedCosineFilterBlock,
+    FMDeemphasisFilterBlock = require('radio.blocks.signal.fmdeemphasisfilter').FMDeemphasisFilterBlock,
     SummerBlock = require('radio.blocks.signal.summer').SummerBlock,
     MultiplierBlock = require('radio.blocks.signal.multiplier').MultiplierBlock,
     HilbertTransformBlock = require('radio.blocks.signal.hilberttransform').HilbertTransformBlock,

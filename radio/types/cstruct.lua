@@ -1,7 +1,7 @@
 local ffi = require('ffi')
 
 local object = require('radio.core.object')
-local vector = require('radio.core.vector')
+local Vector = require('radio.core.vector').Vector
 
 local CStructType = object.class_factory()
 
@@ -14,24 +14,20 @@ function CStructType.factory(ct, custom_mt)
         return CustomType(...)
     end
 
-    function mt.vector(n)
-        return vector.vector_calloc(ct .. " *", n, ffi.sizeof(CustomType))
+    function mt.vector(num)
+        return Vector(CustomType, num)
     end
 
     function mt.vector_from_array(arr)
-        local vec = mt.vector(#arr)
+        local vec = Vector(CustomType, #arr)
         for i = 0, vec.length-1 do
             vec.data[i] = CustomType(unpack(arr[i+1]))
         end
         return vec
     end
 
-    function mt.vector_from_buf(buf, size)
-        return vector.vector_cast(ct .. " *", buf, size, ffi.sizeof(CustomType))
-    end
-
     function mt.const_vector_from_buf(buf, size)
-        return vector.vector_cast("const " .. ct .. " *", buf, size, ffi.sizeof(CustomType))
+        return Vector.cast(CustomType, buf, size)
     end
 
     -- Absorb the user-defined metatable

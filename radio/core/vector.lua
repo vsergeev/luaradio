@@ -1,5 +1,7 @@
 local ffi = require('ffi')
 
+local object = require('radio.core.object')
+
 -- Aligned allocator/deallocator
 ffi.cdef[[
     void *aligned_alloc(size_t alignment, size_t size);
@@ -15,24 +17,36 @@ ffi.cdef[[
 ]]
 local PAGE_SIZE = ffi.C.sysconf(ffi.C._SC_PAGESIZE)
 
-local function vector_calloc(cptrtype, n, elem_size)
+-- Vector object
+
+local Vector = object.class_factory()
+
+-- Constructors
+
+function Vector.new(ctype, num)
+    num = num or 0
+
+    -- Calculate size
+    local size = num*ffi.sizeof(ctype)
     -- Allocate buffer
-    local buf = ffi.gc(ffi.C.aligned_alloc(PAGE_SIZE, n*elem_size), ffi.C.free)
+    local buf = ffi.gc(ffi.C.aligned_alloc(PAGE_SIZE, size), ffi.C.free)
     -- Zero buffer
-    ffi.C.memset(buf, 0, n*elem_size)
+    ffi.C.memset(buf, 0, size)
     -- Cast to specified pointer type
-    local ptr = ffi.cast(cptrtype, buf)
+    local ptr = ffi.cast(ffi.typeof("$ *", ctype), buf)
 
     -- Return vector container
-    return {data = ptr, length = n, size = n*elem_size, _buffer = buf}
+    return setmetatable({data = ptr, length = num, size = size, type = ctype, _buffer = buf}, Vector)
 end
 
-local function vector_cast(cptrtype, buf, size, elem_size)
+function Vector.cast(ctype, buf, size)
+    -- Calculate number of elements
+    local num = size/ffi.sizeof(ctype)
     -- Cast to specified pointer type
-    local ptr = ffi.cast(cptrtype, buf)
+    local ptr = ffi.cast(ffi.typeof("const $ *", ctype), buf)
 
     -- Return vector container
-    return {data = ptr, length = size/elem_size, size = size, _buffer = buf}
+    return setmetatable({data = ptr, length = num, size = size, type = ctype, _buffer = buf}, Vector)
 end
 
-return {vector_calloc = vector_calloc, vector_cast = vector_cast, PAGE_SIZE = PAGE_SIZE}
+return {Vector = Vector, PAGE_SIZE = PAGE_SIZE}

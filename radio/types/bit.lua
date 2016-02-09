@@ -2,7 +2,7 @@ local ffi = require('ffi')
 local bit = require('bit')
 
 local object = require('radio.core.object')
-local vector = require('radio.core.vector')
+local Vector = require('radio.core.vector').Vector
 
 ffi.cdef[[
 typedef struct {
@@ -45,24 +45,20 @@ function mt.new(value)
     return BitType(value)
 end
 
-function mt.vector(n)
-    return vector.vector_calloc("bit_t *", n, ffi.sizeof(BitType))
+function mt.vector(num)
+    return Vector(BitType, num)
 end
 
 function mt.vector_from_array(arr)
-    local vec = mt.vector(#arr)
+    local vec = Vector(BitType, #arr)
     for i = 0, vec.length-1 do
         vec.data[i] = BitType(arr[i+1])
     end
     return vec
 end
 
-function mt.vector_from_buf(buf, size)
-    return vector.vector_cast("bit_t *", buf, size, ffi.sizeof(BitType))
-end
-
 function mt.const_vector_from_buf(buf, size)
-    return vector.vector_cast("const bit_t *", buf, size, ffi.sizeof(BitType))
+    return Vector.cast(BitType, buf, size)
 end
 
 -- FFI type binding

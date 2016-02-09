@@ -1,7 +1,7 @@
 local ffi = require('ffi')
 
 local object = require('radio.core.object')
-local vector = require('radio.core.vector')
+local Vector = require('radio.core.vector').Vector
 
 ffi.cdef[[
 typedef struct {
@@ -52,24 +52,20 @@ function mt.new(value)
     return Float32Type(value)
 end
 
-function mt.vector(n)
-    return vector.vector_calloc("float32_t *", n, ffi.sizeof(Float32Type))
+function mt.vector(num)
+    return Vector(Float32Type, num)
 end
 
 function mt.vector_from_array(arr)
-    local vec = mt.vector(#arr)
+    local vec = Vector(Float32Type, #arr)
     for i = 0, vec.length-1 do
         vec.data[i] = Float32Type(arr[i+1])
     end
     return vec
 end
 
-function mt.vector_from_buf(buf, size)
-    return vector.vector_cast("float32_t *", buf, size, ffi.sizeof(Float32Type))
-end
-
 function mt.const_vector_from_buf(buf, size)
-    return vector.vector_cast("const float32_t *", buf, size, ffi.sizeof(Float32Type))
+    return Vector.cast(Float32Type, buf, size)
 end
 
 -- FFI type binding

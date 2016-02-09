@@ -1,7 +1,7 @@
 local ffi = require('ffi')
 
 local object = require('radio.core.object')
-local vector = require('radio.core.vector')
+local Vector = require('radio.core.vector').Vector
 
 ffi.cdef[[
 typedef struct {
@@ -75,24 +75,20 @@ function mt.new(real, imag)
     return ComplexFloat32Type(real, imag)
 end
 
-function mt.vector(n)
-    return vector.vector_calloc("complex_float32_t *", n, ffi.sizeof(ComplexFloat32Type))
+function mt.vector(num)
+    return Vector(ComplexFloat32Type, num)
 end
 
 function mt.vector_from_array(arr)
-    local vec = mt.vector(#arr)
+    local vec = Vector(ComplexFloat32Type, #arr)
     for i = 0, vec.length-1 do
         vec.data[i] = ComplexFloat32Type(unpack(arr[i+1]))
     end
     return vec
 end
 
-function mt.vector_from_buf(buf, size)
-    return vector.vector_cast("complex_float32_t *", buf, size, ffi.sizeof(ComplexFloat32Type))
-end
-
 function mt.const_vector_from_buf(buf, size)
-    return vector.vector_cast("const complex_float32_t *", buf, size, ffi.sizeof(ComplexFloat32Type))
+    return Vector.cast(ComplexFloat32Type, buf, size)
 end
 
 -- FFI type binding

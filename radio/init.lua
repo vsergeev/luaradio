@@ -9,6 +9,7 @@ return {
     IIRFilterBlock = require('radio.blocks.signal.iirfilter').IIRFilterBlock,
     LowpassFilterBlock = require('radio.blocks.signal.lowpassfilter').LowpassFilterBlock,
     HighpassFilterBlock = require('radio.blocks.signal.highpassfilter').HighpassFilterBlock,
+    BandpassFilterBlock = require('radio.blocks.signal.bandpassfilter').BandpassFilterBlock,
     SummerBlock = require('radio.blocks.signal.summer').SummerBlock,
     MultiplierBlock = require('radio.blocks.signal.multiplier').MultiplierBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,

@@ -1,15 +1,27 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local object = require('radio.core.object')
+local Vector = require('radio.core.vector').Vector
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 local Float32Type = require('radio.types.float32').Float32Type
 
 local IIRFilterBlock = block.factory("IIRFilterBlock")
 
 function IIRFilterBlock:instantiate(b_taps, a_taps)
-    assert(#a_taps >= 1, "Feedback taps must be at least length 1.")
-    self.b_taps = Float32Type.vector_from_array(b_taps)
-    self.a_taps = Float32Type.vector_from_array(a_taps)
+    if object.isinstanceof(b_taps, Vector) and b_taps.type == Float32Type then
+        self.b_taps = b_taps
+    else
+        self.b_taps = Float32Type.vector_from_array(b_taps)
+    end
+
+    if object.isinstanceof(a_taps, Vector) and a_taps.type == Float32Type then
+        assert(a_taps.length >= 1, "Feedback taps must be at least length 1.")
+        self.a_taps = a_taps
+    else
+        assert(#a_taps >= 1, "Feedback taps must be at least length 1.")
+        self.a_taps = Float32Type.vector_from_array(a_taps)
+    end
 
     self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)}, IIRFilterBlock.process_complex)
     self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)}, IIRFilterBlock.process_scalar)

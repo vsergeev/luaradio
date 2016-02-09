@@ -7,6 +7,7 @@ return {
     CompositeBlock = require('radio.core.composite').CompositeBlock,
     FIRFilterBlock = require('radio.blocks.signal.firfilter').FIRFilterBlock,
     IIRFilterBlock = require('radio.blocks.signal.iirfilter').IIRFilterBlock,
+    LowpassFilterBlock = require('radio.blocks.signal.lowpassfilter').LowpassFilterBlock,
     SummerBlock = require('radio.blocks.signal.summer').SummerBlock,
     MultiplierBlock = require('radio.blocks.signal.multiplier').MultiplierBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,

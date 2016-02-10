@@ -28,6 +28,9 @@ return {
     SignalSourceBlock = require('radio.blocks.sources.signalsource').SignalSourceBlock,
     RtlSdrSourceBlock = require('radio.blocks.sources.rtlsdrsource').RtlSdrSourceBlock,
 
+    -- Composite Blocks
+    TunerBlock = require('radio.composites.tuner').TunerBlock,
+
     -- Types
     ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type,
     Float32Type = require('radio.types.float32').Float32Type,

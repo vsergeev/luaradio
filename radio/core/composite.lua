@@ -83,7 +83,7 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
     elseif object.isinstanceof(src_pipe, pipe.PipeInput) and object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) then
         -- If we are aliasing a composite block input pipe to a real input pipe
         dst_pipe.real_pipe = src_pipe
-        io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", dst.name, dst_pipe.name, dst.name, dst_pipe.name))
+        io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", dst.name, dst_pipe.name, src.name, src_pipe.name))
     elseif object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(dst_pipe, pipe.PipeOutput) then
         -- If we are aliasing a composite block input pipe to a real input pipe
         src_pipe.real_pipe = dst_pipe
@@ -91,7 +91,7 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
     elseif object.isinstanceof(src_pipe, pipe.PipeOutput) and object.isinstanceof(dst_pipe, pipe.AliasedPipeOutput) then
         -- If we are aliasing a composite block input pipe to a real input pipe
         dst_pipe.real_pipe = src_pipe
-        io.stderr:write(string.format("Aliased output %s.%s to input %s.%s\n", dst.name, dst_pipe.name, dst.name, dst_pipe.name))
+        io.stderr:write(string.format("Aliased output %s.%s to input %s.%s\n", dst.name, dst_pipe.name, src.name, src_pipe.name))
     else
         error("Malformed pipe connection.")
     end

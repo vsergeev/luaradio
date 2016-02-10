@@ -31,16 +31,17 @@ function SignalSourceBlock:initialize_exponential()
     self.frequency = self.options.frequency
     self.amplitude = self.options.amplitude or 1.0
     self.omega = 2*math.pi*(self.frequency/self.rate)
-    self.phi = 0.0
+
+    self.rotation = ComplexFloat32Type(math.cos(self.omega), math.sin(self.omega))
+    self.phi = ComplexFloat32Type(1, 0)
 end
 
 function SignalSourceBlock:process_exponential()
     local out = ComplexFloat32Type.vector(self._chunk_size)
 
     for i = 0, out.length-1 do
-        out.data[i] = ComplexFloat32Type(math.cos(self.phi), math.sin(self.phi)):scalar_mul(self.amplitude)
-        self.phi = self.phi + self.omega
-        self.phi = (self.phi > 2*math.pi) and (self.phi - 2*math.pi) or self.phi
+        out.data[i] = self.phi:scalar_mul(self.amplitude)
+        self.phi = self.phi * self.rotation
     end
 
     return out

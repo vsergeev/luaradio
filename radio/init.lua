@@ -30,6 +30,7 @@ return {
 
     -- Composite Blocks
     TunerBlock = require('radio.composites.tuner').TunerBlock,
+    DecimatorBlock = require('radio.composites.decimator').DecimatorBlock,
 
     -- Types
     ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type,

@@ -45,6 +45,8 @@ function CompositeBlock:connect(...)
     else
         self:connect_by_name(...)
     end
+
+    return self
 end
 
 function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)

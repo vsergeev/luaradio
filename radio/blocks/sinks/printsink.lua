@@ -1,16 +1,10 @@
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('radio.types.float32').Float32Type
-local Integer32Type = require('radio.types.integer32').Integer32Type
-local BitType = require('radio.types.bit').BitType
 
 local PrintSinkBlock = block.factory("PrintSinkBlock")
 
 function PrintSinkBlock:instantiate()
-    self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {})
-    self:add_type_signature({block.Input("in", Float32Type)}, {})
-    self:add_type_signature({block.Input("in", Integer32Type)}, {})
-    self:add_type_signature({block.Input("in", BitType)}, {})
+    -- Accept all input types that implement __tostring()
+    self:add_type_signature({block.Input("in", function (type) return type.__tostring ~= nil end)}, {})
 end
 
 function PrintSinkBlock:process(x)

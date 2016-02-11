@@ -1,3 +1,10 @@
+* (Prototype) v0.0.3 - 02/11/2016
+    * Add CStructType factory for custom cstruct types.
+    * Add Vector class and resize(), append() methods.
+    * Add necessary blocks to implement RDS demodulator / decoder demo.
+    * Add TunerBlock and DecimatorBlock composite blocks.
+    * Update demos to use composite blocks.
+
 * (Prototype) v0.0.2 - 02/08/2016
     * Add hierarchical block support to CompositeBlock.
     * Add start(), stop(), wait(), run() controls to CompositeBlock.

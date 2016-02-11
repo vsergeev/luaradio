@@ -1,18 +1,14 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('radio.types.float32').Float32Type
-local BitType = require('radio.types.bit').BitType
 
 local FileSinkBlock = block.factory("FileSinkBlock")
 
 function FileSinkBlock:instantiate(filename)
     self.filename = filename
 
-    self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {})
-    self:add_type_signature({block.Input("in", Float32Type)}, {})
-    self:add_type_signature({block.Input("in", BitType)}, {})
+    -- Accept all input types
+    self:add_type_signature({block.Input("in", function (type) return true end)}, {})
 end
 
 ffi.cdef[[

@@ -60,7 +60,15 @@ function Block:differentiate(input_data_types)
 
         -- Compare signature input types with specified input types
         for i = 1, #signature.inputs do
-            if input_data_types[i] ~= signature.inputs[i].data_type then
+            -- Compare input type with block's type signature input type
+            local predicate
+            if type(signature.inputs[i].data_type) == "function" then
+                predicate = signature.inputs[i].data_type(input_data_types[i])
+            else
+                predicate = input_data_types[i] == signature.inputs[i].data_type
+            end
+            -- If they're incompatible, remove the signature candidate
+            if not predicate then
                 signature_candidates[signature] = nil
                 break
             end

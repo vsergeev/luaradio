@@ -30,6 +30,7 @@ return {
     FileDescriptorSinkBlock = require('radio.blocks.sinks.filedescriptorsink').FileDescriptorSinkBlock,
     FileSinkBlock = require('radio.blocks.sinks.filesink').FileSinkBlock,
     PrintSinkBlock = require('radio.blocks.sinks.printsink').PrintSinkBlock,
+    JsonSinkBlock = require('radio.blocks.sinks.jsonsink').JsonSinkBlock,
     PulseAudioSinkBlock = require('radio.blocks.sinks.pulseaudiosink').PulseAudioSinkBlock,
     FileIQSourceBlock = require('radio.blocks.sources.fileiqsource').FileIQSourceBlock,
     FileSourceBlock = require('radio.blocks.sources.filesource').FileSourceBlock,

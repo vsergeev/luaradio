@@ -8,7 +8,7 @@ local MultiplierBlock = block.factory("MultiplierBlock")
 
 function MultiplierBlock:instantiate()
     self:add_type_signature({block.Input("in1", ComplexFloat32Type), block.Input("in2", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)}, MultiplierBlock.process_complex)
-    self:add_type_signature({block.Input("in1", Float32Type), block.Input("in2", Float32Type)}, {block.Output("out", Float32Type)}, MultiplierBlock.process_float)
+    self:add_type_signature({block.Input("in1", Float32Type), block.Input("in2", Float32Type)}, {block.Output("out", Float32Type)}, MultiplierBlock.process_real)
 end
 
 ffi.cdef[[
@@ -23,7 +23,7 @@ function MultiplierBlock:process_complex(x, y)
     return out
 end
 
-function MultiplierBlock:process_float(x, y)
+function MultiplierBlock:process_real(x, y)
     local out = Float32Type.vector(x.length)
     libvolk.volk_32f_x2_multiply_32f_a(out.data, x.data, y.data, x.length)
     return out

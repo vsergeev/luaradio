@@ -2,11 +2,12 @@ local bit = require('bit')
 
 local object = require('radio.core.object')
 local block = require('radio.core.block')
+local ObjectType = require('radio.types.object').ObjectType
 local RDSFrameType = require('radio.blocks.protocol.rdsframe').RDSFrameType
 
 -- RDS Packet Type
 
-local RDSPacketType = object.class_factory()
+local RDSPacketType = ObjectType.factory()
 
 function RDSPacketType.new(frame, header, data)
     local self = setmetatable({}, RDSPacketType)
@@ -125,14 +126,16 @@ local RDS_PTY_TABLE = {
 local RDSDecodeBlock = block.factory("RDSDecodeBlock")
 
 function RDSDecodeBlock:instantiate()
-    self:add_type_signature({block.Input("in", RDSFrameType)}, {})
+    self:add_type_signature({block.Input("in", RDSFrameType)}, {block.Output("out", RDSPacketType)})
 end
 
 function RDSDecodeBlock:process(x)
+    local out = RDSPacketType.vector()
+
     for i = 0, x.length-1 do
         -- Extract frame blocks
         local frame = {x.data[i].blocks[0], x.data[i].blocks[1], x.data[i].blocks[2], x.data[i].blocks[3]}
-        print(x.data[i])
+        io.stderr:write(tostring(x.data[i]) .. "\n")
 
         -- Extract header
         local header = {
@@ -156,29 +159,10 @@ function RDSDecodeBlock:process(x)
 
         -- Assemble packet
         local packet = RDSPacketType(frame, header, data)
-
-        -- FIXME emit the packet
-        local s = string.format("RDSPacket<\n") ..
-                  string.format("  pi = 0x%04x\n", header.pi) ..
-                  string.format("  group = %d\n", header.group) ..
-                  string.format("  version = %d\n", header.version) ..
-                  string.format("  tp = %s\n", header.tp) ..
-                  string.format("  pty_code = %d\n", header.pty_code) ..
-                  string.format("  pty = \"%s\"\n", header.pty)
-        if data then
-            s = s .. string.format("  data = {\n", header.pty)
-            for k,v in pairs(data) do
-                if type(v) == "string" then
-                    s = s .. string.format("    %s = \"%s\"\n", tostring(k), tostring(v))
-                else
-                    s = s .. string.format("    %s = %s\n", tostring(k), tostring(v))
-                end
-            end
-            s = s .. "  }\n"
-        end
-        s = s .. ">"
-        --print(s)
+        out:append(packet)
     end
+
+    return out
 end
 
-return {RDSDecodeBlock = RDSDecodeBlock}
+return {RDSPacketType = RDSPacketType, RDSDecodeBlock = RDSDecodeBlock}

@@ -1,3 +1,9 @@
+* (Prototype) v0.0.4 - 02/12/2016
+    * Add support for functions as candidate input types in block type signatures.
+    * Add support for variable length type serialization with ProcessPipe.
+    * Add ObjectType factory custom Lua object types (serialized with MessagePack).
+    * Add JsonSinkBlock and update the RDS demo to use it.
+
 * (Prototype) v0.0.3 - 02/11/2016
     * Add CStructType factory for custom cstruct types.
     * Add Vector class and resize(), append() methods.

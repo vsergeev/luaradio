@@ -16,7 +16,7 @@ function FIRFilterBlock:instantiate(taps)
     end
 
     self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)}, FIRFilterBlock.process_complex)
-    self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)}, FIRFilterBlock.process_float)
+    self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)}, FIRFilterBlock.process_real)
 end
 
 ffi.cdef[[
@@ -56,7 +56,7 @@ function FIRFilterBlock:process_complex(x)
     return out
 end
 
-function FIRFilterBlock:process_float(x)
+function FIRFilterBlock:process_real(x)
     local out = Float32Type.vector(x.length)
 
     for i = 0, x.length-1 do

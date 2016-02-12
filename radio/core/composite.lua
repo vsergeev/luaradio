@@ -279,6 +279,9 @@ function CompositeBlock:run(multiprocess)
 end
 
 function CompositeBlock:start(multiprocess)
+    -- Default to multiprocess
+    multiprocess = (multiprocess == nil) and true or multiprocess
+
     assert(not self._running, "CompositeBlock already running!")
 
     -- Block handling of SIGINT and SIGCHLD

@@ -64,8 +64,19 @@ function mt.vector_from_array(arr)
     return vec
 end
 
-function mt.const_vector_from_buf(buf, size)
-    return Vector.cast(Integer32Type, buf, size)
+-- Buffer serialization interface
+
+function mt.serialize(vec)
+    return vec.data, vec.size
+end
+
+function mt.deserialize(buf, count)
+    local size = count*ffi.sizeof(Integer32Type)
+    return Vector.cast(Integer32Type, buf, size), size
+end
+
+function mt.deserialize_count(buf, size)
+    return math.floor(size/ffi.sizeof(Integer32Type))
 end
 
 -- FFI type binding

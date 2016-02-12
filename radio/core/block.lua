@@ -107,7 +107,7 @@ function Block:run_once()
         data_out = {self:process()}
     elseif #self.inputs == 1 then
         -- One input
-        data_out = {self:process(self.inputs[1].pipe:read())}
+        data_out = {self:process(self.inputs[1].pipe:read_max())}
     else
         -- Multiple inputs
         -- Do a synchronous read across all pipes

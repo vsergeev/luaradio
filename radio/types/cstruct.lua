@@ -26,13 +26,25 @@ function CStructType.factory(ct, custom_mt)
         return vec
     end
 
-    function mt.const_vector_from_buf(buf, size)
-        return Vector.cast(CustomType, buf, size)
+    -- Buffer serialization interface
+    function mt.serialize(vec)
+        return vec.data, vec.size
+    end
+
+    function mt.deserialize(buf, count)
+        local size = count*ffi.sizeof(CustomType)
+        return Vector.cast(CustomType, buf, size), size
+    end
+
+    function mt.deserialize_count(buf, size)
+        return math.floor(size/ffi.sizeof(CustomType))
     end
 
     -- Absorb the user-defined metatable
-    for k,v in pairs(custom_mt) do
-        mt[k] = v
+    if custom_mt then
+        for k,v in pairs(custom_mt) do
+            mt[k] = v
+        end
     end
 
     -- FFI type binding

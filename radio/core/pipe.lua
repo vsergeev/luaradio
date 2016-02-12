@@ -89,19 +89,19 @@ function Pipe:initialize(multiprocess)
         self._buf_capacity = 65536
         self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_capacity), ffi.C.free)
         self._buf_size = 0
-        self._buf_unread_offset = 0
+        self._buf_read_offset = 0
 
-        self.read = self.read_multiprocess
-        self.write = self.write_multiprocess
-        self.update_read_buffer = self.update_read_buffer_multiprocess
-        self.read_buffered = self.read_buffered_multiprocess
+        self.read_max = self.read_max_mp
+        self.read_n = self.read_n_mp
+        self.write = self.write_mp
+        self.read_update = self.read_update_mp
     else
-        self._data = nil
+        self.vec = nil
 
-        self.read = self.read_singleprocess
-        self.write = self.write_singleprocess
-        self.update_read_buffer = self.update_read_buffer_singleprocess
-        self.read_buffered = self.read_buffered_singleprocess
+        self.read_max = self.read_max_sp
+        self.read_n = self.read_n_sp
+        self.write = self.write_sp
+        self.read_update = self.read_update_sp
     end
 end
 
@@ -111,55 +111,51 @@ end
 
 -- Single-threaded interface
 
-function Pipe:read_singleprocess()
-    local vec = self._data
-    self._data = nil
+function Pipe:read_max_sp()
+    local vec = self.vec
+    self.vec = nil
     return vec
 end
 
-function Pipe:write_singleprocess(vec)
-    self._data = vec
-end
-
-function Pipe:update_read_buffer_singleprocess()
-    return self._data.size
-end
-
-function Pipe:read_buffered_singleprocess(n)
-    assert(n == self._data.size, "Partial buffered reads unsupported.")
-    local vec = self._data
-    self._data = nil
+function Pipe:read_n_sp(n)
+    assert(n == self.vec.length, "Partial buffered reads unsupported.")
+    local vec = self.vec
+    self.vec = nil
     return vec
+end
+
+function Pipe:read_update()
+    return self.vec.length
+end
+
+
+function Pipe:write_sp(vec)
+    self.vec = vec
 end
 
 -- Multi-process interface
 
-function Pipe:read_multiprocess()
-    local iov = ffi.new("struct iovec", self._buf, self._buf_capacity)
-    local bytes_read = ffi.C.vmsplice(self._rfd, iov, 1, 0)
-    assert(bytes_read > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    return self.data_type.const_vector_from_buf(self._buf, bytes_read)
+function Pipe:read_max_mp()
+    -- Update our read buffer and read the maximum amount available
+    return self:read_n(self:read_update())
 end
 
-function Pipe:write_multiprocess(vec)
-    local iov = ffi.new("struct iovec")
-    local len = 0
+function Pipe:read_n_mp(num)
+    -- Create a vector from the buffer
+    local vec, bytes_consumed = self.data_type.deserialize(ffi.cast("char *", self._buf) + self._buf_read_offset, num)
 
-    while len < vec.size do
-        iov.iov_base = ffi.cast("char *", vec.data) + len
-        iov.iov_len = vec.size - len
+    -- Update the read offset
+    self._buf_read_offset = self._buf_read_offset + bytes_consumed
 
-        local bytes_written = ffi.C.vmsplice(self._wfd, iov, 1, 0)
-        assert(bytes_written > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-
-        len = len + bytes_written
-    end
+    return vec
 end
 
-function Pipe:update_read_buffer_multiprocess()
+function Pipe:read_update_mp()
     -- Shift unread samples down to beginning of buffer
-    local unread_length = self._buf_size - self._buf_unread_offset
-    ffi.C.memmove(self._buf, ffi.cast("char *", self._buf) + self._buf_unread_offset, unread_length)
+    local unread_length = self._buf_size - self._buf_read_offset
+    if unread_length > 0 then
+        ffi.C.memmove(self._buf, ffi.cast("char *", self._buf) + self._buf_read_offset, unread_length)
+    end
 
     -- Read new samples in
     local iov = ffi.new("struct iovec", ffi.cast("char *", self._buf) + unread_length, self._buf_capacity - unread_length)
@@ -168,16 +164,29 @@ function Pipe:update_read_buffer_multiprocess()
 
     -- Update size and reset unread offset
     self._buf_size = unread_length + bytes_read
-    self._buf_unread_offset = 0
+    self._buf_read_offset = 0
 
-    return self._buf_size
+    -- Return number of elements in our read buffer
+    return self.data_type.deserialize_count(self._buf, self._buf_size)
 end
 
-function Pipe:read_buffered_multiprocess(n)
-    assert((self._buf_unread_offset + n) <= self._buf_size, "Size out of bounds.")
-    local vec = self.data_type.const_vector_from_buf(ffi.cast("char *", self._buf) + self._buf_unread_offset, n)
-    self._buf_unread_offset = self._buf_unread_offset + n
-    return vec
+function Pipe:write_mp(vec)
+    local iov = ffi.new("struct iovec")
+    local len = 0
+
+    -- Get buffer and size
+    local data, size = self.data_type.serialize(vec)
+
+    -- Write entire buffer
+    while len < size do
+        iov.iov_base = ffi.cast("char *", data) + len
+        iov.iov_len = size - len
+
+        local bytes_written = ffi.C.vmsplice(self._wfd, iov, 1, 0)
+        assert(bytes_written > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+
+        len = len + bytes_written
+    end
 end
 
 -- Helper function to read synchronously from a set of pipes
@@ -186,7 +195,7 @@ local function read_synchronous(pipes)
     -- Update all pipes and gather amount available
     local num_elems_avail = {}
     for i=1, #pipes do
-        num_elems_avail[i] = math.floor(pipes[i]:update_read_buffer()/ffi.sizeof(pipes[i].data_type))
+        num_elems_avail[i] = pipes[i]:read_update()
     end
 
     -- Compute minimum available across all pipes
@@ -195,7 +204,7 @@ local function read_synchronous(pipes)
     -- Read that amount from all pipes
     local data_in = {}
     for i=1, #pipes do
-        data_in[i] = pipes[i]:read_buffered(num_elems*ffi.sizeof(pipes[i].data_type))
+        data_in[i] = pipes[i]:read_n(num_elems)
     end
 
     return unpack(data_in)

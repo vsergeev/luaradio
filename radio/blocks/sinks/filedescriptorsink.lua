@@ -16,7 +16,8 @@ ffi.cdef[[
 ]]
 
 function FileDescriptorSinkBlock:process(x)
-    assert(ffi.C.write(self.fd, x.data, x.size) == x.size, "write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    local data, size = x.type.serialize(x)
+    assert(ffi.C.write(self.fd, data, size) == size, "write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
 return {FileDescriptorSinkBlock = FileDescriptorSinkBlock}

@@ -85,7 +85,6 @@ local function validate_block(block_bits, offset)
     block_bits_expected = bit.bxor(block_bits_expected, offset)
 
     -- Compute CRC error
-    -- FIXME coverage
     local crc_error = bit.bxor(bit.band(block_bits_expected, 0x3ff), bit.band(block_bits, 0x3ff))
 
     -- If there is no error, return the original block bits

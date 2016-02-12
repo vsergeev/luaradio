@@ -23,6 +23,7 @@ function FileSinkBlock:initialize()
 end
 
 function FileSinkBlock:process(x)
+    local data, size = x.type.serialize(x)
     assert(ffi.C.fwrite(x.data, 1, x.size, self.file) == x.size, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 

@@ -107,7 +107,13 @@ function Block:run_once()
         data_out = {self:process()}
     elseif #self.inputs == 1 then
         -- One input
-        data_out = {self:process(self.inputs[1].pipe:read_max())}
+        local data_in = self.inputs[1].pipe:read_max()
+        -- Check for EOF
+        if data_in == nil then
+            return false
+        end
+
+        data_out = {self:process(data_in)}
     else
         -- Multiple inputs
         -- Do a synchronous read across all pipes
@@ -115,7 +121,14 @@ function Block:run_once()
         for i=1, #self.inputs do
             pipes[i] = self.inputs[i].pipe
         end
-        data_out = {self:process(pipe.read_synchronous(pipes))}
+
+        local data_in = pipe.read_synchronous(pipes)
+        -- Check for EOF
+        if data_in == nil then
+            return false
+        end
+
+        data_out = {self:process(unpack(data_in))}
     end
 
     -- Write outputs to pipes
@@ -124,12 +137,16 @@ function Block:run_once()
             self.outputs[i].pipes[j]:write(data_out[i])
         end
     end
+
+    return true
 end
 
 function Block:run()
     -- Run forever
     while true do
-        self:run_once()
+        if not self:run_once() then
+            break
+        end
     end
 end
 

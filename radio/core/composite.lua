@@ -206,10 +206,10 @@ function CompositeBlock:_prepare_to_run(multiprocess)
     end
 
     -- Build dependency graph and execution order
-    self._execution_order = build_execution_order(build_dependency_graph(all_connections))
+    local execution_order = build_execution_order(build_dependency_graph(all_connections))
 
     -- Differentiate all blocks
-    for _, block in ipairs(self._execution_order) do
+    for _, block in ipairs(execution_order) do
         -- Gather input data types to this block
         local input_data_types = {}
         for _, input in ipairs(block.inputs) do
@@ -238,10 +238,12 @@ function CompositeBlock:_prepare_to_run(multiprocess)
     end
 
     io.stderr:write("Execution order:\n")
-    for _, k in ipairs(self._execution_order) do
+    for _, k in ipairs(execution_order) do
         local s = string.gsub(tostring(k), "\n", "\n\t")
         io.stderr:write("\t" .. s .. "\n")
     end
+
+    return all_connections, execution_order
 end
 
 ffi.cdef[[
@@ -304,12 +306,12 @@ function CompositeBlock:start(multiprocess)
     end
 
     -- Prepare to run
-    self:_prepare_to_run(multiprocess)
+    local all_connections, execution_order = self:_prepare_to_run(multiprocess)
 
     if not multiprocess then
         -- Run blocks single-threaded in round-robin order
         while true do
-            for _, block in ipairs(self._execution_order) do
+            for _, block in ipairs(execution_order) do
                 block:run_once()
             end
 
@@ -323,9 +325,10 @@ function CompositeBlock:start(multiprocess)
         self._pids = {}
 
         -- Fork and run blocks
-        for _, block in ipairs(self._execution_order) do
+        for _, block in ipairs(execution_order) do
             local pid = ffi.C.fork()
             assert(pid >= 0, "fork(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+
             if pid == 0 then
                 block:run()
             else

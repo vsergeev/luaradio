@@ -6,6 +6,7 @@ local NullSourceBlock = block.factory("NullSourceBlock")
 function NullSourceBlock:instantiate(rate)
     self._rate = rate or 1
     self._chunk_size = 8192
+    self.out = ComplexFloat32Type.vector(self._chunk_size)
 
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
 end
@@ -15,7 +16,7 @@ function NullSourceBlock:get_rate()
 end
 
 function NullSourceBlock:process()
-    return ComplexFloat32Type.vector(self._chunk_size)
+    return self.out
 end
 
 return {NullSourceBlock = NullSourceBlock}

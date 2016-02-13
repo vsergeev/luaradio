@@ -98,6 +98,10 @@ function Block:process(...)
     error("process() not implemented")
 end
 
+function Block:cleanup()
+    -- No operation
+end
+
 function Block:run_once()
     local data_out
 
@@ -148,6 +152,9 @@ function Block:run()
             break
         end
     end
+
+    -- Clean up
+    self:cleanup()
 end
 
 function Block:__tostring()

@@ -15,6 +15,10 @@ function PipeInput.new(owner, name)
     return self
 end
 
+function PipeInput:close()
+    self.pipe:close_input()
+end
+
 -- PipeOutput class
 local PipeOutput = object.class_factory()
 
@@ -24,6 +28,12 @@ function PipeOutput.new(owner, name)
     self.name = name
     self.pipes = {}
     return self
+end
+
+function PipeOutput:close()
+    for i=1, #self.pipes do
+        self.pipes[i]:close_output()
+    end
 end
 
 -- AliasedPipeInput class
@@ -70,6 +80,8 @@ ffi.cdef[[
 -- Pipe I/O
 ffi.cdef[[
     int pipe(int pipefd[2]);
+    int close(int fildes);
+
     struct iovec {
         void *iov_base;
         size_t iov_len;
@@ -95,6 +107,8 @@ function Pipe:initialize(multiprocess)
         self.read_n = self.read_n_mp
         self.write = self.write_mp
         self.read_update = self.read_update_mp
+        self.close_input = self.close_input_mp
+        self.close_output = self.close_output_mp
     else
         self.vec = nil
 
@@ -102,6 +116,8 @@ function Pipe:initialize(multiprocess)
         self.read_n = self.read_n_sp
         self.write = self.write_sp
         self.read_update = self.read_update_sp
+        self.close_input = self.close_input_sp
+        self.close_output = self.close_output_sp
     end
 end
 
@@ -131,6 +147,14 @@ end
 
 function Pipe:write_sp(vec)
     self.vec = vec
+end
+
+function Pipe:close_input_sp()
+    -- No-op
+end
+
+function Pipe:close_output_sp()
+    -- No-op
 end
 
 -- Multi-process interface
@@ -186,6 +210,20 @@ function Pipe:write_mp(vec)
         assert(bytes_written > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
         len = len + bytes_written
+    end
+end
+
+function Pipe:close_input_mp()
+    if self._rfd then
+        assert(ffi.C.close(self._rfd) == 0, "close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        self._rfd = nil
+    end
+end
+
+function Pipe:close_output_mp()
+    if self._wfd then
+        assert(ffi.C.close(self._wfd) == 0, "close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        self._wfd = nil
     end
 end
 

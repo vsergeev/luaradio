@@ -330,10 +330,36 @@ function CompositeBlock:start(multiprocess)
             assert(pid >= 0, "fork(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
             if pid == 0 then
+                -- Create a set of pipe inputs and outputs to save
+                local pipes_save = {}
+                for i = 1, #block.inputs do
+                    pipes_save[block.inputs[i]] = true
+                end
+                for i = 1, #block.outputs do
+                    pipes_save[block.outputs[i]] = true
+                end
+
+                -- Close all other pipe inputs and outputs
+                for pipe_input, pipe_output in pairs(all_connections) do
+                    if not pipes_save[pipe_input] then
+                        pipe_input:close()
+                    end
+                    if not pipes_save[pipe_output] then
+                        pipe_output:close()
+                    end
+                end
+
+                -- Run the block
                 block:run()
             else
                 self._pids[#self._pids + 1] = pid
             end
+        end
+
+        -- Close all pipe inputs and outputs in the top-level process
+        for pipe_input, pipe_output in pairs(all_connections) do
+            pipe_input:close()
+            pipe_output:close()
         end
 
         -- Mark ourselves as running

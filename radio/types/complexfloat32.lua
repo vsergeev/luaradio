@@ -1,7 +1,6 @@
 local ffi = require('ffi')
 
-local object = require('radio.core.object')
-local Vector = require('radio.core.vector').Vector
+local CStructType = require('radio.types.cstruct').CStructType
 
 ffi.cdef[[
 typedef struct {
@@ -10,10 +9,7 @@ typedef struct {
 } complex_float32_t;
 ]]
 
-local ComplexFloat32Type
-local mt = object.class_factory()
-
--- Operations
+local mt = {}
 
 function mt:__add(other)
     return self.new(self.real + other.real, self.imag + other.imag)
@@ -69,41 +65,6 @@ function mt:__tostring()
     return "ComplexFloat32<real=" .. self.real .. ", imag=" .. self.imag .. ">"
 end
 
--- Constructors
-
-function mt.new(real, imag)
-    return ComplexFloat32Type(real, imag)
-end
-
-function mt.vector(num)
-    return Vector(ComplexFloat32Type, num)
-end
-
-function mt.vector_from_array(arr)
-    local vec = Vector(ComplexFloat32Type, #arr)
-    for i = 0, vec.length-1 do
-        vec.data[i] = ComplexFloat32Type(unpack(arr[i+1]))
-    end
-    return vec
-end
-
--- Buffer serialization interface
-
-function mt.serialize(vec)
-    return vec.data, vec.size
-end
-
-function mt.deserialize(buf, count)
-    local size = count*ffi.sizeof(ComplexFloat32Type)
-    return Vector.cast(ComplexFloat32Type, buf, size), size
-end
-
-function mt.deserialize_count(buf, size)
-    return math.floor(size/ffi.sizeof(ComplexFloat32Type))
-end
-
--- FFI type binding
-
-ComplexFloat32Type = ffi.metatype("complex_float32_t", mt)
+local ComplexFloat32Type = CStructType.factory("complex_float32_t", mt)
 
 return {ComplexFloat32Type = ComplexFloat32Type}

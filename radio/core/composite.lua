@@ -279,6 +279,8 @@ ffi.cdef[[
 function CompositeBlock:run(multiprocess)
     self:start(multiprocess)
     self:wait()
+
+    return self
 end
 
 function CompositeBlock:start(multiprocess)
@@ -368,6 +370,8 @@ function CompositeBlock:start(multiprocess)
         -- Mark ourselves as running
         self._running = true
     end
+
+    return self
 end
 
 function CompositeBlock:stop()

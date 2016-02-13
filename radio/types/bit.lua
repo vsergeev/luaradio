@@ -1,8 +1,7 @@
 local ffi = require('ffi')
 local bit = require('bit')
 
-local object = require('radio.core.object')
-local Vector = require('radio.core.vector').Vector
+local CStructType = require('radio.types.cstruct').CStructType
 
 ffi.cdef[[
 typedef struct {
@@ -10,10 +9,7 @@ typedef struct {
 } bit_t;
 ]]
 
-local BitType
-local mt = object.class_factory()
-
--- Operations
+local mt = {}
 
 function mt:band(other)
     return self.new(bit.band(self.value, other.value))
@@ -39,38 +35,7 @@ function mt:__tostring()
     return "Bit<value=" .. self.value .. ">"
 end
 
--- Constructors
-
-function mt.new(value)
-    return BitType(value)
-end
-
-function mt.vector(num)
-    return Vector(BitType, num)
-end
-
-function mt.vector_from_array(arr)
-    local vec = Vector(BitType, #arr)
-    for i = 0, vec.length-1 do
-        vec.data[i] = BitType(arr[i+1])
-    end
-    return vec
-end
-
--- Buffer serialization interface
-
-function mt.serialize(vec)
-    return vec.data, vec.size
-end
-
-function mt.deserialize(buf, count)
-    local size = count*ffi.sizeof(BitType)
-    return Vector.cast(BitType, buf, size), size
-end
-
-function mt.deserialize_count(buf, size)
-    return math.floor(size/ffi.sizeof(BitType))
-end
+local BitType = CStructType.factory("bit_t", mt)
 
 -- Helper function
 
@@ -88,9 +53,5 @@ local function bits_to_number(data, offset, length, msb_first)
 
     return x
 end
-
--- FFI type binding
-
-BitType = ffi.metatype("bit_t", mt)
 
 return {BitType = BitType, bits_to_number = bits_to_number}

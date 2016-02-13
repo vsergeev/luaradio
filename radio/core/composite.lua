@@ -355,7 +355,7 @@ function CompositeBlock:start(multiprocess)
                 -- Exit
                 os.exit(0)
             else
-                self._pids[#self._pids + 1] = pid
+                self._pids[block] = pid
             end
         end
 
@@ -372,10 +372,16 @@ end
 
 function CompositeBlock:stop()
     if self._running and self._pids then
-        -- Kill and wait for all children
+        -- Kill source blocks
+        for block, pid in pairs(self._pids) do
+            if #block.inputs == 0 then
+                ffi.C.kill(pid, ffi.C.SIGTERM)
+            end
+        end
+
+        -- Wait for all children
         for _, pid in pairs(self._pids) do
-            ffi.C.kill(pid, ffi.C.SIGTERM)
-            ffi.C.waitpid(pid, nil, 0)
+            assert(ffi.C.waitpid(pid, nil, 0) ~= -1, "waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
 
         -- Mark ourselves as not running

@@ -2,9 +2,9 @@ local ffi = require('ffi')
 
 local block = require('radio.core.block')
 
-local FileSinkBlock = block.factory("FileSinkBlock")
+local FileSink = block.factory("FileSink")
 
-function FileSinkBlock:instantiate(filename)
+function FileSink:instantiate(filename)
     self.filename = filename
 
     -- Accept all input types
@@ -17,14 +17,14 @@ ffi.cdef[[
     size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 ]]
 
-function FileSinkBlock:initialize()
+function FileSink:initialize()
     self.file = ffi.C.fopen(self.filename, "w")
     assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
-function FileSinkBlock:process(x)
+function FileSink:process(x)
     local data, size = x.type.serialize(x)
     assert(ffi.C.fwrite(x.data, 1, x.size, self.file) == x.size, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
-return {FileSinkBlock = FileSinkBlock}
+return {FileSink = FileSink}

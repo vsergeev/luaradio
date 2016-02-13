@@ -28,7 +28,7 @@ local e2 = radio.SlicerBlock()
 local e3 = radio.DifferentialDecoderBlock()
 local e4 = radio.RDSFrameBlock()
 local e5 = radio.RDSDecodeBlock()
-local e6 = radio.JSONSinkBlock()
+local e6 = radio.JSONSink()
 
 top:connect(a0, a1, a2, a3, f0)
 top:connect(f0, b1)

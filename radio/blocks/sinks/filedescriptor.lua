@@ -2,9 +2,9 @@ local ffi = require('ffi')
 
 local block = require('radio.core.block')
 
-local FileDescriptorSinkBlock = block.factory("FileDescriptorSinkBlock")
+local FileDescriptorSink = block.factory("FileDescriptorSink")
 
-function FileDescriptorSinkBlock:instantiate(fd)
+function FileDescriptorSink:instantiate(fd)
     self.fd = fd
 
     -- Accept all input types
@@ -15,9 +15,9 @@ ffi.cdef[[
     int write(int fd, const void *buf, size_t count);
 ]]
 
-function FileDescriptorSinkBlock:process(x)
+function FileDescriptorSink:process(x)
     local data, size = x.type.serialize(x)
     assert(ffi.C.write(self.fd, data, size) == size, "write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
-return {FileDescriptorSinkBlock = FileDescriptorSinkBlock}
+return {FileDescriptorSink = FileDescriptorSink}

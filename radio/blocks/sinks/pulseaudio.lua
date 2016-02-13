@@ -3,9 +3,9 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local Float32Type = require('radio.types.float32').Float32Type
 
-local PulseAudioSinkBlock = block.factory("PulseAudioSinkBlock")
+local PulseAudioSink = block.factory("PulseAudioSink")
 
-function PulseAudioSinkBlock:instantiate()
+function PulseAudioSink:instantiate()
     self:add_type_signature({block.Input("in", Float32Type)}, {})
 end
 
@@ -38,7 +38,7 @@ ffi.cdef[[
 ]]
 local libpulse = ffi.load('libpulse-simple.so')
 
-function PulseAudioSinkBlock:initialize()
+function PulseAudioSink:initialize()
     -- Prepare sample spec
     self.sample_spec = ffi.new("pa_sample_spec")
     self.sample_spec.format = ffi.abi("le") and ffi.C.PA_SAMPLE_FLOAT32LE or ffi.C.PA_SAMPLE_FLOAT32BE
@@ -46,14 +46,14 @@ function PulseAudioSinkBlock:initialize()
     self.sample_spec.rate = self:get_rate()
 end
 
-function PulseAudioSinkBlock:process(x)
+function PulseAudioSink:process(x)
     local error_code = ffi.new("int[1]")
 
     -- We can't fork with a PulseAudio connection, so we create here
     if not self.pa_conn then
         -- Open PulseAudio connection
         self.pa_conn = ffi.new("pa_simple *")
-        self.pa_conn = libpulse.pa_simple_new(nil, "LuaRadio", ffi.C.PA_STREAM_PLAYBACK, nil, "PulseAudioSinkBlock", self.sample_spec, nil, nil, error_code)
+        self.pa_conn = libpulse.pa_simple_new(nil, "LuaRadio", ffi.C.PA_STREAM_PLAYBACK, nil, "PulseAudioSink", self.sample_spec, nil, nil, error_code)
         assert(self.pa_conn ~= nil, "pa_simple_new(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
     end
 
@@ -62,4 +62,4 @@ function PulseAudioSinkBlock:process(x)
     assert(ret >= 0, "pa_simple_write(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
 end
 
-return {PulseAudioSinkBlock = PulseAudioSinkBlock}
+return {PulseAudioSink = PulseAudioSink}

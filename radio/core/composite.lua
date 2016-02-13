@@ -237,9 +237,10 @@ function CompositeBlock:_prepare_to_run(multiprocess)
         pipe_input.pipe:initialize(multiprocess)
     end
 
-    io.stderr:write("Running in order:\n")
+    io.stderr:write("Execution order:\n")
     for _, k in ipairs(self._execution_order) do
-        io.stderr:write("\t" .. tostring(k) .. " " .. k.name .. "\n")
+        local s = string.gsub(tostring(k), "\n", "\n\t")
+        io.stderr:write("\t" .. s .. "\n")
     end
 end
 

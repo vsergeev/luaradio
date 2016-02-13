@@ -5,7 +5,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local Float32Type = require('radio.types.float32').Float32Type
 
-local FileSourceBlock = block.factory("FileSourceBlock")
+local FileSource = block.factory("FileSource")
 
 -- IQ Formats
 ffi.cdef[[
@@ -42,7 +42,7 @@ ffi.cdef[[
     } format_f64_t;
 ]]
 
-function FileSourceBlock:instantiate(filename, format, rate)
+function FileSource:instantiate(filename, format, rate)
     local supported_formats = {
         u8    = {ctype = "format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
         s8    = {ctype = "format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
@@ -70,7 +70,7 @@ function FileSourceBlock:instantiate(filename, format, rate)
     self:add_type_signature({}, {block.Output("out", Float32Type)})
 end
 
-function FileSourceBlock:get_rate()
+function FileSource:get_rate()
     return self._rate
 end
 
@@ -83,7 +83,7 @@ ffi.cdef[[
     int ferror(FILE *stream);
 ]]
 
-function FileSourceBlock:initialize()
+function FileSource:initialize()
     self.file = ffi.C.fopen(self._filename, "rb")
     assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
@@ -95,7 +95,7 @@ local function swap_bytes(x)
     end
 end
 
-function FileSourceBlock:process()
+function FileSource:process()
     -- Allocate buffer for raw samples
     local raw_samples = ffi.new(self._format.ctype .. "[?]", self._chunk_size)
 
@@ -103,7 +103,7 @@ function FileSourceBlock:process()
     local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self._format.ctype), self._chunk_size, self.file))
     if num_samples < self._chunk_size then
         if ffi.C.feof(self.file) ~= 0 then
-            io.stderr:write("FileSourceBlock: EOF reached.\n")
+            io.stderr:write("FileSource: EOF reached.\n")
             os.exit()
         else
             assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
@@ -126,4 +126,4 @@ function FileSourceBlock:process()
     return samples
 end
 
-return {FileSourceBlock = FileSourceBlock}
+return {FileSource = FileSource}

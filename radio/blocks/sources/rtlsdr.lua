@@ -4,16 +4,16 @@ local block = require('radio.core.block')
 local vector = require('radio.core.vector')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
-local RtlSdrSourceBlock = block.factory("RtlSdrSourceBlock")
+local RtlSdrSource = block.factory("RtlSdrSource")
 
-function RtlSdrSourceBlock:instantiate(frequency, rate)
+function RtlSdrSource:instantiate(frequency, rate)
     self._frequency = frequency
     self._rate = rate
 
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
 end
 
-function RtlSdrSourceBlock:get_rate()
+function RtlSdrSource:get_rate()
     return self._rate
 end
 
@@ -33,7 +33,7 @@ ffi.cdef[[
 ]]
 local librtlsdr = ffi.load("librtlsdr.so")
 
-function RtlSdrSourceBlock:initialize()
+function RtlSdrSource:initialize()
     self._dev = ffi.new("rtlsdr_dev_t *[1]")
 
     -- Open device
@@ -58,7 +58,7 @@ function RtlSdrSourceBlock:initialize()
     self._n_read = ffi.new("int [1]")
 end
 
-function RtlSdrSourceBlock:process()
+function RtlSdrSource:process()
     -- Read buffer
     assert(librtlsdr.rtlsdr_read_sync(self._dev[0], self._buf, self._buf_size, self._n_read) == 0, "rtlsdr_read_sync() failed.")
     assert(self._n_read[0] == self._buf_size, "Short read. Aborting...")
@@ -73,4 +73,4 @@ function RtlSdrSourceBlock:process()
     return out
 end
 
-return {RtlSdrSourceBlock = RtlSdrSourceBlock}
+return {RtlSdrSource = RtlSdrSource}

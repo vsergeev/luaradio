@@ -1,6 +1,6 @@
 local radio = require('radio')
 
 radio.CompositeBlock():connect(
-    radio.NullSourceBlock(),
+    radio.NullSource(),
     radio.FileDescriptorSinkBlock(1)
 ):run()

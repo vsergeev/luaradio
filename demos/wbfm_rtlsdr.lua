@@ -9,7 +9,7 @@ local frequency = tonumber(arg[1])
 local offset = -600e3
 
 local top = radio.CompositeBlock()
-local b0 = radio.RtlSdrSourceBlock(frequency + offset, 2048000)
+local b0 = radio.RtlSdrSource(frequency + offset, 2048000)
 local b1 = radio.TunerBlock(offset, 190e3, 10)
 local b2 = radio.FrequencyDiscriminatorBlock(6.0)
 local b3 = radio.FMDeemphasisFilterBlock(75e-6)

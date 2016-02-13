@@ -5,7 +5,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
-local FileIQSourceBlock = block.factory("FileIQSourceBlock")
+local FileIQSource = block.factory("FileIQSource")
 
 -- IQ Formats
 ffi.cdef[[
@@ -50,7 +50,7 @@ ffi.cdef[[
     } iq_format_f64_t;
 ]]
 
-function FileIQSourceBlock:instantiate(filename, format, rate)
+function FileIQSource:instantiate(filename, format, rate)
     local supported_formats = {
         u8    = {ctype = "iq_format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
         s8    = {ctype = "iq_format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
@@ -78,7 +78,7 @@ function FileIQSourceBlock:instantiate(filename, format, rate)
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
 end
 
-function FileIQSourceBlock:get_rate()
+function FileIQSource:get_rate()
     return self._rate
 end
 
@@ -91,7 +91,7 @@ ffi.cdef[[
     int ferror(FILE *stream);
 ]]
 
-function FileIQSourceBlock:initialize()
+function FileIQSource:initialize()
     self.file = ffi.C.fopen(self._filename, "rb")
     assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
@@ -103,7 +103,7 @@ local function swap_bytes(x)
     end
 end
 
-function FileIQSourceBlock:process()
+function FileIQSource:process()
     -- Allocate buffer for raw samples
     local raw_samples = ffi.new(self._format.ctype .. "[?]", self._chunk_size)
 
@@ -111,7 +111,7 @@ function FileIQSourceBlock:process()
     local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self._format.ctype), self._chunk_size, self.file))
     if num_samples < self._chunk_size then
         if ffi.C.feof(self.file) ~= 0 then
-            io.stderr:write("FileIQSourceBlock: EOF reached.\n")
+            io.stderr:write("FileIQSource: EOF reached.\n")
             os.exit()
         else
             assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
@@ -136,4 +136,4 @@ function FileIQSourceBlock:process()
     return samples
 end
 
-return {FileIQSourceBlock = FileIQSourceBlock}
+return {FileIQSource = FileIQSource}

@@ -21,7 +21,11 @@ function CStructType.factory(ct, custom_mt)
     function mt.vector_from_array(arr)
         local vec = Vector(CustomType, #arr)
         for i = 0, vec.length-1 do
-            vec.data[i] = CustomType(unpack(arr[i+1]))
+            if type(arr[i+1]) == "table" then
+                vec.data[i] = CustomType(unpack(arr[i+1]))
+            else
+                vec.data[i] = CustomType(arr[i+1])
+            end
         end
         return vec
     end
@@ -54,4 +58,3 @@ function CStructType.factory(ct, custom_mt)
 end
 
 return {CStructType = CStructType}
-

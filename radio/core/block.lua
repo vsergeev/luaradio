@@ -133,6 +133,38 @@ function Block:run()
     end
 end
 
+function Block:__tostring()
+    local s = self.name .. "\n"
+
+    local strs = {}
+
+    for i=1, #self.inputs do
+        local pipe = self.inputs[i].pipe or self.inputs[i].real_input.pipe
+        if pipe then
+            strs[#strs + 1] = string.format("    .%-5s <- {%s.%s}", self.inputs[i].name, pipe.pipe_output.owner.name, pipe.pipe_output.name)
+        else
+            strs[#strs + 1] = string.format("    .%-5s <- unconnected", self.inputs[i].name)
+        end
+    end
+
+    for i=1, #self.outputs do
+        local pipes = self.outputs[i].pipes or self.outputs[i].real_output.pipes
+        if #pipes > 0 then
+            local connections = {}
+            for i=1, #pipes do
+                connections[i] = string.format("%s.%s", pipes[i].pipe_input.owner.name, pipes[i].pipe_input.name)
+            end
+            strs[#strs + 1] = string.format("    .%-5s -> {%s}", self.outputs[i].name, table.concat(connections, ", "))
+        else
+            strs[#strs + 1] = string.format("    .%-5s -> unconnected", self.outputs[i].name)
+        end
+    end
+
+    s = s .. table.concat(strs, "\n")
+
+    return s
+end
+
 -- Block factory derived class generator
 function factory(name, parent_class)
     local class = object.class_factory(parent_class or Block)

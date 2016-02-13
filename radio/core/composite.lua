@@ -351,6 +351,9 @@ function CompositeBlock:start(multiprocess)
 
                 -- Run the block
                 block:run()
+
+                -- Exit
+                os.exit(0)
             else
                 self._pids[#self._pids + 1] = pid
             end

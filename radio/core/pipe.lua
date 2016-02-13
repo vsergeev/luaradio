@@ -161,7 +161,14 @@ end
 
 function Pipe:read_max_mp()
     -- Update our read buffer and read the maximum amount available
-    return self:read_n(self:read_update())
+    local num = self:read_update()
+
+    -- Return nil on EOF
+    if num == nil then
+        return nil
+    end
+
+    return self:read_n(num)
 end
 
 function Pipe:read_n_mp(num)
@@ -184,7 +191,12 @@ function Pipe:read_update_mp()
     -- Read new samples in
     local iov = ffi.new("struct iovec", ffi.cast("char *", self._buf) + unread_length, self._buf_capacity - unread_length)
     local bytes_read = ffi.C.vmsplice(self._rfd, iov, 1, 0)
-    assert(bytes_read > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    assert(bytes_read >= 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+
+    -- Return nil on EOF
+    if unread_length == 0 and bytes_read == 0 then
+        return nil
+    end
 
     -- Update size and reset unread offset
     self._buf_size = unread_length + bytes_read
@@ -230,10 +242,15 @@ end
 -- Helper function to read synchronously from a set of pipes
 
 local function read_synchronous(pipes)
-    -- Update all pipes and gather amount available
+    -- Update read buffer of all pipes and gather amount available
     local num_elems_avail = {}
     for i=1, #pipes do
         num_elems_avail[i] = pipes[i]:read_update()
+
+        -- If we've reached EOF, return nil
+        if num_elems_avail[i] == nil then
+            return nil
+        end
     end
 
     -- Compute minimum available across all pipes
@@ -245,7 +262,7 @@ local function read_synchronous(pipes)
         data_in[i] = pipes[i]:read_n(num_elems)
     end
 
-    return unpack(data_in)
+    return data_in
 end
 
 -- Exported module

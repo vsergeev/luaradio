@@ -7,20 +7,20 @@ Setup LUA_PATH to interpret init.lua in local packages:
 GNURadio Null Source to Stdout
 
     $ python2 benchmark/gr_null_to_stdout.py | pv > /dev/null
-    20.1GiB 0:00:05 [4.52GiB/s] [             <=>   ]
+    22.8GiB 0:00:05 [4.64GiB/s] [             <=>   ]
 
 LuaRadio Null Source to Stdout
 
     $ luajit benchmark/lr_null_to_stdout.lua | pv > /dev/null
-    13.9GiB 0:00:05 [2.82GiB/s] [             <=>   ]
+    20.5GiB 0:00:05 [4.18GiB/s] [             <=>   ]
 
 GNURadio Null Source to 5x 256-tap FIR filters to Stdout
 
     $ python2 benchmark/gr_null_to_fir_to_stdout.py | pv > /dev/null
-     205MiB 0:00:05 [46.4MiB/s] [             <=>   ]
+     222MiB 0:00:05 [46.2MiB/s] [             <=>   ]
 
 LuaRadio Null Source to 5x 256-tap FIR filters to Stdout
 
     $ luajit benchmark/lr_null_to_fir_to_stdout.lua | pv > /dev/null
-    86.1MiB 0:00:05 [17.4MiB/s] [             <=>   ]
+     222MiB 0:00:05 [44.9MiB/s] [             <=>   ]
 

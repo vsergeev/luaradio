@@ -1,3 +1,11 @@
+* (Prototype) v0.0.5 - 02/12/2016
+    * Change CompositeBlock run() to use multiprocesses by default.
+    * Use CStructType factory to build all basic types.
+    * Add tostring() support to Block.
+    * Handle pipe EOF in Block run() to stop processing and clean up.
+    * Update benchmarks.
+    * Rename <Name>SourceBlock to <Name>Source and <Name>SinkBlock to <Name>Sink.
+
 * (Prototype) v0.0.4 - 02/12/2016
     * Add support for functions as candidate input types in block type signatures.
     * Add support for variable length type serialization with ProcessPipe.

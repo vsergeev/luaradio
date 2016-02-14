@@ -193,10 +193,12 @@ end
 function factory(name, parent_class)
     local class = object.class_factory(parent_class or Block)
 
+    class.name = name
+
     class.new = function (...)
         local self = setmetatable({}, class)
 
-        self.name = name
+        -- Pipe inputs and outputs
         self.inputs = {}
         self.outputs = {}
 

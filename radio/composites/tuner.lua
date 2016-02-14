@@ -1,7 +1,7 @@
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 local CompositeBlock = require('radio.core.composite').CompositeBlock
-local FrequencyTranslateBlock = require('radio.blocks.signal.frequencytranslate').FrequencyTranslateBlock
+local FrequencyTranslatorBlock = require('radio.blocks.signal.frequencytranslator').FrequencyTranslatorBlock
 local LowpassFilterBlock = require('radio.blocks.signal.lowpassfilter').LowpassFilterBlock
 local DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock
 
@@ -14,7 +14,7 @@ function TunerBlock:instantiate(offset, bandwidth, decimation, options)
 
     self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})
 
-    local translator = FrequencyTranslateBlock(offset)
+    local translator = FrequencyTranslatorBlock(offset)
     local filter = LowpassFilterBlock(options.num_taps or 128, bandwidth)
     local downsampler = DownsamplerBlock(decimation)
 

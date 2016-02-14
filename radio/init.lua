@@ -15,7 +15,7 @@ return {
     FMDeemphasisFilterBlock = require('radio.blocks.signal.fmdeemphasisfilter').FMDeemphasisFilterBlock,
     SumBlock = require('radio.blocks.signal.sum').SumBlock,
     MultiplyBlock = require('radio.blocks.signal.multiply').MultiplyBlock,
-    FrequencyTranslateBlock = require('radio.blocks.signal.frequencytranslate').FrequencyTranslateBlock,
+    FrequencyTranslatorBlock = require('radio.blocks.signal.frequencytranslator').FrequencyTranslatorBlock,
     HilbertTransformBlock = require('radio.blocks.signal.hilberttransform').HilbertTransformBlock,
     MultiplyConjugateBlock = require('radio.blocks.signal.multiplyconjugate').MultiplyConjugateBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,

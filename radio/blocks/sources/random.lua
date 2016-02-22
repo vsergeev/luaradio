@@ -6,18 +6,18 @@ local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32T
 local RandomSource = block.factory("RandomSource")
 
 function RandomSource:instantiate(rate)
-    self._rate = rate or 1
-    self._chunk_size = 8192
+    self.rate = rate or 1
+    self.chunk_size = 8192
 
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
 end
 
 function RandomSource:get_rate()
-    return self._rate
+    return self.rate
 end
 
 function RandomSource:process()
-    local samples = ComplexFloat32Type.vector(self._chunk_size)
+    local samples = ComplexFloat32Type.vector(self.chunk_size)
     for i=0, samples.length-1 do
         samples.data[i].real = math.random()
         samples.data[i].imag = math.random()

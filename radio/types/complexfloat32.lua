@@ -61,6 +61,10 @@ function mt:conj()
     return self.new(self.real, -self.imag)
 end
 
+function mt.approx_equal(x, y, epsilon)
+    return (x - y):abs() < epsilon
+end
+
 function mt:__tostring()
     return "ComplexFloat32<real=" .. self.real .. ", imag=" .. self.imag .. ">"
 end

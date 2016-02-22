@@ -9,7 +9,7 @@ local DownsamplerBlock = block.factory("DownsamplerBlock")
 
 function DownsamplerBlock:instantiate(factor)
     self.factor = factor
-    self._index = 0
+    self.index = 0
 
     self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})
     self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)})
@@ -25,15 +25,15 @@ function DownsamplerBlock:initialize()
 end
 
 function DownsamplerBlock:process(x)
-    local out_len = math.ceil((x.length - self._index)/self.factor)
+    local out_len = math.ceil((x.length - self.index)/self.factor)
     local out = self.data_type.vector(out_len)
 
     for i = 0, out.length-1 do
-        out.data[i] = x.data[self._index]
-        self._index = self._index + self.factor
+        out.data[i] = x.data[self.index]
+        self.index = self.index + self.factor
     end
 
-    self._index = self._index - x.length
+    self.index = self.index - x.length
     return out
 end
 

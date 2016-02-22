@@ -5,6 +5,10 @@ local Vector = require('radio.core.vector').Vector
 
 local CStructType = object.class_factory()
 
+ffi.cdef[[
+    int memcmp(const void *s1, const void *s2, size_t n);
+]]
+
 function CStructType.factory(ct, custom_mt)
     local CustomType
     local mt = object.class_factory(CStructType)
@@ -42,6 +46,11 @@ function CStructType.factory(ct, custom_mt)
 
     function mt.deserialize_count(buf, size)
         return math.floor(size/ffi.sizeof(CustomType))
+    end
+
+    -- Comparison
+    function mt:__eq(other)
+        return ffi.C.memcmp(self, other, ffi.sizeof(CustomType)) == 0
     end
 
     -- Absorb the user-defined metatable

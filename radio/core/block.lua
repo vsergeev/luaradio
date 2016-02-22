@@ -109,6 +109,10 @@ function Block:run_once()
     if #self.inputs == 0 then
         -- No inputs (source)
         data_out = {self:process()}
+        -- Check for EOF
+        if #data_out == 0 then
+            return false
+        end
     elseif #self.inputs == 1 then
         -- One input
         local data_in = self.inputs[1].pipe:read_max()

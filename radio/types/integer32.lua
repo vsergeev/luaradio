@@ -1,4 +1,5 @@
 local ffi = require('ffi')
+local bit = require('bit')
 
 local CStructType = require('radio.types.cstruct').CStructType
 
@@ -11,19 +12,19 @@ typedef struct {
 local mt = {}
 
 function mt:__add(other)
-    return self.new(self.value + other.value)
+    return self.new(bit.tobit(self.value + other.value))
 end
 
 function mt:__sub(other)
-    return self.new(self.value - other.value)
+    return self.new(bit.tobit(self.value - other.value))
 end
 
 function mt:__mul(other)
-    return self.new(self.value * other.value)
+    return self.new(bit.tobit(self.value * other.value))
 end
 
 function mt:__div(other)
-    return self.new(self.value / other.value)
+    return self.new(bit.tobit(self.value / other.value))
 end
 
 function mt:__eq(other)

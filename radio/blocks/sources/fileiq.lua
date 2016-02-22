@@ -110,9 +110,8 @@ function FileIQSource:process()
     -- Read from file
     local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self.format.ctype), self.chunk_size, self.file))
     if num_samples < self.chunk_size then
-        if ffi.C.feof(self.file) ~= 0 then
-            io.stderr:write("FileIQSource: EOF reached.\n")
-            os.exit()
+        if num_samples == 0 and ffi.C.feof(self.file) ~= 0 then
+            return nil
         else
             assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end

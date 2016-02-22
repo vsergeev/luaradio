@@ -54,4 +54,5 @@ return {
     ByteType = require('radio.types.byte').ByteType,
     BitType = require('radio.types.bit').BitType,
     CStructType = require('radio.types.cstruct').CStructType,
+    ObjectType = require('radio.types.object').ObjectType,
 }

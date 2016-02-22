@@ -6,9 +6,9 @@ local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 local Float32Type = require('radio.types.float32').Float32Type
 
-local PhaseCorrectorBlock = block.factory("PhaseCorrectorBlock")
+local BinaryPhaseCorrectorBlock = block.factory("BinaryPhaseCorrectorBlock")
 
-function PhaseCorrectorBlock:instantiate(num_samples)
+function BinaryPhaseCorrectorBlock:instantiate(num_samples)
     self.num_samples = num_samples
     self.phi_moving_average = 0.0
     self.phi_state = Float32Type.vector(self.num_samples)
@@ -20,7 +20,7 @@ ffi.cdef[[
 void *memmove(void *dest, const void *src, size_t n);
 ]]
 
-function PhaseCorrectorBlock:process(x)
+function BinaryPhaseCorrectorBlock:process(x)
     local out = ComplexFloat32Type.vector(x.length)
 
     for i = 0, x.length-1 do
@@ -49,4 +49,4 @@ function PhaseCorrectorBlock:process(x)
     return out
 end
 
-return {PhaseCorrectorBlock = PhaseCorrectorBlock}
+return {BinaryPhaseCorrectorBlock = BinaryPhaseCorrectorBlock}

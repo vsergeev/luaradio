@@ -24,7 +24,7 @@ return {
     DifferentialDecoderBlock = require('radio.blocks.signal.differentialdecoder').DifferentialDecoderBlock,
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,
     DelayBlock = require('radio.blocks.signal.delay').DelayBlock,
-    PhaseCorrectorBlock = require('radio.blocks.signal.phasecorrector').PhaseCorrectorBlock,
+    BinaryPhaseCorrectorBlock = require('radio.blocks.signal.binaryphasecorrector').BinaryPhaseCorrectorBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     PLLBlock = require('radio.blocks.signal.pllblock').PLLBlock,
     FileDescriptorSink = require('radio.blocks.sinks.filedescriptor').FileDescriptorSink,

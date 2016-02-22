@@ -7,14 +7,14 @@ local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32T
 local RtlSdrSource = block.factory("RtlSdrSource")
 
 function RtlSdrSource:instantiate(frequency, rate)
-    self._frequency = frequency
-    self._rate = rate
+    self.frequency = frequency
+    self.rate = rate
 
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
 end
 
 function RtlSdrSource:get_rate()
-    return self._rate
+    return self.rate
 end
 
 ffi.cdef[[
@@ -34,40 +34,40 @@ ffi.cdef[[
 local librtlsdr = ffi.load("librtlsdr.so")
 
 function RtlSdrSource:initialize()
-    self._dev = ffi.new("rtlsdr_dev_t *[1]")
+    self.dev = ffi.new("rtlsdr_dev_t *[1]")
 
     -- Open device
-    assert(librtlsdr.rtlsdr_open(self._dev, 0) == 0, "rtlsdr_open() failed.")
+    assert(librtlsdr.rtlsdr_open(self.dev, 0) == 0, "rtlsdr_open() failed.")
 
     -- Set sample rate
-    assert(librtlsdr.rtlsdr_set_sample_rate(self._dev[0], self._rate) == 0, "rtlsdr_set_sample_rate() failed.")
+    assert(librtlsdr.rtlsdr_set_sample_rate(self.dev[0], self.rate) == 0, "rtlsdr_set_sample_rate() failed.")
 
     -- Set frequency
-    assert(librtlsdr.rtlsdr_set_center_freq(self._dev[0], self._frequency) == 0, "rtlsdr_set_center_freq() failed.")
+    assert(librtlsdr.rtlsdr_set_center_freq(self.dev[0], self.frequency) == 0, "rtlsdr_set_center_freq() failed.")
 
     -- Set autogain
-    assert(librtlsdr.rtlsdr_set_tuner_gain_mode(self._dev[0], 0) == 0, "rtlsdr_set_tuner_gain_mode() failed.")
+    assert(librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 0) == 0, "rtlsdr_set_tuner_gain_mode() failed.")
 
     -- Reset endpoint buffer
-    assert(librtlsdr.rtlsdr_reset_buffer(self._dev[0]) == 0, "rtlsdr_reset_buffer() failed.")
+    assert(librtlsdr.rtlsdr_reset_buffer(self.dev[0]) == 0, "rtlsdr_reset_buffer() failed.")
 
     -- Allocate read buffer
-    self._buf_size = 65536
-    self._rawbuf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_size), ffi.C.free)
-    self._buf = ffi.cast("uint8_t *", self._rawbuf)
-    self._n_read = ffi.new("int [1]")
+    self.buf_size = 65536
+    self.rawbuf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self.buf_size), ffi.C.free)
+    self.buf = ffi.cast("uint8_t *", self.rawbuf)
+    self.n_read = ffi.new("int [1]")
 end
 
 function RtlSdrSource:process()
     -- Read buffer
-    assert(librtlsdr.rtlsdr_read_sync(self._dev[0], self._buf, self._buf_size, self._n_read) == 0, "rtlsdr_read_sync() failed.")
-    assert(self._n_read[0] == self._buf_size, "Short read. Aborting...")
+    assert(librtlsdr.rtlsdr_read_sync(self.dev[0], self.buf, self.buf_size, self.n_read) == 0, "rtlsdr_read_sync() failed.")
+    assert(self.n_read[0] == self.buf_size, "Short read. Aborting...")
 
     -- Convert to complex u8 to complex floats
-    local out = ComplexFloat32Type.vector(self._buf_size/2)
+    local out = ComplexFloat32Type.vector(self.buf_size/2)
     for i = 0, out.length-1 do
-        out.data[i].real = (self._buf[2*i]   - 127.5) * (1/127.5)
-        out.data[i].imag = (self._buf[2*i+1] - 127.5) * (1/127.5)
+        out.data[i].real = (self.buf[2*i]   - 127.5) * (1/127.5)
+        out.data[i].imag = (self.buf[2*i+1] - 127.5) * (1/127.5)
     end
 
     return out

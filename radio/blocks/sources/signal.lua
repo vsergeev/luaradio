@@ -18,7 +18,7 @@ function SignalSource:instantiate(options, rate)
 
     self.options = options
     self.rate = rate
-    self._chunk_size = 8192
+    self.chunk_size = 8192
 
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)}, supported_signals[options.signal].process, supported_signals[options.signal].initialize)
 end
@@ -37,7 +37,7 @@ function SignalSource:initialize_exponential()
 end
 
 function SignalSource:process_exponential()
-    local out = ComplexFloat32Type.vector(self._chunk_size)
+    local out = ComplexFloat32Type.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         out.data[i] = self.phi:scalar_mul(self.amplitude)

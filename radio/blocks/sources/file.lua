@@ -61,17 +61,17 @@ function FileSource:instantiate(filename, format, rate)
     }
     assert(supported_formats[format], "Unsupported format \"" .. format .. "\".")
 
-    self._filename = filename
-    self._format = supported_formats[format]
-    self._rate = rate
+    self.filename = filename
+    self.format = supported_formats[format]
+    self.rate = rate
 
-    self._chunk_size = 8192
+    self.chunk_size = 8192
 
     self:add_type_signature({}, {block.Output("out", Float32Type)})
 end
 
 function FileSource:get_rate()
-    return self._rate
+    return self.rate
 end
 
 -- File I/O
@@ -84,7 +84,7 @@ ffi.cdef[[
 ]]
 
 function FileSource:initialize()
-    self.file = ffi.C.fopen(self._filename, "rb")
+    self.file = ffi.C.fopen(self.filename, "rb")
     assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
@@ -97,13 +97,13 @@ end
 
 function FileSource:process()
     -- Allocate buffer for raw samples
-    local raw_samples = ffi.new(self._format.ctype .. "[?]", self._chunk_size)
+    local raw_samples = ffi.new(self.format.ctype .. "[?]", self.chunk_size)
 
     -- Read from file
-    local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self._format.ctype), self._chunk_size, self.file))
-    if num_samples < self._chunk_size then
+    local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self.format.ctype), self.chunk_size, self.file))
+    if num_samples < self.chunk_size then
         if ffi.C.feof(self.file) ~= 0 then
-            io.stderr:write("FileSource: EOF reached.\n")
+            io.stderr:write("FileIQSource: EOF reached.\n")
             os.exit()
         else
             assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
@@ -111,7 +111,7 @@ function FileSource:process()
     end
 
     -- Perform byte swap for endianness if needed
-    if self._format.swap then
+    if self.format.swap then
         for i = 0, num_samples-1 do
             swap_bytes(raw_samples[i])
         end
@@ -120,7 +120,7 @@ function FileSource:process()
     -- Convert raw samples to float32 samples
     local samples = Float32Type.vector(num_samples)
     for i = 0, num_samples-1 do
-        samples.data[i].value = (raw_samples[i].value - self._format.offset)*self._format.scale
+        samples.data[i].value = (raw_samples[i].value - self.format.offset)*self.format.scale
     end
 
     return samples

@@ -61,7 +61,9 @@ function ObjectType.factory(custom_mt)
     function CustomType.deserialize(buf, count)
         local vec = ObjectVector()
 
-        local p = ffi.cast("const uint8_t *", buf)
+        buf = ffi.cast("const uint8_t *", buf)
+
+        local p = buf
 
         for i=1, count do
             -- Read the big endian 32-bit size header

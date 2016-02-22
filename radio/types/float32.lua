@@ -38,6 +38,10 @@ function mt:__le(other)
     return self.value <= other.value
 end
 
+function mt.approx_equal(x, y, epsilon)
+    return math.abs((x - y).value) < epsilon
+end
+
 function mt:__tostring()
     return "Float32<value=" .. self.value .. ">"
 end

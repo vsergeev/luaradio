@@ -32,7 +32,7 @@ return {
     PrintSink = require('radio.blocks.sinks.print').PrintSink,
     JSONSink = require('radio.blocks.sinks.json').JSONSink,
     PulseAudioSink = require('radio.blocks.sinks.pulseaudio').PulseAudioSink,
-    FileIQSource = require('radio.blocks.sources.fileiq').FileIQSource,
+    FileIQDescriptorSource = require('radio.blocks.sources.fileiqdescriptor').FileIQDescriptorSource,
     FileDescriptorSource = require('radio.blocks.sources.filedescriptor').FileDescriptorSource,
     NullSource = require('radio.blocks.sources.null').NullSource,
     RandomSource = require('radio.blocks.sources.random').RandomSource,

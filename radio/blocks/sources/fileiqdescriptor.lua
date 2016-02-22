@@ -5,7 +5,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
-local FileIQSource = block.factory("FileIQSource")
+local FileIQDescriptorSource = block.factory("FileIQDescriptorSource")
 
 -- IQ Formats
 ffi.cdef[[
@@ -50,7 +50,7 @@ ffi.cdef[[
     } iq_format_f64_t;
 ]]
 
-function FileIQSource:instantiate(filename, format, rate)
+function FileIQDescriptorSource:instantiate(fd, format, rate)
     local supported_formats = {
         u8    = {ctype = "iq_format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
         s8    = {ctype = "iq_format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
@@ -69,7 +69,7 @@ function FileIQSource:instantiate(filename, format, rate)
     }
     assert(supported_formats[format], "Unsupported format \"" .. format .. "\".")
 
-    self.filename = filename
+    self.fd = fd
     self.format = supported_formats[format]
     self.rate = rate
 
@@ -78,22 +78,22 @@ function FileIQSource:instantiate(filename, format, rate)
     self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
 end
 
-function FileIQSource:get_rate()
+function FileIQDescriptorSource:get_rate()
     return self.rate
 end
 
 -- File I/O
 ffi.cdef[[
     typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
+    FILE *fdopen(int fd, const char *mode);
     size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
     int feof(FILE *stream);
     int ferror(FILE *stream);
 ]]
 
-function FileIQSource:initialize()
-    self.file = ffi.C.fopen(self.filename, "rb")
-    assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+function FileIQDescriptorSource:initialize()
+    self.file = ffi.C.fdopen(self.fd, "rb")
+    assert(self.file ~= nil, "fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
 local function swap_bytes(x)
@@ -103,7 +103,7 @@ local function swap_bytes(x)
     end
 end
 
-function FileIQSource:process()
+function FileIQDescriptorSource:process()
     -- Allocate buffer for raw samples
     local raw_samples = ffi.new(self.format.ctype .. "[?]", self.chunk_size)
 
@@ -135,4 +135,4 @@ function FileIQSource:process()
     return samples
 end
 
-return {FileIQSource = FileIQSource}
+return {FileIQDescriptorSource = FileIQDescriptorSource}

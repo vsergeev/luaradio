@@ -24,7 +24,7 @@ function mt:bxor(other)
 end
 
 function mt:bnot()
-    return self.new(bit.bnot(self.value))
+    return self.new(bit.band(bit.bnot(self.value), 0x1))
 end
 
 function mt:__eq(other)

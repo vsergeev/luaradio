@@ -64,7 +64,7 @@ local function firwin_highpass(num_taps, cutoff, window_type)
     -- Default to hamming window
     window_type = (window_type == nil) and "hamming" or window_type
 
-    assert((num_taps % 2) == 1, "Number of taps must be even.")
+    assert((num_taps % 2) == 1, "Number of taps must be odd.")
 
     -- Generate filter coefficients
     local h = {}
@@ -89,7 +89,7 @@ local function firwin_bandpass(num_taps, cutoffs, window_type)
     -- Default to hamming window
     window_type = (window_type == nil) and "hamming" or window_type
 
-    assert((num_taps % 2) == 1, "Number of taps must be even.")
+    assert((num_taps % 2) == 1, "Number of taps must be odd.")
     assert(#cutoffs == 2, "Cutoffs should be a length two array.")
 
     -- Generate filter coefficients
@@ -115,7 +115,7 @@ local function firwin_bandstop(num_taps, cutoffs, window_type)
     -- Default to hamming window
     window_type = (window_type == nil) and "hamming" or window_type
 
-    assert((num_taps % 2) == 1, "Number of taps must be even.")
+    assert((num_taps % 2) == 1, "Number of taps must be odd.")
     assert(#cutoffs == 2, "Cutoffs should be a length two array.")
 
     -- Generate filter coefficients

@@ -39,13 +39,15 @@ local BitType = CStructType.factory("bit_t", mt)
 
 -- Helper function
 
-local function bits_to_number(data, offset, length, msb_first)
+local function bits_to_number(bits, offset, length, msb_first)
     local x = 0
 
+    offset = offset or 0
+    length = length or (bits.length - offset)
     msb_first = (msb_first == nil) and true or msb_first
 
     for i = 0, length-1 do
-        if data[offset+i].value == 1 then
+        if bits.data[offset+i].value == 1 then
             local mask = msb_first and bit.lshift(1, length-1-i) or bit.lshift(1, i)
             x = bit.bor(x, mask)
         end

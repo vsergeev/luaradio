@@ -5,7 +5,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local Float32Type = require('radio.types.float32').Float32Type
 
-local FileSource = block.factory("FileSource")
+local FileDescriptorSource = block.factory("FileDescriptorSource")
 
 -- IQ Formats
 ffi.cdef[[
@@ -42,7 +42,7 @@ ffi.cdef[[
     } format_f64_t;
 ]]
 
-function FileSource:instantiate(filename, format, rate)
+function FileDescriptorSource:instantiate(fd, format, rate)
     local supported_formats = {
         u8    = {ctype = "format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
         s8    = {ctype = "format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
@@ -61,7 +61,7 @@ function FileSource:instantiate(filename, format, rate)
     }
     assert(supported_formats[format], "Unsupported format \"" .. format .. "\".")
 
-    self.filename = filename
+    self.fd = fd
     self.format = supported_formats[format]
     self.rate = rate
 
@@ -70,22 +70,22 @@ function FileSource:instantiate(filename, format, rate)
     self:add_type_signature({}, {block.Output("out", Float32Type)})
 end
 
-function FileSource:get_rate()
+function FileDescriptorSource:get_rate()
     return self.rate
 end
 
 -- File I/O
 ffi.cdef[[
     typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
+    FILE *fdopen(int fd, const char *mode);
     size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
     int feof(FILE *stream);
     int ferror(FILE *stream);
 ]]
 
-function FileSource:initialize()
-    self.file = ffi.C.fopen(self.filename, "rb")
-    assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+function FileDescriptorSource:initialize()
+    self.file = ffi.C.fdopen(self.fd, "rb")
+    assert(self.file ~= nil, "fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
 local function swap_bytes(x)
@@ -95,7 +95,7 @@ local function swap_bytes(x)
     end
 end
 
-function FileSource:process()
+function FileDescriptorSource:process()
     -- Allocate buffer for raw samples
     local raw_samples = ffi.new(self.format.ctype .. "[?]", self.chunk_size)
 
@@ -125,4 +125,4 @@ function FileSource:process()
     return samples
 end
 
-return {FileSource = FileSource}
+return {FileDescriptorSource = FileDescriptorSource}

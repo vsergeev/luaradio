@@ -115,9 +115,8 @@ local function crawl_connections(connections)
     local blocks = {}
     local connections_copy = util.table_copy(connections)
 
-    local new_blocks_found
     repeat
-        new_blocks_found = false
+        local new_blocks_found = false
 
         for pipe_input, pipe_output in pairs(connections_copy) do
             local src = pipe_output.owner

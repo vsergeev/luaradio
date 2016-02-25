@@ -1,5 +1,6 @@
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
+local Float32Type = require('radio.types.float32').Float32Type
 local CompositeBlock = require('radio.core.composite').CompositeBlock
 local LowpassFilterBlock = require('radio.blocks.signal.lowpassfilter').LowpassFilterBlock
 local DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock
@@ -12,6 +13,7 @@ function DecimatorBlock:instantiate(bandwidth, decimation, options)
     options = options or {}
 
     self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)})
 
     local filter = LowpassFilterBlock(options.num_taps or 128, bandwidth)
     local downsampler = DownsamplerBlock(decimation)

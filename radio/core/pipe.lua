@@ -147,8 +147,8 @@ function Pipe:read_update()
     return self.vec.length
 end
 
-
 function Pipe:write_sp(vec)
+    assert(self.vec == nil, "Pipe already has data.")
     self.vec = vec
 end
 

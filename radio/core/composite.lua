@@ -500,4 +500,4 @@ function CompositeBlock:wait()
     end
 end
 
-return {CompositeBlock = CompositeBlock}
+return {CompositeBlock = CompositeBlock, _crawl_connections = crawl_connections, _build_dependency_graph = build_dependency_graph, _build_reverse_dependency_graph = build_reverse_dependency_graph, _build_execution_order = build_execution_order, _build_skip_set = build_skip_set}

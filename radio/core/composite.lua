@@ -312,15 +312,19 @@ function CompositeBlock:start(multiprocess)
 
     if not multiprocess then
         -- Run blocks single-threaded in round-robin order
-        while true do
+        local running = true
+        while running do
             for _, block in ipairs(execution_order) do
-                block:run_once()
+                if block:run_once() == false then
+                    running = false
+                    break
+                end
             end
 
             assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
             if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
                 io.stderr:write("Received SIGINT. Shutting down...\n")
-                break
+                running = false
             end
         end
     else

@@ -141,6 +141,9 @@ function Pipe:read_n_sp(n)
 end
 
 function Pipe:read_update()
+    if self.vec == nil then
+        return nil
+    end
     return self.vec.length
 end
 

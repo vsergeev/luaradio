@@ -59,8 +59,10 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
     assert(dst_pipe, string.format("Destination pipe \"%s\" of block \"%s\" not found.", dst_pipe_name, dst.name))
 
     -- Map aliased outputs or aliased inputs to their real pipes
+    src_pipe = (object.isinstanceof(src_pipe, pipe.AliasedPipeInput) and src_pipe.real_input) and src_pipe.real_input or src_pipe
     src_pipe = (object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and src_pipe.real_output) and src_pipe.real_output or src_pipe
     dst_pipe = (object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) and dst_pipe.real_input) and dst_pipe.real_input or dst_pipe
+    dst_pipe = (object.isinstanceof(dst_pipe, pipe.AliasedPipeOutput) and dst_pipe.real_output) and dst_pipe.real_output or dst_pipe
 
     if object.isinstanceof(src_pipe, pipe.PipeOutput) and object.isinstanceof(dst_pipe, pipe.PipeInput) then
         -- If we are connecting an output pipe to an input pipe

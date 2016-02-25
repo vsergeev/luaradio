@@ -41,4 +41,18 @@ local function array_all(array, func)
     return true
 end
 
-return {table_length = table_length, table_copy = table_copy, array_exists = array_exists, array_search = array_search, array_all = array_all}
+local function array_equals(a, b)
+    if #a ~= #b then
+        return false
+    end
+
+    for i = 1, #a do
+        if a[i] ~= b[i] then
+            return false
+        end
+    end
+
+    return true
+end
+
+return {table_length = table_length, table_copy = table_copy, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals}

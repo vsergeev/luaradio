@@ -121,7 +121,7 @@ end
 
 function Pipe:read_n(num)
     -- Create a vector from the buffer
-    local vec, bytes_consumed = self.data_type.deserialize(ffi.cast("char *", self._buf) + self._buf_read_offset, num)
+    local vec, bytes_consumed = self.data_type.deserialize_partial(ffi.cast("char *", self._buf) + self._buf_read_offset, num)
 
     -- Update the read offset
     self._buf_read_offset = self._buf_read_offset + bytes_consumed

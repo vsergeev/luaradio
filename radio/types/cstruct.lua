@@ -39,7 +39,11 @@ function CStructType.factory(ct, custom_mt)
         return vec.data, vec.size
     end
 
-    function mt.deserialize(buf, count)
+    function mt.deserialize(buf, size)
+        return Vector.cast(CustomType, buf, size)
+    end
+
+    function mt.deserialize_partial(buf, count)
         local size = count*ffi.sizeof(CustomType)
         return Vector.cast(CustomType, buf, size), size
     end

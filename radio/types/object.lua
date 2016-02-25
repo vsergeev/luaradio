@@ -58,7 +58,13 @@ function ObjectType.factory(custom_mt)
         return buf, #buf
     end
 
-    function CustomType.deserialize(buf, count)
+    function CustomType.deserialize(buf, size)
+        local num_elems = CustomType.deserialize_count(buf, size)
+        local vec = CustomType.deserialize_partial(buf, num_elems)
+        return vec
+    end
+
+    function CustomType.deserialize_partial(buf, count)
         local vec = ObjectVector()
 
         buf = ffi.cast("const uint8_t *", buf)
@@ -80,7 +86,6 @@ function ObjectType.factory(custom_mt)
         end
 
         return vec, (p-buf)
-
     end
 
     function CustomType.deserialize_count(buf, size)

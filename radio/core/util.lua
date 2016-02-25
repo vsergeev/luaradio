@@ -55,4 +55,14 @@ local function array_equals(a, b)
     return true
 end
 
-return {table_length = table_length, table_copy = table_copy, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals}
+local function array_find(array, elem)
+    for i = 1, #array do
+        if array[i] == elem then
+            return i
+        end
+    end
+
+    return nil
+end
+
+return {table_length = table_length, table_copy = table_copy, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find}

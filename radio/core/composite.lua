@@ -79,18 +79,30 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
 
         io.stderr:write(string.format("Connected source %s.%s to destination %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
     elseif object.isinstanceof(src_pipe, pipe.AliasedPipeInput) and object.isinstanceof(dst_pipe, pipe.PipeInput) then
+        -- Assert input is not already connected
+        assert(not src_pipe.real_input, "Aliased input already connected.")
+
         -- If we are aliasing a composite block input pipe to a real input pipe
         src_pipe.real_input = dst_pipe
         io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
     elseif object.isinstanceof(src_pipe, pipe.PipeInput) and object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) then
+        -- Assert input is not already connected
+        assert(not dst_pipe.real_input, "Aliased input already connected.")
+
         -- If we are aliasing a composite block input pipe to a real input pipe
         dst_pipe.real_input = src_pipe
         io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", dst.name, dst_pipe.name, src.name, src_pipe.name))
     elseif object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(dst_pipe, pipe.PipeOutput) then
+        -- Assert output is not already connected
+        assert(not src_pipe.real_output, "Aliased output already connected.")
+
         -- If we are aliasing a composite block input pipe to a real input pipe
         src_pipe.real_output = dst_pipe
         io.stderr:write(string.format("Aliased output %s.%s to input %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
     elseif object.isinstanceof(src_pipe, pipe.PipeOutput) and object.isinstanceof(dst_pipe, pipe.AliasedPipeOutput) then
+        -- Assert output is not already connected
+        assert(not dst_pipe.real_output, "Aliased output already connected.")
+
         -- If we are aliasing a composite block input pipe to a real input pipe
         dst_pipe.real_output = src_pipe
         io.stderr:write(string.format("Aliased output %s.%s to input %s.%s\n", dst.name, dst_pipe.name, src.name, src_pipe.name))

@@ -89,80 +89,25 @@ ffi.cdef[[
     int vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned int flags);
 ]]
 
-function Pipe:initialize(multiprocess)
-    if multiprocess then
-        -- Create UNIX pipe
-        local pipe_fds = ffi.new("int[2]")
-        assert(ffi.C.pipe(pipe_fds) == 0, "pipe(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        self._rfd = pipe_fds[0]
-        self._wfd = pipe_fds[1]
+function Pipe:initialize()
+    -- Create UNIX pipe
+    local pipe_fds = ffi.new("int[2]")
+    assert(ffi.C.pipe(pipe_fds) == 0, "pipe(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    self._rfd = pipe_fds[0]
+    self._wfd = pipe_fds[1]
 
-        -- Pre-allocate read buffer
-        self._buf_capacity = 65536
-        self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_capacity), ffi.C.free)
-        self._buf_size = 0
-        self._buf_read_offset = 0
-
-        self.read_max = self.read_max_mp
-        self.read_n = self.read_n_mp
-        self.write = self.write_mp
-        self.read_update = self.read_update_mp
-        self.close_input = self.close_input_mp
-        self.close_output = self.close_output_mp
-    else
-        self.vec = nil
-
-        self.read_max = self.read_max_sp
-        self.read_n = self.read_n_sp
-        self.write = self.write_sp
-        self.read_update = self.read_update_sp
-        self.close_input = self.close_input_sp
-        self.close_output = self.close_output_sp
-    end
+    -- Pre-allocate read buffer
+    self._buf_capacity = 65536
+    self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_capacity), ffi.C.free)
+    self._buf_size = 0
+    self._buf_read_offset = 0
 end
 
 function Pipe:get_rate()
     return self.pipe_output.owner:get_rate()
 end
 
--- Single-threaded interface
-
-function Pipe:read_max_sp()
-    local vec = self.vec
-    self.vec = nil
-    return vec
-end
-
-function Pipe:read_n_sp(n)
-    assert(n == self.vec.length, "Partial buffered reads unsupported.")
-    local vec = self.vec
-    self.vec = nil
-    return vec
-end
-
-function Pipe:read_update()
-    if self.vec == nil then
-        return nil
-    end
-    return self.vec.length
-end
-
-function Pipe:write_sp(vec)
-    assert(self.vec == nil, "Pipe already has data.")
-    self.vec = vec
-end
-
-function Pipe:close_input_sp()
-    -- No-op
-end
-
-function Pipe:close_output_sp()
-    -- No-op
-end
-
--- Multi-process interface
-
-function Pipe:read_max_mp()
+function Pipe:read_max()
     -- Update our read buffer and read the maximum amount available
     local num = self:read_update()
 
@@ -174,7 +119,7 @@ function Pipe:read_max_mp()
     return self:read_n(num)
 end
 
-function Pipe:read_n_mp(num)
+function Pipe:read_n(num)
     -- Create a vector from the buffer
     local vec, bytes_consumed = self.data_type.deserialize(ffi.cast("char *", self._buf) + self._buf_read_offset, num)
 
@@ -184,7 +129,7 @@ function Pipe:read_n_mp(num)
     return vec
 end
 
-function Pipe:read_update_mp()
+function Pipe:read_update()
     -- Shift unread samples down to beginning of buffer
     local unread_length = self._buf_size - self._buf_read_offset
     if unread_length > 0 then
@@ -209,7 +154,7 @@ function Pipe:read_update_mp()
     return self.data_type.deserialize_count(self._buf, self._buf_size)
 end
 
-function Pipe:write_mp(vec)
+function Pipe:write(vec)
     local iov = ffi.new("struct iovec")
     local len = 0
 
@@ -228,14 +173,14 @@ function Pipe:write_mp(vec)
     end
 end
 
-function Pipe:close_input_mp()
+function Pipe:close_input()
     if self._rfd then
         assert(ffi.C.close(self._rfd) == 0, "close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         self._rfd = nil
     end
 end
 
-function Pipe:close_output_mp()
+function Pipe:close_output()
     if self._wfd then
         assert(ffi.C.close(self._wfd) == 0, "close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         self._wfd = nil

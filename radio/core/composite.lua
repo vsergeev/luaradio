@@ -207,7 +207,7 @@ local function build_execution_order(dependency_graph)
     return order
 end
 
-function CompositeBlock:_prepare_to_run(multiprocess)
+function CompositeBlock:_prepare_to_run()
     -- Crawl our connections to get the full list of blocks and connections
     local blocks, all_connections = crawl_connections(self._connections)
 
@@ -247,7 +247,7 @@ function CompositeBlock:_prepare_to_run(multiprocess)
 
     -- Initialize all pipes
     for pipe_input, pipe_output in pairs(all_connections) do
-        pipe_input.pipe:initialize(multiprocess)
+        pipe_input.pipe:initialize()
     end
 
     io.stderr:write("Execution order:\n")
@@ -321,7 +321,7 @@ function CompositeBlock:start(multiprocess)
     end
 
     -- Prepare to run
-    local all_connections, execution_order = self:_prepare_to_run(multiprocess)
+    local all_connections, execution_order = self:_prepare_to_run()
 
     if not multiprocess then
         -- Run blocks single-threaded in round-robin order

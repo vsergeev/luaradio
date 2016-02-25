@@ -26,6 +26,11 @@ end
 local Block = object.class_factory()
 
 function Block:add_type_signature(inputs, outputs, process_func, initialize_func)
+    -- Assert inputs are Inputs
+    for i = 1, #inputs do
+        assert(object.isinstanceof(inputs[i], Input), string.format("Invalid input %d.", i))
+    end
+
     -- Create a PipeInput for each input
     if #self.inputs == 0 then
         for _, v in ipairs(inputs) do
@@ -33,6 +38,11 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
         end
     end
     assert(#self.inputs == #inputs, "Invalid type signature: mismatch in input count.")
+
+    -- Assert outputs are Outputs
+    for i = 1, #outputs do
+        assert(object.isinstanceof(outputs[i], Output), string.format("Invalid output %d.", i))
+    end
 
     -- Create a PipeOutput for each output
     if #self.outputs == 0 then

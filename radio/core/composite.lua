@@ -9,6 +9,8 @@ local util = require('radio.core.util')
 
 local CompositeBlock = block.factory("CompositeBlock")
 
+-- Connection logic
+
 function CompositeBlock:instantiate()
     self._running = false
     self._connections = {}
@@ -252,6 +254,38 @@ local function build_execution_order(dependency_graph)
     return order
 end
 
+-- Execution
+
+ffi.cdef[[
+    typedef int pid_t;
+    pid_t fork(void);
+    pid_t waitpid(pid_t pid, int *status, int options);
+
+    /* kill() */
+    int kill(pid_t pid, int sig);
+    enum {SIGINT = 2, SIGKILL = 9, SIGTERM = 15, SIGCHLD = 17};
+
+    /* sigset handling */
+    typedef struct { uint8_t set[128]; } sigset_t;
+    int sigemptyset(sigset_t *set);
+    int sigfillset(sigset_t *set);
+    int sigaddset(sigset_t *set, int signum);
+    int sigdelset(sigset_t *set, int signum);
+    int sigismember(const sigset_t *set, int signum);
+
+    /* sigwait() */
+    int sigwait(const sigset_t *set, int *sig);
+
+    /* sigprocmask() */
+    enum {SIG_BLOCK, SIG_UNBLOCK, SIG_SETMASK};
+    int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
+
+    /* sigpending() */
+    int sigpending(sigset_t *set);
+
+    unsigned int sleep(unsigned int seconds);
+]]
+
 function CompositeBlock:_prepare_to_run()
     -- Crawl our connections to get the full list of blocks and connections
     local blocks, all_connections = crawl_connections(self._connections)
@@ -303,36 +337,6 @@ function CompositeBlock:_prepare_to_run()
 
     return all_connections, execution_order
 end
-
-ffi.cdef[[
-    typedef int pid_t;
-    pid_t fork(void);
-    pid_t waitpid(pid_t pid, int *status, int options);
-
-    /* kill() */
-    int kill(pid_t pid, int sig);
-    enum {SIGINT = 2, SIGKILL = 9, SIGTERM = 15, SIGCHLD = 17};
-
-    /* sigset handling */
-    typedef struct { uint8_t set[128]; } sigset_t;
-    int sigemptyset(sigset_t *set);
-    int sigfillset(sigset_t *set);
-    int sigaddset(sigset_t *set, int signum);
-    int sigdelset(sigset_t *set, int signum);
-    int sigismember(const sigset_t *set, int signum);
-
-    /* sigwait() */
-    int sigwait(const sigset_t *set, int *sig);
-
-    /* sigprocmask() */
-    enum {SIG_BLOCK, SIG_UNBLOCK, SIG_SETMASK};
-    int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
-
-    /* sigpending() */
-    int sigpending(sigset_t *set);
-
-    unsigned int sleep(unsigned int seconds);
-]]
 
 function CompositeBlock:run(multiprocess)
     self:start(multiprocess)

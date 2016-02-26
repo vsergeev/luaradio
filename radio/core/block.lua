@@ -177,11 +177,13 @@ function Block:__tostring()
     local strs = {}
 
     for i=1, #self.inputs do
-        local pipe = self.inputs[i].pipe or self.inputs[i].real_input.pipe
-        if pipe then
-            strs[#strs + 1] = string.format("    .%-5s <- {%s.%s}", self.inputs[i].name, pipe.pipe_output.owner.name, pipe.pipe_output.name)
-        else
-            strs[#strs + 1] = string.format("    .%-5s <- unconnected", self.inputs[i].name)
+        if self.inputs[i].pipe then
+            local pipe = self.inputs[i].pipe or self.inputs[i].real_input.pipe
+            if pipe then
+                strs[#strs + 1] = string.format("    .%-5s <- {%s.%s}", self.inputs[i].name, pipe.pipe_output.owner.name, pipe.pipe_output.name)
+            else
+                strs[#strs + 1] = string.format("    .%-5s <- unconnected", self.inputs[i].name)
+            end
         end
     end
 

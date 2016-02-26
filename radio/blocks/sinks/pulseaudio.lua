@@ -36,9 +36,14 @@ ffi.cdef[[
 
     const char* pa_strerror(int error);
 ]]
-local libpulse = ffi.load('libpulse-simple.so')
+local libpulse_available, libpulse = pcall(ffi.load, "pulse-simple")
 
 function PulseAudioSink:initialize()
+    -- Check library is available
+    if not libpulse_available then
+        error("PulseAudioSink: libpulse-simple not found.")
+    end
+
     -- Prepare sample spec
     self.sample_spec = ffi.new("pa_sample_spec")
     self.sample_spec.format = ffi.abi("le") and ffi.C.PA_SAMPLE_FLOAT32LE or ffi.C.PA_SAMPLE_FLOAT32BE

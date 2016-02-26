@@ -54,6 +54,7 @@ function RtlSdrSource:initialize()
     -- Allocate read buffer
     self.buf_size = 65536
     self.rawbuf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self.buf_size), ffi.C.free)
+    assert(self.rawbuf ~= nil, "aligned_alloc(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     self.buf = ffi.cast("uint8_t *", self.rawbuf)
     self.n_read = ffi.new("int [1]")
 end

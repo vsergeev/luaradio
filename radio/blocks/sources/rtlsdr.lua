@@ -32,9 +32,14 @@ ffi.cdef[[
     int rtlsdr_reset_buffer(rtlsdr_dev_t *dev);
     int rtlsdr_read_sync(rtlsdr_dev_t *dev, void *buf, int len, int *n_read);
 ]]
-local librtlsdr = ffi.load("librtlsdr.so")
+local librtlsdr_found, librtlsdr = pcall(ffi.load, "rtlsdr")
 
 function RtlSdrSource:initialize()
+    -- Check library is available
+    if not librtlsdr_found then
+        error("RtlSdrSource: librtlsdr not found.")
+    end
+
     self.dev = ffi.new("rtlsdr_dev_t *[1]")
 
     -- Open device

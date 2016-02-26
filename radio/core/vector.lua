@@ -22,6 +22,20 @@ local PAGE_SIZE = ffi.C.sysconf(ffi.C._SC_PAGESIZE)
 
 local Vector = object.class_factory()
 
+function Vector:__eq(other)
+    if self.length ~= other.length then
+        return false
+    end
+
+    for i = 0, self.length-1 do
+        if self.data[i] ~= other.data[i] then
+            return false
+        end
+    end
+
+    return true
+end
+
 function Vector:resize(num)
     -- If we're within capacity, adjust length and size
     if num <= self._capacity then

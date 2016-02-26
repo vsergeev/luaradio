@@ -1,5 +1,6 @@
 local ffi = require('ffi')
 
+local platform = require('radio.core.platform')
 local block = require('radio.core.block')
 local object = require('radio.core.object')
 local Vector = require('radio.core.vector').Vector
@@ -19,13 +20,6 @@ function FIRFilterBlock:instantiate(taps)
     self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)}, FIRFilterBlock.process_real)
 end
 
-ffi.cdef[[
-void *memmove(void *dest, const void *src, size_t n);
-void (*volk_32fc_32f_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const float32_t* taps, unsigned int num_points);
-void (*volk_32f_x2_dot_prod_32f_a)(float32_t* result, const float32_t* input, const float32_t* taps, unsigned int num_points);
-]]
-local libvolk = ffi.load("libvolk.so")
-
 function FIRFilterBlock:initialize()
     if self.signature.inputs[1].data_type == ComplexFloat32Type then
         self.data_type = ComplexFloat32Type
@@ -36,44 +30,84 @@ function FIRFilterBlock:initialize()
     self.state = self.data_type.vector(self.taps.length)
 end
 
-function FIRFilterBlock:process_complex(x)
-    local out = ComplexFloat32Type.vector(x.length)
+ffi.cdef[[
+void *memmove(void *dest, const void *src, size_t n);
+]]
 
-    for i = 0, x.length-1 do
-        -- Shift the state samples down
-        ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
-        -- Insert sample into state
-        self.state.data[0] = x.data[i]
-        -- Inner product of state and taps
-        libvolk.volk_32fc_32f_dot_prod_32fc_a(out.data[i], self.state.data, self.taps.data, self.taps.length)
+if platform.features.volk then
 
-        -- Inner product of state and taps (slow Lua version)
-        --for j = 0, self.state.length-1 do
-        --    out.data[i] = out.data[i] + self.state.data[j]:scalar_mul(self.taps.data[j+1].value)
-        --end
+    ffi.cdef[[
+    void (*volk_32fc_32f_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const float32_t* taps, unsigned int num_points);
+    void (*volk_32f_x2_dot_prod_32f_a)(float32_t* result, const float32_t* input, const float32_t* taps, unsigned int num_points);
+    ]]
+    local libvolk = platform.libs.volk
+
+    function FIRFilterBlock:process_complex(x)
+        local out = ComplexFloat32Type.vector(x.length)
+
+        for i = 0, x.length-1 do
+            -- Shift the state samples down
+            ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
+            -- Insert sample into state
+            self.state.data[0] = x.data[i]
+            -- Inner product of state and taps
+            libvolk.volk_32fc_32f_dot_prod_32fc_a(out.data[i], self.state.data, self.taps.data, self.taps.length)
+        end
+
+        return out
     end
 
-    return out
-end
+    function FIRFilterBlock:process_real(x)
+        local out = Float32Type.vector(x.length)
 
-function FIRFilterBlock:process_real(x)
-    local out = Float32Type.vector(x.length)
+        for i = 0, x.length-1 do
+            -- Shift the state samples down
+            ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
+            -- Insert sample into state
+            self.state.data[0] = x.data[i]
+            -- Inner product of state and taps
+            libvolk.volk_32f_x2_dot_prod_32f_a(out.data[i], self.state.data, self.taps.data, self.taps.length)
+        end
 
-    for i = 0, x.length-1 do
-        -- Shift the state samples down
-        ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
-        -- Insert sample into state
-        self.state.data[0] = x.data[i]
-        -- Inner product of state and taps
-        libvolk.volk_32f_x2_dot_prod_32f_a(out.data[i], self.state.data, self.taps.data, self.taps.length)
-
-        -- Inner product of state and taps (slow Lua version)
-        --for j = 0, self.state.length-1 do
-        --    out.data[i].value = out.data[i].value + self.state.data[j].value * self.taps.data[j+1].value
-        --end
+        return out
     end
 
-    return out
+else
+
+    function FIRFilterBlock:process_complex(x)
+        local out = ComplexFloat32Type.vector(x.length)
+
+        for i = 0, x.length-1 do
+            -- Shift the state samples down
+            ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
+            -- Insert sample into state
+            self.state.data[0] = x.data[i]
+            -- Inner product of state and taps
+            for j = 0, self.state.length-1 do
+                out.data[i] = out.data[i] + self.state.data[j]:scalar_mul(self.taps.data[j].value)
+            end
+        end
+
+        return out
+    end
+
+    function FIRFilterBlock:process_real(x)
+        local out = Float32Type.vector(x.length)
+
+        for i = 0, x.length-1 do
+            -- Shift the state samples down
+            ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
+            -- Insert sample into state
+            self.state.data[0] = x.data[i]
+            -- Inner product of state and taps
+            for j = 0, self.state.length-1 do
+                out.data[i].value = out.data[i].value + self.state.data[j].value * self.taps.data[j].value
+            end
+        end
+
+        return out
+    end
+
 end
 
 return {FIRFilterBlock = FIRFilterBlock}

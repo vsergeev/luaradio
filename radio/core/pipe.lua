@@ -2,7 +2,7 @@ local ffi = require('ffi')
 local math = require('math')
 
 local object = require('radio.core.object')
-local vector = require('radio.core.vector')
+local platform = require('radio.core.platform')
 
 -- PipeInput class
 local PipeInput = object.class_factory()
@@ -69,14 +69,6 @@ function Pipe.new(pipe_output, pipe_input, data_type)
     return self
 end
 
--- Aligned memory allocator/deallocator
-ffi.cdef[[
-    void *aligned_alloc(size_t alignment, size_t size);
-    void free(void *ptr);
-
-    char *strerror(int errnum);
-]]
-
 -- Pipe I/O
 ffi.cdef[[
     int pipe(int pipefd[2]);
@@ -98,8 +90,7 @@ function Pipe:initialize()
 
     -- Pre-allocate read buffer
     self._buf_capacity = 65536
-    self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_capacity), ffi.C.free)
-    assert(self._buf ~= nil, "aligned_alloc(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    self._buf = platform.alloc(self._buf_capacity)
     self._buf_size = 0
     self._buf_read_offset = 0
 end

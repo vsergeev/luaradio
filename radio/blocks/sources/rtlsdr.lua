@@ -1,6 +1,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local platform = require('radio.core.platform')
 local vector = require('radio.core.vector')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
@@ -53,8 +54,7 @@ function RtlSdrSource:initialize()
 
     -- Allocate read buffer
     self.buf_size = 65536
-    self.rawbuf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self.buf_size), ffi.C.free)
-    assert(self.rawbuf ~= nil, "aligned_alloc(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    self.rawbuf = platform.alloc(self.buf_size)
     self.buf = ffi.cast("uint8_t *", self.rawbuf)
     self.n_read = ffi.new("int [1]")
 end

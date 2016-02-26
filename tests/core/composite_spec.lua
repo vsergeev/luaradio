@@ -103,14 +103,14 @@ describe("composite", function ()
         local b2 = TestBlock()
 
         -- Unknown source pipe
-        assert.has.errors(function () top:connect(b1, "foo", b2, "in") end)
+        assert.has_error(function () top:connect(b1, "foo", b2, "in") end)
 
         -- Unknown destination pipe
-        assert.has.errors(function () top:connect(b1, "out", b2, "foo") end)
+        assert.has_error(function () top:connect(b1, "out", b2, "foo") end)
 
         -- Duplicate input connection
         top:connect(b1, "out", b2, "in")
-        assert.has.errors(function () top:connect(b1, "out", b2, "in") end)
+        assert.has_error(function () top:connect(b1, "out", b2, "in") end)
     end)
 
     it("input/output aliasing", function ()
@@ -168,19 +168,19 @@ describe("composite", function ()
         blk:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.Float32Type)}, {block.Output("out", radio.Integer32Type)})
 
         -- Invalid pipe direction
-        assert.has.errors(function () blk:connect(blk, "out", b1, "in") end)
-        assert.has.errors(function () blk:connect(blk, "in1", b3, "out") end)
+        assert.has_error(function () blk:connect(blk, "out", b1, "in") end)
+        assert.has_error(function () blk:connect(blk, "in1", b3, "out") end)
 
         -- Duplicate input connection
         blk:connect(blk, "in1", b1, "in")
-        assert.has.errors(function () blk:connect(blk, "in1", b2, "in") end)
-        assert.has.errors(function () blk:connect(b2, "in", blk, "in1") end)
+        assert.has_error(function () blk:connect(blk, "in1", b2, "in") end)
+        assert.has_error(function () blk:connect(b2, "in", blk, "in1") end)
 
         -- Duplicate output connection
         local b4 = TestBlock3()
         blk:connect(blk, "out", b3, "out")
-        assert.has.errors(function () blk:connect(blk, "out", b4, "out") end)
-        assert.has.errors(function () blk:connect(b4, "out", blk, "out") end)
+        assert.has_error(function () blk:connect(blk, "out", b4, "out") end)
+        assert.has_error(function () blk:connect(b4, "out", blk, "out") end)
     end)
 
     it("crawl connections", function ()
@@ -481,7 +481,7 @@ describe("composite", function ()
         local b1 = TestSink()
         top:connect(b0, b1)
 
-        assert.has.errors(function () top:_prepare_to_run() end)
+        assert.has_error(function () top:_prepare_to_run() end)
 
         local top = radio.CompositeBlock()
         local b0 = TestSource()
@@ -490,7 +490,7 @@ describe("composite", function ()
         top:connect(b0, "out", b1, "in1")
         top:connect(b1, "out", b2, "in")
 
-        assert.has.errors(function () top:_prepare_to_run() end)
+        assert.has_error(function () top:_prepare_to_run() end)
 
         -- No compatible signatures
 
@@ -508,7 +508,7 @@ describe("composite", function ()
         top:connect(b1, "out", b2, "in2")
         top:connect(b2, "out", b3, "in")
 
-        assert.has.errors(function () top:_prepare_to_run() end)
+        assert.has_error(function () top:_prepare_to_run() end)
 
         -- Initialization error
 
@@ -521,6 +521,6 @@ describe("composite", function ()
         local b1 = TestSink()
         top:connect(b0, b1)
 
-        assert.has.errors(function () top:_prepare_to_run() end)
+        assert.has_error(function () top:_prepare_to_run() end)
     end)
 end)

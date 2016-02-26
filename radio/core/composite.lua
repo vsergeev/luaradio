@@ -263,7 +263,6 @@ ffi.cdef[[
 
     /* kill() */
     int kill(pid_t pid, int sig);
-    enum {SIGINT = 2, SIGKILL = 9, SIGTERM = 15, SIGCHLD = 17};
 
     /* sigset handling */
     typedef struct { uint8_t set[128]; } sigset_t;
@@ -277,7 +276,6 @@ ffi.cdef[[
     int sigwait(const sigset_t *set, int *sig);
 
     /* sigprocmask() */
-    enum {SIG_BLOCK, SIG_UNBLOCK, SIG_SETMASK};
     int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
 
     /* sigpending() */

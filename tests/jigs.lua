@@ -12,8 +12,8 @@ local function assert_approx_equal(x, y, epsilon)
 end
 
 local function assert_vector_equal(x, y, epsilon)
-    assert.is_equal(x.length, y.length)
-    assert.is_equal(x.type, y.type)
+    assert.is.equal(x.length, y.length)
+    assert.is.equal(x.type, y.type)
     for i=0, x.length-1 do
         assert_approx_equal(x.data[i], y.data[i], epsilon)
     end

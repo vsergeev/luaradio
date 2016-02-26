@@ -7,7 +7,7 @@ local ByteType = radio.ByteType
 describe("ByteType", function ()
     it("size", function ()
         -- Check underlying struct size
-        assert.is_equal(1, ffi.sizeof(ByteType))
+        assert.is.equal(1, ffi.sizeof(ByteType))
     end)
 
     it("operations", function ()
@@ -23,16 +23,16 @@ describe("ByteType", function ()
         assert.is.equal(ByteType(0x00), ByteType(0xff) + ByteType(0x01))
 
         -- Subtraction
-        assert.is_equal(ByteType(0x32), ByteType(0x33) - ByteType(0x01))
+        assert.is.equal(ByteType(0x32), ByteType(0x33) - ByteType(0x01))
         -- Check underflow
         assert.is.equal(ByteType(0xff), ByteType(0x00) - ByteType(0x01))
 
         -- Multiplication
-        assert.is_equal(ByteType(0xd2), ByteType(0x0e) * ByteType(0x0f))
+        assert.is.equal(ByteType(0xd2), ByteType(0x0e) * ByteType(0x0f))
         -- Check overflow
-        assert.is_equal(ByteType(0x90), ByteType(0x14) * ByteType(0x14))
+        assert.is.equal(ByteType(0x90), ByteType(0x14) * ByteType(0x14))
 
         -- Division
-        assert.is_equal(ByteType(0x02), ByteType(0x32) / ByteType(0x19))
+        assert.is.equal(ByteType(0x02), ByteType(0x32) / ByteType(0x19))
     end)
 end)

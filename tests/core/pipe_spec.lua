@@ -153,7 +153,7 @@ describe("pipe", function ()
         b1.inputs[1].pipe = p
 
         -- Check pipe and TestSink rates
-        assert.is_equal(5, p:get_rate())
-        assert.is_equal(5, b1:get_rate())
+        assert.is.equal(5, p:get_rate())
+        assert.is.equal(5, b1:get_rate())
     end)
 end)

@@ -8,7 +8,7 @@ local bits_to_number = require('radio.types.bit').bits_to_number
 describe("BitType", function ()
     it("size", function ()
         -- Check underlying struct size
-        assert.is_equal(1, ffi.sizeof(BitType))
+        assert.is.equal(1, ffi.sizeof(BitType))
     end)
 
     it("operations", function ()

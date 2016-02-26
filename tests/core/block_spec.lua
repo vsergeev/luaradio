@@ -184,7 +184,7 @@ describe("block", function ()
         function TestSource:get_rate()
             return 5
         end
-        assert.is_equal(5, blk:get_rate())
+        assert.is.equal(5, blk:get_rate())
 
         -- A few more blocks
 

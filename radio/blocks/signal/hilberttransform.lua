@@ -1,5 +1,6 @@
 local ffi = require('ffi')
 
+local platform = require('radio.core.platform')
 local block = require('radio.core.block')
 local filter_utils = require('radio.blocks.signal.filter_utils')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
@@ -27,27 +28,57 @@ end
 
 ffi.cdef[[
 void *memmove(void *dest, const void *src, size_t n);
-void (*volk_32f_x2_dot_prod_32f_a)(float32_t* result, const float32_t* input, const float32_t* taps, unsigned int num_points);
 ]]
-local libvolk = ffi.load("libvolk.so")
 
-function HilbertTransformBlock:process(x)
-    local out = ComplexFloat32Type.vector(x.length)
-    local filter_out = Float32Type()
+if platform.features.volk then
 
-    for i = 0, x.length-1 do
-        -- Shift the state samples down
-        ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
-        -- Insert sample into state
-        self.state.data[0] = x.data[i]
-        -- Inner product of state and taps for imaginary component
-        libvolk.volk_32f_x2_dot_prod_32f_a(filter_out, self.state.data, self.hilbert_taps.data, self.hilbert_taps.length)
+    ffi.cdef[[
+    void (*volk_32f_x2_dot_prod_32f_a)(float32_t* result, const float32_t* input, const float32_t* taps, unsigned int num_points);
+    ]]
+    local libvolk = platform.libs.volk
 
-        -- Create complex output with delayed real and filter output imaginary
-        out.data[i] = ComplexFloat32Type(self.state.data[(self.hilbert_taps.length-1)/2].value, filter_out.value)
+    function HilbertTransformBlock:process(x)
+        local out = ComplexFloat32Type.vector(x.length)
+        local filter_out = Float32Type()
+
+        for i = 0, x.length-1 do
+            -- Shift the state samples down
+            ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
+            -- Insert sample into state
+            self.state.data[0] = x.data[i]
+            -- Inner product of state and taps for imaginary component
+            libvolk.volk_32f_x2_dot_prod_32f_a(filter_out, self.state.data, self.hilbert_taps.data, self.hilbert_taps.length)
+
+            -- Create complex output with delayed real and filter output imaginary
+            out.data[i] = ComplexFloat32Type(self.state.data[(self.hilbert_taps.length-1)/2].value, filter_out.value)
+        end
+
+        return out
     end
 
-    return out
+else
+
+  function HilbertTransformBlock:process(x)
+        local out = ComplexFloat32Type.vector(x.length)
+
+        for i = 0, x.length-1 do
+            -- Shift the state samples down
+            ffi.C.memmove(self.state.data[1], self.state.data[0], (self.state.length-1)*ffi.sizeof(self.state.data[0]))
+            -- Insert sample into state
+            self.state.data[0] = x.data[i]
+            -- Inner product of state and taps for imaginary component
+            local filter_out = Float32Type()
+            for j = 0, self.state.length-1 do
+                filter_out = filter_out + self.state.data[j] * self.hilbert_taps.data[j]
+            end
+
+            -- Create complex output with delayed real and filter output imaginary
+            out.data[i] = ComplexFloat32Type(self.state.data[(self.hilbert_taps.length-1)/2].value, filter_out.value)
+        end
+
+        return out
+    end
+
 end
 
 return {HilbertTransformBlock = HilbertTransformBlock}

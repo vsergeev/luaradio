@@ -99,6 +99,7 @@ function Pipe:initialize()
     -- Pre-allocate read buffer
     self._buf_capacity = 65536
     self._buf = ffi.gc(ffi.C.aligned_alloc(vector.PAGE_SIZE, self._buf_capacity), ffi.C.free)
+    assert(self._buf ~= nil, "aligned_alloc(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     self._buf_size = 0
     self._buf_read_offset = 0
 end

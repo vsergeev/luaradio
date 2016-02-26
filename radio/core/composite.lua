@@ -272,6 +272,10 @@ ffi.cdef[[
     int sigdelset(sigset_t *set, int signum);
     int sigismember(const sigset_t *set, int signum);
 
+    /* signal() */
+    typedef void (*sighandler_t)(int);
+    sighandler_t signal(int signum, sighandler_t handler);
+
     /* sigwait() */
     int sigwait(const sigset_t *set, int *sig);
 
@@ -348,6 +352,10 @@ function CompositeBlock:start(multiprocess)
     multiprocess = (multiprocess == nil) and true or multiprocess
 
     assert(not self._running, "CompositeBlock already running!")
+
+    -- Install dummy signal handler for SIGCHLD as BSD platforms
+    -- discard this signal by default.
+    ffi.C.signal(ffi.C.SIGCHLD, function (sig) end)
 
     -- Block handling of SIGINT and SIGCHLD
     local sigset = ffi.new("sigset_t[1]")

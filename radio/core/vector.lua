@@ -1,22 +1,12 @@
 local ffi = require('ffi')
 
 local object = require('radio.core.object')
+local platform = require('radio.core.platform')
 
--- Aligned allocator/deallocator
 ffi.cdef[[
-    void *aligned_alloc(size_t alignment, size_t size);
-    void free(void *ptr);
-
     void *memset(void *s, int c, size_t n);
     void *memcpy(void *dest, const void *src, size_t n);
 ]]
-
--- OS page size query
-ffi.cdef[[
-    enum { _SC_PAGESIZE = 0x1e };
-    long sysconf(int name);
-]]
-local PAGE_SIZE = ffi.C.sysconf(ffi.C._SC_PAGESIZE)
 
 -- Vector object
 
@@ -49,8 +39,7 @@ function Vector:resize(num)
     -- Calculate new buffer size
     local size = capacity*ffi.sizeof(self.type)
     -- Allocate buffer
-    local buf = ffi.gc(ffi.C.aligned_alloc(PAGE_SIZE, size), ffi.C.free)
-    assert(buf ~= nil, "aligned_alloc(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    local buf = platform.alloc(size)
     -- Zero buffer
     ffi.C.memset(buf, 0, size)
     -- Cast to specified pointer type
@@ -79,8 +68,7 @@ function Vector.new(ctype, num)
     -- Calculate size
     local size = num*ffi.sizeof(ctype)
     -- Allocate buffer
-    local buf = ffi.gc(ffi.C.aligned_alloc(PAGE_SIZE, size), ffi.C.free)
-    assert(buf ~= nil, "aligned_alloc(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    local buf = platform.alloc(size)
     -- Zero buffer
     ffi.C.memset(buf, 0, size)
     -- Cast to specified pointer type
@@ -100,4 +88,4 @@ function Vector.cast(ctype, buf, size)
     return setmetatable({data = ptr, length = num, _capacity = num, size = size, type = ctype, _buffer = buf}, Vector)
 end
 
-return {Vector = Vector, PAGE_SIZE = PAGE_SIZE}
+return {Vector = Vector}

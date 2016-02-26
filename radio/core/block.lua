@@ -121,14 +121,14 @@ function Block:run_once()
         data_out = {self:process()}
         -- Check for EOF
         if #data_out == 0 then
-            return false
+            return nil
         end
     elseif #self.inputs == 1 then
         -- One input
         local data_in = self.inputs[1].pipe:read_max()
         -- Check for EOF
         if data_in == nil then
-            return false
+            return nil
         end
 
         data_out = {self:process(data_in)}
@@ -143,26 +143,29 @@ function Block:run_once()
         local data_in = pipe.read_synchronous(pipes)
         -- Check for EOF
         if data_in == nil then
-            return false
+            return nil
         end
 
         data_out = {self:process(unpack(data_in))}
     end
 
     -- Write outputs to pipes
+    local new_samples = false
     for i=1, #self.outputs do
+        new_samples = new_samples or data_out[i].length > 0
         for j=1, #self.outputs[i].pipes do
             self.outputs[i].pipes[j]:write(data_out[i])
         end
     end
 
-    return true
+    -- Return true or false if new samples were produced
+    return new_samples
 end
 
 function Block:run()
     -- Run forever
     while true do
-        if not self:run_once() then
+        if self:run_once() == nil then
             break
         end
     end

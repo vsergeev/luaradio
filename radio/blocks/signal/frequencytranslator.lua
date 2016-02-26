@@ -1,6 +1,7 @@
 local math = require('math')
 local ffi = require('ffi')
 
+local platform = require('radio.core.platform')
 local block = require('radio.core.block')
 local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
 
@@ -19,23 +20,33 @@ function FrequencyTranslatorBlock:initialize()
     self.phi = ComplexFloat32Type(1, 0)
 end
 
-ffi.cdef[[
-void (*volk_32fc_s32fc_x2_rotator_32fc)(complex_float32_t* outVector, const complex_float32_t* inVector, const complex_float32_t phase_inc, complex_float32_t* phase, unsigned int num_points);
-]]
-local libvolk = ffi.load("libvolk.so")
+if platform.features.volk then
 
-function FrequencyTranslatorBlock:process(x)
-    local out = ComplexFloat32Type.vector(x.length)
+    ffi.cdef[[
+    void (*volk_32fc_s32fc_x2_rotator_32fc)(complex_float32_t* outVector, const complex_float32_t* inVector, const complex_float32_t phase_inc, complex_float32_t* phase, unsigned int num_points);
+    ]]
+    local libvolk = platform.libs.volk
 
-    libvolk.volk_32fc_s32fc_x2_rotator_32fc(out.data, x.data, self.rotation, self.phi, x.length)
+    function FrequencyTranslatorBlock:process(x)
+        local out = ComplexFloat32Type.vector(x.length)
+        libvolk.volk_32fc_s32fc_x2_rotator_32fc(out.data, x.data, self.rotation, self.phi, x.length)
 
-    -- Slow Lua version
-    --for i = 0, x.length-1 do
-    --    out.data[i] = x.data[i] * self.phi
-    --    self.phi = self.phi * self.rotation
-    --end
+        return out
+    end
 
-    return out
+else
+
+    function FrequencyTranslatorBlock:process(x)
+        local out = ComplexFloat32Type.vector(x.length)
+
+        for i = 0, x.length-1 do
+            out.data[i] = x.data[i] * self.phi
+            self.phi = self.phi * self.rotation
+        end
+
+        return out
+    end
+
 end
 
 return {FrequencyTranslatorBlock = FrequencyTranslatorBlock}

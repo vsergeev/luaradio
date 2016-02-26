@@ -1,10 +1,10 @@
 local ffi = require('ffi')
 
 ffi.cdef[[
-    typedef uint32_t mode_t;
-    int shm_open(const char *name, int oflag, mode_t mode);
-    int shm_unlink(const char *name);
-    enum {O_CREAT = 0x40, O_RDWR = 0x02};
+    typedef void FILE;
+    FILE *fopen(const char *path, const char *mode);
+    int fileno(FILE *stream);
+    int unlink(const char *pathname);
 
     int write(int fd, const void *buf, size_t count);
     int read(int fd, void *buf, size_t count);
@@ -17,21 +17,23 @@ ffi.cdef[[
 
     char *strerror(int errnum);
 ]]
-local librt = ffi.load("rt")
 
 local function open(str)
     -- Default to empty buffer (e.g. writing only purposes)
     str = str or ""
 
-    -- Create and get a file descriptor to a shared memory object
-    local shmobj_name = string.format("/%08x", math.random(0, 0xffffffff))
-    local fd = librt.shm_open(shmobj_name, bit.bor(ffi.C.O_CREAT, ffi.C.O_RDWR), tonumber("600", 8))
-    assert(fd ~= -1, "shm_open(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    -- Create and get a file descriptor to a temporary file
+    local tmpfile_path = string.format("/tmp/%08x", math.random(0, 0xffffffff))
+    local file = ffi.C.fopen(tmpfile_path, "a+")
+    assert(fd ~= -1, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
-    -- Unlink the shared memory object
-    assert(librt.shm_unlink(shmobj_name) == 0, "shm_unlink(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    -- Get file descriptor from file
+    local fd = ffi.C.fileno(file)
 
-    -- Write the buffer to the shared memory object
+    -- Unlink the temporary file
+    assert(ffi.C.unlink(tmpfile_path) == 0, "unlink(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+
+    -- Write the buffer
     assert(ffi.C.write(fd, str, #str) == #str, "write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
     -- Reset the file offset

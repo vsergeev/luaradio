@@ -50,6 +50,7 @@ function Vector:resize(num)
     local size = capacity*ffi.sizeof(self.type)
     -- Allocate buffer
     local buf = ffi.gc(ffi.C.aligned_alloc(PAGE_SIZE, size), ffi.C.free)
+    assert(buf ~= nil, "aligned_alloc(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     -- Zero buffer
     ffi.C.memset(buf, 0, size)
     -- Cast to specified pointer type
@@ -79,6 +80,7 @@ function Vector.new(ctype, num)
     local size = num*ffi.sizeof(ctype)
     -- Allocate buffer
     local buf = ffi.gc(ffi.C.aligned_alloc(PAGE_SIZE, size), ffi.C.free)
+    assert(buf ~= nil, "aligned_alloc(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     -- Zero buffer
     ffi.C.memset(buf, 0, size)
     -- Cast to specified pointer type

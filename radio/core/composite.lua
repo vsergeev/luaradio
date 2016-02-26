@@ -168,6 +168,51 @@ local function build_dependency_graph(connections)
     return graph
 end
 
+local function build_reverse_dependency_graph(connections)
+    local graph = {}
+
+    -- Add dependencies between connected blocks
+    for pipe_input, pipe_output in pairs(connections) do
+        local src = pipe_output.owner
+        local dst = pipe_input.owner
+
+        if graph[src] == nil then
+            graph[src] = {dst}
+        else
+            graph[src][#graph[src] + 1] = dst
+        end
+
+        if graph[dst] == nil then
+            graph[dst] = {}
+        end
+    end
+
+    return graph
+end
+
+local function build_skip_set(connections)
+    local dep_graph = build_reverse_dependency_graph(connections)
+    local graph = {}
+
+    -- Generate a set of downstream dependencies to block
+    local function recurse_dependencies(block, set)
+        set = set or {}
+
+        for _, dependency in ipairs(dep_graph[block]) do
+            set[dependency] = true
+            recurse_dependencies(dependency, set)
+        end
+
+        return set
+    end
+
+    for block, _ in pairs(dep_graph) do
+        graph[block] = recurse_dependencies(block)
+    end
+
+    return graph
+end
+
 local function build_execution_order(dependency_graph)
     local order = {}
 
@@ -324,16 +369,33 @@ function CompositeBlock:start(multiprocess)
     local all_connections, execution_order = self:_prepare_to_run()
 
     if not multiprocess then
-        -- Run blocks single-threaded in round-robin order
+        -- Build a skip set, containing the set of blocks to skip for each
+        -- block, if it produces no new samples.
+        local skip_set = build_skip_set(all_connections)
+
+        -- Run blocks in round-robin order
         local running = true
         while running do
+            local skip = {}
+
             for _, block in ipairs(execution_order) do
-                if block:run_once() == false then
-                    running = false
-                    break
+                if not skip[block] then
+                    local ret = block:run_once()
+                    if ret == false then
+                        -- No new samples produced, mark downstream blocks in
+                        -- our skip set
+                        for b , _ in pairs(skip_set[block]) do
+                            skip[b] = true
+                        end
+                    elseif ret == nil then
+                        -- EOF reached, stop running
+                        running = false
+                        break
+                    end
                 end
             end
 
+            -- Check for SIGINT
             assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
             if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
                 io.stderr:write("Received SIGINT. Shutting down...\n")

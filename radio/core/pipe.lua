@@ -69,16 +69,9 @@ function Pipe.new(pipe_output, pipe_input, data_type)
     return self
 end
 
--- Pipe I/O
 ffi.cdef[[
     int pipe(int pipefd[2]);
     int close(int fildes);
-
-    struct iovec {
-        void *iov_base;
-        size_t iov_len;
-    };
-    int vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned int flags);
 ]]
 
 function Pipe:initialize()
@@ -121,6 +114,58 @@ function Pipe:read_n(num)
     return vec
 end
 
+local platform_read
+local platform_write
+
+if platform.features.vmsplice then
+
+    ffi.cdef[[
+        struct iovec {
+            void *iov_base;
+            size_t iov_len;
+        };
+        int vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned int flags);
+    ]]
+
+    local iov = ffi.new("struct iovec")
+
+    function platform_read(fd, buf, size)
+        iov.iov_base = buf
+        iov.iov_len = size
+        local bytes_read = ffi.C.vmsplice(fd, iov, 1, 0)
+        assert(bytes_read >= 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        return bytes_read
+    end
+
+    function platform_write(fd, buf, size)
+        iov.iov_base = buf
+        iov.iov_len = size
+        local bytes_written = ffi.C.vmsplice(fd, iov, 1, 0)
+        assert(bytes_written > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        return bytes_written
+    end
+
+else
+
+    ffi.cdef[[
+        int read(int fd, void *buf, size_t count);
+        int write(int fd, const void *buf, size_t count);
+    ]]
+
+    function platform_read(fd, buf, size)
+        local bytes_read = ffi.C.read(fd, buf, size)
+        assert(bytes_read >= 0, "read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        return bytes_read
+    end
+
+    function platform_write(fd, buf, size)
+        local bytes_written = ffi.C.write(fd, buf, size)
+        assert(bytes_written > 0, "write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        return bytes_written
+    end
+
+end
+
 function Pipe:read_update()
     -- Shift unread samples down to beginning of buffer
     local unread_length = self._buf_size - self._buf_read_offset
@@ -129,9 +174,7 @@ function Pipe:read_update()
     end
 
     -- Read new samples in
-    local iov = ffi.new("struct iovec", ffi.cast("char *", self._buf) + unread_length, self._buf_capacity - unread_length)
-    local bytes_read = ffi.C.vmsplice(self._rfd, iov, 1, 0)
-    assert(bytes_read >= 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    local bytes_read = platform_read(self._rfd, ffi.cast("char *", self._buf) + unread_length, self._buf_capacity - unread_length)
 
     -- Return nil on EOF
     if unread_length == 0 and bytes_read == 0 then
@@ -147,7 +190,6 @@ function Pipe:read_update()
 end
 
 function Pipe:write(vec)
-    local iov = ffi.new("struct iovec")
     local len = 0
 
     -- Get buffer and size
@@ -155,12 +197,7 @@ function Pipe:write(vec)
 
     -- Write entire buffer
     while len < size do
-        iov.iov_base = ffi.cast("char *", data) + len
-        iov.iov_len = size - len
-
-        local bytes_written = ffi.C.vmsplice(self._wfd, iov, 1, 0)
-        assert(bytes_written > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-
+        local bytes_written = platform_write(self._wfd, ffi.cast("char *", data) + len, size - len)
         len = len + bytes_written
     end
 end

@@ -5,7 +5,7 @@ GEN_DIR = $(BUILD_DIR)/gen
 ################################################################################
 
 LIBNAME = luaradio
-LIB_SRCS =
+LIB_SRCS = libluaradio.c
 LUA_SRCS = $(shell find $(SRC_DIR)/radio -type f -name "*.lua")
 
 ################################################################################
@@ -13,7 +13,7 @@ LUA_SRCS = $(shell find $(SRC_DIR)/radio -type f -name "*.lua")
 SHARED_LIB = $(BUILD_DIR)/lib$(LIBNAME).so
 STATIC_LIB = $(BUILD_DIR)/lib$(LIBNAME).a
 LUA_C_SRCS := $(patsubst $(SRC_DIR)/%.lua, $(GEN_DIR)/%.c, $(LUA_SRCS))
-LIB_OBJS := $(patsubst $(GEN_DIR)/%.c, $(BUILD_DIR)/%.o, $(LUA_C_SRCS))
+LIB_OBJS := $(patsubst $(GEN_DIR)/%.c, $(BUILD_DIR)/%.o, $(LUA_C_SRCS)) $(patsubst %.c, $(BUILD_DIR)/%.o, $(LIB_SRCS))
 
 ################################################################################
 
@@ -59,6 +59,9 @@ $(STATIC_LIB): $(LIB_OBJS)
 
 $(SHARED_LIB): $(LIB_OBJS)
 	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDFLAGS)
+
+$(BUILD_DIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(BUILD_DIR)/%.o: $(GEN_DIR)/%.c
 	@mkdir -p $(dir $@)

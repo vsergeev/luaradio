@@ -2,6 +2,7 @@ return {
     -- Core public modules
     platform = require('radio.core.platform'),
     block = require('radio.core.block'),
+    object = require('radio.core.object'),
     util = require('radio.core.util'),
 
     -- Blocks

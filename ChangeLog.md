@@ -1,3 +1,11 @@
+* (Prototype) v0.0.7 - 02/26/2016
+    * Add platform module with platform-specific constants and allocator.
+    * Handle missing library gracefully in RtlSdrSource and PulseAudioSink.
+    * Add portable implementation of Pipe for non-Linux platforms.
+    * Add portable Lua implementations of signal processing blocks for Volk-less platforms.
+    * Fix other minor portability issues.
+    * This release adds support for FreeBSD and Mac OS X platforms.
+
 * (Prototype) v0.0.6 - 02/25/2016
     * Rename some blocks for consistency.
     * Return nil on EOF from source blocks instead of exiting.

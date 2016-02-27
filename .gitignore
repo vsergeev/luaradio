@@ -1,3 +1,5 @@
 *.o
 *.so
 *.swp
+
+embed/build/

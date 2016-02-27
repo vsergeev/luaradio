@@ -1,4 +1,5 @@
 SRC_DIR = ..
+DEMO_DIR = demos
 BUILD_DIR = build
 GEN_DIR = $(BUILD_DIR)/gen
 
@@ -8,12 +9,16 @@ LIBNAME = luaradio
 LIB_SRCS = libluaradio.c
 LUA_SRCS = $(shell find $(SRC_DIR)/radio -type f -name "*.lua")
 
+DEMO_SRCS = $(DEMO_DIR)/fmradio.c $(DEMO_DIR)/rds-timesync.c
+
 ################################################################################
 
 SHARED_LIB = $(BUILD_DIR)/lib$(LIBNAME).so
 STATIC_LIB = $(BUILD_DIR)/lib$(LIBNAME).a
 LUA_C_SRCS := $(patsubst $(SRC_DIR)/%.lua, $(GEN_DIR)/%.c, $(LUA_SRCS))
 LIB_OBJS := $(patsubst $(GEN_DIR)/%.c, $(BUILD_DIR)/%.o, $(LUA_C_SRCS)) $(patsubst %.c, $(BUILD_DIR)/%.o, $(LIB_SRCS))
+
+DEMO_BINS = $(patsubst $(DEMO_DIR)/%.c, $(BUILD_DIR)/$(DEMO_DIR)/%, $(DEMO_SRCS))
 
 ################################################################################
 
@@ -48,11 +53,18 @@ all: lib
 .PHONY: lib
 lib: $(SHARED_LIB) $(STATIC_LIB)
 
+.PHONY: demos
+demos: $(SHARED_LIB) $(DEMO_BINS)
+
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)
 
 ################################################################################
+
+$(BUILD_DIR)/$(DEMO_DIR)/%: $(DEMO_DIR)/%.c $(SHARED_LIB)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -I./ $< -o $@ -L$(BUILD_DIR) -l$(LIBNAME) $(LIBFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
 
 $(STATIC_LIB): $(LIB_OBJS)
 	ar rcs $@ $^

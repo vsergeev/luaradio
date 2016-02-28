@@ -1,5 +1,6 @@
 SRC_DIR = ..
 DEMO_DIR = demos
+TEST_DIR = tests
 BUILD_DIR = build
 GEN_DIR = $(BUILD_DIR)/gen
 
@@ -10,6 +11,7 @@ LIB_SRCS = libluaradio.c
 LUA_SRCS = $(shell find $(SRC_DIR)/radio -type f -name "*.lua")
 
 DEMO_SRCS = $(DEMO_DIR)/fmradio.c $(DEMO_DIR)/rds-timesync.c
+TEST_SRCS = $(TEST_DIR)/test_api.c
 
 ################################################################################
 
@@ -19,6 +21,7 @@ LUA_C_SRCS := $(patsubst $(SRC_DIR)/%.lua, $(GEN_DIR)/%.c, $(LUA_SRCS))
 LIB_OBJS := $(patsubst $(GEN_DIR)/%.c, $(BUILD_DIR)/%.o, $(LUA_C_SRCS)) $(patsubst %.c, $(BUILD_DIR)/%.o, $(LIB_SRCS))
 
 DEMO_BINS = $(patsubst $(DEMO_DIR)/%.c, $(BUILD_DIR)/$(DEMO_DIR)/%, $(DEMO_SRCS))
+TEST_BINS = $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/$(TEST_DIR)/%, $(TEST_SRCS))
 
 ################################################################################
 
@@ -56,11 +59,24 @@ lib: $(SHARED_LIB) $(STATIC_LIB)
 .PHONY: demos
 demos: $(SHARED_LIB) $(DEMO_BINS)
 
+.PHONY: tests
+tests: $(SHARED_LIB) $(TEST_BINS)
+
+.PHONY: runtests
+runtests: $(TEST_BINS)
+	for f in $(TEST_BINS); do \
+		LD_LIBRARY_PATH=$(BUILD_DIR) ./$$f; \
+	done
+
 .PHONY: clean
 clean:
 	rm -rf $(BUILD_DIR)
 
 ################################################################################
+
+$(BUILD_DIR)/$(TEST_DIR)/%: $(TEST_DIR)/%.c $(SHARED_LIB)
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -I./ $< -o $@ -L$(BUILD_DIR) -l$(LIBNAME) $(LIBFLAGS) $(LDFLAGS) $(LDFLAGS_EXTRA)
 
 $(BUILD_DIR)/$(DEMO_DIR)/%: $(DEMO_DIR)/%.c $(SHARED_LIB)
 	@mkdir -p $(dir $@)

@@ -1,3 +1,8 @@
+* (Prototype) v0.0.8 - 02/28/2016
+    * Add libluaradio library with a C API to the LuaRadio runtime.
+    * Add fmradio and rds-timesync demos for libluaradio.
+    * Add standalone luaradio interpreter.
+
 * (Prototype) v0.0.7 - 02/26/2016
     * Add platform module with platform-specific constants and allocator.
     * Handle missing library gracefully in RtlSdrSource and PulseAudioSink.

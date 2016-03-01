@@ -3,7 +3,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local types = require('radio.types')
 
-local FileIQSource = block.factory("FileIQSource")
+local IQFileSource = block.factory("IQFileSource")
 
 -- IQ Formats
 ffi.cdef[[
@@ -48,7 +48,7 @@ ffi.cdef[[
     } iq_format_f64_t;
 ]]
 
-function FileIQSource:instantiate(file, format, rate)
+function IQFileSource:instantiate(file, format, rate)
     local supported_formats = {
         u8    = {ctype = "iq_format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
         s8    = {ctype = "iq_format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
@@ -81,7 +81,7 @@ function FileIQSource:instantiate(file, format, rate)
     self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)})
 end
 
-function FileIQSource:get_rate()
+function IQFileSource:get_rate()
     return self.rate
 end
 
@@ -95,7 +95,7 @@ ffi.cdef[[
     int ferror(FILE *stream);
 ]]
 
-function FileIQSource:initialize()
+function IQFileSource:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "rb")
         assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
@@ -112,7 +112,7 @@ local function swap_bytes(x)
     end
 end
 
-function FileIQSource:process()
+function IQFileSource:process()
     -- Allocate buffer for raw samples
     local raw_samples = ffi.new(self.format.ctype .. "[?]", self.chunk_size)
 
@@ -144,4 +144,4 @@ function FileIQSource:process()
     return samples
 end
 
-return {FileIQSource = FileIQSource}
+return {IQFileSource = IQFileSource}

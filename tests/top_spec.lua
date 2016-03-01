@@ -25,8 +25,8 @@ describe("top level test", function ()
 
             -- Build the pipeline
             local top = radio.CompositeBlock()
-            local src1 = radio.FileIQSource(src1_fd, 'f32le', 1000000)
-            local src2 = radio.FileIQSource(src2_fd, 'f32le', 1000000)
+            local src1 = radio.IQFileSource(src1_fd, 'f32le', 1000000)
+            local src2 = radio.IQFileSource(src2_fd, 'f32le', 1000000)
             local b1 = radio.MultiplyConjugateBlock()
             local b2 = radio.LowpassFilterBlock(16, 100e3)
             local b3 = radio.FrequencyDiscriminatorBlock(5.0)

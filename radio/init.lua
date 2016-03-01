@@ -4,6 +4,7 @@ return {
     block = require('radio.core.block'),
     object = require('radio.core.object'),
     util = require('radio.core.util'),
+    types = require('radio.types'),
 
     -- Blocks
     CompositeBlock = require('radio.core.composite').CompositeBlock,
@@ -50,11 +51,11 @@ return {
     DecimatorBlock = require('radio.composites.decimator').DecimatorBlock,
 
     -- Types
-    ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type,
-    Float32Type = require('radio.types.float32').Float32Type,
-    Integer32Type = require('radio.types.integer32').Integer32Type,
-    ByteType = require('radio.types.byte').ByteType,
-    BitType = require('radio.types.bit').BitType,
-    CStructType = require('radio.types.cstruct').CStructType,
-    ObjectType = require('radio.types.object').ObjectType,
+    ComplexFloat32Type = require('radio.types').ComplexFloat32Type,
+    Float32Type = require('radio.types').Float32Type,
+    Integer32Type = require('radio.types').Integer32Type,
+    ByteType = require('radio.types').ByteType,
+    BitType = require('radio.types').BitType,
+    CStructType = require('radio.types').CStructType,
+    ObjectType = require('radio.types').ObjectType,
 }

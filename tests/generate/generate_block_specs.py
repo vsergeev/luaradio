@@ -704,8 +704,8 @@ def generate_fileiqdescriptor_spec():
 
     return vectors
 
-@raw_spec("tests/blocks/sources/filedescriptor_spec.lua")
-def generate_filedescriptor_spec():
+@raw_spec("tests/blocks/sources/file_spec.lua")
+def generate_file_spec():
     numpy_vectors = [
         # Format, numpy array, byteswap
         ( "u8", numpy.array(numpy.random.randint(0, 255, 256*2), dtype=numpy.uint8), False ),
@@ -753,7 +753,7 @@ def generate_filedescriptor_spec():
     vectors.append("")
 
     # Vectors
-    vectors.append("jigs.TestSourceBlock(radio.FileDescriptorSource, {")
+    vectors.append("jigs.TestSourceBlock(radio.FileSource, {")
     for (fmt, array, byteswap) in numpy_vectors:
         # Build byte array
         buf = array.tobytes() if not byteswap else array.byteswap().tobytes()

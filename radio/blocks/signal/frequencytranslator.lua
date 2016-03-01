@@ -3,21 +3,21 @@ local ffi = require('ffi')
 
 local platform = require('radio.core.platform')
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
+local types = require('radio.types')
 
 local FrequencyTranslatorBlock = block.factory("FrequencyTranslatorBlock")
 
 function FrequencyTranslatorBlock:instantiate(offset)
     self.offset = offset
 
-    self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
 end
 
 function FrequencyTranslatorBlock:initialize()
     self.omega = 2*math.pi*(self.offset/self:get_rate())
 
-    self.rotation = ComplexFloat32Type(math.cos(self.omega), math.sin(self.omega))
-    self.phi = ComplexFloat32Type(1, 0)
+    self.rotation = types.ComplexFloat32Type(math.cos(self.omega), math.sin(self.omega))
+    self.phi = types.ComplexFloat32Type(1, 0)
 end
 
 if platform.features.volk then
@@ -28,7 +28,7 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function FrequencyTranslatorBlock:process(x)
-        local out = ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32Type.vector(x.length)
         libvolk.volk_32fc_s32fc_x2_rotator_32fc(out.data, x.data, self.rotation, self.phi, x.length)
 
         return out
@@ -37,7 +37,7 @@ if platform.features.volk then
 else
 
     function FrequencyTranslatorBlock:process(x)
-        local out = ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32Type.vector(x.length)
 
         for i = 0, x.length-1 do
             out.data[i] = x.data[i] * self.phi

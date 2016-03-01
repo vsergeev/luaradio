@@ -2,12 +2,13 @@ local bit = require('bit')
 
 local object = require('radio.core.object')
 local block = require('radio.core.block')
-local ObjectType = require('radio.types.object').ObjectType
+local types = require('radio.types')
+
 local RDSFrameType = require('radio.blocks.protocol.rdsframe').RDSFrameType
 
 -- RDS Packet Type
 
-local RDSPacketType = ObjectType.factory()
+local RDSPacketType = types.ObjectType.factory()
 
 function RDSPacketType.new(frame, header, data)
     local self = setmetatable({}, RDSPacketType)

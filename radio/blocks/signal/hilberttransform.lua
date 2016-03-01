@@ -2,9 +2,8 @@ local ffi = require('ffi')
 
 local platform = require('radio.core.platform')
 local block = require('radio.core.block')
+local types = require('radio.types')
 local filter_utils = require('radio.blocks.signal.filter_utils')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('radio.types.float32').Float32Type
 
 local HilbertTransformBlock = block.factory("HilbertTransformBlock")
 
@@ -16,14 +15,14 @@ function HilbertTransformBlock:instantiate(num_taps, window_type)
 
     -- Generate Hilbert transform taps
     local h = filter_utils.fir_hilbert_transform(num_taps, window_type)
-    self.hilbert_taps = Float32Type.vector(num_taps)
+    self.hilbert_taps = types.Float32Type.vector(num_taps)
     for i = 0, num_taps-1 do
         self.hilbert_taps.data[i].value = h[i+1]
     end
 
-    self.state = Float32Type.vector(num_taps)
+    self.state = types.Float32Type.vector(num_taps)
 
-    self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.ComplexFloat32Type)})
 end
 
 ffi.cdef[[
@@ -38,8 +37,8 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function HilbertTransformBlock:process(x)
-        local out = ComplexFloat32Type.vector(x.length)
-        local filter_out = Float32Type()
+        local out = types.ComplexFloat32Type.vector(x.length)
+        local filter_out = types.Float32Type()
 
         for i = 0, x.length-1 do
             -- Shift the state samples down
@@ -50,7 +49,7 @@ if platform.features.volk then
             libvolk.volk_32f_x2_dot_prod_32f_a(filter_out, self.state.data, self.hilbert_taps.data, self.hilbert_taps.length)
 
             -- Create complex output with delayed real and filter output imaginary
-            out.data[i] = ComplexFloat32Type(self.state.data[(self.hilbert_taps.length-1)/2].value, filter_out.value)
+            out.data[i] = types.ComplexFloat32Type(self.state.data[(self.hilbert_taps.length-1)/2].value, filter_out.value)
         end
 
         return out
@@ -59,7 +58,7 @@ if platform.features.volk then
 else
 
   function HilbertTransformBlock:process(x)
-        local out = ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32Type.vector(x.length)
 
         for i = 0, x.length-1 do
             -- Shift the state samples down
@@ -67,13 +66,13 @@ else
             -- Insert sample into state
             self.state.data[0] = x.data[i]
             -- Inner product of state and taps for imaginary component
-            local filter_out = Float32Type()
+            local filter_out = types.Float32Type()
             for j = 0, self.state.length-1 do
                 filter_out = filter_out + self.state.data[j] * self.hilbert_taps.data[j]
             end
 
             -- Create complex output with delayed real and filter output imaginary
-            out.data[i] = ComplexFloat32Type(self.state.data[(self.hilbert_taps.length-1)/2].value, filter_out.value)
+            out.data[i] = types.ComplexFloat32Type(self.state.data[(self.hilbert_taps.length-1)/2].value, filter_out.value)
         end
 
         return out

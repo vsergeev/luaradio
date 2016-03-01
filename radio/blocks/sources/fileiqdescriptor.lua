@@ -3,7 +3,7 @@ local os = require('os')
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
+local types = require('radio.types')
 
 local FileIQDescriptorSource = block.factory("FileIQDescriptorSource")
 
@@ -75,7 +75,7 @@ function FileIQDescriptorSource:instantiate(fd, format, rate)
 
     self.chunk_size = 8192
 
-    self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
+    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)})
 end
 
 function FileIQDescriptorSource:get_rate()
@@ -126,7 +126,7 @@ function FileIQDescriptorSource:process()
     end
 
     -- Convert raw samples to complex float32 samples
-    local samples = ComplexFloat32Type.vector(num_samples)
+    local samples = types.ComplexFloat32Type.vector(num_samples)
     for i = 0, num_samples-1 do
         samples.data[i].real = (raw_samples[i].real.value - self.format.offset)*self.format.scale
         samples.data[i].imag = (raw_samples[i].imag.value - self.format.offset)*self.format.scale

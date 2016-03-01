@@ -2,12 +2,12 @@ local ffi = require('ffi')
 
 local platform = require('radio.core.platform')
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
+local types = require('radio.types')
 
 local MultiplyConjugateBlock = block.factory("MultiplyConjugateBlock")
 
 function MultiplyConjugateBlock:instantiate()
-    self:add_type_signature({block.Input("in1", ComplexFloat32Type), block.Input("in2", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in1", types.ComplexFloat32Type), block.Input("in2", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
 end
 
 if platform.features.volk then
@@ -18,7 +18,7 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function MultiplyConjugateBlock:process(x, y)
-        local out = ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32Type.vector(x.length)
         libvolk.volk_32fc_x2_multiply_conjugate_32fc_a(out.data, x.data, y.data, x.length)
         return out
     end
@@ -26,7 +26,7 @@ if platform.features.volk then
 else
 
     function MultiplyConjugateBlock:process(x, y)
-        local out = ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32Type.vector(x.length)
 
         for i = 0, x.length - 1 do
             out.data[i] = x.data[i] * y.data[i]:conj()

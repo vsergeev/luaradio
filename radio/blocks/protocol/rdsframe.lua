@@ -2,9 +2,7 @@ local ffi = require('ffi')
 local bit = require('bit')
 
 local block = require('radio.core.block')
-local BitType = require('radio.types.bit').BitType
-local CStructType = require('radio.types.cstruct').CStructType
-local bits_to_number = require('radio.types.bit').bits_to_number
+local types = require('radio.types')
 
 -- RDS Related constants
 
@@ -49,18 +47,18 @@ local rds_frame_type_mt = {
     end,
 }
 
-local RDSFrameType = CStructType.factory("rds_frame_t", rds_frame_type_mt)
+local RDSFrameType = types.CStructType.factory("rds_frame_t", rds_frame_type_mt)
 
 -- RDS Frame Block
 
 local RDSFrameBlock = block.factory("RDSFrameBlock")
 
 function RDSFrameBlock:instantiate()
-    self.rds_frame = BitType.vector(RDS_FRAME_LEN)
+    self.rds_frame = types.BitType.vector(RDS_FRAME_LEN)
     self.rds_frame_length = 0
     self.synchronized = false
 
-    self:add_type_signature({block.Input("in", BitType)}, {block.Output("out", RDSFrameType)})
+    self:add_type_signature({block.Input("in", types.BitType)}, {block.Output("out", RDSFrameType)})
 end
 
 -- RDS Block Validation
@@ -139,10 +137,10 @@ function RDSFrameBlock:process(x)
         -- Try to validate the frame
         if self.rds_frame_length == RDS_FRAME_LEN then
             -- Extract blocks as numbers
-            local block_a = bits_to_number(self.rds_frame, RDS_BLOCK_LEN*0, RDS_BLOCK_LEN)
-            local block_b = bits_to_number(self.rds_frame, RDS_BLOCK_LEN*1, RDS_BLOCK_LEN)
-            local block_c = bits_to_number(self.rds_frame, RDS_BLOCK_LEN*2, RDS_BLOCK_LEN)
-            local block_d = bits_to_number(self.rds_frame, RDS_BLOCK_LEN*3, RDS_BLOCK_LEN)
+            local block_a = types.bits_to_number(self.rds_frame, RDS_BLOCK_LEN*0, RDS_BLOCK_LEN)
+            local block_b = types.bits_to_number(self.rds_frame, RDS_BLOCK_LEN*1, RDS_BLOCK_LEN)
+            local block_c = types.bits_to_number(self.rds_frame, RDS_BLOCK_LEN*2, RDS_BLOCK_LEN)
+            local block_d = types.bits_to_number(self.rds_frame, RDS_BLOCK_LEN*3, RDS_BLOCK_LEN)
 
             -- Validate and correct the blocks
             correct_block_a = validate_block(block_a, RDS_OFFSET_WORDS.A)

@@ -1,12 +1,12 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
-local Float32Type = require('radio.types.float32').Float32Type
+local types = require('radio.types')
 
 local PulseAudioSink = block.factory("PulseAudioSink")
 
 function PulseAudioSink:instantiate()
-    self:add_type_signature({block.Input("in", Float32Type)}, {})
+    self:add_type_signature({block.Input("in", types.Float32Type)}, {})
 end
 
 ffi.cdef[[

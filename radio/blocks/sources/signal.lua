@@ -1,7 +1,7 @@
 local math = require('math')
 
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
+local types = require('radio.types')
 
 local SignalSource = block.factory("SignalSource")
 
@@ -20,7 +20,7 @@ function SignalSource:instantiate(options, rate)
     self.rate = rate
     self.chunk_size = 8192
 
-    self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)}, supported_signals[options.signal].process, supported_signals[options.signal].initialize)
+    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)}, supported_signals[options.signal].process, supported_signals[options.signal].initialize)
 end
 
 function SignalSource:get_rate()
@@ -32,12 +32,12 @@ function SignalSource:initialize_exponential()
     self.amplitude = self.options.amplitude or 1.0
     self.omega = 2*math.pi*(self.frequency/self.rate)
 
-    self.rotation = ComplexFloat32Type(math.cos(self.omega), math.sin(self.omega))
-    self.phi = ComplexFloat32Type(1, 0)
+    self.rotation = types.ComplexFloat32Type(math.cos(self.omega), math.sin(self.omega))
+    self.phi = types.ComplexFloat32Type(1, 0)
 end
 
 function SignalSource:process_exponential()
-    local out = ComplexFloat32Type.vector(self.chunk_size)
+    local out = types.ComplexFloat32Type.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         out.data[i] = self.phi:scalar_mul(self.amplitude)

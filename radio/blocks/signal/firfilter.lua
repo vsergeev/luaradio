@@ -3,30 +3,24 @@ local ffi = require('ffi')
 local platform = require('radio.core.platform')
 local block = require('radio.core.block')
 local object = require('radio.core.object')
-local Vector = require('radio.core.vector').Vector
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('radio.types.float32').Float32Type
+local vector = require('radio.core.vector')
+local types = require('radio.types')
 
 local FIRFilterBlock = block.factory("FIRFilterBlock")
 
 function FIRFilterBlock:instantiate(taps)
-    if object.isinstanceof(taps, Vector) and taps.type == Float32Type then
+    if object.isinstanceof(taps, vector.Vector) and taps.type == types.Float32Type then
         self.taps = taps
     else
-        self.taps = Float32Type.vector_from_array(taps)
+        self.taps = types.Float32Type.vector_from_array(taps)
     end
 
-    self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)}, FIRFilterBlock.process_complex)
-    self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)}, FIRFilterBlock.process_real)
+    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)}, FIRFilterBlock.process_complex)
+    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)}, FIRFilterBlock.process_real)
 end
 
 function FIRFilterBlock:initialize()
-    if self.signature.inputs[1].data_type == ComplexFloat32Type then
-        self.data_type = ComplexFloat32Type
-    else
-        self.data_type = Float32Type
-    end
-
+    self.data_type = self.signature.inputs[1].data_type
     self.state = self.data_type.vector(self.taps.length)
 end
 
@@ -43,7 +37,7 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function FIRFilterBlock:process_complex(x)
-        local out = ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32Type.vector(x.length)
 
         for i = 0, x.length-1 do
             -- Shift the state samples down
@@ -58,7 +52,7 @@ if platform.features.volk then
     end
 
     function FIRFilterBlock:process_real(x)
-        local out = Float32Type.vector(x.length)
+        local out = types.Float32Type.vector(x.length)
 
         for i = 0, x.length-1 do
             -- Shift the state samples down
@@ -75,7 +69,7 @@ if platform.features.volk then
 else
 
     function FIRFilterBlock:process_complex(x)
-        local out = ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32Type.vector(x.length)
 
         for i = 0, x.length-1 do
             -- Shift the state samples down
@@ -92,7 +86,7 @@ else
     end
 
     function FIRFilterBlock:process_real(x)
-        local out = Float32Type.vector(x.length)
+        local out = types.Float32Type.vector(x.length)
 
         for i = 0, x.length-1 do
             -- Shift the state samples down

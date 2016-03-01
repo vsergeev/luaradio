@@ -1,9 +1,7 @@
 local math = require('math')
 
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('radio.types.float32').Float32Type
-local Integer32Type = require('radio.types.integer32').Integer32Type
+local types = require('radio.types')
 
 local DownsamplerBlock = block.factory("DownsamplerBlock")
 
@@ -11,9 +9,9 @@ function DownsamplerBlock:instantiate(factor)
     self.factor = factor
     self.index = 0
 
-    self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)})
-    self:add_type_signature({block.Input("in", Integer32Type)}, {block.Output("out", Integer32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.Integer32Type)}, {block.Output("out", types.Integer32Type)})
 end
 
 function DownsamplerBlock:get_rate()

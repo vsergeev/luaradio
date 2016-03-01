@@ -1,8 +1,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('radio.types.float32').Float32Type
+local types = require('radio.types')
 
 local SamplerBlock = block.factory("SamplerBlock")
 
@@ -11,8 +10,8 @@ local ClockState = {LOW = 1, HIGH = 2}
 function SamplerBlock:instantiate()
     self.clock_hysteresis = ClockState.LOW
 
-    self:add_type_signature({block.Input("data", ComplexFloat32Type), block.Input("clock", Float32Type)}, {block.Output("out", ComplexFloat32Type)})
-    self:add_type_signature({block.Input("data", Float32Type), block.Input("clock", Float32Type)}, {block.Output("out", Float32Type)})
+    self:add_type_signature({block.Input("data", types.ComplexFloat32Type), block.Input("clock", types.Float32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("data", types.Float32Type), block.Input("clock", types.Float32Type)}, {block.Output("out", types.Float32Type)})
 end
 
 function SamplerBlock:initialize()

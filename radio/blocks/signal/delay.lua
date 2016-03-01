@@ -1,9 +1,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
-local Float32Type = require('radio.types.float32').Float32Type
-local Integer32Type = require('radio.types.integer32').Integer32Type
+local types = require('radio.types')
 
 local DelayBlock = block.factory("DelayBlock")
 
@@ -11,9 +9,9 @@ function DelayBlock:instantiate(num_samples)
     assert(num_samples > 0, "Number of samples must be greater than 0.")
     self.num_samples = num_samples
 
-    self:add_type_signature({block.Input("in", ComplexFloat32Type)}, {block.Output("out", ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", Float32Type)}, {block.Output("out", Float32Type)})
-    self:add_type_signature({block.Input("in", Integer32Type)}, {block.Output("out", Integer32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.Integer32Type)}, {block.Output("out", types.Integer32Type)})
 end
 
 function DelayBlock:initialize()

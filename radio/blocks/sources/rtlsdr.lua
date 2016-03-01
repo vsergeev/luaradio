@@ -2,8 +2,7 @@ local ffi = require('ffi')
 
 local block = require('radio.core.block')
 local platform = require('radio.core.platform')
-local vector = require('radio.core.vector')
-local ComplexFloat32Type = require('radio.types.complexfloat32').ComplexFloat32Type
+local types = require('radio.types')
 
 local RtlSdrSource = block.factory("RtlSdrSource")
 
@@ -11,7 +10,7 @@ function RtlSdrSource:instantiate(frequency, rate)
     self.frequency = frequency
     self.rate = rate
 
-    self:add_type_signature({}, {block.Output("out", ComplexFloat32Type)})
+    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)})
 end
 
 function RtlSdrSource:get_rate()
@@ -70,7 +69,7 @@ function RtlSdrSource:process()
     assert(self.n_read[0] == self.buf_size, "Short read. Aborting...")
 
     -- Convert to complex u8 to complex floats
-    local out = ComplexFloat32Type.vector(self.buf_size/2)
+    local out = types.ComplexFloat32Type.vector(self.buf_size/2)
     for i = 0, out.length-1 do
         out.data[i].real = (self.buf[2*i]   - 127.5) * (1/127.5)
         out.data[i].imag = (self.buf[2*i+1] - 127.5) * (1/127.5)

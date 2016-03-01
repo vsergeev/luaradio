@@ -3,7 +3,7 @@ local os = require('os')
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
-local Float32Type = require('radio.types.float32').Float32Type
+local types = require('radio.types')
 
 local FileDescriptorSource = block.factory("FileDescriptorSource")
 
@@ -67,7 +67,7 @@ function FileDescriptorSource:instantiate(fd, format, rate)
 
     self.chunk_size = 8192
 
-    self:add_type_signature({}, {block.Output("out", Float32Type)})
+    self:add_type_signature({}, {block.Output("out", types.Float32Type)})
 end
 
 function FileDescriptorSource:get_rate()
@@ -117,7 +117,7 @@ function FileDescriptorSource:process()
     end
 
     -- Convert raw samples to float32 samples
-    local samples = Float32Type.vector(num_samples)
+    local samples = types.Float32Type.vector(num_samples)
     for i = 0, num_samples-1 do
         samples.data[i].value = (raw_samples[i].value - self.format.offset)*self.format.scale
     end

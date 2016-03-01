@@ -1,14 +1,15 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local types = require('radio.types')
 local filter_utils = require('radio.blocks.signal.filter_utils')
-local Float32Type = require('radio.types.float32').Float32Type
+
 local IIRFilterBlock = require('radio.blocks.signal.iirfilter').IIRFilterBlock
 
 local FMDeemphasisFilterBlock = block.factory("FMDeemphasisFilterBlock", IIRFilterBlock)
 
 function FMDeemphasisFilterBlock:instantiate(tau)
-    IIRFilterBlock.instantiate(self, Float32Type.vector(2), Float32Type.vector(2))
+    IIRFilterBlock.instantiate(self, types.Float32Type.vector(2), types.Float32Type.vector(2))
 
     self.tau = tau
 end

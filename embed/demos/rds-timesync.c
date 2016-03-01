@@ -28,7 +28,7 @@ const char *script_template =
     "local e2 = radio.SlicerBlock()\n"
     "local e3 = radio.DifferentialDecoderBlock()\n"
     "local e4 = radio.RDSFrameBlock()\n"
-    "local e5 = radio.FileSink(%d)\n"
+    "local e5 = radio.RawFileSink(%d)\n"
     ""
     "top:connect(a0, a1, a2, a3, f0)\n"
     "top:connect(f0, b1)\n"

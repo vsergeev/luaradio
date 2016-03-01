@@ -35,7 +35,7 @@ return {
     JSONSink = require('radio.blocks.sinks.json').JSONSink,
     PulseAudioSink = require('radio.blocks.sinks.pulseaudio').PulseAudioSink,
     FileIQSource = require('radio.blocks.sources.fileiq').FileIQSource,
-    FileSource = require('radio.blocks.sources.file').FileSource,
+    RealFileSource = require('radio.blocks.sources.realfile').RealFileSource,
     NullSource = require('radio.blocks.sources.null').NullSource,
     RandomSource = require('radio.blocks.sources.random').RandomSource,
     SignalSource = require('radio.blocks.sources.signal').SignalSource,

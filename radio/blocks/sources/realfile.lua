@@ -3,9 +3,9 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local types = require('radio.types')
 
-local FileSource = block.factory("FileSource")
+local RealFileSource = block.factory("RealFileSource")
 
--- IQ Formats
+-- Real Formats
 ffi.cdef[[
     typedef struct {
         union { uint8_t bytes[1]; uint8_t value; };
@@ -40,7 +40,7 @@ ffi.cdef[[
     } format_f64_t;
 ]]
 
-function FileSource:instantiate(file, format, rate)
+function RealFileSource:instantiate(file, format, rate)
     local supported_formats = {
         u8    = {ctype = "format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
         s8    = {ctype = "format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
@@ -73,7 +73,7 @@ function FileSource:instantiate(file, format, rate)
     self:add_type_signature({}, {block.Output("out", types.Float32Type)})
 end
 
-function FileSource:get_rate()
+function RealFileSource:get_rate()
     return self.rate
 end
 
@@ -87,7 +87,7 @@ ffi.cdef[[
     int ferror(FILE *stream);
 ]]
 
-function FileSource:initialize()
+function RealFileSource:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "rb")
         assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
@@ -104,7 +104,7 @@ local function swap_bytes(x)
     end
 end
 
-function FileSource:process()
+function RealFileSource:process()
     -- Allocate buffer for raw samples
     local raw_samples = ffi.new(self.format.ctype .. "[?]", self.chunk_size)
 
@@ -134,4 +134,4 @@ function FileSource:process()
     return samples
 end
 
-return {FileSource = FileSource}
+return {RealFileSource = RealFileSource}

@@ -30,7 +30,6 @@ return {
     BinaryPhaseCorrectorBlock = require('radio.blocks.signal.binaryphasecorrector').BinaryPhaseCorrectorBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     PLLBlock = require('radio.blocks.signal.pllblock').PLLBlock,
-    FileDescriptorSink = require('radio.blocks.sinks.filedescriptor').FileDescriptorSink,
     FileSink = require('radio.blocks.sinks.file').FileSink,
     PrintSink = require('radio.blocks.sinks.print').PrintSink,
     JSONSink = require('radio.blocks.sinks.json').JSONSink,

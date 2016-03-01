@@ -15,5 +15,5 @@ radio.CompositeBlock():connect(
     radio.FIRFilterBlock(random_taps(256)),
     radio.FIRFilterBlock(random_taps(256)),
     radio.FIRFilterBlock(random_taps(256)),
-    radio.FileDescriptorSink(1)
+    radio.FileSink(1)
 ):run()

@@ -412,6 +412,11 @@ function CompositeBlock:start(multiprocess)
                 running = false
             end
         end
+
+        -- Clean up all blocks
+        for _, block in ipairs(execution_order) do
+            block:cleanup()
+        end
     else
         self._pids = {}
 

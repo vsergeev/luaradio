@@ -76,11 +76,21 @@ def generate_test_vector(func, args, inputs, note=None):
     s += tab + "},\n"
     return s
 
-def generate_spec(block_name, test_vectors, epsilon):
+def generate_block_spec(block_name, test_vectors, epsilon):
     s = "local radio = require('radio')\n"
     s += "local jigs = require('tests.jigs')\n"
     s += "\n"
     s += "jigs.TestBlock(radio.%s, {\n" % block_name
+    s += "".join(test_vectors)
+    s += "}, {epsilon = %.1e})\n" % epsilon
+    return s
+
+def generate_source_spec(block_name, test_vectors, epsilon):
+    s = "local radio = require('radio')\n"
+    s += "local jigs = require('tests.jigs')\n"
+    s += "local buffer = require('tests.buffer')\n"
+    s += "\n"
+    s += "jigs.TestSourceBlock(radio.%s, {\n" % block_name
     s += "".join(test_vectors)
     s += "}, {epsilon = %.1e})\n" % epsilon
     return s
@@ -99,7 +109,18 @@ def block_spec(block_name, filename, epsilon=EPSILON):
     def wrap(f):
         def wrapped():
             test_vectors = f()
-            spec = generate_spec(block_name, test_vectors, epsilon)
+            spec = generate_block_spec(block_name, test_vectors, epsilon)
+            write_to(filename, spec)
+        AllSpecs.append(wrapped)
+        return wrapped
+
+    return wrap
+
+def source_spec(block_name, filename, epsilon=EPSILON):
+    def wrap(f):
+        def wrapped():
+            test_vectors = f()
+            spec = generate_source_spec(block_name, test_vectors, epsilon)
             write_to(filename, spec)
         AllSpecs.append(wrapped)
         return wrapped
@@ -154,6 +175,8 @@ def fir_hilbert_transform(num_taps, window_func):
 
     return h.astype(numpy.float32)
 
+################################################################################
+# Signal block test vectors
 ################################################################################
 
 @block_spec("FIRFilterBlock", "tests/blocks/signal/firfilter_spec.lua")
@@ -581,6 +604,10 @@ def generate_rootraisedcosinefilter_spec():
 
     return vectors
 
+################################################################################
+# Protocol block test vectors
+################################################################################
+
 @block_spec("RDSFrameBlock", "tests/blocks/protocol/rdsframe_spec.lua")
 def generate_rdsframe_spec():
     class RDSFrame:
@@ -638,135 +665,123 @@ def generate_rdsframe_spec():
 
     return vectors
 
-@raw_spec("tests/blocks/sources/iqfile_spec.lua")
-def generate_iqfile_spec():
-    numpy_vectors = [
-        # Format, numpy array, byteswap
-        ( "u8", numpy.array(numpy.random.randint(0, 255, 256*2), dtype=numpy.uint8), False ),
-        ( "s8", numpy.array(numpy.random.randint(-128, 127, 256*2), dtype=numpy.int8), False ),
-        ( "u16le", numpy.array(numpy.random.randint(0, 65535, 256*2), dtype=numpy.uint16), False ),
-        ( "u16be", numpy.array(numpy.random.randint(0, 65535, 256*2), dtype=numpy.uint16), True ),
-        ( "s16le", numpy.array(numpy.random.randint(-32768, 32767, 256*2), dtype=numpy.int16), False ),
-        ( "s16be", numpy.array(numpy.random.randint(-32768, 32767, 256*2), dtype=numpy.int16), True ),
-        ( "u32le", numpy.array(numpy.random.randint(0, 4294967295, 256*2), dtype=numpy.uint32), False ),
-        ( "u32be", numpy.array(numpy.random.randint(0, 4294967295, 256*2), dtype=numpy.uint32), True ),
-        ( "s32le", numpy.array(numpy.random.randint(-2147483648, 2147483647, 256*2), dtype=numpy.int32), False ),
-        ( "s32be", numpy.array(numpy.random.randint(-2147483648, 2147483647, 256*2), dtype=numpy.int32), True ),
-        ( "f32le", numpy.array(numpy.around(numpy.random.rand(256*2), PRECISION), dtype=numpy.float32), False ),
-        ( "f32be", numpy.array(numpy.around(numpy.random.rand(256*2), PRECISION), dtype=numpy.float32), True ),
-        ( "f64le", numpy.array(numpy.around(numpy.random.rand(256*2), PRECISION), dtype=numpy.float64), False ),
-        ( "f64be", numpy.array(numpy.around(numpy.random.rand(256*2), PRECISION), dtype=numpy.float64), True),
-    ]
+################################################################################
+# Source block test vectors
+################################################################################
 
-    def ascomplex64(x):
-        if type(x[0]) == numpy.uint8:
-            y = ((x - 127.5) / 127.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.int8:
-            y = ((x - 0) / 127.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.uint16:
-            y = ((x - 32767.5) / 32767.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.int16:
-            y = ((x - 0) / 32767.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.uint32:
-            y = ((x - 2147483647.5) / 2147483647.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.int32:
-            y = ((x - 0) / 2147483647.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.float32:
-            y = x
-        elif type(x[0]) == numpy.float64:
-            y = x.astype(numpy.float32)
-        return numpy.around(numpy.array([numpy.complex64(complex(y[i], y[i+1])) for i in range(0, len(y), 2)]), PRECISION)
+@source_spec("NullSource", "tests/blocks/sources/null_spec.lua")
+def generate_null_spec():
+    def process():
+        return [numpy.array([complex(0, 0) for _ in range(256)]).astype(numpy.complex64)]
 
     vectors = []
-
-    # Header
-    vectors.append("local radio = require('radio')")
-    vectors.append("")
-    vectors.append("local jigs = require('tests.jigs')")
-    vectors.append("local buffer = require('tests.buffer')")
-    vectors.append("")
-
-    # Vectors
-    vectors.append("jigs.TestSourceBlock(radio.IQFileSource, {")
-    for (fmt, array, byteswap) in numpy_vectors:
-        # Build byte array
-        buf = array.tobytes() if not byteswap else array.byteswap().tobytes()
-        buf = ''.join(["\\x%02x" % b for b in buf])
-
-        # Serialize expected output
-        expected_output = serialize(ascomplex64(array))
-
-        vectors.append("\t{")
-        vectors.append("\t\targs = {buffer.open(\"%s\"), \"%s\", 1}," % (buf, fmt))
-        vectors.append("\t\toutputs = {%s}," % expected_output)
-        vectors.append("\t},")
-    vectors.append("}, {epsilon = %.1e})" % EPSILON)
+    vectors.append(generate_test_vector(process, [], [], []))
 
     return vectors
 
-@raw_spec("tests/blocks/sources/realfile_spec.lua")
-def generate_realfile_spec():
+@source_spec("IQFileSource", "tests/blocks/sources/iqfile_spec.lua")
+def generate_iqfile_spec():
     numpy_vectors = [
         # Format, numpy array, byteswap
-        ( "u8", numpy.array(numpy.random.randint(0, 255, 256*2), dtype=numpy.uint8), False ),
-        ( "s8", numpy.array(numpy.random.randint(-128, 127, 256*2), dtype=numpy.int8), False ),
-        ( "u16le", numpy.array(numpy.random.randint(0, 65535, 256*2), dtype=numpy.uint16), False ),
-        ( "u16be", numpy.array(numpy.random.randint(0, 65535, 256*2), dtype=numpy.uint16), True ),
-        ( "s16le", numpy.array(numpy.random.randint(-32768, 32767, 256*2), dtype=numpy.int16), False ),
-        ( "s16be", numpy.array(numpy.random.randint(-32768, 32767, 256*2), dtype=numpy.int16), True ),
-        ( "u32le", numpy.array(numpy.random.randint(0, 4294967295, 256*2), dtype=numpy.uint32), False ),
-        ( "u32be", numpy.array(numpy.random.randint(0, 4294967295, 256*2), dtype=numpy.uint32), True ),
-        ( "s32le", numpy.array(numpy.random.randint(-2147483648, 2147483647, 256*2), dtype=numpy.int32), False ),
-        ( "s32be", numpy.array(numpy.random.randint(-2147483648, 2147483647, 256*2), dtype=numpy.int32), True ),
-        ( "f32le", numpy.array(numpy.around(numpy.random.rand(256*2), PRECISION), dtype=numpy.float32), False ),
-        ( "f32be", numpy.array(numpy.around(numpy.random.rand(256*2), PRECISION), dtype=numpy.float32), True ),
-        ( "f64le", numpy.array(numpy.around(numpy.random.rand(256*2), PRECISION), dtype=numpy.float64), False ),
-        ( "f64be", numpy.array(numpy.around(numpy.random.rand(256*2), PRECISION), dtype=numpy.float64), True),
+        ( "u8", numpy.array([random.randint(0, 255) for _ in range(256*2)], dtype=numpy.uint8), False ),
+        ( "s8", numpy.array([random.randint(-128, 127) for _ in range(256*2)], dtype=numpy.int8), False ),
+        ( "u16le", numpy.array([random.randint(0, 65535) for _ in range(256*2)], dtype=numpy.uint16), False ),
+        ( "u16be", numpy.array([random.randint(0, 65535) for _ in range(256*2)], dtype=numpy.uint16), True ),
+        ( "s16le", numpy.array([random.randint(-32768, 32767) for _ in range(256*2)], dtype=numpy.int16), False ),
+        ( "s16be", numpy.array([random.randint(-32768, 32767) for _ in range(256*2)], dtype=numpy.int16), True ),
+        ( "u32le", numpy.array([random.randint(0, 4294967295) for _ in range(256*2)], dtype=numpy.uint32), False ),
+        ( "u32be", numpy.array([random.randint(0, 4294967295) for _ in range(256*2)], dtype=numpy.uint32), True ),
+        ( "s32le", numpy.array([random.randint(-2147483648, 2147483647) for _ in range(256*2)], dtype=numpy.int32), False ),
+        ( "s32be", numpy.array([random.randint(-2147483648, 2147483647) for _ in range(256*2)], dtype=numpy.int32), True ),
+        ( "f32le", numpy.array(random_float32(256*2), dtype=numpy.float32), False ),
+        ( "f32be", numpy.array(random_float32(256*2), dtype=numpy.float32), True ),
+        ( "f64le", numpy.array(random_float32(256*2), dtype=numpy.float64), False ),
+        ( "f64be", numpy.array(random_float32(256*2), dtype=numpy.float64), True),
     ]
 
-    def asfloat32(x):
-        if type(x[0]) == numpy.uint8:
-            y = ((x - 127.5) / 127.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.int8:
-            y = ((x - 0) / 127.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.uint16:
-            y = ((x - 32767.5) / 32767.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.int16:
-            y = ((x - 0) / 32767.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.uint32:
-            y = ((x - 2147483647.5) / 2147483647.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.int32:
-            y = ((x - 0) / 2147483647.5).astype(numpy.float32)
-        elif type(x[0]) == numpy.float32:
-            y = x
-        elif type(x[0]) == numpy.float64:
-            y = x.astype(numpy.float32)
-        return numpy.around(y, PRECISION)
+    def process_factory(x):
+        def process(filename, fmt, rate):
+            if type(x[0]) == numpy.uint8:
+                y = ((x - 127.5) / 127.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.int8:
+                y = ((x - 0) / 127.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.uint16:
+                y = ((x - 32767.5) / 32767.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.int16:
+                y = ((x - 0) / 32767.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.uint32:
+                y = ((x - 2147483647.5) / 2147483647.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.int32:
+                y = ((x - 0) / 2147483647.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.float32:
+                y = x
+            elif type(x[0]) == numpy.float64:
+                y = x.astype(numpy.float32)
+            return [numpy.around(numpy.array([numpy.complex64(complex(y[i], y[i+1])) for i in range(0, len(y), 2)]), PRECISION)]
+
+        return process
 
     vectors = []
 
-    # Header
-    vectors.append("local radio = require('radio')")
-    vectors.append("")
-    vectors.append("local jigs = require('tests.jigs')")
-    vectors.append("local buffer = require('tests.buffer')")
-    vectors.append("")
-
-    # Vectors
-    vectors.append("jigs.TestSourceBlock(radio.RealFileSource, {")
     for (fmt, array, byteswap) in numpy_vectors:
         # Build byte array
         buf = array.tobytes() if not byteswap else array.byteswap().tobytes()
         buf = ''.join(["\\x%02x" % b for b in buf])
+        # Build test vector
+        vectors.append(generate_test_vector(process_factory(array), ["buffer.open(\"%s\")" % buf, "\"%s\"" % fmt, 1], [], fmt))
 
-        # Serialize expected output
-        expected_output = serialize(asfloat32(array))
+    return vectors
 
-        vectors.append("\t{")
-        vectors.append("\t\targs = {buffer.open(\"%s\"), \"%s\", 1}," % (buf, fmt))
-        vectors.append("\t\toutputs = {%s}," % expected_output)
-        vectors.append("\t},")
-    vectors.append("}, {epsilon = %.1e})" % EPSILON)
+@source_spec("RealFileSource", "tests/blocks/sources/realfile_spec.lua")
+def generate_realfile_spec():
+    numpy_vectors = [
+        # Format, numpy array, byteswap
+        ( "u8", numpy.array([random.randint(0, 255) for _ in range(256)], dtype=numpy.uint8), False ),
+        ( "s8", numpy.array([random.randint(-128, 127) for _ in range(256)], dtype=numpy.int8), False ),
+        ( "u16le", numpy.array([random.randint(0, 65535) for _ in range(256)], dtype=numpy.uint16), False ),
+        ( "u16be", numpy.array([random.randint(0, 65535) for _ in range(256)], dtype=numpy.uint16), True ),
+        ( "s16le", numpy.array([random.randint(-32768, 32767) for _ in range(256)], dtype=numpy.int16), False ),
+        ( "s16be", numpy.array([random.randint(-32768, 32767) for _ in range(256)], dtype=numpy.int16), True ),
+        ( "u32le", numpy.array([random.randint(0, 4294967295) for _ in range(256)], dtype=numpy.uint32), False ),
+        ( "u32be", numpy.array([random.randint(0, 4294967295) for _ in range(256)], dtype=numpy.uint32), True ),
+        ( "s32le", numpy.array([random.randint(-2147483648, 2147483647) for _ in range(256)], dtype=numpy.int32), False ),
+        ( "s32be", numpy.array([random.randint(-2147483648, 2147483647) for _ in range(256)], dtype=numpy.int32), True ),
+        ( "f32le", numpy.array(random_float32(256), dtype=numpy.float32), False ),
+        ( "f32be", numpy.array(random_float32(256), dtype=numpy.float32), True ),
+        ( "f64le", numpy.array(random_float32(256), dtype=numpy.float64), False ),
+        ( "f64be", numpy.array(random_float32(256), dtype=numpy.float64), True),
+    ]
+
+    def process_factory(x):
+        def process(filename, fmt, rate):
+            if type(x[0]) == numpy.uint8:
+                y = ((x - 127.5) / 127.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.int8:
+                y = ((x - 0) / 127.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.uint16:
+                y = ((x - 32767.5) / 32767.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.int16:
+                y = ((x - 0) / 32767.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.uint32:
+                y = ((x - 2147483647.5) / 2147483647.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.int32:
+                y = ((x - 0) / 2147483647.5).astype(numpy.float32)
+            elif type(x[0]) == numpy.float32:
+                y = x
+            elif type(x[0]) == numpy.float64:
+                y = x.astype(numpy.float32)
+            return [numpy.around(y, PRECISION)]
+
+        return process
+
+    vectors = []
+
+    for (fmt, array, byteswap) in numpy_vectors:
+        # Build byte array
+        buf = array.tobytes() if not byteswap else array.byteswap().tobytes()
+        buf = ''.join(["\\x%02x" % b for b in buf])
+        # Build test vector
+        vectors.append(generate_test_vector(process_factory(array), ["buffer.open(\"%s\")" % buf, "\"%s\"" % fmt, 1], [], fmt))
 
     return vectors
 

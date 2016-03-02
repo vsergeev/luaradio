@@ -36,6 +36,7 @@ return {
     PulseAudioSink = require('radio.blocks.sinks.pulseaudio').PulseAudioSink,
     IQFileSource = require('radio.blocks.sources.iqfile').IQFileSource,
     RealFileSource = require('radio.blocks.sources.realfile').RealFileSource,
+    RawFileSource = require('radio.blocks.sources.rawfile').RawFileSource,
     NullSource = require('radio.blocks.sources.null').NullSource,
     RandomSource = require('radio.blocks.sources.random').RandomSource,
     SignalSource = require('radio.blocks.sources.signal').SignalSource,

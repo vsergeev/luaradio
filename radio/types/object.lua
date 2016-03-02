@@ -12,7 +12,7 @@ function ObjectType.factory(custom_mt)
 
     -- Constructors
     function CustomType.vector(num)
-        return ObjectVector(num)
+        return ObjectVector(CustomType, num)
     end
 
     -- Serializers
@@ -65,7 +65,7 @@ function ObjectType.factory(custom_mt)
     end
 
     function CustomType.deserialize_partial(buf, count)
-        local vec = ObjectVector()
+        local vec = ObjectVector(CustomType)
 
         buf = ffi.cast("const uint8_t *", buf)
 
@@ -126,8 +126,8 @@ end
 
 ObjectVector = object.class_factory()
 
-function ObjectVector.new(num)
-    return setmetatable({data = {}, length = 0, size = 0}, ObjectVector)
+function ObjectVector.new(type, num)
+    return setmetatable({data = {}, length = 0, size = 0, type = type}, ObjectVector)
 end
 
 function ObjectVector:resize(num)

@@ -21,6 +21,8 @@ ffi.cdef[[
     FILE *fopen(const char *path, const char *mode);
     FILE *fdopen(int fd, const char *mode);
     size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+    int fclose(FILE *stream);
+    int fflush(FILE *stream);
 ]]
 
 function RawFileSink:initialize()
@@ -39,6 +41,14 @@ function RawFileSink:process(x)
     -- Write to file
     local bytes_written = ffi.C.fwrite(data, 1, size, self.file)
     assert(bytes_written == size, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+end
+
+function RawFileSink:cleanup()
+    if self.filename then
+        assert(ffi.C.fclose(self.file) == 0, "fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    else
+        assert(ffi.C.fflush(self.file) == 0, "fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 end
 
 return {RawFileSink = RawFileSink}

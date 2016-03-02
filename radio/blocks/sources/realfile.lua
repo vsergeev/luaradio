@@ -85,6 +85,7 @@ ffi.cdef[[
     size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
     int feof(FILE *stream);
     int ferror(FILE *stream);
+    int fclose(FILE *stream);
 ]]
 
 function RealFileSource:initialize()
@@ -132,6 +133,12 @@ function RealFileSource:process()
     end
 
     return samples
+end
+
+function RealFileSource:cleanup()
+    if self.filename then
+        assert(ffi.C.fclose(self.file) == 0, "fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 end
 
 return {RealFileSource = RealFileSource}

@@ -32,6 +32,7 @@ return {
     PLLBlock = require('radio.blocks.signal.pllblock').PLLBlock,
     RawFileSink = require('radio.blocks.sinks.rawfile').RawFileSink,
     IQFileSink = require('radio.blocks.sinks.iqfile').IQFileSink,
+    RealFileSink = require('radio.blocks.sinks.realfile').RealFileSink,
     PrintSink = require('radio.blocks.sinks.print').PrintSink,
     JSONSink = require('radio.blocks.sinks.json').JSONSink,
     PulseAudioSink = require('radio.blocks.sinks.pulseaudio').PulseAudioSink,

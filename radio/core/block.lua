@@ -177,6 +177,12 @@ end
 function Block:__tostring()
     local s = self.name .. "\n"
 
+    -- tostring() on class
+    if self.inputs == nil or self.outputs == nil then
+        return s
+    end
+
+    -- tostring() on class instance
     local strs = {}
 
     for i=1, #self.inputs do

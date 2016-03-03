@@ -39,6 +39,7 @@ return {
     IQFileSource = require('radio.blocks.sources.iqfile').IQFileSource,
     RealFileSource = require('radio.blocks.sources.realfile').RealFileSource,
     RawFileSource = require('radio.blocks.sources.rawfile').RawFileSource,
+    WAVFileSource = require('radio.blocks.sources.wavfile').WAVFileSource,
     NullSource = require('radio.blocks.sources.null').NullSource,
     RandomSource = require('radio.blocks.sources.random').RandomSource,
     SignalSource = require('radio.blocks.sources.signal').SignalSource,

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import scipy.signal
+import scipy.io.wavfile
 import random
 import numpy
+import io
 
 # Floating point precision to round and serialize to
 PRECISION = 8
@@ -782,6 +784,63 @@ def generate_realfile_spec():
         buf = ''.join(["\\x%02x" % b for b in buf])
         # Build test vector
         vectors.append(generate_test_vector(process_factory(array), ["buffer.open(\"%s\")" % buf, "\"%s\"" % fmt, 1], [], fmt))
+
+    return vectors
+
+@source_spec("WAVFileSource", "tests/blocks/sources/wavfile_spec.lua")
+def generate_wavfile_spec():
+    test_vector = random_float32(256)
+
+    def process_factory(expected_vector):
+        def process(filename, num_channels, rate):
+            return [expected_vector[:,i] for i in range(num_channels)]
+
+        return process
+
+    def float32_to_u8(x):
+        return ((x * 127.5) + 127.5).astype(numpy.uint8)
+    def u8_to_float32(x):
+        return ((x - 127.5) / 127.5).astype(numpy.float32)
+
+    def float32_to_s16(x):
+        return ((x * 32767.5) + 0.0).astype(numpy.int16)
+    def s16_to_float32(x):
+        return ((x - 0.0) / 32767.5).astype(numpy.float32)
+
+    def float32_to_s32(x):
+        return ((x * 2147483647.5) + 0.0).astype(numpy.int32)
+    def s32_to_float32(x):
+        return ((x - 0.0) / 2147483647.5).astype(numpy.float32)
+
+    vectors = []
+
+    for bits_per_sample in (8, 16, 32):
+        for num_channels in (1 ,2):
+            # Prepare vectors
+            if bits_per_sample == 8:
+                wav_vector = float32_to_u8(test_vector)
+                expected_vector = u8_to_float32(wav_vector)
+            elif bits_per_sample == 16:
+                wav_vector = float32_to_s16(test_vector)
+                expected_vector = s16_to_float32(wav_vector)
+            elif bits_per_sample == 32:
+                wav_vector = float32_to_s32(test_vector)
+                expected_vector = s32_to_float32(wav_vector)
+
+            # Reshape arrays for channels
+            wav_vector.shape = (len(wav_vector)/num_channels, num_channels)
+            expected_vector.shape = (len(expected_vector)/num_channels, num_channels)
+
+            # Write WAV file
+            f_buf = io.BytesIO()
+            scipy.io.wavfile.write(f_buf, 44100, wav_vector)
+
+            # Convert to bytes
+            buf = f_buf.getvalue()
+            buf = ''.join(["\\x%02x" % b for b in buf])
+
+            # Build test vector
+            vectors.append(generate_test_vector(process_factory(expected_vector), ["buffer.open(\"%s\")" % buf, num_channels, 44100], [], "bits per sample %d, num channels %d" % (bits_per_sample, num_channels)))
 
     return vectors
 

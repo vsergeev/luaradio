@@ -13,88 +13,208 @@ function random_byte_vector(n)
     return vec
 end
 
+function random_float32_vector(n)
+    local vec = radio.Float32Type.vector(n)
+    for i = 0, vec.length - 1 do
+        vec.data[i].value = 2*math.random() - 1.0
+    end
+    return vec
+end
+
+function random_complexfloat32_vector(n)
+    local vec = radio.ComplexFloat32Type.vector(n)
+    for i = 0, vec.length - 1 do
+        vec.data[i].real = 2*math.random() - 1.0
+        vec.data[i].imag = 2*math.random() - 1.0
+    end
+    return vec
+end
+
 ffi.cdef[[
     int memcmp(const void *s1, const void *s2, size_t n);
     void memcpy(void *dest, const void *src, size_t n);
 ]]
 
 describe("pipe", function ()
-    it("write and read", function ()
-        local test_vector = random_byte_vector(4096)
+    local cstruct_types = {
+        ByteType = {data_type = radio.ByteType, random_vector_fn = random_byte_vector},
+        Float32Type = {data_type = radio.Float32Type, random_vector_fn = random_float32_vector},
+        ComplexFloat32Type = {data_type = radio.Float32Type, random_vector_fn = random_float32_vector},
+    }
 
-        for _, write_size in ipairs({1, 1235, test_vector.size}) do
-            for _, read_size in ipairs({1, 1235, test_vector.size}) do
-                local p = pipe.Pipe(nil, nil, radio.ByteType)
-                p:initialize(true)
+    for type_name, _ in pairs(cstruct_types) do
+        it("write and read cstruct " .. type_name, function ()
+            local data_type = cstruct_types[type_name].data_type
+            local test_vector = cstruct_types[type_name].random_vector_fn(512)
 
-                local write_offset = 0
-                local read_offset = 0
+            for _, write_num in ipairs({1, 123, test_vector.length}) do
+                for _, read_num in ipairs({1, 123, test_vector.length}) do
+                    local p = pipe.Pipe(nil, nil, data_type)
+                    p:initialize()
+
+                    -- Write and read offsets into test vector
+                    local write_offset = 0
+                    local read_offset = 0
+
+                    while true do
+                        -- Write up to write_num elements to pipe
+                        if write_offset < test_vector.size then
+                            -- Pull out next write_num elements into write_vec
+                            local size = math.min(write_num * ffi.sizeof(data_type), test_vector.size - write_offset)
+                            local write_vec = data_type.deserialize(ffi.cast("char *", test_vector.data) + write_offset, size)
+
+                            -- Write to pipe
+                            p:write(write_vec)
+
+                            -- Update write offset
+                            write_offset = write_offset + write_vec.size
+
+                            -- Close the write end of the pipe when we've reached the end
+                            if write_offset == test_vector.size then
+                                p:close_output()
+                            end
+                        end
+
+                        -- Update pipe read buffer
+                        local num_elems = p:read_update()
+                        assert.is.equal(write_offset - read_offset, num_elems*ffi.sizeof(data_type))
+
+                        -- Read up to read_num elements from pipe
+                        local n = math.min(read_num, num_elems)
+                        local read_vec = p:read_n(n)
+                        assert.is.equal(n, read_vec.length)
+                        assert.is.equal(data_type, read_vec.type)
+
+                        -- Compare read vector with test vector
+                        assert.is_true(ffi.C.memcmp(ffi.cast("char *", test_vector.data) + read_offset, read_vec.data, read_vec.size) == 0)
+
+                        -- Update read offset
+                        read_offset = read_offset + read_vec.size
+
+                        -- Stop when we've read the entire test vector
+                        if write_offset == test_vector.size and read_offset == write_offset then
+                            break
+                        end
+                    end
+
+                    -- Check that read_update() returns EOF / nil
+                    assert.is_true(p:read_update() == nil)
+                end
+            end
+        end)
+    end
+
+    it("write and read object type", function ()
+        local FooType = radio.ObjectType.factory()
+
+        function FooType.new(a, b, c)
+            return setmetatable({a = a, b = b, c = c}, FooType)
+        end
+
+        local function random_foo_vector(n)
+            local vec = FooType.vector()
+            for i = 1, n do
+                vec:append(FooType(math.random(), string.char(math.random(0x41, 0x5a)), false))
+            end
+            return vec
+        end
+
+        local test_vector = random_foo_vector(175)
+
+        for _, write_num in ipairs({1, 123, test_vector.length}) do
+            for _, read_num in ipairs({1, 123, test_vector.length}) do
+                local p = pipe.Pipe(nil, nil, FooType)
+                p:initialize()
+
+                -- Write and read counts of test vector
+                local write_count = 0
+                local read_count = 0
 
                 while true do
-                    -- Write up to write_size bytes to pipe
-                    if write_offset < test_vector.size then
-                        -- Pull out next write_size bytes into write_vec
-                        local write_len = math.min(write_size, test_vector.size - write_offset)
-                        local write_vec = radio.ByteType.deserialize(ffi.cast("char *", test_vector.data) + write_offset, write_len)
+                    -- Write up to write_num elements to pipe
+                    if write_count < test_vector.length then
+                        -- Pull out next write_num elements into write_vec
+                        local n = math.min(write_num, test_vector.length - write_count)
+                        local write_vec = FooType.vector()
+                        for i = 0, n-1 do
+                            write_vec:append(test_vector.data[write_count + i])
+                        end
+
                         -- Write to pipe
                         p:write(write_vec)
 
-                        -- Update write offset
-                        write_offset = write_offset + write_vec.size
+                        -- Update write count
+                        write_count = write_count + write_vec.length
 
                         -- Close the write end of the pipe when we've reached the end
-                        if write_offset == test_vector.size then
+                        if write_count == test_vector.length then
                             p:close_output()
                         end
                     end
 
                     -- Update pipe read buffer
                     local num_elems = p:read_update()
-                    assert.is.equal(write_offset - read_offset, num_elems)
 
-                    -- Read up to read_size bytes from pipe
-                    local read_len = math.min(read_size, num_elems)
-                    local read_vec = p:read_n(read_len)
-                    assert.is_true(ffi.C.memcmp(ffi.cast("char *", test_vector.data) + read_offset, read_vec.data, read_vec.size) == 0)
+                    -- Read up to read_num elements from pipe
+                    local n = math.min(read_num, num_elems)
+                    local read_vec = p:read_n(n)
+                    assert.is.equal(n, read_vec.length)
+                    assert.is.equal(FooType, read_vec.type)
 
-                    -- Update read offset
-                    read_offset = read_offset + read_vec.size
+                    -- Compare read vector with test vector
+                    for i = 0, read_vec.length-1 do
+                        assert.are.same(test_vector.data[read_count+i], read_vec.data[i])
+                    end
+
+                    -- Update read count
+                    read_count = read_count + read_vec.length
 
                     -- Stop when we've read the entire test vector
-                    if write_offset == test_vector.size and read_offset == write_offset then
+                    if write_count == test_vector.length and read_count == test_vector.length then
                         break
                     end
                 end
 
-                -- Assert that read_update() returns EOF / nil
+                -- Check that read_update() returns EOF / nil
                 assert.is_true(p:read_update() == nil)
             end
         end
     end)
 
     it("write and read synchronous", function ()
-        local test_vector = random_byte_vector(4096)
-
-        local pipes = {
-            pipe.Pipe(nil, nil, radio.ByteType),
-            pipe.Pipe(nil, nil, radio.ByteType),
-            pipe.Pipe(nil, nil, radio.ByteType),
+        local test_vectors = {
+            random_byte_vector(512),
+            random_float32_vector(512),
+            random_complexfloat32_vector(512),
         }
 
+        -- Create three pipes
+        local pipes = {
+            pipe.Pipe(nil, nil, radio.ByteType),
+            pipe.Pipe(nil, nil, radio.Float32Type),
+            pipe.Pipe(nil, nil, radio.ComplexFloat32Type),
+        }
+
+        -- Initialize pipes
         for i = 1, #pipes do
             pipes[i]:initialize(true)
         end
 
+        -- Write and read offsets into test_vectors for each pipe
         local write_offsets = {0, 0, 0}
         local read_offsets = {0, 0, 0}
 
         while true do
+            -- For each pipe
             for i = 1, #pipes do
-                -- Write bytes to pipe
-                if write_offsets[i] < test_vector.size then
-                    -- Get next vector to write
-                    local write_len = math.random(1, test_vector.size - write_offsets[i])
-                    local write_vec = radio.ByteType.deserialize(ffi.cast("char *", test_vector.data) + write_offsets[i], write_len)
+                local data_type = pipes[i].data_type
+
+                -- Write elements to pipe
+                if write_offsets[i] < test_vectors[i].size then
+                    -- Pull out next random number of elements into write_vec
+                    local size = math.random(1, (test_vectors[i].size - write_offsets[i])/ffi.sizeof(data_type))*ffi.sizeof(data_type)
+                    local write_vec = data_type.deserialize(ffi.cast("char *", test_vectors[i].data) + write_offsets[i], size)
+
                     -- Write to pipe
                     pipes[i]:write(write_vec)
 
@@ -102,7 +222,7 @@ describe("pipe", function ()
                     write_offsets[i] = write_offsets[i] + write_vec.size
 
                     -- Close the write end of the pipe when we've reached the end
-                    if write_offsets[i] == test_vector.size then
+                    if write_offsets[i] == test_vectors[i].size then
                         pipes[i]:close_output()
                     end
                 end
@@ -111,14 +231,26 @@ describe("pipe", function ()
             -- Read synchronously from all three pipes
             local read_vectors = pipe.read_synchronous(pipes)
 
-            -- Check data and update offsets
+            local n = read_vectors[1].length
+
+            -- Check length, types, data and update offsets
             for i = 1, #pipes do
-                assert.is_true(ffi.C.memcmp(ffi.cast("char *", test_vector.data) + read_offsets[i], read_vectors[i].data, read_vectors[i].size) == 0)
+                assert.is.equal(n, read_vectors[i].length)
+                assert.is.equal(pipes[i].data_type, read_vectors[i].type)
+                assert.is_true(ffi.C.memcmp(ffi.cast("char *", test_vectors[i].data) + read_offsets[i], read_vectors[i].data, read_vectors[i].size) == 0)
+
                 read_offsets[i] = read_offsets[i] + read_vectors[i].size
             end
 
             -- Stop when we've read the entire test vector
-            if util.array_all(write_offsets, function (offset) return offset == test_vector.size end) and util.array_all(read_offsets, function (offset) return offset == test_vector.size end) then
+            local eof = true
+            for i = 1, # pipes do
+                if write_offsets[i] ~= test_vectors[i].size or read_offsets[i] ~= test_vectors[i].size then
+                    eof = false
+                    break
+                end
+            end
+            if eof then
                 break
             end
         end

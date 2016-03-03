@@ -5,22 +5,23 @@ local types = require('radio.types')
 
 local SignalSource = block.factory("SignalSource")
 
-function SignalSource:instantiate(options, rate)
+function SignalSource:instantiate(signal, frequency, rate, options)
     local supported_signals = {
-        exponential = {process = SignalSource.process_exponential, initialize = SignalSource.initialize_exponential},
+        exponential = {process = SignalSource.process_exponential, initialize = SignalSource.initialize_exponential, type = types.ComplexFloat32Type},
         --cosine = {process = SignalSource.process_cosine, initialize = SignalSource.initialize_cosine},
         --sine = {process = SignalSource.process_sine, initialize = SignalSource.initialize_sine},
         --square = {process = SignalSource.process_square, initialize = SignalSource.initialize_square},
         --triangle = {process = SignalSource.process_triangle, initialize = SignalSource.initialize_triangle},
         --sawtooth = {process = SignalSource.process_sawtooth, initialize = SignalSource.initialize_sawtooth},
     }
-    assert(supported_signals[options.signal], "Unsupported signal \"" .. options.signal .. "\".")
+    assert(supported_signals[signal], "Unsupported signal \"" .. signal .. "\".")
 
-    self.options = options
+    self.frequency = frequency
     self.rate = rate
+    self.options = options or {}
     self.chunk_size = 8192
 
-    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)}, supported_signals[options.signal].process, supported_signals[options.signal].initialize)
+    self:add_type_signature({}, {block.Output("out", supported_signals[signal].type)}, supported_signals[signal].process, supported_signals[signal].initialize)
 end
 
 function SignalSource:get_rate()
@@ -28,11 +29,10 @@ function SignalSource:get_rate()
 end
 
 function SignalSource:initialize_exponential()
-    self.frequency = self.options.frequency
     self.amplitude = self.options.amplitude or 1.0
-    self.omega = 2*math.pi*(self.frequency/self.rate)
 
-    self.rotation = types.ComplexFloat32Type(math.cos(self.omega), math.sin(self.omega))
+    local omega = 2*math.pi*(self.frequency/self.rate)
+    self.rotation = types.ComplexFloat32Type(math.cos(omega), math.sin(omega))
     self.phi = types.ComplexFloat32Type(1, 0)
 end
 

@@ -23,7 +23,7 @@ local function open(str)
 
     -- Create and get a file descriptor to a temporary file
     local tmpfile_path = string.format("/tmp/%08x", math.random(0, 0xffffffff))
-    local file = ffi.C.fopen(tmpfile_path, "a+")
+    local file = ffi.C.fopen(tmpfile_path, "w+")
     assert(fd ~= -1, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
     -- Get file descriptor from file

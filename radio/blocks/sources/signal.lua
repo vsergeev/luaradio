@@ -30,10 +30,11 @@ end
 
 function SignalSource:initialize_exponential()
     self.amplitude = self.options.amplitude or 1.0
+    self.phase = self.options.phase or 0.0
 
     local omega = 2*math.pi*(self.frequency/self.rate)
     self.rotation = types.ComplexFloat32Type(math.cos(omega), math.sin(omega))
-    self.phi = types.ComplexFloat32Type(1, 0)
+    self.phi = types.ComplexFloat32Type(math.cos(self.phase), math.sin(self.phase))
 end
 
 function SignalSource:process_exponential()

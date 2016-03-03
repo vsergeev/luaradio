@@ -1,3 +1,15 @@
+* (Prototype) v0.0.9 - 03/02/2016
+    * Simplify type imports in blocks.
+    * Fix single process execution to call block cleanup() after finish.
+    * Fix block initialization order.
+    * Extend file source and sink blocks to:
+        * IQFileSource / IQFileSink
+        * RealFileSource / RealFileSink
+        * RawFileSource / RawFileSink
+        * WAVFileSource / WAVFileSink
+    * Improve unit tests.
+    * Reorganize package init for readability.
+
 * (Prototype) v0.0.8 - 02/28/2016
     * Add libluaradio library with a C API to the LuaRadio runtime.
     * Add fmradio and rds-timesync demos for libluaradio.

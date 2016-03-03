@@ -6,8 +6,38 @@ return {
     util = require('radio.core.util'),
     types = require('radio.types'),
 
-    -- Blocks
+    -- Types
+    ComplexFloat32Type = require('radio.types').ComplexFloat32Type,
+    Float32Type = require('radio.types').Float32Type,
+    Integer32Type = require('radio.types').Integer32Type,
+    ByteType = require('radio.types').ByteType,
+    BitType = require('radio.types').BitType,
+    CStructType = require('radio.types').CStructType,
+    ObjectType = require('radio.types').ObjectType,
+
+    -- Composite block
     CompositeBlock = require('radio.core.composite').CompositeBlock,
+
+    -- Source Blocks
+    IQFileSource = require('radio.blocks.sources.iqfile').IQFileSource,
+    RealFileSource = require('radio.blocks.sources.realfile').RealFileSource,
+    WAVFileSource = require('radio.blocks.sources.wavfile').WAVFileSource,
+    RawFileSource = require('radio.blocks.sources.rawfile').RawFileSource,
+    NullSource = require('radio.blocks.sources.null').NullSource,
+    RandomSource = require('radio.blocks.sources.random').RandomSource,
+    SignalSource = require('radio.blocks.sources.signal').SignalSource,
+    RtlSdrSource = require('radio.blocks.sources.rtlsdr').RtlSdrSource,
+
+    -- Sink Blocks
+    IQFileSink = require('radio.blocks.sinks.iqfile').IQFileSink,
+    RealFileSink = require('radio.blocks.sinks.realfile').RealFileSink,
+    WAVFileSink = require('radio.blocks.sinks.wavfile').WAVFileSink,
+    RawFileSink = require('radio.blocks.sinks.rawfile').RawFileSink,
+    PrintSink = require('radio.blocks.sinks.print').PrintSink,
+    JSONSink = require('radio.blocks.sinks.json').JSONSink,
+    PulseAudioSink = require('radio.blocks.sinks.pulseaudio').PulseAudioSink,
+
+    -- Signal Blocks
     FIRFilterBlock = require('radio.blocks.signal.firfilter').FIRFilterBlock,
     IIRFilterBlock = require('radio.blocks.signal.iirfilter').IIRFilterBlock,
     LowpassFilterBlock = require('radio.blocks.signal.lowpassfilter').LowpassFilterBlock,
@@ -30,34 +60,12 @@ return {
     BinaryPhaseCorrectorBlock = require('radio.blocks.signal.binaryphasecorrector').BinaryPhaseCorrectorBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     PLLBlock = require('radio.blocks.signal.pllblock').PLLBlock,
-    RawFileSink = require('radio.blocks.sinks.rawfile').RawFileSink,
-    IQFileSink = require('radio.blocks.sinks.iqfile').IQFileSink,
-    RealFileSink = require('radio.blocks.sinks.realfile').RealFileSink,
-    WAVFileSink = require('radio.blocks.sinks.wavfile').WAVFileSink,
-    PrintSink = require('radio.blocks.sinks.print').PrintSink,
-    JSONSink = require('radio.blocks.sinks.json').JSONSink,
-    PulseAudioSink = require('radio.blocks.sinks.pulseaudio').PulseAudioSink,
-    IQFileSource = require('radio.blocks.sources.iqfile').IQFileSource,
-    RealFileSource = require('radio.blocks.sources.realfile').RealFileSource,
-    RawFileSource = require('radio.blocks.sources.rawfile').RawFileSource,
-    WAVFileSource = require('radio.blocks.sources.wavfile').WAVFileSource,
-    NullSource = require('radio.blocks.sources.null').NullSource,
-    RandomSource = require('radio.blocks.sources.random').RandomSource,
-    SignalSource = require('radio.blocks.sources.signal').SignalSource,
-    RtlSdrSource = require('radio.blocks.sources.rtlsdr').RtlSdrSource,
+
+    -- Protocol Blocks
     RDSFrameBlock = require('radio.blocks.protocol.rdsframe').RDSFrameBlock,
     RDSDecodeBlock = require('radio.blocks.protocol.rdsdecode').RDSDecodeBlock,
 
     -- Composite Blocks
     TunerBlock = require('radio.composites.tuner').TunerBlock,
     DecimatorBlock = require('radio.composites.decimator').DecimatorBlock,
-
-    -- Types
-    ComplexFloat32Type = require('radio.types').ComplexFloat32Type,
-    Float32Type = require('radio.types').Float32Type,
-    Integer32Type = require('radio.types').Integer32Type,
-    ByteType = require('radio.types').ByteType,
-    BitType = require('radio.types').BitType,
-    CStructType = require('radio.types').CStructType,
-    ObjectType = require('radio.types').ObjectType,
 }

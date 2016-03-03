@@ -11,7 +11,6 @@ ffi.cdef[[
 
     typedef uint64_t off_t;
     off_t lseek(int fildes, off_t offset, int whence);
-    enum {SEEK_SET = 0, SEEK_CUR = 1, SEEK_END = 2};
 
     int close(int fd);
 

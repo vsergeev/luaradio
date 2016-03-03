@@ -322,7 +322,7 @@ function CompositeBlock:_prepare_to_run()
     end
 
     -- Initialize all blocks
-    for block, _ in pairs(blocks) do
+    for _, block in ipairs(execution_order) do
         block:initialize()
     end
 

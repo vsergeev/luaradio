@@ -273,6 +273,21 @@ def generate_sum_spec():
 
     return vectors
 
+@block_spec("SubtractBlock", "tests/blocks/signal/subtract_spec.lua")
+def generate_subtract_spec():
+    def process(x, y):
+        return [x - y]
+
+    vectors = []
+    x, y = random_complex64(256), random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+    x, y = random_float32(256), random_float32(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Float32 inputs, 256 Float32 output"))
+    x, y = random_integer32(256), random_integer32(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Integer32 inputs, 256 Integer32 output"))
+
+    return vectors
+
 @block_spec("ComplexToRealBlock", "tests/blocks/signal/complextoreal_spec.lua")
 def generate_complextoreal_spec():
     def process(x):

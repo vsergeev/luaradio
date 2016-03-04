@@ -47,6 +47,7 @@ return {
     RootRaisedCosineFilterBlock = require('radio.blocks.signal.rootraisedcosinefilter').RootRaisedCosineFilterBlock,
     FMDeemphasisFilterBlock = require('radio.blocks.signal.fmdeemphasisfilter').FMDeemphasisFilterBlock,
     SumBlock = require('radio.blocks.signal.sum').SumBlock,
+    SubtractBlock = require('radio.blocks.signal.subtract').SubtractBlock,
     MultiplyBlock = require('radio.blocks.signal.multiply').MultiplyBlock,
     FrequencyTranslatorBlock = require('radio.blocks.signal.frequencytranslator').FrequencyTranslatorBlock,
     HilbertTransformBlock = require('radio.blocks.signal.hilberttransform').HilbertTransformBlock,

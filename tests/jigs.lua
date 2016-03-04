@@ -48,7 +48,7 @@ local function TestBlock(block_class, vectors, options)
 
     busted.describe(block_class.name, function ()
         for i=1, #vectors do
-            busted.it("test vector " .. i, function ()
+            busted.it("test vector " .. i .. (vectors[i].desc and (" " .. vectors[i].desc) or ""), function ()
                 local test_vector = vectors[i]
 
                 ------------------------------------------------------------
@@ -131,7 +131,7 @@ local function TestSourceBlock(block_class, vectors, options)
 
     busted.describe(block_class.name, function ()
         for i=1, #vectors do
-            busted.it("test vector " .. i, function ()
+            busted.it("test vector " .. i .. (vectors[i].desc and (" " .. vectors[i].desc) or ""), function ()
                 local test_vector = vectors[i]
 
                 -- Run block until we have enough sufficient output to compare

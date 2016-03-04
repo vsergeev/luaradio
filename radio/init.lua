@@ -57,6 +57,7 @@ return {
     SlicerBlock = require('radio.blocks.signal.slicer').SlicerBlock,
     DifferentialDecoderBlock = require('radio.blocks.signal.differentialdecoder').DifferentialDecoderBlock,
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,
+    ComplexToImagBlock = require('radio.blocks.signal.complextoimag').ComplexToImagBlock,
     DelayBlock = require('radio.blocks.signal.delay').DelayBlock,
     BinaryPhaseCorrectorBlock = require('radio.blocks.signal.binaryphasecorrector').BinaryPhaseCorrectorBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,

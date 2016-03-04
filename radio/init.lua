@@ -62,6 +62,7 @@ return {
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,
     ComplexToImagBlock = require('radio.blocks.signal.complextoimag').ComplexToImagBlock,
     FloatToComplexBlock = require('radio.blocks.signal.floattocomplex').FloatToComplexBlock,
+    ComplexToFloatBlock = require('radio.blocks.signal.complextofloat').ComplexToFloatBlock,
     DelayBlock = require('radio.blocks.signal.delay').DelayBlock,
     BinaryPhaseCorrectorBlock = require('radio.blocks.signal.binaryphasecorrector').BinaryPhaseCorrectorBlock,
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,

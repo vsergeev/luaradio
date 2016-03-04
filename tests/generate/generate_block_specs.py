@@ -288,6 +288,17 @@ def generate_subtract_spec():
 
     return vectors
 
+@block_spec("ComplexMagnitudeBlock", "tests/blocks/signal/complexmagnitude_spec.lua")
+def generate_complexmagnitude_spec():
+    def process(x):
+        return [numpy.abs(x).astype(numpy.float32)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
+
+    return vectors
+
 @block_spec("ComplexToRealBlock", "tests/blocks/signal/complextoreal_spec.lua")
 def generate_complextoreal_spec():
     def process(x):

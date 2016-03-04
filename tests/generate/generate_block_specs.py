@@ -343,6 +343,17 @@ def generate_complextoreal_spec():
 
     return vectors
 
+@block_spec("FloatToComplexBlock", "tests/blocks/signal/floattocomplex_spec.lua")
+def generate_floattocomplex_spec():
+    def process(real, imag):
+        return [numpy.array([complex(*e) for e in zip(real, imag)]).astype(numpy.complex64)]
+
+    vectors = []
+    real, imag = random_float32(256), random_float32(256)
+    vectors.append(generate_test_vector(process, [], [real, imag], "2 256 Float32 inputs, 256 ComplexFloat32 output"))
+
+    return vectors
+
 @block_spec("SlicerBlock", "tests/blocks/signal/slicer_spec.lua")
 def generate_slicer_spec():
     def process(threshold, x):

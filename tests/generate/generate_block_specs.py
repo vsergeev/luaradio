@@ -61,6 +61,11 @@ def serialize(x):
         return NUMPY_VECTOR_TYPE[type(x[0])] % ", ".join(t)
     elif isinstance(x, CustomVector):
         return x.serialize()
+    elif isinstance(x , dict):
+        t = []
+        for k, v in x.items():
+            t.append(serialize(k) + " = " + serialize(v))
+        return "{" + ", ".join(t) + "}"
     else:
         return str(x)
 
@@ -841,6 +846,25 @@ def generate_wavfile_spec():
 
             # Build test vector
             vectors.append(generate_test_vector(process_factory(expected_vector), ["buffer.open(\"%s\")" % buf, num_channels, 44100], [], "bits per sample %d, num channels %d" % (bits_per_sample, num_channels)))
+
+    return vectors
+
+@source_spec("SignalSource", "tests/blocks/sources/signal_spec.lua", epsilon=1e-4)
+def generate_signal_spec():
+    # FIXME why does exponential need 1e-4 epsilon?
+    def process(signal, frequency, rate, options):
+        if signal == "\"exponential\"":
+            vec = options['amplitude']*numpy.exp(1j*2*numpy.pi*(frequency/rate)*numpy.arange(256) + 1j*options['phase']).astype(numpy.complex64)
+            return [vec]
+
+    vectors = []
+
+    # Complex Exponential signal
+    for frequency in (50, 100):
+        for amplitude in (1.0, 2.5):
+            for phase in (0.0, numpy.pi/4):
+                options = {'amplitude': amplitude, 'phase': phase}
+                vectors.append(generate_test_vector(process, ["\"exponential\"", frequency, 1e3, options], [], "exponential frequency %d, sample rate 1000, ampltiude %.2f, phase %.4f" % (frequency, amplitude, phase)))
 
     return vectors
 

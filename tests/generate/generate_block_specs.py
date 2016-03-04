@@ -850,22 +850,58 @@ def generate_wavfile_spec():
 
     return vectors
 
-@source_spec("SignalSource", "tests/blocks/sources/signal_spec.lua", epsilon=1e-4)
+@source_spec("SignalSource", "tests/blocks/sources/signal_spec.lua", epsilon=1e-5)
 def generate_signal_spec():
-    # FIXME why does exponential need 1e-4 epsilon?
+    # FIXME why does exponential, cosine, sine need 1e-5 epsilon?
     def process(signal, frequency, rate, options):
         if signal == "\"exponential\"":
-            vec = options['amplitude']*numpy.exp(1j*2*numpy.pi*(frequency/rate)*numpy.arange(256) + 1j*options['phase']).astype(numpy.complex64)
-            return [vec]
+            vec = options['amplitude']*numpy.exp(1j*2*numpy.pi*(frequency/rate)*numpy.arange(256) + 1j*options['phase'])
+            return [vec.astype(numpy.complex64)]
+        elif signal == "\"cosine\"":
+            vec = options['amplitude']*numpy.cos(2*numpy.pi*(frequency/rate)*numpy.arange(256) + options['phase']) + options['offset']
+            return [vec.astype(numpy.float32)]
+        elif signal == "\"sine\"":
+            vec = options['amplitude']*numpy.sin(2*numpy.pi*(frequency/rate)*numpy.arange(256) + options['phase']) + options['offset']
+            return [vec.astype(numpy.float32)]
+        elif signal == "\"constant\"":
+            vec = numpy.ones(256)*options['amplitude']
+            return [vec.astype(numpy.float32)]
+
+        def generate_domain(n, phase_offset=0.0):
+            # Generate the 2*pi modulo domain with addition, as the signal
+            # source block does it, instead of multiplication, which has small
+            # discrepancies compared to addition in the neighborhood of 1e-13
+            # and can cause different slicing on the x axis for square,
+            # triangle, and sawtooth signals.
+            omega, phi, phis = 2*numpy.pi*(frequency/rate), phase_offset, []
+            for i in range(n):
+                phis.append(phi)
+                phi += omega
+                phi = (phi - 2*numpy.pi) if phi >= 2*numpy.pi else phi
+            return numpy.array(phis)
+
+        if signal == "\"square\"":
+            def f(phi):
+                return 1.0 if phi < numpy.pi else -1.0
+        elif signal == "\"triangle\"":
+            def f(phi):
+                if phi < numpy.pi:
+                    return 1 - (2/numpy.pi)*phi
+                else:
+                    return -1 + (2/numpy.pi)*(phi - numpy.pi)
+        elif signal == "\"sawtooth\"":
+            def f(phi):
+                return -1.0 + (1 / numpy.pi) * phi
+
+        vec = options['amplitude']*numpy.vectorize(f)(generate_domain(256, options['phase'])) + options['offset']
+        return [vec.astype(numpy.float32)]
 
     vectors = []
 
-    # Complex Exponential signal
-    for frequency in (50, 100):
-        for amplitude in (1.0, 2.5):
-            for phase in (0.0, numpy.pi/4):
-                options = {'amplitude': amplitude, 'phase': phase}
-                vectors.append(generate_test_vector(process, ["\"exponential\"", frequency, 1e3, options], [], "exponential frequency %d, sample rate 1000, ampltiude %.2f, phase %.4f" % (frequency, amplitude, phase)))
+    for signal in ("exponential", "cosine", "sine", "square", "triangle", "sawtooth", "constant"):
+        for (frequency, amplitude, phase, offset) in ((50, 1.0, 0.0, 0.0), (100, 2.5, numpy.pi/4, -0.5)):
+            options = {'amplitude': amplitude, 'phase': phase, 'offset': offset}
+            vectors.append(generate_test_vector(process, ["\"" + signal + "\"", frequency, 1e3, options], [], "%s frequency %d, sample rate 1000, ampltiude %.2f, phase %.4f, offset %.2f" % (signal, frequency, amplitude, phase, offset)))
 
     return vectors
 

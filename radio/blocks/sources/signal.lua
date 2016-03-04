@@ -8,11 +8,12 @@ local SignalSource = block.factory("SignalSource")
 function SignalSource:instantiate(signal, frequency, rate, options)
     local supported_signals = {
         exponential = {process = SignalSource.process_exponential, initialize = SignalSource.initialize_exponential, type = types.ComplexFloat32Type},
-        --cosine = {process = SignalSource.process_cosine, initialize = SignalSource.initialize_cosine},
-        --sine = {process = SignalSource.process_sine, initialize = SignalSource.initialize_sine},
-        --square = {process = SignalSource.process_square, initialize = SignalSource.initialize_square},
-        --triangle = {process = SignalSource.process_triangle, initialize = SignalSource.initialize_triangle},
-        --sawtooth = {process = SignalSource.process_sawtooth, initialize = SignalSource.initialize_sawtooth},
+        cosine = {process = SignalSource.process_cosine, initialize = SignalSource.initialize_cosine_sine, type = types.Float32Type},
+        sine = {process = SignalSource.process_sine, initialize = SignalSource.initialize_cosine_sine, type = types.Float32Type},
+        square = {process = SignalSource.process_square, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32Type},
+        triangle = {process = SignalSource.process_triangle, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32Type},
+        sawtooth = {process = SignalSource.process_sawtooth, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32Type},
+        constant = {process = SignalSource.process_constant, initialize = SignalSource.initialize_constant, type = types.Float32Type},
     }
     assert(supported_signals[signal], "Unsupported signal \"" .. signal .. "\".")
 
@@ -27,6 +28,8 @@ end
 function SignalSource:get_rate()
     return self.rate
 end
+
+-- Complex Exponential
 
 function SignalSource:initialize_exponential()
     self.amplitude = self.options.amplitude or 1.0
@@ -43,6 +46,111 @@ function SignalSource:process_exponential()
     for i = 0, out.length-1 do
         out.data[i] = self.phi:scalar_mul(self.amplitude)
         self.phi = self.phi * self.rotation
+    end
+
+    return out
+end
+
+-- Cosine and sine
+
+function SignalSource:initialize_cosine_sine()
+    self.amplitude = self.options.amplitude or 1.0
+    self.phase = self.options.phase or 0.0
+    self.offset = self.options.offset or 0.0
+
+    local omega = 2*math.pi*(self.frequency/self.rate)
+    self.rotation = types.ComplexFloat32Type(math.cos(omega), math.sin(omega))
+    self.phi = types.ComplexFloat32Type(math.cos(self.phase), math.sin(self.phase))
+end
+
+function SignalSource:process_cosine()
+    local out = types.Float32Type.vector(self.chunk_size)
+
+    for i = 0, out.length-1 do
+        out.data[i].value = self.phi.real * self.amplitude + self.offset
+        self.phi = self.phi * self.rotation
+    end
+
+    return out
+end
+
+function SignalSource:process_sine()
+    local out = types.Float32Type.vector(self.chunk_size)
+
+    for i = 0, out.length-1 do
+        out.data[i].value = self.phi.imag * self.amplitude + self.offset
+        self.phi = self.phi * self.rotation
+    end
+
+    return out
+end
+
+-- Square, Triangle, Sawtooth
+
+function SignalSource:initialize_square_triangle_sawtooth()
+    self.amplitude = self.options.amplitude or 1.0
+    self.phase = self.options.phase or 0.0
+    self.offset = self.options.offset or 0.0
+
+    self.omega = 2*math.pi*(self.frequency/self.rate)
+    self.phi = self.phase
+end
+
+function SignalSource:process_square()
+    local out = types.Float32Type.vector(self.chunk_size)
+
+    for i = 0, out.length-1 do
+        if self.phi < math.pi then
+            out.data[i].value = 1.0*self.amplitude + self.offset
+        else
+            out.data[i].value = -1.0*self.amplitude + self.offset
+        end
+        self.phi = self.phi + self.omega
+        self.phi = (self.phi >= 2*math.pi) and (self.phi - 2*math.pi) or self.phi
+    end
+
+    return out
+end
+
+function SignalSource:process_triangle()
+    local out = types.Float32Type.vector(self.chunk_size)
+
+    for i = 0, out.length-1 do
+        if self.phi < math.pi then
+            out.data[i].value = (1 - (2 / math.pi)*self.phi)*self.amplitude + self.offset
+        else
+            out.data[i].value = (-1 + (2 / math.pi)*(self.phi - math.pi))*self.amplitude + self.offset
+        end
+        self.phi = self.phi + self.omega
+        self.phi = (self.phi >= 2*math.pi) and (self.phi - 2*math.pi) or self.phi
+    end
+
+    return out
+end
+
+function SignalSource:process_sawtooth()
+    local out = types.Float32Type.vector(self.chunk_size)
+
+    for i = 0, out.length-1 do
+        out.data[i].value = (-1 + (1 / math.pi)*self.phi)*self.amplitude + self.offset
+        self.phi = self.phi + self.omega
+        self.phi = (self.phi >= 2*math.pi) and (self.phi - 2*math.pi) or self.phi
+    end
+
+    return out
+end
+
+-- Constant
+
+function SignalSource:initialize_constant()
+    self.amplitude = self.options.amplitude or 1.0
+end
+
+function SignalSource:process_constant()
+    local out = types.Float32Type.vector(self.chunk_size)
+
+    for i = 0, out.length-1 do
+        out.data[i].value = self.amplitude
     end
 
     return out

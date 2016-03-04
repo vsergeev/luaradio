@@ -56,6 +56,7 @@ return {
     SamplerBlock = require('radio.blocks.signal.sampler').SamplerBlock,
     SlicerBlock = require('radio.blocks.signal.slicer').SlicerBlock,
     DifferentialDecoderBlock = require('radio.blocks.signal.differentialdecoder').DifferentialDecoderBlock,
+    AbsoluteValueBlock = require('radio.blocks.signal.absolutevalue').AbsoluteValueBlock,
     ComplexMagnitudeBlock = require('radio.blocks.signal.complexmagnitude').ComplexMagnitudeBlock,
     ComplexPhaseBlock = require('radio.blocks.signal.complexphase').ComplexPhaseBlock,
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock,

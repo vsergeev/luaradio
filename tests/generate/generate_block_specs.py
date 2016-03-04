@@ -299,6 +299,17 @@ def generate_complexmagnitude_spec():
 
     return vectors
 
+@block_spec("ComplexPhaseBlock", "tests/blocks/signal/complexphase_spec.lua")
+def generate_complexphase_spec():
+    def process(x):
+        return [numpy.angle(x).astype(numpy.float32)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
+
+    return vectors
+
 @block_spec("ComplexToRealBlock", "tests/blocks/signal/complextoreal_spec.lua")
 def generate_complextoreal_spec():
     def process(x):

@@ -1,5 +1,3 @@
-local ffi = require('ffi')
-
 local block = require('radio.core.block')
 local types = require('radio.types')
 

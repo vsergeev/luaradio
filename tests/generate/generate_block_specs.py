@@ -66,6 +66,10 @@ def serialize(x):
         for k, v in x.items():
             t.append(serialize(k) + " = " + serialize(v))
         return "{" + ", ".join(t) + "}"
+    elif isinstance(x, numpy.complex64):
+        return "radio.ComplexFloat32Type(%.*f, %.*f)" % (PRECISION, x.real, PRECISION, x.imag)
+    elif isinstance(x, numpy.float32):
+        return "radio.Float32Type(%.*f)" % (PRECISION, x)
     else:
         return str(x)
 

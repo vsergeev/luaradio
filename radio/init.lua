@@ -54,6 +54,7 @@ return {
     FrequencyTranslatorBlock = require('radio.blocks.signal.frequencytranslator').FrequencyTranslatorBlock,
     HilbertTransformBlock = require('radio.blocks.signal.hilberttransform').HilbertTransformBlock,
     DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock,
+    UpsamplerBlock = require('radio.blocks.signal.upsampler').UpsamplerBlock,
     SamplerBlock = require('radio.blocks.signal.sampler').SamplerBlock,
     SlicerBlock = require('radio.blocks.signal.slicer').SlicerBlock,
     DifferentialDecoderBlock = require('radio.blocks.signal.differentialdecoder').DifferentialDecoderBlock,

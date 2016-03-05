@@ -480,10 +480,8 @@ def generate_sampler_spec():
 def generate_downsampler_spec():
     def process(factor, x):
         out = []
-
         for i in range(0, len(x), factor):
             out.append(x[i])
-
         return [numpy.array(out)]
 
     vectors = []
@@ -520,6 +518,36 @@ def generate_downsampler_spec():
     vectors.append(generate_test_vector(process, [200], [x], "200 Factor, 256 Integer32 input, 1 Integer32 output"))
     vectors.append(generate_test_vector(process, [256], [x], "256 Factor, 256 Integer32 input, 1 Integer32 output"))
     vectors.append(generate_test_vector(process, [257], [x], "256 Factor, 256 Integer32 input, 0 Integer32 output"))
+
+    return vectors
+
+@block_spec("UpsamplerBlock", "tests/blocks/signal/upsampler_spec.lua")
+def generate_upsampler_spec():
+    def process(factor, x):
+        out = [type(x[0])()]*(len(x)*factor)
+        for i in range(0, len(x)):
+            out[i*factor] = x[i]
+        return [numpy.array(out)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [1], [x], "1 Factor, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 256 ComplexFloat32 input, 128 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 256 ComplexFloat32 input, 85 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 256 ComplexFloat32 input, 64 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 256 ComplexFloat32 input, 36 ComplexFloat32 output"))
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [1], [x], "1 Factor, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 256 Float32 input, 128 Float32 output"))
+    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 256 Float32 input, 85 Float32 output"))
+    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 256 Float32 input, 64 Float32 output"))
+    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 256 Float32 input, 36 Float32 output"))
+    x = random_integer32(256)
+    vectors.append(generate_test_vector(process, [1], [x], "1 Factor, 256 Integer32 input, 256 Integer32 output"))
+    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 256 Integer32 input, 128 Integer32 output"))
+    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 256 Integer32 input, 85 Integer32 output"))
+    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 256 Integer32 input, 64 Integer32 output"))
+    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 256 Integer32 input, 36 Integer32 output"))
 
     return vectors
 

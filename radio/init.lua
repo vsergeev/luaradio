@@ -77,4 +77,5 @@ return {
     -- Composite Blocks
     TunerBlock = require('radio.composites.tuner').TunerBlock,
     DecimatorBlock = require('radio.composites.decimator').DecimatorBlock,
+    InterpolatorBlock = require('radio.composites.interpolator').InterpolatorBlock,
 }

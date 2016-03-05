@@ -24,7 +24,14 @@ local function class_factory(cls)
 end
 
 local function isinstanceof(o, cls)
-    return (o._types and o._types[cls]) and true or false
+    if type(cls) == "string" then
+        return type(o) == cls
+    elseif type(cls) == "table" then
+        return ((type(o) == "cdata" or type(o) == "table") and o._types and o._types[cls]) and true or false
+    elseif type(cls) == "cdata" then
+        return (type(o) == "cdata" and o._types and o._types[cls.__index]) and true or false
+    end
+    return false
 end
 
 return {class_factory = class_factory, isinstanceof = isinstanceof}

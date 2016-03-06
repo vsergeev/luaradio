@@ -9,7 +9,7 @@ function random_taps(n)
 end
 
 radio.CompositeBlock():connect(
-    radio.NullSource(),
+    radio.NullSource(radio.ComplexFloat32Type),
     radio.FIRFilterBlock(random_taps(256)),
     radio.FIRFilterBlock(random_taps(256)),
     radio.FIRFilterBlock(random_taps(256)),

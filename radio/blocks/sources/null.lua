@@ -3,12 +3,12 @@ local types = require('radio.types')
 
 local NullSource = block.factory("NullSource")
 
-function NullSource:instantiate(rate)
+function NullSource:instantiate(data_type, rate)
     self.rate = rate or 1
     self.chunk_size = 8192
-    self.out = types.ComplexFloat32Type.vector(self.chunk_size)
+    self.out = data_type.vector(self.chunk_size)
 
-    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({}, {block.Output("out", data_type)})
 end
 
 function NullSource:get_rate()

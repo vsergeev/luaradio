@@ -814,11 +814,18 @@ def generate_rdsframe_spec():
 
 @source_spec("NullSource", "tests/blocks/sources/null_spec.lua")
 def generate_null_spec():
-    def process():
-        return [numpy.array([complex(0, 0) for _ in range(256)]).astype(numpy.complex64)]
+    def process(data_type, rate):
+        if data_type == "radio.ComplexFloat32Type":
+            return [numpy.array([complex(0, 0) for _ in range(256)]).astype(numpy.complex64)]
+        elif data_type == "radio.Float32Type":
+            return [numpy.array([0 for _ in range(256)]).astype(numpy.float32)]
+        elif data_type == "radio.Integer32Type":
+            return [numpy.array([0 for _ in range(256)]).astype(numpy.int32)]
 
     vectors = []
-    vectors.append(generate_test_vector(process, [], [], []))
+    vectors.append(generate_test_vector(process, ["radio.ComplexFloat32Type", 1], [], []))
+    vectors.append(generate_test_vector(process, ["radio.Float32Type", 1], [], []))
+    vectors.append(generate_test_vector(process, ["radio.Integer32Type", 1], [], []))
 
     return vectors
 

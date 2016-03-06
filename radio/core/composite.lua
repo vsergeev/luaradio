@@ -364,6 +364,9 @@ function CompositeBlock:start(multiprocess)
     ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
     assert(ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) == 0, "sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
+    -- Prepare to run
+    local all_connections, execution_order = self:_prepare_to_run()
+
     -- Clear any pending signals
     while true do
         assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
@@ -374,9 +377,6 @@ function CompositeBlock:start(multiprocess)
             break
         end
     end
-
-    -- Prepare to run
-    local all_connections, execution_order = self:_prepare_to_run()
 
     if not multiprocess then
         -- Build a skip set, containing the set of blocks to skip for each

@@ -37,6 +37,7 @@ return {
     JSONSink = require('radio.blocks.sinks.json').JSONSink,
     PulseAudioSink = require('radio.blocks.sinks.pulseaudio').PulseAudioSink,
     GnuplotPlotSink = require('radio.blocks.sinks.gnuplotplot').GnuplotPlotSink,
+    GnuplotXYPlotSink = require('radio.blocks.sinks.gnuplotxyplot').GnuplotXYPlotSink,
 
     -- Signal Blocks
     --- Filtering

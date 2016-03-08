@@ -719,10 +719,15 @@ def generate_window_utils_spec():
 
     # Window functions
     vectors.append("M.window_rectangular = " + serialize(scipy.signal.boxcar(128).astype(numpy.float32)))
+    vectors.append("M.window_rectangular_periodic = " + serialize(scipy.signal.boxcar(128, False).astype(numpy.float32)))
     vectors.append("M.window_hamming = " + serialize(scipy.signal.hamming(128).astype(numpy.float32)))
+    vectors.append("M.window_hamming_periodic = " + serialize(scipy.signal.hamming(128, False).astype(numpy.float32)))
     vectors.append("M.window_hanning = " + serialize(scipy.signal.hanning(128).astype(numpy.float32)))
+    vectors.append("M.window_hanning_periodic = " + serialize(scipy.signal.hanning(128, False).astype(numpy.float32)))
     vectors.append("M.window_bartlett = " + serialize(scipy.signal.bartlett(128).astype(numpy.float32)))
+    vectors.append("M.window_bartlett_periodic = " + serialize(scipy.signal.bartlett(128, False).astype(numpy.float32)))
     vectors.append("M.window_blackman = " + serialize(scipy.signal.blackman(128).astype(numpy.float32)))
+    vectors.append("M.window_blackman_periodic = " + serialize(scipy.signal.blackman(128, False).astype(numpy.float32)))
     vectors.append("")
 
     vectors.append("return M")

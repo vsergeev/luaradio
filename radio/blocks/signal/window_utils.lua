@@ -21,14 +21,14 @@ local window_functions = {
     end
 }
 
-local function window(M, window_type)
+local function window(M, window_type, periodic)
     if not window_functions[window_type] then
         error("Unsupported window \"" .. tostring(window_type) .. "\".")
     end
 
     local w = {}
     for n = 0, M-1 do
-        w[n+1] = window_functions[window_type](n, M)
+        w[n+1] = window_functions[window_type](n, periodic and (M+1) or M)
     end
 
     return w

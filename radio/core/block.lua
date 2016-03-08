@@ -215,7 +215,7 @@ function Block:__tostring()
 end
 
 -- Block factory derived class generator
-function factory(name, parent_class)
+local function factory(name, parent_class)
     local class = object.class_factory(parent_class or Block)
 
     class.name = name

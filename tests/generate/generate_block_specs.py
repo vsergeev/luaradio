@@ -708,8 +708,8 @@ def generate_floattocomplex_spec():
 
     return vectors
 
-@raw_spec("tests/blocks/signal/filter_utils_vectors.lua")
-def generate_filter_utils_spec():
+@raw_spec("tests/blocks/signal/window_utils_vectors.lua")
+def generate_window_utils_spec():
     vectors = []
 
     # Header
@@ -724,6 +724,19 @@ def generate_filter_utils_spec():
     vectors.append("M.window_bartlett = " + serialize(scipy.signal.bartlett(128).astype(numpy.float32)))
     vectors.append("M.window_blackman = " + serialize(scipy.signal.blackman(128).astype(numpy.float32)))
     vectors.append("")
+
+    vectors.append("return M")
+
+    return vectors
+
+@raw_spec("tests/blocks/signal/filter_utils_vectors.lua")
+def generate_filter_utils_spec():
+    vectors = []
+
+    # Header
+    vectors.append("local radio = require('radio')")
+    vectors.append("")
+    vectors.append("local M = {}")
 
     # Firwin functions
     vectors.append("M.firwin_lowpass = " + serialize(scipy.signal.firwin(128, 0.5, scale=False).astype(numpy.float32)))

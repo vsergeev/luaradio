@@ -235,244 +235,103 @@ def generate_iirfilter_spec():
 
     return vectors
 
-@block_spec("MultiplyBlock", "tests/blocks/signal/multiply_spec.lua")
-def generate_multiply_spec():
-    def process(x, y):
-        return [x * y]
+@block_spec("LowpassFilterBlock", "tests/blocks/signal/lowpassfilter_spec.lua")
+def generate_lowpassfilter_spec():
+    def process(num_taps, cutoff, x):
+        b = scipy.signal.firwin(num_taps, cutoff, scale=False)
+        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
     x = random_complex64(256)
-    y = random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [128, 0.2], [x], "128 taps, 0.2 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [128, 0.5], [x], "128 taps, 0.5 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [128, 0.7], [x], "128 taps, 0.7 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     x = random_float32(256)
-    y = random_float32(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Float32 inputs, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [128, 0.2], [x], "128 taps, 0.2 cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [128, 0.5], [x], "128 taps, 0.5 cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [128, 0.7], [x], "128 taps, 0.7 cutoff, 256 Float32 input, 256 Float32 output"))
 
     return vectors
 
-@block_spec("MultiplyConjugateBlock", "tests/blocks/signal/multiplyconjugate_spec.lua")
-def generate_multiplyconjugate_spec():
-    def process(x, y):
-        return [x * numpy.conj(y)]
+@block_spec("HighpassFilterBlock", "tests/blocks/signal/highpassfilter_spec.lua")
+def generate_highpassfilter_spec():
+    def process(num_taps, cutoff, x):
+        b = scipy.signal.firwin(num_taps, cutoff, pass_zero=False, scale=False)
+        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
     x = random_complex64(256)
-    y = random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
-
-    return vectors
-
-@block_spec("MultiplyConstantBlock", "tests/blocks/signal/multiplyconstant_spec.lua")
-def generate_multiplyconstant_spec():
-    def process(constant, x):
-        return [x * constant]
-
-    vectors = []
-    x = random_complex64(256)
-    y = random_float32(256)
-
-    # ComplexFloat32 vector times number constant
-    vectors.append(generate_test_vector(process, [2.5], [x], "Number constant, 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
-    # ComplexFloat32 vector times float32 constant
-    vectors.append(generate_test_vector(process, [numpy.float32(3.5)], [x], "Float32 constant, 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
-    # ComplexFloat32 vector times ComplexFloat32 constant
-    vectors.append(generate_test_vector(process, [numpy.complex64(complex(1,2))], [x], "ComplexFloat32 constant, 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
-    # Float32 vector times number constant
-    vectors.append(generate_test_vector(process, [2.5], [y], "Number constant, 256 Float32 inputs, 256 Float32 output"))
-    # Float32 vector times Float32 constant
-    vectors.append(generate_test_vector(process, [numpy.float32(3.5)], [y], "Float32 constant, 256 Float32 inputs, 256 Float32 output"))
-
-    return vectors
-
-@block_spec("SumBlock", "tests/blocks/signal/sum_spec.lua")
-def generate_sum_spec():
-    def process(x, y):
-        return [x + y]
-
-    vectors = []
-    x, y = random_complex64(256), random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
-    x, y = random_float32(256), random_float32(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Float32 inputs, 256 Float32 output"))
-    x, y = random_integer32(256), random_integer32(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Integer32 inputs, 256 Integer32 output"))
-
-    return vectors
-
-@block_spec("SubtractBlock", "tests/blocks/signal/subtract_spec.lua")
-def generate_subtract_spec():
-    def process(x, y):
-        return [x - y]
-
-    vectors = []
-    x, y = random_complex64(256), random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
-    x, y = random_float32(256), random_float32(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Float32 inputs, 256 Float32 output"))
-    x, y = random_integer32(256), random_integer32(256)
-    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Integer32 inputs, 256 Integer32 output"))
-
-    return vectors
-
-@block_spec("AbsoluteValueBlock", "tests/blocks/signal/absolutevalue_spec.lua")
-def generate_absolutevalue_spec():
-    def process(x):
-        return [numpy.abs(x)]
-
-    vectors = []
+    vectors.append(generate_test_vector(process, [129, 0.2], [x], "129 taps, 0.2 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [129, 0.5], [x], "129 taps, 0.5 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [129, 0.7], [x], "129 taps, 0.7 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     x = random_float32(256)
-    vectors.append(generate_test_vector(process, [], [x], "256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [129, 0.2], [x], "129 taps, 0.2 cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [129, 0.5], [x], "129 taps, 0.5 cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [129, 0.7], [x], "129 taps, 0.7 cutoff, 256 Float32 input, 256 Float32 output"))
 
     return vectors
 
-@block_spec("ComplexMagnitudeBlock", "tests/blocks/signal/complexmagnitude_spec.lua")
-def generate_complexmagnitude_spec():
-    def process(x):
-        return [numpy.abs(x).astype(numpy.float32)]
+@block_spec("BandpassFilterBlock", "tests/blocks/signal/bandpassfilter_spec.lua")
+def generate_bandpassfilter_spec():
+    def process(num_taps, cutoffs, x):
+        b = scipy.signal.firwin(num_taps, cutoffs, pass_zero=False, scale=False)
+        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
     x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [129, [0.4, 0.6]], [x], "129 taps, {0.4, 0.6} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [129, [0.4, 0.6]], [x], "129 taps, {0.4, 0.6} cutoff, 256 Float32 input, 256 Float32 output"))
 
     return vectors
 
-@block_spec("ComplexPhaseBlock", "tests/blocks/signal/complexphase_spec.lua")
-def generate_complexphase_spec():
-    def process(x):
-        return [numpy.angle(x).astype(numpy.float32)]
+@block_spec("BandstopFilterBlock", "tests/blocks/signal/bandstopfilter_spec.lua")
+def generate_bandstopfilter_spec():
+    def process(num_taps, cutoffs, x):
+        b = scipy.signal.firwin(num_taps, cutoffs, pass_zero=True, scale=False)
+        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
     x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [129, [0.4, 0.6]], [x], "129 taps, {0.4, 0.6} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [129, [0.4, 0.6]], [x], "129 taps, {0.4, 0.6} cutoff, 256 Float32 input, 256 Float32 output"))
 
     return vectors
 
-@block_spec("ComplexToRealBlock", "tests/blocks/signal/complextoreal_spec.lua")
-def generate_complextoreal_spec():
-    def process(x):
-        return [numpy.real(x)]
+@block_spec("RootRaisedCosineFilterBlock", "tests/blocks/signal/rootraisedcosinefilter_spec.lua")
+def generate_rootraisedcosinefilter_spec():
+    def process(num_taps, beta, symbol_rate, x):
+        b = fir_root_raised_cosine(num_taps, 2.0, beta, 1/symbol_rate)
+        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
     x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [101, 0.5, 1e-3], [x], "101 taps, 0.5 beta, 1e-3 symbol rate, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [101, 0.7, 1e-3], [x], "101 taps, 0.7 beta, 1e-3 symbol rate, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [101, 1.0, 5e-3], [x], "101 taps, 1.0 beta, 5e-3 symbol rate, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [101, 0.5, 1e-3], [x], "101 taps, 0.5 beta, 1e-3 symbol rate, 256 Float32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [101, 0.7, 1e-3], [x], "101 taps, 0.7 beta, 1e-3 symbol rate, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [101, 1.0, 5e-3], [x], "101 taps, 1.0 beta, 5e-3 symbol rate, 256 Float32 input, 256 Float32 output"))
 
     return vectors
 
-@block_spec("ComplexToImagBlock", "tests/blocks/signal/complextoimag_spec.lua")
-def generate_complextoreal_spec():
-    def process(x):
-        return [numpy.imag(x)]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
-
-    return vectors
-
-@block_spec("FloatToComplexBlock", "tests/blocks/signal/floattocomplex_spec.lua")
-def generate_floattocomplex_spec():
-    def process(real, imag):
-        return [numpy.array([complex(*e) for e in zip(real, imag)]).astype(numpy.complex64)]
-
-    vectors = []
-    real, imag = random_float32(256), random_float32(256)
-    vectors.append(generate_test_vector(process, [], [real, imag], "2 256 Float32 inputs, 256 ComplexFloat32 output"))
-
-    return vectors
-
-@block_spec("ComplexToFloatBlock", "tests/blocks/signal/complextofloat_spec.lua")
-def generate_complextofloat_spec():
-    def process(x):
-        return [numpy.real(x), numpy.imag(x)]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 2 256 Float32 outputs"))
-
-    return vectors
-
-@block_spec("SlicerBlock", "tests/blocks/signal/slicer_spec.lua")
-def generate_slicer_spec():
-    def process(threshold, x):
-        return [x > threshold]
+@block_spec("FMDeemphasisFilterBlock",  "tests/blocks/signal/fmdeemphasisfilter_spec.lua")
+def generate_fmdeemphasisfilter_spec():
+    def process(tau, x):
+        b_taps = [1/(1 + 4*tau), 1/(1 + 4*tau)]
+        a_taps = [1, (1 - 4*tau)/(1 + 4*tau)]
+        return [scipy.signal.lfilter(b_taps, a_taps, x).astype(numpy.float32)]
 
     vectors = []
     x = random_float32(256)
-    vectors.append(generate_test_vector(process, [0.00], [x], "Default threshold, 256 Float32 input, 256 Bit output"))
-    vectors.append(generate_test_vector(process, [0.25], [x], "0.25 threshold, 256 Float32 input, 256 Bit output"))
-    vectors.append(generate_test_vector(process, [-0.25], [x], "-0.25 threshold, 256 Float32 input, 256 Bit output"))
-
-    return vectors
-
-@block_spec("DifferentialDecoderBlock", "tests/blocks/signal/differentialdecoder_spec.lua")
-def generate_differentialdecoder_spec():
-    def process(x):
-        prev_bit = numpy.bool_(False)
-        return [numpy.logical_xor(numpy.insert(x, 0, False)[:-1], x)]
-
-    vectors = []
-    x = random_bit(256)
-    vectors.append(generate_test_vector(process, [], [x], "256 Bit input, 256 Bit output"))
-
-    return vectors
-
-@block_spec("DelayBlock", "tests/blocks/signal/delay_spec.lua")
-def generate_delay_spec():
-    def process(n, x):
-        elem_type = type(x[0])
-        return [numpy.insert(x, 0, [elem_type()]*n)[:len(x)]]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [1], [x], "1 Sample Delay, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [15], [x], "1 Sample Delay, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [100], [x], "1 Sample Delay, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [1], [x], "1 Sample Delay, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [15], [x], "1 Sample Delay, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [100], [x], "1 Sample Delay, 256 Float32 input, 256 Float32 output"))
-    x = random_integer32(256)
-    vectors.append(generate_test_vector(process, [1], [x], "1 Sample Delay, 256 Integer32 input, 256 Integer32 output"))
-    vectors.append(generate_test_vector(process, [15], [x], "1 Sample Delay, 256 Integer32 input, 256 Integer32 output"))
-    vectors.append(generate_test_vector(process, [100], [x], "1 Sample Delay, 256 Integer32 input, 256 Integer32 output"))
-
-    return vectors
-
-@block_spec("FrequencyDiscriminatorBlock", "tests/blocks/signal/frequencydiscriminator_spec.lua")
-def generate_frequencydiscriminator_spec():
-    def process(gain, x):
-        x_shifted = numpy.insert(x, 0, numpy.complex64())[:len(x)]
-        tmp = x*numpy.conj(x_shifted)
-        return [(numpy.arctan2(numpy.imag(tmp), numpy.real(tmp))/gain).astype(numpy.float32)]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [1.0], [x], "1.0 Gain, 256 ComplexFloat32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [5.0], [x], "5.0 Gain, 256 ComplexFloat32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [10.0], [x], "10.0 Gain, 256 ComplexFloat32 input, 256 Float32 output"))
-
-    return vectors
-
-@block_spec("SamplerBlock", "tests/blocks/signal/sampler_spec.lua")
-def generate_sampler_spec():
-    def process(data, clock):
-        sampled_data = []
-        hysteresis = False
-
-        for i in range(len(clock)):
-            if hysteresis == False and clock[i] > 0:
-                sampled_data.append(data[i])
-                hysteresis = True
-            elif hysteresis == True and clock[i] < 0:
-                hysteresis = False
-
-        return [numpy.array(sampled_data)]
-
-    vectors = []
-    data, clk = random_complex64(256), random_float32(256)
-    vectors.append(generate_test_vector(process, [], [data, clk], "256 ComplexFloat32 data, 256 Float32 clock, 256 Float32 output"))
-    data, clk = random_float32(256), random_float32(256)
-    vectors.append(generate_test_vector(process, [], [data, clk], "256 Float32 data, 256 Float32 clock, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [75e-6], [x], "75e-6 tau, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [50e-6], [x], "50e-6 tau, 256 Float32 input, 256 Float32 output"))
 
     return vectors
 
@@ -551,6 +410,21 @@ def generate_upsampler_spec():
 
     return vectors
 
+@block_spec("FrequencyTranslatorBlock", "tests/blocks/signal/frequencytranslator_spec.lua", epsilon=1e-5)
+def generate_frequencytranslator_spec():
+    # FIXME why does this need 1e-5 epsilon?
+    def process(offset, x):
+        rotator = numpy.exp(1j*2*numpy.pi*(offset/2.0)*numpy.arange(len(x))).astype(numpy.complex64)
+        return [x * rotator]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [0.2], [x], "0.2 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [0.5], [x], "0.5 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [0.7], [x], "0.7 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+
+    return vectors
+
 @block_spec("HilbertTransformBlock", "tests/blocks/signal/hilberttransform_spec.lua")
 def generate_hilberttransform_spec():
     def process(num_taps, x):
@@ -567,6 +441,133 @@ def generate_hilberttransform_spec():
     vectors.append(generate_test_vector(process, [65], [x], "65 taps, 256 Float32 input, 256 ComplexFloat32 output"))
     vectors.append(generate_test_vector(process, [129], [x], "129 taps, 256 Float32 input, 256 ComplexFloat32 output"))
     vectors.append(generate_test_vector(process, [257], [x], "257 taps, 256 Float32 input, 256 ComplexFloat32 output"))
+
+    return vectors
+
+@block_spec("FrequencyDiscriminatorBlock", "tests/blocks/signal/frequencydiscriminator_spec.lua")
+def generate_frequencydiscriminator_spec():
+    def process(gain, x):
+        x_shifted = numpy.insert(x, 0, numpy.complex64())[:len(x)]
+        tmp = x*numpy.conj(x_shifted)
+        return [(numpy.arctan2(numpy.imag(tmp), numpy.real(tmp))/gain).astype(numpy.float32)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [1.0], [x], "1.0 Gain, 256 ComplexFloat32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [5.0], [x], "5.0 Gain, 256 ComplexFloat32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [10.0], [x], "10.0 Gain, 256 ComplexFloat32 input, 256 Float32 output"))
+
+    return vectors
+
+@block_spec("SumBlock", "tests/blocks/signal/sum_spec.lua")
+def generate_sum_spec():
+    def process(x, y):
+        return [x + y]
+
+    vectors = []
+    x, y = random_complex64(256), random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+    x, y = random_float32(256), random_float32(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Float32 inputs, 256 Float32 output"))
+    x, y = random_integer32(256), random_integer32(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Integer32 inputs, 256 Integer32 output"))
+
+    return vectors
+
+@block_spec("SubtractBlock", "tests/blocks/signal/subtract_spec.lua")
+def generate_subtract_spec():
+    def process(x, y):
+        return [x - y]
+
+    vectors = []
+    x, y = random_complex64(256), random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+    x, y = random_float32(256), random_float32(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Float32 inputs, 256 Float32 output"))
+    x, y = random_integer32(256), random_integer32(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Integer32 inputs, 256 Integer32 output"))
+
+    return vectors
+
+@block_spec("MultiplyBlock", "tests/blocks/signal/multiply_spec.lua")
+def generate_multiply_spec():
+    def process(x, y):
+        return [x * y]
+
+    vectors = []
+    x = random_complex64(256)
+    y = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+    x = random_float32(256)
+    y = random_float32(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 Float32 inputs, 256 Float32 output"))
+
+    return vectors
+
+@block_spec("MultiplyConstantBlock", "tests/blocks/signal/multiplyconstant_spec.lua")
+def generate_multiplyconstant_spec():
+    def process(constant, x):
+        return [x * constant]
+
+    vectors = []
+    x = random_complex64(256)
+    y = random_float32(256)
+
+    # ComplexFloat32 vector times number constant
+    vectors.append(generate_test_vector(process, [2.5], [x], "Number constant, 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+    # ComplexFloat32 vector times float32 constant
+    vectors.append(generate_test_vector(process, [numpy.float32(3.5)], [x], "Float32 constant, 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+    # ComplexFloat32 vector times ComplexFloat32 constant
+    vectors.append(generate_test_vector(process, [numpy.complex64(complex(1,2))], [x], "ComplexFloat32 constant, 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+    # Float32 vector times number constant
+    vectors.append(generate_test_vector(process, [2.5], [y], "Number constant, 256 Float32 inputs, 256 Float32 output"))
+    # Float32 vector times Float32 constant
+    vectors.append(generate_test_vector(process, [numpy.float32(3.5)], [y], "Float32 constant, 256 Float32 inputs, 256 Float32 output"))
+
+    return vectors
+
+@block_spec("MultiplyConjugateBlock", "tests/blocks/signal/multiplyconjugate_spec.lua")
+def generate_multiplyconjugate_spec():
+    def process(x, y):
+        return [x * numpy.conj(y)]
+
+    vectors = []
+    x = random_complex64(256)
+    y = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x, y], "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output"))
+
+    return vectors
+
+@block_spec("AbsoluteValueBlock", "tests/blocks/signal/absolutevalue_spec.lua")
+def generate_absolutevalue_spec():
+    def process(x):
+        return [numpy.abs(x)]
+
+    vectors = []
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 Float32 input, 256 Float32 output"))
+
+    return vectors
+
+@block_spec("ComplexMagnitudeBlock", "tests/blocks/signal/complexmagnitude_spec.lua")
+def generate_complexmagnitude_spec():
+    def process(x):
+        return [numpy.abs(x).astype(numpy.float32)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
+
+    return vectors
+
+@block_spec("ComplexPhaseBlock", "tests/blocks/signal/complexphase_spec.lua")
+def generate_complexphase_spec():
+    def process(x):
+        return [numpy.angle(x).astype(numpy.float32)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
 
     return vectors
 
@@ -593,6 +594,120 @@ def generate_binaryphasecorrector_spec():
     vectors.append(generate_test_vector(process, [17], [x], "17 sample average, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     vectors.append(generate_test_vector(process, [64], [x], "64 sample average, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     vectors.append(generate_test_vector(process, [100], [x], "100 sample average, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+
+    return vectors
+
+@block_spec("DelayBlock", "tests/blocks/signal/delay_spec.lua")
+def generate_delay_spec():
+    def process(n, x):
+        elem_type = type(x[0])
+        return [numpy.insert(x, 0, [elem_type()]*n)[:len(x)]]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [1], [x], "1 Sample Delay, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [15], [x], "1 Sample Delay, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [100], [x], "1 Sample Delay, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [1], [x], "1 Sample Delay, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [15], [x], "1 Sample Delay, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process, [100], [x], "1 Sample Delay, 256 Float32 input, 256 Float32 output"))
+    x = random_integer32(256)
+    vectors.append(generate_test_vector(process, [1], [x], "1 Sample Delay, 256 Integer32 input, 256 Integer32 output"))
+    vectors.append(generate_test_vector(process, [15], [x], "1 Sample Delay, 256 Integer32 input, 256 Integer32 output"))
+    vectors.append(generate_test_vector(process, [100], [x], "1 Sample Delay, 256 Integer32 input, 256 Integer32 output"))
+
+    return vectors
+
+@block_spec("SamplerBlock", "tests/blocks/signal/sampler_spec.lua")
+def generate_sampler_spec():
+    def process(data, clock):
+        sampled_data = []
+        hysteresis = False
+
+        for i in range(len(clock)):
+            if hysteresis == False and clock[i] > 0:
+                sampled_data.append(data[i])
+                hysteresis = True
+            elif hysteresis == True and clock[i] < 0:
+                hysteresis = False
+
+        return [numpy.array(sampled_data)]
+
+    vectors = []
+    data, clk = random_complex64(256), random_float32(256)
+    vectors.append(generate_test_vector(process, [], [data, clk], "256 ComplexFloat32 data, 256 Float32 clock, 256 Float32 output"))
+    data, clk = random_float32(256), random_float32(256)
+    vectors.append(generate_test_vector(process, [], [data, clk], "256 Float32 data, 256 Float32 clock, 256 Float32 output"))
+
+    return vectors
+
+@block_spec("SlicerBlock", "tests/blocks/signal/slicer_spec.lua")
+def generate_slicer_spec():
+    def process(threshold, x):
+        return [x > threshold]
+
+    vectors = []
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [0.00], [x], "Default threshold, 256 Float32 input, 256 Bit output"))
+    vectors.append(generate_test_vector(process, [0.25], [x], "0.25 threshold, 256 Float32 input, 256 Bit output"))
+    vectors.append(generate_test_vector(process, [-0.25], [x], "-0.25 threshold, 256 Float32 input, 256 Bit output"))
+
+    return vectors
+
+@block_spec("DifferentialDecoderBlock", "tests/blocks/signal/differentialdecoder_spec.lua")
+def generate_differentialdecoder_spec():
+    def process(x):
+        prev_bit = numpy.bool_(False)
+        return [numpy.logical_xor(numpy.insert(x, 0, False)[:-1], x)]
+
+    vectors = []
+    x = random_bit(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 Bit input, 256 Bit output"))
+
+    return vectors
+
+@block_spec("ComplexToRealBlock", "tests/blocks/signal/complextoreal_spec.lua")
+def generate_complextoreal_spec():
+    def process(x):
+        return [numpy.real(x)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
+
+    return vectors
+
+@block_spec("ComplexToImagBlock", "tests/blocks/signal/complextoimag_spec.lua")
+def generate_complextoreal_spec():
+    def process(x):
+        return [numpy.imag(x)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 Float32 output"))
+
+    return vectors
+
+@block_spec("ComplexToFloatBlock", "tests/blocks/signal/complextofloat_spec.lua")
+def generate_complextofloat_spec():
+    def process(x):
+        return [numpy.real(x), numpy.imag(x)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 2 256 Float32 outputs"))
+
+    return vectors
+
+@block_spec("FloatToComplexBlock", "tests/blocks/signal/floattocomplex_spec.lua")
+def generate_floattocomplex_spec():
+    def process(real, imag):
+        return [numpy.array([complex(*e) for e in zip(real, imag)]).astype(numpy.complex64)]
+
+    vectors = []
+    real, imag = random_float32(256), random_float32(256)
+    vectors.append(generate_test_vector(process, [], [real, imag], "2 256 Float32 inputs, 256 ComplexFloat32 output"))
 
     return vectors
 
@@ -629,121 +744,6 @@ def generate_filter_utils_spec():
     vectors.append("")
 
     vectors.append("return M")
-
-    return vectors
-
-@block_spec("FrequencyTranslatorBlock", "tests/blocks/signal/frequencytranslator_spec.lua", epsilon=1e-5)
-def generate_frequencytranslator_spec():
-    # FIXME why does this need 1e-5 epsilon?
-    def process(offset, x):
-        rotator = numpy.exp(1j*2*numpy.pi*(offset/2.0)*numpy.arange(len(x))).astype(numpy.complex64)
-        return [x * rotator]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [0.2], [x], "0.2 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [0.5], [x], "0.5 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [0.7], [x], "0.7 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-
-    return vectors
-
-@block_spec("LowpassFilterBlock", "tests/blocks/signal/lowpassfilter_spec.lua")
-def generate_lowpassfilter_spec():
-    def process(num_taps, cutoff, x):
-        b = scipy.signal.firwin(num_taps, cutoff, scale=False)
-        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [128, 0.2], [x], "128 taps, 0.2 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [128, 0.5], [x], "128 taps, 0.5 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [128, 0.7], [x], "128 taps, 0.7 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [128, 0.2], [x], "128 taps, 0.2 cutoff, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [128, 0.5], [x], "128 taps, 0.5 cutoff, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [128, 0.7], [x], "128 taps, 0.7 cutoff, 256 Float32 input, 256 Float32 output"))
-
-    return vectors
-
-@block_spec("HighpassFilterBlock", "tests/blocks/signal/highpassfilter_spec.lua")
-def generate_highpassfilter_spec():
-    def process(num_taps, cutoff, x):
-        b = scipy.signal.firwin(num_taps, cutoff, pass_zero=False, scale=False)
-        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [129, 0.2], [x], "129 taps, 0.2 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [129, 0.5], [x], "129 taps, 0.5 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [129, 0.7], [x], "129 taps, 0.7 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [129, 0.2], [x], "129 taps, 0.2 cutoff, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [129, 0.5], [x], "129 taps, 0.5 cutoff, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [129, 0.7], [x], "129 taps, 0.7 cutoff, 256 Float32 input, 256 Float32 output"))
-
-    return vectors
-
-@block_spec("BandpassFilterBlock", "tests/blocks/signal/bandpassfilter_spec.lua")
-def generate_bandpassfilter_spec():
-    def process(num_taps, cutoffs, x):
-        b = scipy.signal.firwin(num_taps, cutoffs, pass_zero=False, scale=False)
-        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [129, [0.4, 0.6]], [x], "129 taps, {0.4, 0.6} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [129, [0.4, 0.6]], [x], "129 taps, {0.4, 0.6} cutoff, 256 Float32 input, 256 Float32 output"))
-
-    return vectors
-
-@block_spec("BandstopFilterBlock", "tests/blocks/signal/bandstopfilter_spec.lua")
-def generate_bandstopfilter_spec():
-    def process(num_taps, cutoffs, x):
-        b = scipy.signal.firwin(num_taps, cutoffs, pass_zero=True, scale=False)
-        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [129, [0.4, 0.6]], [x], "129 taps, {0.4, 0.6} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [129, [0.4, 0.6]], [x], "129 taps, {0.4, 0.6} cutoff, 256 Float32 input, 256 Float32 output"))
-
-    return vectors
-
-@block_spec("FMDeemphasisFilterBlock",  "tests/blocks/signal/fmdeemphasisfilter_spec.lua")
-def generate_fmdeemphasisfilter_spec():
-    def process(tau, x):
-        b_taps = [1/(1 + 4*tau), 1/(1 + 4*tau)]
-        a_taps = [1, (1 - 4*tau)/(1 + 4*tau)]
-        return [scipy.signal.lfilter(b_taps, a_taps, x).astype(numpy.float32)]
-
-    vectors = []
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [75e-6], [x], "75e-6 tau, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [50e-6], [x], "50e-6 tau, 256 Float32 input, 256 Float32 output"))
-
-    return vectors
-
-@block_spec("RootRaisedCosineFilterBlock", "tests/blocks/signal/rootraisedcosinefilter_spec.lua")
-def generate_rootraisedcosinefilter_spec():
-    def process(num_taps, beta, symbol_rate, x):
-        b = fir_root_raised_cosine(num_taps, 2.0, beta, 1/symbol_rate)
-        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
-
-    vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [101, 0.5, 1e-3], [x], "101 taps, 0.5 beta, 1e-3 symbol rate, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [101, 0.7, 1e-3], [x], "101 taps, 0.7 beta, 1e-3 symbol rate, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [101, 1.0, 5e-3], [x], "101 taps, 1.0 beta, 5e-3 symbol rate, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [101, 0.5, 1e-3], [x], "101 taps, 0.5 beta, 1e-3 symbol rate, 256 Float32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [101, 0.7, 1e-3], [x], "101 taps, 0.7 beta, 1e-3 symbol rate, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [101, 1.0, 5e-3], [x], "101 taps, 1.0 beta, 5e-3 symbol rate, 256 Float32 input, 256 Float32 output"))
 
     return vectors
 

@@ -45,6 +45,9 @@ describe("ComplexFloat32Type", function ()
         jigs.assert_approx_equal(math.sqrt(2), ComplexFloat32Type(1, 1):abs(), 1e-6)
         jigs.assert_approx_equal(math.sqrt(2), ComplexFloat32Type(1, -1):abs(), 1e-6)
         jigs.assert_approx_equal(math.sqrt(101), ComplexFloat32Type(-10, 1):abs(), 1e-6)
+        jigs.assert_approx_equal(2, ComplexFloat32Type(1, 1):abs_squared(), 1e-6)
+        jigs.assert_approx_equal(2, ComplexFloat32Type(1, -1):abs_squared(), 1e-6)
+        jigs.assert_approx_equal(101, ComplexFloat32Type(-10, 1):abs_squared(), 1e-6)
 
         -- Complex Conjugate
         assert.is.equal(ComplexFloat32Type(1, -2), ComplexFloat32Type(1, 2):conj())

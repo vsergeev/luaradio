@@ -57,6 +57,10 @@ function mt:abs()
     return math.sqrt(self.real*self.real + self.imag*self.imag)
 end
 
+function mt:abs_squared()
+    return self.real*self.real + self.imag*self.imag
+end
+
 function mt:conj()
     return self.new(self.real, -self.imag)
 end

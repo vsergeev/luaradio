@@ -12,9 +12,6 @@ PRECISION = 8
 # Default comparison epsilon
 EPSILON = 1e-6
 
-# Fixed random seed for deterministic generation
-random.seed(1)
-
 ################################################################################
 # Helper functions for generating random types
 ################################################################################
@@ -63,8 +60,8 @@ def serialize(x):
         return x.serialize()
     elif isinstance(x , dict):
         t = []
-        for k, v in x.items():
-            t.append(serialize(k) + " = " + serialize(v))
+        for k in sorted(x.keys()):
+            t.append(serialize(k) + " = " + serialize(x[k]))
         return "{" + ", ".join(t) + "}"
     elif isinstance(x, numpy.complex64):
         return "radio.ComplexFloat32Type(%.*f, %.*f)" % (PRECISION, x.real, PRECISION, x.imag)
@@ -1051,5 +1048,7 @@ def generate_signal_spec():
 
 if __name__ == "__main__":
     for s in AllSpecs:
+        # Reset random seed before each spec file for deterministic generation
+        random.seed(1)
         s()
 

@@ -5,8 +5,18 @@ local types = require('radio.types')
 
 local PulseAudioSink = block.factory("PulseAudioSink")
 
-function PulseAudioSink:instantiate()
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {})
+function PulseAudioSink:instantiate(num_channels)
+    self.num_channels = num_channels or 1
+
+    if self.num_channels == 1 then
+        self:add_type_signature({block.Input("in", types.Float32Type)}, {})
+    else
+        local block_inputs = {}
+        for i = 1, self.num_channels do
+            block_inputs[#block_inputs+1] = block.Input("in" .. i, types.Float32Type)
+        end
+        self:add_type_signature(block_inputs, {})
+    end
 end
 
 ffi.cdef[[
@@ -47,14 +57,15 @@ function PulseAudioSink:initialize()
     -- Prepare sample spec
     self.sample_spec = ffi.new("pa_sample_spec")
     self.sample_spec.format = ffi.abi("le") and ffi.C.PA_SAMPLE_FLOAT32LE or ffi.C.PA_SAMPLE_FLOAT32BE
-    self.sample_spec.channels = 1
+    self.sample_spec.channels = self.num_channels
     self.sample_spec.rate = self:get_rate()
 end
 
-function PulseAudioSink:process(x)
+function PulseAudioSink:process(...)
+    local samples = {...}
     local error_code = ffi.new("int[1]")
 
-    -- We can't fork with a PulseAudio connection, so we create here
+    -- We can't fork with a PulseAudio connection, so we create it here
     if not self.pa_conn then
         -- Open PulseAudio connection
         self.pa_conn = ffi.new("pa_simple *")
@@ -62,8 +73,21 @@ function PulseAudioSink:process(x)
         assert(self.pa_conn ~= nil, "pa_simple_new(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
     end
 
+    local interleaved_samples
+    if self.num_channels == 1 then
+        interleaved_samples = samples[1]
+    else
+        -- Interleave samples
+        interleaved_samples = types.Float32Type.vector(self.num_channels*samples[1].length)
+        for i = 0, samples[1].length-1 do
+            for j = 0, self.num_channels-1 do
+                interleaved_samples.data[i*self.num_channels + j] = samples[j+1].data[i]
+            end
+        end
+    end
+
     -- Write to our PulseAudio connection
-    local ret = libpulse.pa_simple_write(self.pa_conn, x.data, x.size, error_code)
+    local ret = libpulse.pa_simple_write(self.pa_conn, interleaved_samples.data, interleaved_samples.size, error_code)
     assert(ret >= 0, "pa_simple_write(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
 end
 

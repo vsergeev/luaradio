@@ -17,6 +17,7 @@ local platform = {
     page_size = 4096,
     features = {
         volk = false,
+        fftw3f = false,
         vmsplice = false,
     },
     libs = {},
@@ -29,6 +30,13 @@ if libvolk_available then
     platform.features.volk = true
 else
     io.stderr:write("Warning: libvolk not found. LuaRadio will run without volk acceleration.\n")
+end
+
+-- Load libfftw3f if it is available
+local libfftw3f_available, libfftw3f = pcall(ffi.load, "fftw3f")
+if libfftw3f_available then
+    platform.libs.fftw3f = libfftw3f
+    platform.features.fftw3f = true
 end
 
 -- Platform specific lookups
@@ -70,8 +78,9 @@ platform.alloc = function (size)
     return ffi.gc(ptr[0], ffi.C.free)
 end
 
--- Disable volk or vmsplice() features with env vars
+-- Disable features with env vars
 platform.features.volk = platform.features.volk and not getenv_flag("LUARADIO_DISABLE_VOLK")
+platform.features.fftw3f = platform.features.fftw3f and not getenv_flag("LUARADIO_DISABLE_FFTW3")
 platform.features.vmsplice = platform.features.vmsplice and not getenv_flag("LUARADIO_DISABLE_VMSPLICE")
 
 return platform

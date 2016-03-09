@@ -6,7 +6,7 @@ local types = require('radio.types')
 
 local RawFileSource = block.factory("RawFileSource")
 
-function RawFileSource:instantiate(file, data_type, rate)
+function RawFileSource:instantiate(file, data_type, rate, repeat_on_eof)
     if type(file) == "number" then
         self.fd = file
     else
@@ -15,6 +15,7 @@ function RawFileSource:instantiate(file, data_type, rate)
 
     self.type = data_type
     self.rate = rate
+    self.repeat_on_eof = (repeat_on_eof == nil) and false or repeat_on_eof
 
     self.buf_capacity = 65536
     self.rawbuf = platform.alloc(self.buf_capacity)
@@ -35,6 +36,7 @@ ffi.cdef[[
     FILE *fopen(const char *path, const char *mode);
     FILE *fdopen(int fd, const char *mode);
     size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+    void rewind(FILE *stream);
     int feof(FILE *stream);
     int ferror(FILE *stream);
     int fclose(FILE *stream);
@@ -63,7 +65,11 @@ function RawFileSource:process()
     local bytes_read = ffi.C.fread(self.buf, 1, self.buf_capacity - unread_length, self.file)
     if bytes_read < (self.buf_capacity - unread_length) then
         if bytes_read == 0 and ffi.C.feof(self.file) ~= 0 then
-            return nil
+            if self.repeat_on_eof then
+                ffi.C.rewind(self.file)
+            else
+                return nil
+            end
         else
             assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end

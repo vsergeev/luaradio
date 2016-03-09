@@ -42,7 +42,7 @@ ffi.cdef[[
     } wave_sample_s32_t;
 ]]
 
-function WAVFileSource:instantiate(file, num_channels)
+function WAVFileSource:instantiate(file, num_channels, repeat_on_eof)
     if type(file) == "number" then
         self.fd = file
     else
@@ -52,6 +52,7 @@ function WAVFileSource:instantiate(file, num_channels)
     self.num_channels = num_channels
     self.rate = nil
     self.chunk_size = 8192
+    self.repeat_on_eof = (repeat_on_eof == nil) and false or repeat_on_eof
 
     -- Build type signature
     if num_channels == 1 then
@@ -75,6 +76,7 @@ ffi.cdef[[
     FILE *fopen(const char *path, const char *mode);
     FILE *fdopen(int fd, const char *mode);
     size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+    int fseek(FILE *stream, long offset, int whence);
     int feof(FILE *stream);
     int ferror(FILE *stream);
     int fclose(FILE *stream);
@@ -190,7 +192,13 @@ function WAVFileSource:process()
     local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self.format.ctype), self.chunk_size, self.file))
     if num_samples < self.chunk_size then
         if num_samples == 0 and ffi.C.feof(self.file) ~= 0 then
-            return nil
+            if self.repeat_on_eof then
+                -- Rewind past header
+                local header_length = ffi.sizeof("riff_header_t") + ffi.sizeof("wave_subchunk1_header_t") + ffi.sizeof("wave_subchunk2_header_t")
+                assert(ffi.C.rewind(self.file, header_length, ffi.C.SEEK_SET) == 0, "fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            else
+                return nil
+            end
         else
             assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end

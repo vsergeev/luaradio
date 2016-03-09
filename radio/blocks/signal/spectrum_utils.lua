@@ -35,28 +35,15 @@ function DFT:initialize()
         self.window_energy = self.window_energy + self.window.data[i].value*self.window.data[i].value
     end
 
-    -- Generate complex exponentials
-    self.exponentials = {}
-    for k = 0, self.num_samples-1 do
-        self.exponentials[k] = types.ComplexFloat32Type.vector(self.num_samples)
-        local omega = (-2*math.pi*k)/self.num_samples
-        for n = 0, self.num_samples-1 do
-            self.exponentials[k].data[n] = types.ComplexFloat32Type(math.cos(omega*n), math.sin(omega*n))
-        end
-    end
-
-    -- Generate unwrapped indices
-    self.indices = {}
-    for k = 0, self.num_samples-1 do
-        self.indices[k] = (k < (self.num_samples/2)) and (k + (self.num_samples/2)) or (k - (self.num_samples/2))
-    end
-
     -- Pick complex or real DFT
     if self.data_type == types.ComplexFloat32Type then
         self.dft = self.dft_complex
     else
         self.dft = self.dft_real
     end
+
+    -- Initialize the DFT
+    self:initialize_dft()
 
     -- Create sample buffers
     self.windowed_samples = types.ComplexFloat32Type.vector(self.num_samples)
@@ -67,6 +54,7 @@ end
 if platform.features.volk then
 
     ffi.cdef[[
+    void (*volk_32fc_s32fc_x2_rotator_32fc)(complex_float32_t* outVector, const complex_float32_t* inVector, const complex_float32_t phase_inc, complex_float32_t* phase, unsigned int num_points);
     void (*volk_32fc_32f_multiply_32fc_a)(complex_float32_t* cVector, const complex_float32_t* aVector, const float32_t* bVector, unsigned int num_points); 
     void (*volk_32fc_x2_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const complex_float32_t* taps, unsigned int num_points);
     void (*volk_32fc_s32f_x2_power_spectral_density_32f_a)(float32_t* logPowerOutput, const complex_float32_t* complexFFTInput, const float normalizationFactor, const float rbw, unsigned int num_points);
@@ -74,6 +62,30 @@ if platform.features.volk then
     void (*volk_32f_s32f_normalize_a)(float32_t* vecBuffer, const float scalar, unsigned int num_points);
     ]]
     local libvolk = platform.libs.volk
+
+    function DFT:initialize_dft()
+        -- Generate a DC vector
+        local dc_vec = types.ComplexFloat32Type.vector(self.num_samples)
+        for i = 0, self.num_samples-1 do
+            dc_vec.data[i] = types.ComplexFloat32Type(1, 0)
+        end
+
+        -- Generate complex exponentials
+        self.exponentials = {}
+        for k = 0, self.num_samples-1 do
+            self.exponentials[k] = types.ComplexFloat32Type.vector(self.num_samples)
+            local omega = (-2*math.pi*k)/self.num_samples
+            local rotator = types.ComplexFloat32Type(math.cos(omega), math.sin(omega))
+            local phase = types.ComplexFloat32Type(1, 0)
+            libvolk.volk_32fc_s32fc_x2_rotator_32fc(self.exponentials[k].data, dc_vec.data, rotator, phase, self.num_samples)
+        end
+
+        -- Generate unwrapped indices
+        self.indices = {}
+        for k = 0, self.num_samples-1 do
+            self.indices[k] = (k < (self.num_samples/2)) and (k + (self.num_samples/2)) or (k - (self.num_samples/2))
+        end
+    end
 
     function DFT:dft_complex(samples)
         -- Window samples (product of complex samples and real window)
@@ -107,6 +119,24 @@ if platform.features.volk then
     end
 
 else
+
+    function DFT:initialize_dft()
+        -- Generate complex exponentials
+        self.exponentials = {}
+        for k = 0, self.num_samples-1 do
+            self.exponentials[k] = types.ComplexFloat32Type.vector(self.num_samples)
+            local omega = (-2*math.pi*k)/self.num_samples
+            for n = 0, self.num_samples-1 do
+                self.exponentials[k].data[n] = types.ComplexFloat32Type(math.cos(omega*n), math.sin(omega*n))
+            end
+        end
+
+        -- Generate unwrapped indices
+        self.indices = {}
+        for k = 0, self.num_samples-1 do
+            self.indices[k] = (k < (self.num_samples/2)) and (k + (self.num_samples/2)) or (k - (self.num_samples/2))
+        end
+    end
 
     function DFT:dft_complex(samples)
         -- Window samples (product of complex samples and real window)

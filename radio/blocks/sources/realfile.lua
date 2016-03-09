@@ -40,7 +40,7 @@ ffi.cdef[[
     } format_f64_t;
 ]]
 
-function RealFileSource:instantiate(file, format, rate)
+function RealFileSource:instantiate(file, format, rate, repeat_on_eof)
     local supported_formats = {
         u8    = {ctype = "format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
         s8    = {ctype = "format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
@@ -67,6 +67,7 @@ function RealFileSource:instantiate(file, format, rate)
 
     self.format = supported_formats[format]
     self.rate = rate
+    self.repeat_on_eof = (repeat_on_eof == nil) and false or repeat_on_eof
 
     self.chunk_size = 8192
 
@@ -83,6 +84,7 @@ ffi.cdef[[
     FILE *fopen(const char *path, const char *mode);
     FILE *fdopen(int fd, const char *mode);
     size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+    void rewind(FILE *stream);
     int feof(FILE *stream);
     int ferror(FILE *stream);
     int fclose(FILE *stream);
@@ -113,7 +115,11 @@ function RealFileSource:process()
     local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self.format.ctype), self.chunk_size, self.file))
     if num_samples < self.chunk_size then
         if num_samples == 0 and ffi.C.feof(self.file) ~= 0 then
-            return nil
+            if self.repeat_on_eof then
+                ffi.C.rewind(self.file)
+            else
+                return nil
+            end
         else
             assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end

@@ -34,18 +34,17 @@ end
 function SignalSource:initialize_exponential()
     self.amplitude = self.options.amplitude or 1.0
     self.phase = self.options.phase or 0.0
-
-    local omega = 2*math.pi*(self.frequency/self.rate)
-    self.rotation = types.ComplexFloat32Type(math.cos(omega), math.sin(omega))
-    self.phi = types.ComplexFloat32Type(math.cos(self.phase), math.sin(self.phase))
+    self.omega = 2*math.pi*(self.frequency/self.rate)
 end
 
 function SignalSource:process_exponential()
     local out = types.ComplexFloat32Type.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
-        out.data[i] = self.phi:scalar_mul(self.amplitude)
-        self.phi = self.phi * self.rotation
+        out.data[i].real = math.cos(self.phase)*self.amplitude
+        out.data[i].imag = math.sin(self.phase)*self.amplitude
+        self.phase = self.phase + self.omega
+        self.phase = (self.phase > 2*math.pi) and (self.phase - 2*math.pi) or self.phase
     end
 
     return out
@@ -57,18 +56,16 @@ function SignalSource:initialize_cosine_sine()
     self.amplitude = self.options.amplitude or 1.0
     self.phase = self.options.phase or 0.0
     self.offset = self.options.offset or 0.0
-
-    local omega = 2*math.pi*(self.frequency/self.rate)
-    self.rotation = types.ComplexFloat32Type(math.cos(omega), math.sin(omega))
-    self.phi = types.ComplexFloat32Type(math.cos(self.phase), math.sin(self.phase))
+    self.omega = 2*math.pi*(self.frequency/self.rate)
 end
 
 function SignalSource:process_cosine()
     local out = types.Float32Type.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
-        out.data[i].value = self.phi.real * self.amplitude + self.offset
-        self.phi = self.phi * self.rotation
+        out.data[i].value = math.cos(self.phase) * self.amplitude + self.offset
+        self.phase = self.phase + self.omega
+        self.phase = (self.phase > 2*math.pi) and (self.phase - 2*math.pi) or self.phase
     end
 
     return out
@@ -78,8 +75,9 @@ function SignalSource:process_sine()
     local out = types.Float32Type.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
-        out.data[i].value = self.phi.imag * self.amplitude + self.offset
-        self.phi = self.phi * self.rotation
+        out.data[i].value = math.sin(self.phase) * self.amplitude + self.offset
+        self.phase = self.phase + self.omega
+        self.phase = (self.phase > 2*math.pi) and (self.phase - 2*math.pi) or self.phase
     end
 
     return out

@@ -38,6 +38,7 @@ return {
     PulseAudioSink = require('radio.blocks.sinks.pulseaudio').PulseAudioSink,
     GnuplotPlotSink = require('radio.blocks.sinks.gnuplotplot').GnuplotPlotSink,
     GnuplotXYPlotSink = require('radio.blocks.sinks.gnuplotxyplot').GnuplotXYPlotSink,
+    GnuplotSpectrumSink = require('radio.blocks.sinks.gnuplotspectrum').GnuplotSpectrumSink,
 
     -- Signal Blocks
     --- Filtering

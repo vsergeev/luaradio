@@ -88,7 +88,49 @@ end
 -- DFT implementations
 --------------------------------------------------------------------------------
 
-if platform.features.volk then
+if platform.features.fftw3f then
+
+    ffi.cdef[[
+    typedef void * fftwf_plan;
+    typedef complex_float32_t fftwf_complex;
+
+    fftwf_plan fftwf_plan_dft_1d(int n, fftwf_complex *in, fftwf_complex *out, int sign, unsigned flags);
+    void fftwf_execute(const fftwf_plan plan);
+    void fftwf_destroy_plan(fftwf_plan plan);
+
+    enum { FFTW_FORWARD = -1, FFTW_BACKWARD = 1 };
+    enum { FFTW_MEASURE = 0, FFTW_ESTIMATE = (1 << 6) };
+    ]]
+    local libfftw3f = platform.libs.fftw3f
+
+    function DFT:initialize_dft()
+        -- Create FFTW plan
+        local plan = libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.FFTW_FORWARD, ffi.C.FFTW_MEASURE)
+        if plan == nil then
+            error("Creating FFTW plan.")
+        end
+
+        -- Create garbage collect wrapper for FFTW plan
+        self.plan = ffi.gc(plan, libfftw3f.fftwf_destroy_plan)
+    end
+
+    function DFT:dft_complex(samples)
+        -- Window samples
+        self:_window(samples)
+
+        -- Execute FFTW plan
+        libfftw3f.fftwf_execute(self.plan)
+
+        -- Swap indices
+        for k = 0, (self.num_samples/2)-1 do
+            self.dft_samples.data[self.fftshift_indices[k]].real, self.dft_samples.data[k].real = self.dft_samples.data[k].real, self.dft_samples.data[self.fftshift_indices[k]].real
+            self.dft_samples.data[self.fftshift_indices[k]].imag, self.dft_samples.data[k].imag = self.dft_samples.data[k].imag, self.dft_samples.data[self.fftshift_indices[k]].imag
+        end
+
+        return self.dft_samples
+    end
+
+elseif platform.features.volk then
 
     ffi.cdef[[
     void (*volk_32fc_s32fc_x2_rotator_32fc)(complex_float32_t* outVector, const complex_float32_t* inVector, const complex_float32_t phase_inc, complex_float32_t* phase, unsigned int num_points);

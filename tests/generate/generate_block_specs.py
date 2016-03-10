@@ -71,12 +71,13 @@ def serialize(x):
 
 ################################################################################
 
-def generate_test_vector(func, args, inputs, note=None):
+def generate_test_vector(func, args, inputs, desc=None):
     outputs = func(*(args + inputs))
 
     tab = " "*4
 
-    s = tab + "{" + ((" -- " + note + "\n") if note else "\n")
+    s = tab + "{\n"
+    s += tab + tab + "desc = \"" + (desc if desc else "") + "\",\n"
     s += tab + tab + "args = {" + ", ".join([serialize(e) for e in args]) + "},\n"
     s += tab + tab + "inputs = {" + ", ".join([serialize(e) for e in inputs]) + "},\n"
     s += tab + tab + "outputs = {" + ", ".join([serialize(e) for e in outputs]) + "}\n"

@@ -85,6 +85,8 @@ return {
     ComplexToImagBlock = require('radio.blocks.signal.complextoimag').ComplexToImagBlock,
     ComplexToFloatBlock = require('radio.blocks.signal.complextofloat').ComplexToFloatBlock,
     FloatToComplexBlock = require('radio.blocks.signal.floattocomplex').FloatToComplexBlock,
+    --- Miscellaneous
+    ThrottleBlock = require('radio.blocks.signal.throttle').ThrottleBlock,
 
     -- Protocol Blocks
     --- RDS

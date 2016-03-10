@@ -1,3 +1,35 @@
+* (Prototype) v0.0.10 - 03/10/2016
+    * Add abs_squared() method to ComplexFloat32Type.
+    * Add cosine, sine, square, triangle, sawtooth, and constant real signals to SignalSource.
+    * Add file repeat option to IQFileSource, RealFileSource, WAVFileSource, RawFileSource.
+    * Add support for multiple channels to PulseAudioSink.
+    * Add support for other data types to NullSource and RandomSource.
+    * Add support for generating periodic windows to window utilities.
+    * Add FFTW3 library and feature flag to platform module.
+    * Add DFT and PSD spectrum utilities with Lua, VOLK, and FFTW3 implementations.
+    * Add new signal blocks:
+        * SubtractBlock
+        * ComplexToImagBlock
+        * ComplexToFloatBlock
+        * FloatToComplexBlock
+        * ComplexMagnitudeBlock
+        * ComplexPhaseBlock
+        * AbsoluteValueBlock
+        * MultiplyConstantBlock
+        * UpsamplerBlock
+        * ThrottleBlock
+    * Add new composite blocks:
+        * InterpolatorBlock
+        * RationalResamplerBlock
+    * Add gnuplot-based plotting sinks:
+        * GnuplotPlotSink
+        * GnuplotXYPlotSink
+        * GnuplotSpectrumSink
+        * GnuplotWaterfallSink
+    * Fix numerical stability problem in FrequencyTranslatorBlock and SignalSource.
+    * Improve unit tests.
+    * Add plots to RDS and WBFM demos.
+
 * (Prototype) v0.0.9 - 03/02/2016
     * Simplify type imports in blocks.
     * Fix single process execution to call block cleanup() after finish.

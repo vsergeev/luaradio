@@ -24,12 +24,8 @@ if __name__ == "__main__":
     tmp = out*numpy.conj(out_shifted)
     out = (numpy.arctan2(numpy.imag(tmp), numpy.real(tmp))/5.0).astype(numpy.float32)
 
-    # Low pass filter with 16 taps, 15e3 cutoff at 1e6 sample rate
-    b = scipy.signal.firwin(16, 15e3, nyq=1e6/2)
-    out = scipy.signal.lfilter(b, 1, out).astype(type(out[0]))
-
-    # Downsampler of 25
-    out = numpy.array([out[i] for i in range(0, len(out), 25)])
+    # Decimate by 25
+    out = scipy.signal.decimate(out, 25, n=16-1, ftype='fir').astype(numpy.float32)
 
     # Print serialized expected result
     s = "local SNK_TEST_VECTOR = \""

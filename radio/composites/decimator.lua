@@ -7,7 +7,7 @@ local DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerB
 
 local DecimatorBlock = block.factory("DecimatorBlock", CompositeBlock)
 
-function DecimatorBlock:instantiate(bandwidth, decimation, options)
+function DecimatorBlock:instantiate(decimation, options)
     CompositeBlock.instantiate(self)
 
     options = options or {}
@@ -15,7 +15,7 @@ function DecimatorBlock:instantiate(bandwidth, decimation, options)
     self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
     self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
 
-    local filter = LowpassFilterBlock(options.num_taps or 128, bandwidth)
+    local filter = LowpassFilterBlock(options.num_taps or 128, 1/decimation, options.window, 1.0)
     local downsampler = DownsamplerBlock(decimation)
 
     self:connect(self, "in", filter, "in")

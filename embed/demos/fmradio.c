@@ -12,7 +12,7 @@ const char *script_template =
     "    radio.TunerBlock(offset, 190e3, 10),"
     "    radio.FrequencyDiscriminatorBlock(6.0),"
     "    radio.FMDeemphasisFilterBlock(75e-6),"
-    "    radio.DecimatorBlock(15e3, 4),"
+    "    radio.DecimatorBlock(4),"
     "    radio.PulseAudioSink()"
     ")";
 

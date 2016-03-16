@@ -483,6 +483,29 @@ def generate_decimator_spec():
 
     return vectors
 
+@composite_spec("InterpolatorBlock", "tests/composites/interpolator_spec.lua")
+def generate_interpolator_spec():
+    def process(factor, x):
+        x_interp = numpy.array([type(x[0])()]*(len(x)*factor))
+        for i in range(0, len(x)):
+            x_interp[i*factor] = factor*x[i]
+        b = scipy.signal.firwin(128, 1/factor)
+        return [scipy.signal.lfilter(b, 1, x_interp).astype(type(x[0]))]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 256 ComplexFloat32 input, 512 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 256 ComplexFloat32 input, 768 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 256 ComplexFloat32 input, 1024 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 256 ComplexFloat32 input, 1792 ComplexFloat32 output"))
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 256 Float32 input, 512 Float32 output"))
+    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 256 Float32 input, 768 Float32 output"))
+    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 256 Float32 input, 1024 Float32 output"))
+    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 256 Float32 input, 1792 Float32 output"))
+
+    return vectors
+
 @block_spec("FrequencyTranslatorBlock", "tests/blocks/signal/frequencytranslator_spec.lua", epsilon=1e-5)
 def generate_frequencytranslator_spec():
     # FIXME why does this need 1e-5 epsilon?

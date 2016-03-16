@@ -213,7 +213,8 @@ def fir_hilbert_transform(num_taps, window_func):
 @block_spec("FIRFilterBlock", "tests/blocks/signal/firfilter_spec.lua")
 def generate_firfilter_spec():
     def process(taps, x):
-        return [scipy.signal.lfilter(taps, 1, x).astype(type(x[0]))]
+        data_type = numpy.complex64 if isinstance(taps[0], numpy.complex64) or isinstance(x[0], numpy.complex64) else numpy.float32
+        return [scipy.signal.lfilter(taps, 1, x).astype(data_type)]
 
     normalize = lambda v: v / numpy.sum(numpy.abs(v))
 
@@ -228,6 +229,16 @@ def generate_firfilter_spec():
     vectors.append(generate_test_vector(process, [normalize(random_float32(8))], [x], "8 Float32 tap, 256 Float32 input, 256 Float32 output"))
     vectors.append(generate_test_vector(process, [normalize(random_float32(15))], [x], "15 Float32 tap, 256 Float32 input, 256 Float32 output"))
     vectors.append(generate_test_vector(process, [normalize(random_float32(128))], [x], "128 Float32 tap, 256 Float32 input, 256 Float32 output"))
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [normalize(random_complex64(1))], [x], "1 ComplexFloat32 tap, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [normalize(random_complex64(8))], [x], "8 ComplexFloat32 tap, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [normalize(random_complex64(15))], [x], "15 ComplexFloat32 tap, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [normalize(random_complex64(128))], [x], "128 ComplexFloat32 tap, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [normalize(random_complex64(1))], [x], "1 ComplexFloat32 tap, 256 Float32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [normalize(random_complex64(8))], [x], "8 ComplexFloat32 tap, 256 Float32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [normalize(random_complex64(15))], [x], "15 ComplexFloat32 tap, 256 Float32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [normalize(random_complex64(128))], [x], "128 ComplexFloat32 tap, 256 Float32 input, 256 ComplexFloat32 output"))
 
     return vectors
 

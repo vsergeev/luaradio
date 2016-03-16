@@ -91,4 +91,9 @@ function PulseAudioSink:process(...)
     assert(ret >= 0, "pa_simple_write(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
 end
 
+function PulseAudioSink:cleanup()
+    -- Close and free our PulseAudio connection
+    libpulse.pa_simple_free(self.pa_conn)
+end
+
 return {PulseAudioSink = PulseAudioSink}

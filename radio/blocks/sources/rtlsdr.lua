@@ -6,9 +6,14 @@ local types = require('radio.types')
 
 local RtlSdrSource = block.factory("RtlSdrSource")
 
-function RtlSdrSource:instantiate(frequency, rate)
+function RtlSdrSource:instantiate(frequency, rate, options)
     self.frequency = frequency
     self.rate = rate
+    self.options = options or {}
+
+    self.autogain = (self.options.autogain == nil) and false or self.options.autogain
+    self.rf_gain = self.options.rf_gain or 10.0
+    self.freq_correction = self.options.freq_correction or 0.0
 
     self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)})
 end
@@ -26,6 +31,9 @@ ffi.cdef[[
     int rtlsdr_set_sample_rate(rtlsdr_dev_t *dev, uint32_t rate);
     int rtlsdr_set_center_freq(rtlsdr_dev_t *dev, uint32_t freq);
     int rtlsdr_set_tuner_gain_mode(rtlsdr_dev_t *dev, int manual);
+    int rtlsdr_set_agc_mode(rtlsdr_dev_t *dev, int on);
+    int rtlsdr_set_tuner_gain(rtlsdr_dev_t *dev, int gain);
+    int rtlsdr_set_tuner_if_gain(rtlsdr_dev_t *dev, int stage, int gain);
     int rtlsdr_set_freq_correction(rtlsdr_dev_t *dev, int ppm);
 
     int rtlsdr_reset_buffer(rtlsdr_dev_t *dev);
@@ -50,8 +58,26 @@ function RtlSdrSource:initialize()
     -- Set frequency
     assert(librtlsdr.rtlsdr_set_center_freq(self.dev[0], self.frequency) == 0, "rtlsdr_set_center_freq() failed.")
 
-    -- Set autogain
-    assert(librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 0) == 0, "rtlsdr_set_tuner_gain_mode() failed.")
+    if self.autogain then
+        -- Set autogain
+        assert(librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 0) == 0, "rtlsdr_set_tuner_gain_mode() failed.")
+
+        -- Enable AGC
+        assert(librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 1) == 0, "rtlsdr_set_agc_mode() failed.")
+    else
+        -- Disable autogain
+        assert(librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 1) == 0, "rtlsdr_set_tuner_gain_mode() failed.")
+
+        -- Disable AGC
+        assert(librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 0) == 0, "rtlsdr_set_agc_mode() failed.")
+
+        -- Set RF gain
+        assert(librtlsdr.rtlsdr_set_tuner_gain(self.dev[0], math.floor(self.rf_gain*10)) == 0, "rtlsdr_set_tuner_gain() failed.")
+    end
+
+    -- Set frequency correction
+    local ret = librtlsdr.rtlsdr_set_freq_correction(self.dev[0], math.floor(self.freq_correction))
+    assert(ret == 0 or ret == -2, "rtlsdr_set_freq_correction() failed.")
 
     -- Reset endpoint buffer
     assert(librtlsdr.rtlsdr_reset_buffer(self.dev[0]) == 0, "rtlsdr_reset_buffer() failed.")

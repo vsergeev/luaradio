@@ -195,7 +195,7 @@ function WAVFileSource:process()
             if self.repeat_on_eof then
                 -- Rewind past header
                 local header_length = ffi.sizeof("riff_header_t") + ffi.sizeof("wave_subchunk1_header_t") + ffi.sizeof("wave_subchunk2_header_t")
-                assert(ffi.C.rewind(self.file, header_length, ffi.C.SEEK_SET) == 0, "fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                assert(ffi.C.fseek(self.file, header_length, ffi.C.SEEK_SET) == 0, "fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
             else
                 return nil
             end

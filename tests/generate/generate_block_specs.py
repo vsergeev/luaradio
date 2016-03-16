@@ -235,7 +235,7 @@ def generate_iirfilter_spec():
 @block_spec("LowpassFilterBlock", "tests/blocks/signal/lowpassfilter_spec.lua")
 def generate_lowpassfilter_spec():
     def process(num_taps, cutoff, x):
-        b = scipy.signal.firwin(num_taps, cutoff, scale=False)
+        b = scipy.signal.firwin(num_taps, cutoff)
         return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
@@ -253,7 +253,7 @@ def generate_lowpassfilter_spec():
 @block_spec("HighpassFilterBlock", "tests/blocks/signal/highpassfilter_spec.lua")
 def generate_highpassfilter_spec():
     def process(num_taps, cutoff, x):
-        b = scipy.signal.firwin(num_taps, cutoff, pass_zero=False, scale=False)
+        b = scipy.signal.firwin(num_taps, cutoff, pass_zero=False)
         return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
@@ -271,7 +271,7 @@ def generate_highpassfilter_spec():
 @block_spec("BandpassFilterBlock", "tests/blocks/signal/bandpassfilter_spec.lua")
 def generate_bandpassfilter_spec():
     def process(num_taps, cutoffs, x):
-        b = scipy.signal.firwin(num_taps, cutoffs, pass_zero=False, scale=False)
+        b = scipy.signal.firwin(num_taps, cutoffs, pass_zero=False)
         return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
@@ -287,7 +287,7 @@ def generate_bandpassfilter_spec():
 @block_spec("BandstopFilterBlock", "tests/blocks/signal/bandstopfilter_spec.lua")
 def generate_bandstopfilter_spec():
     def process(num_taps, cutoffs, x):
-        b = scipy.signal.firwin(num_taps, cutoffs, pass_zero=True, scale=False)
+        b = scipy.signal.firwin(num_taps, cutoffs, pass_zero=True)
         return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
@@ -744,10 +744,10 @@ def generate_filter_utils_spec():
     vectors.append("local M = {}")
 
     # Firwin functions
-    vectors.append("M.firwin_lowpass = " + serialize(scipy.signal.firwin(128, 0.5, scale=False).astype(numpy.float32)))
-    vectors.append("M.firwin_highpass = " + serialize(scipy.signal.firwin(129, 0.5, pass_zero=False, scale=False).astype(numpy.float32)))
-    vectors.append("M.firwin_bandpass = " + serialize(scipy.signal.firwin(129, [0.4, 0.6], pass_zero=False, scale=False).astype(numpy.float32)))
-    vectors.append("M.firwin_bandstop = " + serialize(scipy.signal.firwin(129, [0.4, 0.6], scale=False).astype(numpy.float32)))
+    vectors.append("M.firwin_lowpass = " + serialize(scipy.signal.firwin(128, 0.5).astype(numpy.float32)))
+    vectors.append("M.firwin_highpass = " + serialize(scipy.signal.firwin(129, 0.5, pass_zero=False).astype(numpy.float32)))
+    vectors.append("M.firwin_bandpass = " + serialize(scipy.signal.firwin(129, [0.4, 0.6], pass_zero=False).astype(numpy.float32)))
+    vectors.append("M.firwin_bandstop = " + serialize(scipy.signal.firwin(129, [0.4, 0.6]).astype(numpy.float32)))
     vectors.append("")
 
     # FIR Root Raised Cosine function

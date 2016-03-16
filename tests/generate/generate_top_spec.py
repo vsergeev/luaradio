@@ -16,7 +16,7 @@ if __name__ == "__main__":
     out = src1 * numpy.conj(src2)
 
     # Low pass filter 16 taps, 100e3 cutoff at 1e6 sample rate
-    b = scipy.signal.firwin(16, 100e3, nyq=1e6/2, scale=False)
+    b = scipy.signal.firwin(16, 100e3, nyq=1e6/2)
     out = scipy.signal.lfilter(b, 1, out).astype(type(out[0]))
 
     # Frequency discriminator with gain 5
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     out = (numpy.arctan2(numpy.imag(tmp), numpy.real(tmp))/5.0).astype(numpy.float32)
 
     # Low pass filter with 16 taps, 15e3 cutoff at 1e6 sample rate
-    b = scipy.signal.firwin(16, 15e3, nyq=1e6/2, scale=False)
+    b = scipy.signal.firwin(16, 15e3, nyq=1e6/2)
     out = scipy.signal.lfilter(b, 1, out).astype(type(out[0]))
 
     # Downsampler of 25

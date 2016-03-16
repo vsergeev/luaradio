@@ -25,6 +25,15 @@ local function firwin_lowpass(num_taps, cutoff, window_type)
         h[n] = h[n] * w[n]
     end
 
+    -- Scale by DC gain
+    scale = 0
+    for n=0, num_taps-1 do
+        scale = scale + h[n+1]
+    end
+    for n=1, #h do
+        h[n] = h[n] / scale
+    end
+
     return h
 end
 
@@ -48,6 +57,15 @@ local function firwin_highpass(num_taps, cutoff, window_type)
     local w = window_utils.window(num_taps, window_type)
     for n=1, #h do
         h[n] = h[n] * w[n]
+    end
+
+    -- Scale by Nyquist gain
+    scale = 0
+    for n=0, num_taps-1 do
+        scale = scale + h[n+1]*math.cos(math.pi*(n - (num_taps-1)/2))
+    end
+    for n=1, #h do
+        h[n] = h[n] / scale
     end
 
     return h
@@ -76,6 +94,16 @@ local function firwin_bandpass(num_taps, cutoffs, window_type)
         h[n] = h[n] * w[n]
     end
 
+    -- Scale by passband gain
+    local center_frequency = (cutoffs[1] + cutoffs[2])/2
+    local scale = 0
+    for n=0, num_taps-1 do
+        scale = scale + h[n+1]*math.cos(math.pi*(n - (num_taps-1)/2)*center_frequency)
+    end
+    for n=1, #h do
+        h[n] = h[n] / scale
+    end
+
     return h
 end
 
@@ -100,6 +128,15 @@ local function firwin_bandstop(num_taps, cutoffs, window_type)
     local w = window_utils.window(num_taps, window_type)
     for n=1, #h do
         h[n] = h[n] * w[n]
+    end
+
+    -- Scale by DC gain
+    scale = 0
+    for n=0, num_taps-1 do
+        scale = scale + h[n+1]
+    end
+    for n=1, #h do
+        h[n] = h[n] / scale
     end
 
     return h

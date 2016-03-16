@@ -23,7 +23,7 @@ function RawFileSource:instantiate(file, data_type, rate, repeat_on_eof)
     self.buf_offset = 0
     self.buf_size = 0
 
-    self:add_type_signature({}, {block.Output("out", type)})
+    self:add_type_signature({}, {block.Output("out", data_type)})
 end
 
 function RawFileSource:get_rate()

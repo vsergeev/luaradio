@@ -9,16 +9,18 @@ local DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerB
 
 local RationalResamplerBlock = block.factory("RationalResamplerBlock", CompositeBlock)
 
-function RationalResamplerBlock:instantiate(bandwidth, interpolation, decimation, options)
+function RationalResamplerBlock:instantiate(interpolation, decimation, options)
     CompositeBlock.instantiate(self)
     options = options or {}
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
     self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
 
+    local cutoff = (1/interpolation < 1/decimation) and 1/interpolation or 1/decimation
+
     local scaler = MultiplyConstantBlock(interpolation)
     local upsampler = UpsamplerBlock(interpolation)
-    local filter = LowpassFilterBlock(options.num_taps or 128, bandwidth)
+    local filter = LowpassFilterBlock(options.num_taps or 128, cutoff, options.window, 1.0)
     local downsampler = DownsamplerBlock(decimation)
 
     self:connect(self, "in", scaler, "in")

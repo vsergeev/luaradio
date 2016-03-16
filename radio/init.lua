@@ -75,6 +75,7 @@ return {
     MultiplyConstantBlock = require('radio.blocks.signal.multiplyconstant').MultiplyConstantBlock,
     MultiplyConjugateBlock = require('radio.blocks.signal.multiplyconjugate').MultiplyConjugateBlock,
     AbsoluteValueBlock = require('radio.blocks.signal.absolutevalue').AbsoluteValueBlock,
+    ComplexConjugateBlock = require('radio.blocks.signal.complexconjugate').ComplexConjugateBlock,
     ComplexMagnitudeBlock = require('radio.blocks.signal.complexmagnitude').ComplexMagnitudeBlock,
     ComplexPhaseBlock = require('radio.blocks.signal.complexphase').ComplexPhaseBlock,
     --- Sampling and Bits

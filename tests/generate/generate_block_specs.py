@@ -738,6 +738,17 @@ def generate_absolutevalue_spec():
 
     return vectors
 
+@block_spec("ComplexConjugateBlock", "tests/blocks/signal/complexconjugate_spec.lua")
+def generate_complexconjugate_spec():
+    def process(x):
+        return [numpy.conj(x)]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [], [x], "256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+
+    return vectors
+
 @block_spec("ComplexMagnitudeBlock", "tests/blocks/signal/complexmagnitude_spec.lua")
 def generate_complexmagnitude_spec():
     def process(x):

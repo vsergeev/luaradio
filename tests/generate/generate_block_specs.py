@@ -506,6 +506,27 @@ def generate_interpolator_spec():
 
     return vectors
 
+@composite_spec("RationalResamplerBlock", "tests/composites/rationalresampler_spec.lua")
+def generate_rationalresampler_spec():
+    def process(up_factor, down_factor, x):
+        x_interp = numpy.array([type(x[0])()]*(len(x)*up_factor))
+        for i in range(0, len(x)):
+            x_interp[i*up_factor] = up_factor*x[i]
+        b = scipy.signal.firwin(128, 1/up_factor if (1/up_factor < 1/down_factor) else 1/down_factor)
+        x_interp = scipy.signal.lfilter(b, 1, x_interp).astype(type(x[0]))
+        x_decim = numpy.array([x_interp[i] for i in range(0, len(x_interp), down_factor)])
+        return [x_decim.astype(type(x[0]))]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process, [2, 3], [x], "2 up, 3 down, 256 ComplexFloat32 input, 170 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [7, 5], [x], "7 up, 5 down, 256 ComplexFloat32 input, 358 ComplexFloat32 output"))
+    x = random_float32(256)
+    vectors.append(generate_test_vector(process, [2, 3], [x], "2 up, 3 down, 256 Float32 input, 170 Float32 output"))
+    vectors.append(generate_test_vector(process, [7, 5], [x], "7 up, 5 down, 256 Float32 input, 358 Float32 output"))
+
+    return vectors
+
 @block_spec("FrequencyTranslatorBlock", "tests/blocks/signal/frequencytranslator_spec.lua", epsilon=1e-5)
 def generate_frequencytranslator_spec():
     # FIXME why does this need 1e-5 epsilon?

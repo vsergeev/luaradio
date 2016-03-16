@@ -8,7 +8,7 @@ local LowpassFilterBlock = require('radio.blocks.signal.lowpassfilter').LowpassF
 
 local InterpolatorBlock = block.factory("InterpolatorBlock", CompositeBlock)
 
-function InterpolatorBlock:instantiate(bandwidth, interpolation, options)
+function InterpolatorBlock:instantiate(interpolation, options)
     CompositeBlock.instantiate(self)
     options = options or {}
 
@@ -17,7 +17,7 @@ function InterpolatorBlock:instantiate(bandwidth, interpolation, options)
 
     local scaler = MultiplyConstantBlock(interpolation)
     local upsampler = UpsamplerBlock(interpolation)
-    local filter = LowpassFilterBlock(options.num_taps or 128, bandwidth)
+    local filter = LowpassFilterBlock(options.num_taps or 128, 1/interpolation, options.window, 1.0)
 
     self:connect(self, "in", scaler, "in")
     self:connect(scaler, upsampler, filter)

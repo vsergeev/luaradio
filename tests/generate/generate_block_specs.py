@@ -94,6 +94,15 @@ def generate_block_spec(block_name, test_vectors, epsilon):
     s += "}, {epsilon = %.1e})\n" % epsilon
     return s
 
+def generate_composite_spec(block_name, test_vectors, epsilon):
+    s = "local radio = require('radio')\n"
+    s += "local jigs = require('tests.jigs')\n"
+    s += "\n"
+    s += "jigs.TestCompositeBlock(radio.%s, {\n" % block_name
+    s += "".join(test_vectors)
+    s += "}, {epsilon = %.1e})\n" % epsilon
+    return s
+
 def generate_source_spec(block_name, test_vectors, epsilon):
     s = "local radio = require('radio')\n"
     s += "local jigs = require('tests.jigs')\n"
@@ -119,6 +128,17 @@ def block_spec(block_name, filename, epsilon=EPSILON):
         def wrapped():
             test_vectors = f()
             spec = generate_block_spec(block_name, test_vectors, epsilon)
+            write_to(filename, spec)
+        AllSpecs.append(wrapped)
+        return wrapped
+
+    return wrap
+
+def composite_spec(block_name, filename, epsilon=EPSILON):
+    def wrap(f):
+        def wrapped():
+            test_vectors = f()
+            spec = generate_composite_spec(block_name, test_vectors, epsilon)
             write_to(filename, spec)
         AllSpecs.append(wrapped)
         return wrapped

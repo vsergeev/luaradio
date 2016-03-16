@@ -234,19 +234,29 @@ def generate_iirfilter_spec():
 
 @block_spec("LowpassFilterBlock", "tests/blocks/signal/lowpassfilter_spec.lua")
 def generate_lowpassfilter_spec():
-    def process(num_taps, cutoff, x):
+    def process1(num_taps, cutoff, x):
         b = scipy.signal.firwin(num_taps, cutoff)
+        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
+
+    def process2(num_taps, cutoff, window, nyquist, x):
+        b = scipy.signal.firwin(num_taps, cutoff, window=window.strip('"'), nyq=nyquist)
         return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
 
     vectors = []
     x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [128, 0.2], [x], "128 taps, 0.2 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [128, 0.5], [x], "128 taps, 0.5 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [128, 0.7], [x], "128 taps, 0.7 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process1, [128, 0.2], [x], "128 taps, 0.2 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process1, [128, 0.5], [x], "128 taps, 0.5 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process1, [128, 0.7], [x], "128 taps, 0.7 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process2, [128, 0.2, '"bartlett"', 3.0], [x], "128 taps, 0.2 cutoff, bartlett window, 3.0 nyquist, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process2, [128, 0.5, '"bartlett"', 3.0], [x], "128 taps, 0.5 cutoff, bartlett window, 3.0 nyquist, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process2, [128, 0.7, '"bartlett"', 3.0], [x], "128 taps, 0.7 cutoff, bartlett window, 3.0 nyquist, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     x = random_float32(256)
-    vectors.append(generate_test_vector(process, [128, 0.2], [x], "128 taps, 0.2 cutoff, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [128, 0.5], [x], "128 taps, 0.5 cutoff, 256 Float32 input, 256 Float32 output"))
-    vectors.append(generate_test_vector(process, [128, 0.7], [x], "128 taps, 0.7 cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process1, [128, 0.2], [x], "128 taps, 0.2 cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process1, [128, 0.5], [x], "128 taps, 0.5 cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process1, [128, 0.7], [x], "128 taps, 0.7 cutoff, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process2, [128, 0.2, '"bartlett"', 3.0], [x], "128 taps, 0.2 cutoff, bartlett window, 3.0 nyquist, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process2, [128, 0.5, '"bartlett"', 3.0], [x], "128 taps, 0.5 cutoff, bartlett window, 3.0 nyquist, 256 Float32 input, 256 Float32 output"))
+    vectors.append(generate_test_vector(process2, [128, 0.7, '"bartlett"', 3.0], [x], "128 taps, 0.7 cutoff, bartlett window, 3.0 nyquist, 256 Float32 input, 256 Float32 output"))
 
     return vectors
 

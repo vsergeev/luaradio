@@ -157,7 +157,6 @@ local function fir_root_raised_cosine(num_taps, sample_rate, beta, symbol_period
     end
 
     -- Generate filter coefficients
-    local scale = 0.0
     for n = 0, num_taps-1 do
         local t = (n - (num_taps-1)/2)/sample_rate
 
@@ -170,11 +169,13 @@ local function fir_root_raised_cosine(num_taps, sample_rate, beta, symbol_period
             local denom = (1 - (4*beta*t/symbol_period)*(4*beta*t/symbol_period))
             h[n+1] = ((4*beta)/(math.pi*math.sqrt(symbol_period)))*num/denom
         end
-
-        scale = scale + h[n+1]
     end
 
-    -- Scale for DC gain of 1.0
+    -- Scale by DC gain
+    local scale = 0
+    for n=0, num_taps-1 do
+        scale = scale + h[n+1]
+    end
     for n = 0, num_taps-1 do
         h[n+1] = h[n+1] / scale
     end

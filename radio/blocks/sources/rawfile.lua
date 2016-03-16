@@ -76,7 +76,7 @@ function RawFileSource:process()
     end
 
     -- Update size and reset unread offset
-    self.buf_size = unread_length + bytes_read
+    self.buf_size = tonumber(unread_length + bytes_read)
     self.buf_offset = 0
 
     -- Deserialize as many elements as possible

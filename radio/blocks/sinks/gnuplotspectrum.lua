@@ -13,6 +13,7 @@ function GnuplotSpectrumSink:instantiate(num_samples, title, options)
     self.options = options or {}
     self.update_time = self.options.update_time or 0.10
     self.overlap = self.options.overlap or 0.00
+    self.reference_level = self.options.reference_level or 0.00
 
     assert(self.overlap < 1, "Overlap should be a fraction in [0.00, 1.00).")
 
@@ -132,7 +133,7 @@ function GnuplotSpectrumSink:process(x)
         if self.sample_count >= self.num_plot_update and self.psd_average_count > 0 then
             -- Normalize our average
             for i = 0, self.psd_average.length-1 do
-                self.psd_average.data[i].value = self.psd_average.data[i].value / self.psd_average_count
+                self.psd_average.data[i].value = (self.psd_average.data[i].value / self.psd_average_count) - self.reference_level
             end
 
             -- Plot power spectrum

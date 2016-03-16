@@ -166,4 +166,74 @@ local function TestSourceBlock(block_class, vectors, options)
     end)
 end
 
-return {TestBlock = TestBlock, TestSourceBlock = TestSourceBlock, assert_approx_equal = assert_approx_equal, assert_vector_equal = assert_vector_equal}
+local function TestCompositeBlock(block_class, vectors, options)
+    options = options or {}
+
+    local radio = require('radio')
+    local ffi = require('ffi')
+    local buffer = require('tests.buffer')
+
+    busted.describe(block_class.name, function ()
+        for i=1, #vectors do
+            busted.it("test vector " .. i .. (vectors[i].desc and (" " .. vectors[i].desc) or ""), function ()
+                local test_vector = vectors[i]
+
+                -- Build raw file sources for inputs
+                local sources = {}
+                local src_fds = {}
+                for i = 1, #test_vector.inputs do
+                    src_fds[i] = buffer.open(ffi.string(test_vector.inputs[i].type.serialize(test_vector.inputs[i])))
+                    sources[i] = radio.RawFileSource(src_fds[i], test_vector.inputs[i].type, 2.0)
+                end
+
+                -- Build raw file sinks for inputs
+                local sinks = {}
+                local snk_fds = {}
+                for i = 1, #test_vector.outputs do
+                    snk_fds[i] = buffer.open()
+                    sinks[i] = radio.RawFileSink(snk_fds[i])
+                end
+
+                -- Instantiate the composite block
+                local block = block_class(unpack(test_vector.args or {}))
+
+                -- Create a top block
+                local top = radio.CompositeBlock()
+
+                -- Connect inputs and outputs
+                for i = 1, #test_vector.inputs do
+                    top:connect(sources[i], 'out', block, block.inputs[i].name)
+                end
+                for i = 1, #test_vector.outputs do
+                    top:connect(block, block.outputs[i].name, sinks[i], 'in')
+                end
+
+                -- Run the top block
+                top:run(false)
+
+                -- Deserialize outputs
+                local outputs = {}
+                for i = 1, #test_vector.outputs do
+                    buffer.rewind(snk_fds[i])
+                    local buf = buffer.read(snk_fds[i], test_vector.outputs[i].size)
+                    outputs[i] = test_vector.outputs[i].type.deserialize(buf, #buf)
+                end
+
+                -- Compare outputs with expected outputs
+                for i=1, #outputs do
+                    assert_vector_equal(outputs[i], test_vector.outputs[i], options.epsilon)
+                end
+
+                -- Close source and sink fds
+                for i = 1, #test_vector.inputs do
+                    buffer.close(src_fds[i])
+                end
+                for i = 1, #test_vector.outputs do
+                    buffer.close(snk_fds[i])
+                end
+            end)
+        end
+    end)
+end
+
+return {TestBlock = TestBlock, TestCompositeBlock = TestCompositeBlock, TestSourceBlock = TestSourceBlock, assert_approx_equal = assert_approx_equal, assert_vector_equal = assert_vector_equal}

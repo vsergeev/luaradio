@@ -122,6 +122,55 @@ local function firwin_bandstop(num_taps, cutoffs, window_type)
     return firwin(h, window_type, 0.0)
 end
 
+-- Complex FIR window method filter design.
+
+local function complex_firwin(h, center_freq, window_type, scale_freq)
+    -- Default to hamming window
+    window_type = (window_type == nil) and "hamming" or window_type
+
+    -- Translate real filter to center frequency, making it complex
+    for n = 0, #h-1 do
+        h[n+1] = {h[n+1]*math.cos(math.pi*center_freq*n), h[n+1]*math.sin(math.pi*center_freq*n)}
+    end
+
+    -- Generate and apply window
+    local w = window_utils.window(#h, window_type)
+    for n=1, #h do
+        h[n][1] = h[n][1] * w[n]
+        h[n][2] = h[n][2] * w[n]
+    end
+
+    -- Scale magnitude response
+    local scale = {0, 0}
+    for n=0, #h-1 do
+        local exponential = {math.cos(math.pi*(n - (#h-1)/2)*scale_freq), math.sin(-1*math.pi*(n - (#h-1)/2)*scale_freq)}
+        scale[1] = scale[1] + (h[n+1][1]*exponential[1] - h[n+1][2]*exponential[2])
+        scale[2] = scale[2] + (h[n+1][2]*exponential[1] + h[n+1][1]*exponential[2])
+    end
+    local denom = scale[1]*scale[1] + scale[2]*scale[2]
+    for n=1, #h do
+        h[n] = {(h[n][1]*scale[1] + h[n][2]*scale[2])/denom, (h[n][2]*scale[1] - h[n][1]*scale[2])/denom}
+    end
+
+    return h
+end
+
+local function firwin_complex_bandpass(num_taps, cutoffs, window_type)
+    -- Generate truncated lowpass filter taps
+    local h = fir_lowpass(num_taps, (math.max(unpack(cutoffs)) - math.min(unpack(cutoffs)))/2)
+    -- Translate filter, apply window, and scale by passband gain
+    return complex_firwin(h, (cutoffs[1] + cutoffs[2])/2, window_type, (cutoffs[1] + cutoffs[2])/2)
+end
+
+local function firwin_complex_bandstop(num_taps, cutoffs, window_type)
+    -- Generate truncated highpass filter taps
+    local h = fir_highpass(num_taps, (math.max(unpack(cutoffs)) - math.min(unpack(cutoffs)))/2)
+    -- Use either DC or Nyquist frequency for scaling, whichever is not in the stopband
+    local scale_freq = (cutoffs[1] < 0.0 and 0.0 < cutoffs[2]) and 1.0 or 0.0
+    -- Translate filter, apply window, and scale by passband gain
+    return complex_firwin(h, (cutoffs[1] + cutoffs[2])/2, window_type, scale_freq)
+end
+
 -- FIR Root Raised Cosine Filter
 -- See https://en.wikipedia.org/wiki/Root-raised-cosine_filter
 
@@ -194,4 +243,4 @@ local function fir_hilbert_transform(num_taps, window_type)
     return h
 end
 
-return {firwin_lowpass = firwin_lowpass, firwin_highpass = firwin_highpass, firwin_bandpass = firwin_bandpass, firwin_bandstop = firwin_bandstop, fir_root_raised_cosine = fir_root_raised_cosine, fir_hilbert_transform = fir_hilbert_transform}
+return {firwin_lowpass = firwin_lowpass, firwin_highpass = firwin_highpass, firwin_bandpass = firwin_bandpass, firwin_bandstop = firwin_bandstop, firwin_complex_bandpass = firwin_complex_bandpass, firwin_complex_bandstop = firwin_complex_bandstop, fir_root_raised_cosine = fir_root_raised_cosine, fir_hilbert_transform = fir_hilbert_transform}

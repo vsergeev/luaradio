@@ -172,6 +172,23 @@ def raw_spec(filename):
 # Filter generation helper functions not available in numpy/scipy
 ################################################################################
 
+def firwin_complex_bandpass(num_taps, cutoffs, window='hamming'):
+    width, center = max(cutoffs) - min(cutoffs), (cutoffs[0] + cutoffs[1])/2
+    b = scipy.signal.firwin(num_taps, width/2, window='rectangular', scale=False)
+    b = b * numpy.exp(1j*numpy.pi*center*numpy.arange(len(b)))
+    b = b * scipy.signal.get_window(window, num_taps, False)
+    b = b / numpy.sum(b * numpy.exp(-1j*numpy.pi*center*(numpy.arange(num_taps) - (num_taps-1)/2)))
+    return b.astype(numpy.complex64)
+
+def firwin_complex_bandstop(num_taps, cutoffs, window='hamming'):
+    width, center = max(cutoffs) - min(cutoffs), (cutoffs[0] + cutoffs[1])/2
+    scale_freq = 1.0 if (0.0 > cutoffs[0] and 0.0 < cutoffs[1]) else 0.0
+    b = scipy.signal.firwin(num_taps, width/2, pass_zero=False, window='rectangular', scale=False)
+    b = b * numpy.exp(1j*numpy.pi*center*numpy.arange(len(b)))
+    b = b * scipy.signal.get_window(window, num_taps, False)
+    b = b / numpy.sum(b * numpy.exp(-1j*numpy.pi*scale_freq*(numpy.arange(num_taps) - (num_taps-1)/2)))
+    return b.astype(numpy.complex64)
+
 def fir_root_raised_cosine(num_taps, sample_rate, beta, symbol_period):
     h = []
 
@@ -881,6 +898,15 @@ def generate_filter_utils_spec():
     vectors.append("M.firwin_highpass = " + serialize(scipy.signal.firwin(129, 0.5, pass_zero=False).astype(numpy.float32)))
     vectors.append("M.firwin_bandpass = " + serialize(scipy.signal.firwin(129, [0.4, 0.6], pass_zero=False).astype(numpy.float32)))
     vectors.append("M.firwin_bandstop = " + serialize(scipy.signal.firwin(129, [0.4, 0.6]).astype(numpy.float32)))
+    vectors.append("")
+
+    # Complex firwin functions
+    vectors.append("M.firwin_complex_bandpass_positive = " + serialize(firwin_complex_bandpass(129, [0.1, 0.3])))
+    vectors.append("M.firwin_complex_bandpass_negative = " + serialize(firwin_complex_bandpass(129, [-0.1, -0.3])))
+    vectors.append("M.firwin_complex_bandpass_zero = " + serialize(firwin_complex_bandpass(129, [-0.2, 0.2])))
+    vectors.append("M.firwin_complex_bandstop_positive = " + serialize(firwin_complex_bandstop(129, [0.1, 0.3])))
+    vectors.append("M.firwin_complex_bandstop_negative = " + serialize(firwin_complex_bandstop(129, [-0.1, -0.3])))
+    vectors.append("M.firwin_complex_bandstop_zero = " + serialize(firwin_complex_bandstop(129, [-0.2, 0.2])))
     vectors.append("")
 
     # FIR Root Raised Cosine function

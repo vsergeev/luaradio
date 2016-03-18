@@ -2,15 +2,12 @@ local math = require('math')
 
 local window_utils = require('radio.blocks.signal.window_utils')
 
--- FIR window method filter design.
+-- Causal FIR filters computed from truncations of ideal IIR filters
 -- See http://www.labbookpages.co.uk/audio/firWindowing.html for derivations.
 
-local function firwin_lowpass(num_taps, cutoff, window_type)
-    -- Default to hamming window
-    window_type = (window_type == nil) and "hamming" or window_type
-
-    -- Generate filter coefficients
+local function fir_lowpass(num_taps, cutoff)
     local h = {}
+
     for n = 0, num_taps-1 do
         if n == (num_taps-1)/2 then
             h[n+1] = cutoff
@@ -19,32 +16,14 @@ local function firwin_lowpass(num_taps, cutoff, window_type)
         end
     end
 
-    -- Apply window
-    local w = window_utils.window(num_taps, window_type)
-    for n=1, #h do
-        h[n] = h[n] * w[n]
-    end
-
-    -- Scale by DC gain
-    scale = 0
-    for n=0, num_taps-1 do
-        scale = scale + h[n+1]
-    end
-    for n=1, #h do
-        h[n] = h[n] / scale
-    end
-
     return h
 end
 
-local function firwin_highpass(num_taps, cutoff, window_type)
-    -- Default to hamming window
-    window_type = (window_type == nil) and "hamming" or window_type
-
+local function fir_highpass(num_taps, cutoff)
     assert((num_taps % 2) == 1, "Number of taps must be odd.")
 
-    -- Generate filter coefficients
     local h = {}
+
     for n = 0, num_taps-1 do
         if n == (num_taps-1)/2 then
             h[n+1] = 1 - cutoff
@@ -53,33 +32,15 @@ local function firwin_highpass(num_taps, cutoff, window_type)
         end
     end
 
-    -- Apply window
-    local w = window_utils.window(num_taps, window_type)
-    for n=1, #h do
-        h[n] = h[n] * w[n]
-    end
-
-    -- Scale by Nyquist gain
-    scale = 0
-    for n=0, num_taps-1 do
-        scale = scale + h[n+1]*math.cos(math.pi*(n - (num_taps-1)/2))
-    end
-    for n=1, #h do
-        h[n] = h[n] / scale
-    end
-
     return h
 end
 
-local function firwin_bandpass(num_taps, cutoffs, window_type)
-    -- Default to hamming window
-    window_type = (window_type == nil) and "hamming" or window_type
-
+local function fir_bandpass(num_taps, cutoffs)
     assert((num_taps % 2) == 1, "Number of taps must be odd.")
     assert(#cutoffs == 2, "Cutoffs should be a length two array.")
 
-    -- Generate filter coefficients
     local h = {}
+
     for n = 0, num_taps-1 do
         if n == (num_taps-1)/2 then
             h[n+1] = (cutoffs[2] - cutoffs[1])
@@ -88,34 +49,15 @@ local function firwin_bandpass(num_taps, cutoffs, window_type)
         end
     end
 
-    -- Apply window
-    local w = window_utils.window(num_taps, window_type)
-    for n=1, #h do
-        h[n] = h[n] * w[n]
-    end
-
-    -- Scale by passband gain
-    local center_frequency = (cutoffs[1] + cutoffs[2])/2
-    local scale = 0
-    for n=0, num_taps-1 do
-        scale = scale + h[n+1]*math.cos(math.pi*(n - (num_taps-1)/2)*center_frequency)
-    end
-    for n=1, #h do
-        h[n] = h[n] / scale
-    end
-
     return h
 end
 
-local function firwin_bandstop(num_taps, cutoffs, window_type)
-    -- Default to hamming window
-    window_type = (window_type == nil) and "hamming" or window_type
-
+local function fir_bandstop(num_taps, cutoffs)
     assert((num_taps % 2) == 1, "Number of taps must be odd.")
     assert(#cutoffs == 2, "Cutoffs should be a length two array.")
 
-    -- Generate filter coefficients
     local h = {}
+
     for n = 0, num_taps-1 do
         if n == (num_taps-1)/2 then
             h[n+1] = 1 - (cutoffs[2] - cutoffs[1])
@@ -124,22 +66,60 @@ local function firwin_bandstop(num_taps, cutoffs, window_type)
         end
     end
 
-    -- Apply window
-    local w = window_utils.window(num_taps, window_type)
+    return h
+end
+
+-- FIR window method filter design.
+-- See http://www.labbookpages.co.uk/audio/firWindowing.html for derivations.
+
+local function firwin(h, window_type, scale_freq)
+    -- Default to hamming window
+    window_type = (window_type == nil) and "hamming" or window_type
+
+    -- Generate and apply window
+    local w = window_utils.window(#h, window_type)
     for n=1, #h do
         h[n] = h[n] * w[n]
     end
 
-    -- Scale by DC gain
-    scale = 0
-    for n=0, num_taps-1 do
-        scale = scale + h[n+1]
+    -- Scale magnitude response
+    local scale = 0
+    for n=0, #h-1 do
+        scale = scale + h[n+1]*math.cos(math.pi*(n - (#h-1)/2)*scale_freq)
     end
     for n=1, #h do
         h[n] = h[n] / scale
     end
 
     return h
+end
+
+local function firwin_lowpass(num_taps, cutoff, window_type)
+    -- Generate truncated lowpass filter taps
+    local h = fir_lowpass(num_taps, cutoff)
+    -- Apply window and scale by DC gain
+    return firwin(h, window_type, 0.0)
+end
+
+local function firwin_highpass(num_taps, cutoff, window_type)
+    -- Generate truncated highpass filter taps
+    local h = fir_highpass(num_taps, cutoff)
+    -- Apply window and scale by Nyquist gain
+    return firwin(h, window_type, 1.0)
+end
+
+local function firwin_bandpass(num_taps, cutoffs, window_type)
+    -- Generate truncated bandpass filter taps
+    local h = fir_bandpass(num_taps, cutoffs)
+    -- Apply window and scale by passband gain
+    return firwin(h, window_type, (cutoffs[1] + cutoffs[2])/2)
+end
+
+local function firwin_bandstop(num_taps, cutoffs, window_type)
+    -- Generate truncated bandpass filter taps
+    local h = fir_bandstop(num_taps, cutoffs)
+    -- Apply window and scale by DC gain
+    return firwin(h, window_type, 0.0)
 end
 
 -- FIR Root Raised Cosine Filter

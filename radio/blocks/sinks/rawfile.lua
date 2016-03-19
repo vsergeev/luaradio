@@ -19,19 +19,18 @@ end
 ffi.cdef[[
     typedef struct FILE FILE;
     FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+    int fileno(FILE *stream);
+    int write(int fd, const void *buf, size_t count);
     int fclose(FILE *stream);
-    int fflush(FILE *stream);
 ]]
 
 function RawFileSink:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "wb")
         assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    else
-        self.file = ffi.C.fdopen(self.fd, "wb")
-        assert(self.file ~= nil, "fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+
+        self.fd = ffi.C.fileno(self.file)
+        assert(self.fd < 0, "fileno(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 end
 
@@ -39,15 +38,13 @@ function RawFileSink:process(x)
     local data, size = x.type.serialize(x)
 
     -- Write to file
-    local bytes_written = ffi.C.fwrite(data, 1, size, self.file)
-    assert(bytes_written == size, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    local bytes_written = ffi.C.write(self.fd, data, size)
+    assert(bytes_written == size, "write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
 function RawFileSink:cleanup()
     if self.filename then
         assert(ffi.C.fclose(self.file) == 0, "fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    else
-        assert(ffi.C.fflush(self.file) == 0, "fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 end
 

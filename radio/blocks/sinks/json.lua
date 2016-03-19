@@ -48,6 +48,9 @@ function JSONSink:process(x)
         local bytes_written = ffi.C.fwrite(s, 1, #s, self.file)
         assert(bytes_written == #s, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
+
+    -- Flush file
+    assert(ffi.C.fflush(self.file) == 0, "fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 end
 
 function JSONSink:cleanup()

@@ -6,13 +6,14 @@
 
 const char *script_template =
     "local frequency = %s\n"
-    "local offset = -600e3\n"
+    "local offset = -200e3\n"
     "return radio.CompositeBlock():connect("
-    "    radio.RtlSdrSource(frequency + offset, 2048000),"
-    "    radio.TunerBlock(offset, 190e3, 10),"
+    "    radio.RtlSdrSource(frequency + offset, 1102500),"
+    "    radio.TunerBlock(offset, 200e3, 5),"
     "    radio.FrequencyDiscriminatorBlock(6.0),"
+    "    radio.LowpassFilterBlock(128, 15e3),"
     "    radio.FMDeemphasisFilterBlock(75e-6),"
-    "    radio.DecimatorBlock(4),"
+    "    radio.DecimatorBlock(5),"
     "    radio.PulseAudioSink()"
     ")";
 

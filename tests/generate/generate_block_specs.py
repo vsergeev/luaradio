@@ -407,6 +407,27 @@ def generate_complexbandpassfilter_spec():
 
     return vectors
 
+@block_spec("ComplexBandstopFilterBlock", "tests/blocks/signal/complexbandstopfilter_spec.lua")
+def generate_complexbandstopfilter_spec():
+    def process1(num_taps, cutoffs, x):
+        b = firwin_complex_bandstop(num_taps, cutoffs)
+        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
+
+    def process2(num_taps, cutoffs, window, nyquist, x):
+        b = firwin_complex_bandstop(num_taps, [cutoffs[0]/nyquist, cutoffs[1]/nyquist], window.strip('"'))
+        return [scipy.signal.lfilter(b, 1, x).astype(type(x[0]))]
+
+    vectors = []
+    x = random_complex64(256)
+    vectors.append(generate_test_vector(process1, [129, [0.1, 0.3]], [x], "129 taps, {0.1, 0.3} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process1, [129, [-0.1, -0.3]], [x], "129 taps, {-0.1, -0.3} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process1, [129, [-0.2, 0.2]], [x], "129 taps, {-0.2, 0.2} cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process2, [129, [0.1, 0.3], '"bartlett"', 3.0], [x], "129 taps, {0.1, 0.3} cutoff, bartlett window, 3.0 nyquist, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process2, [129, [-0.1, -0.3], '"bartlett"', 3.0], [x], "129 taps, {-0.1, -0.3} cutoff, bartlett window, 3.0 nyquist, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process2, [129, [-0.2, 0.2], '"bartlett"', 3.0], [x], "129 taps, {-0.2, 0.2} cutoff, bartlett window, 3.0 nyquist, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
+
+    return vectors
+
 @block_spec("RootRaisedCosineFilterBlock", "tests/blocks/signal/rootraisedcosinefilter_spec.lua")
 def generate_rootraisedcosinefilter_spec():
     def process(num_taps, beta, symbol_rate, x):

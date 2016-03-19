@@ -51,6 +51,7 @@ return {
     BandpassFilterBlock = require('radio.blocks.signal.bandpassfilter').BandpassFilterBlock,
     BandstopFilterBlock = require('radio.blocks.signal.bandstopfilter').BandstopFilterBlock,
     ComplexBandpassFilterBlock = require('radio.blocks.signal.complexbandpassfilter').ComplexBandpassFilterBlock,
+    ComplexBandstopFilterBlock = require('radio.blocks.signal.complexbandstopfilter').ComplexBandstopFilterBlock,
     RootRaisedCosineFilterBlock = require('radio.blocks.signal.rootraisedcosinefilter').RootRaisedCosineFilterBlock,
     FMDeemphasisFilterBlock = require('radio.blocks.signal.fmdeemphasisfilter').FMDeemphasisFilterBlock,
     --- Sample Rate Conversion

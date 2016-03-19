@@ -30,9 +30,9 @@ local e4 = radio.RDSFrameBlock()
 local e5 = radio.RDSDecodeBlock()
 local e6 = radio.JSONSink()
 
-local p1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum')
-local p2 = radio.GnuplotSpectrumSink(2048, 'BPSK Spectrum', {xrange = {-8000, 8000}})
-local p3 = radio.GnuplotXYPlotSink(1024, 'BPSK Constellation', {complex = true})
+local p1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
+local p2 = radio.GnuplotSpectrumSink(2048, 'BPSK Spectrum', {yrange = {-130, -60}, xrange = {-8000, 8000}})
+local p3 = radio.GnuplotXYPlotSink(1024, 'BPSK Constellation', {complex = true, yrange = {-0.03, 0.03}, xrange = {-0.03, 0.03}})
 
 top:connect(a0, a1, a2, a3, f0)
 top:connect(f0, b1)

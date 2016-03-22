@@ -17,4 +17,7 @@ return {
 
     -- Modulators
     SSBModulator = require('radio.composites.ssbmodulator').SSBModulator,
+
+    -- Receivers
+    RDSReceiver = require('radio.composites.rdsreceiver').RDSReceiver,
 }

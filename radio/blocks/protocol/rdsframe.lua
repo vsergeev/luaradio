@@ -61,6 +61,8 @@ function RDSFrameBlock:instantiate()
     self:add_type_signature({block.Input("in", types.BitType)}, {block.Output("out", RDSFrameType)})
 end
 
+RDSFrameBlock.RDSFrameType = RDSFrameType
+
 -- RDS Block Validation
 
 local function validate_block(block_bits, offset)

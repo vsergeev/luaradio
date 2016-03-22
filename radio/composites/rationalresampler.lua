@@ -11,10 +11,8 @@ local RationalResamplerBlock = block.factory("RationalResamplerBlock", Composite
 
 function RationalResamplerBlock:instantiate(interpolation, decimation, options)
     CompositeBlock.instantiate(self)
-    options = options or {}
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    options = options or {}
 
     local cutoff = (1/interpolation < 1/decimation) and 1/interpolation or 1/decimation
 
@@ -22,10 +20,12 @@ function RationalResamplerBlock:instantiate(interpolation, decimation, options)
     local upsampler = UpsamplerBlock(interpolation)
     local filter = LowpassFilterBlock(options.num_taps or 128, cutoff, options.window, 1.0)
     local downsampler = DownsamplerBlock(decimation)
-
-    self:connect(self, "in", scaler, "in")
     self:connect(scaler, upsampler, filter, downsampler)
-    self:connect(downsampler, "out", self, "out")
+
+    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:connect(self, "in", scaler, "in")
+    self:connect(self, "out", downsampler, "out")
 end
 
 return {RationalResamplerBlock = RationalResamplerBlock}

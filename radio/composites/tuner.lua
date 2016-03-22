@@ -13,15 +13,14 @@ function TunerBlock:instantiate(offset, bandwidth, decimation, options)
 
     options = options or {}
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-
     local translator = FrequencyTranslatorBlock(offset)
     local filter = LowpassFilterBlock(options.num_taps or 128, bandwidth/2, options.window)
     local downsampler = DownsamplerBlock(decimation)
-
-    self:connect(self, "in", translator, "in")
     self:connect(translator, filter, downsampler)
-    self:connect(downsampler, "out", self, "out")
+
+    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:connect(self, "in", translator, "in")
+    self:connect(self, "out", downsampler, "out")
 end
 
 return {TunerBlock = TunerBlock}

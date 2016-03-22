@@ -12,15 +12,14 @@ function DecimatorBlock:instantiate(decimation, options)
 
     options = options or {}
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
-
     local filter = LowpassFilterBlock(options.num_taps or 128, 1/decimation, options.window, 1.0)
     local downsampler = DownsamplerBlock(decimation)
-
-    self:connect(self, "in", filter, "in")
     self:connect(filter, downsampler)
-    self:connect(downsampler, "out", self, "out")
+
+    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:connect(self, "in", filter, "in")
+    self:connect(self, "out", downsampler, "out")
 end
 
 return {DecimatorBlock = DecimatorBlock}

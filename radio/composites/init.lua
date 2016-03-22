@@ -6,4 +6,7 @@ return {
     DecimatorBlock = require('radio.composites.decimator').DecimatorBlock,
     InterpolatorBlock = require('radio.composites.interpolator').InterpolatorBlock,
     RationalResamplerBlock = require('radio.composites.rationalresampler').RationalResamplerBlock,
+
+    -- Demodulators
+    NBFMDemodulator = require('radio.composites.nbfmdemodulator').NBFMDemodulator,
 }

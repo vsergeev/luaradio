@@ -10,18 +10,18 @@ local InterpolatorBlock = block.factory("InterpolatorBlock", CompositeBlock)
 
 function InterpolatorBlock:instantiate(interpolation, options)
     CompositeBlock.instantiate(self)
-    options = options or {}
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    options = options or {}
 
     local scaler = MultiplyConstantBlock(interpolation)
     local upsampler = UpsamplerBlock(interpolation)
     local filter = LowpassFilterBlock(options.num_taps or 128, 1/interpolation, options.window, 1.0)
-
-    self:connect(self, "in", scaler, "in")
     self:connect(scaler, upsampler, filter)
-    self:connect(filter, "out", self, "out")
+
+    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:connect(self, "in", scaler, "in")
+    self:connect(self, "out", filter, "out")
 end
 
 return {InterpolatorBlock = InterpolatorBlock}

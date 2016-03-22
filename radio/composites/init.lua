@@ -9,6 +9,7 @@ return {
 
     -- Demodulators
     NBFMDemodulator = require('radio.composites.nbfmdemodulator').NBFMDemodulator,
+    WBFMMonoDemodulator = require('radio.composites.wbfmmonodemodulator').WBFMMonoDemodulator,
     AMEnvelopeDemodulator = require('radio.composites.amenvelopedemodulator').AMEnvelopeDemodulator,
     AMSynchronousDemodulator = require('radio.composites.amsynchronousdemodulator').AMSynchronousDemodulator,
     SSBDemodulator = require('radio.composites.ssbdemodulator').SSBDemodulator,

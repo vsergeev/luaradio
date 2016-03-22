@@ -15,7 +15,7 @@ local tuner = radio.TunerBlock(offset, 200e3, 5)
 local fm_demod = radio.FrequencyDiscriminatorBlock(6.0)
 local hilbert = radio.HilbertTransformBlock(257)
 local delay = radio.DelayBlock(129)
-local pilot_filter = radio.BandpassFilterBlock(129, {18e3, 20e3})
+local pilot_filter = radio.ComplexBandpassFilterBlock(129, {18e3, 20e3})
 local pilot_pll = radio.PLLBlock(100, 19e3-50, 19e3+50, 2)
 local mixer = radio.MultiplyConjugateBlock()
 -- L+R

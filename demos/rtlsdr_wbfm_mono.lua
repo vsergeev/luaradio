@@ -18,8 +18,10 @@ local b4 = radio.FMDeemphasisFilterBlock(75e-6)
 local b5 = radio.DecimatorBlock(5)
 local b6 = radio.PulseAudioSink()
 
-local p1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {reference_level = -120, yrange = {0, 80}})
+local p1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
+local p2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-160, -40}, xrange = {0, bandwidth}, update_time = 0.05})
 
 top:connect(b0, b1, b2, b3, b4, b5, b6)
 top:connect(b2, p1)
+top:connect(b4, p2)
 top:run()

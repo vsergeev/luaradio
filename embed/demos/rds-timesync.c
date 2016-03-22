@@ -7,39 +7,13 @@
 
 const char *script_template =
     "local frequency = %s\n"
-    "local offset = -600e3\n"
-    ""
-    "local top = radio.CompositeBlock()\n"
-    "local a0 = radio.RtlSdrSource(frequency + offset, 2048000)\n"
-    "local a1 = radio.TunerBlock(offset, 190e3, 10)\n"
-    "local a2 = radio.FrequencyDiscriminatorBlock(5.0)\n"
-    "local a3 = radio.HilbertTransformBlock(257)\n"
-    "local f0 = radio.BandpassFilterBlock(165, {18e3, 20e3})\n"
-    "local b1 = radio.PLLBlock(1000.0, 19e3-100, 19e3+100, 3.0)\n"
-    "local c0 = radio.PLLBlock(1000.0, 19e3-100, 19e3+100, 1/16.0)\n"
-    "local c1 = radio.DelayBlock(35)\n"
-    "local c2 = radio.ComplexToRealBlock()\n"
-    "local a4 = radio.MultiplyConjugateBlock()\n"
-    "local a5 = radio.LowpassFilterBlock(256, 4e3)\n"
-    "local a6 = radio.RootRaisedCosineFilterBlock(101, 1, 1187.5)\n"
-    "local a7 = radio.BinaryPhaseCorrectorBlock(2000)\n"
-    "local e0 = radio.SamplerBlock()\n"
-    "local e1 = radio.ComplexToRealBlock()\n"
-    "local e2 = radio.SlicerBlock()\n"
-    "local e3 = radio.DifferentialDecoderBlock()\n"
-    "local e4 = radio.RDSFrameBlock()\n"
-    "local e5 = radio.RawFileSink(%d)\n"
-    ""
-    "top:connect(a0, a1, a2, a3, f0)\n"
-    "top:connect(f0, b1)\n"
-    "top:connect(a3, 'out', a4, 'in1')\n"
-    "top:connect(b1, 'out', a4, 'in2')\n"
-    "top:connect(f0, c0, c1, c2)\n"
-    "top:connect(a4, a5, a6, a7)\n"
-    "top:connect(a7, 'out', e0, 'data')\n"
-    "top:connect(c2, 'out', e0, 'clock')\n"
-    "top:connect(e0, e1, e2, e3, e4, e5)\n"
-    "return top";
+    "local offset = -200e3\n"
+    "return radio.CompositeBlock():connect("
+    "    radio.RtlSdrSource(frequency + offset, 1102500),"
+    "    radio.TunerBlock(offset, 200e3, 5),"
+    "    radio.RDSReceiver(),"
+    "    radio.RawFileSink(%d)"
+    ")";
 
 typedef struct {
     uint16_t blocks[4];
@@ -47,10 +21,7 @@ typedef struct {
 
 time_t rds_decode_time(const rds_frame_t *time_frame) {
     /* See RDS Standard 3.1.5.6, pg. 28 */
-    /* Time frame bit layout:
-     *   [XXXX_XXXX_XXXX_XXXX] | [XXXX_XXXX_XXXX_XXDD]
-     *   [DDDD_DDDD_DDDD_DDDH] | [HHHH_MMMM_MMOO_OOOO]
-     * MJD = blocks[1][1:0], blocks[2][15:1]
+    /* MJD = blocks[1][1:0], blocks[2][15:1]
      * Hour = blocks[2][0], blocks[3][15:12]
      * Minute = blocks[3][11:6] */
     uint32_t mjd = ((time_frame->blocks[1] & 0x3) << 15) | ((time_frame->blocks[2] & 0xfffe) >> 1);

@@ -3,7 +3,7 @@ local types = require('radio.types')
 
 local DifferentialDecoderBlock = block.factory("DifferentialDecoderBlock")
 
-function DifferentialDecoderBlock:instantiate(threshold)
+function DifferentialDecoderBlock:instantiate()
     self.prev_bit = types.BitType(0)
     self:add_type_signature({block.Input("in", types.BitType)}, {block.Output("out", types.BitType)})
 end

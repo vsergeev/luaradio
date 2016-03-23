@@ -4,7 +4,7 @@ local types = require('radio.types')
 local FloatToComplexBlock = block.factory("FloatToComplexBlock")
 
 function FloatToComplexBlock:instantiate()
-    self:add_type_signature({block.Input("real", types.Float32Type), block.Input("imag", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("real", types.Float32Type), block.Input("imag", types.Float32Type)}, {block.Output("out", types.ComplexFloat32Type)})
 end
 
 function FloatToComplexBlock:process(real, imag)

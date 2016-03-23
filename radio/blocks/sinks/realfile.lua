@@ -40,7 +40,7 @@ ffi.cdef[[
     } format_f64_t;
 ]]
 
-function RealFileSink:instantiate(file, format, rate)
+function RealFileSink:instantiate(file, format)
     local supported_formats = {
         u8    = {ctype = "format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
         s8    = {ctype = "format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},

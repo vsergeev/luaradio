@@ -58,6 +58,12 @@ local function TestBlock(block_class, vectors, options)
                 -- Create the ready-to-go block
                 local block = create_block(test_vector)
 
+                -- Compare type signature with expected output count and types
+                assert.is.equal(#block.signature.outputs, #test_vector.outputs)
+                for i=1, #test_vector.outputs do
+                    assert.is.equal(block.signature.outputs[i].data_type, test_vector.outputs[i].type)
+                end
+
                 -- Run process
                 local outputs = {block:process(unpack(test_vector.inputs))}
 
@@ -139,6 +145,12 @@ local function TestSourceBlock(block_class, vectors, options)
 
                 -- Create the ready-to-go block
                 local block = create_block(test_vector)
+
+                -- Compare type signature with expected output count and types
+                assert.is.equal(#block.signature.outputs, #test_vector.outputs)
+                for i=1, #test_vector.outputs do
+                    assert.is.equal(block.signature.outputs[i].data_type, test_vector.outputs[i].type)
+                end
 
                 -- Create array for collected outputs
                 local collected_outputs = {}

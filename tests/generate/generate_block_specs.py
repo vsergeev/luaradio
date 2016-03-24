@@ -67,6 +67,8 @@ def serialize(x):
         return "radio.ComplexFloat32Type(%.*f, %.*f)" % (PRECISION, x.real, PRECISION, x.imag)
     elif isinstance(x, numpy.float32):
         return "radio.Float32Type(%.*f)" % (PRECISION, x)
+    elif isinstance(x, bool):
+        return "true" if x else "false"
     else:
         return str(x)
 
@@ -774,13 +776,13 @@ def generate_slicer_spec():
 
 @block_spec("DifferentialDecoderBlock", "tests/blocks/signal/differentialdecoder_spec.lua")
 def generate_differentialdecoder_spec():
-    def process(x):
-        prev_bit = numpy.bool_(False)
-        return [numpy.logical_xor(numpy.insert(x, 0, False)[:-1], x)]
+    def process(invert, x):
+        return [numpy.logical_xor(numpy.logical_xor(numpy.insert(x, 0, False)[:-1], x), invert)]
 
     vectors = []
     x = random_bit(256)
-    vectors.append(generate_test_vector(process, [], [x], "256 Bit input, 256 Bit output"))
+    vectors.append(generate_test_vector(process, [False], [x], "Non-inverted output, 256 Bit input, 256 Bit output"))
+    vectors.append(generate_test_vector(process, [True], [x], "Inverted output, 256 Bit input, 256 Bit output"))
 
     return vectors
 

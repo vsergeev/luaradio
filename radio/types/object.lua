@@ -15,6 +15,14 @@ function ObjectType.factory(custom_mt)
         return ObjectVector(CustomType, num)
     end
 
+    function CustomType.vector_from_array(arr)
+        local vec = ObjectVector(CustomType)
+        for i = 1, #arr do
+            vec:append(CustomType(unpack(arr[i])))
+        end
+        return vec
+    end
+
     -- Serializers
     function CustomType:to_msgpack()
         return msgpack.pack(self)

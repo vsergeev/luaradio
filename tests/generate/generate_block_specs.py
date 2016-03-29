@@ -648,6 +648,21 @@ def generate_frequencydiscriminator_spec():
 
     return vectors
 
+@block_spec("ZeroCrossingClockRecoveryBlock", "tests/blocks/signal/zerocrossingclockrecovery_spec.lua")
+def generate_zerocrossingclockrecovery_spec():
+    def test_vector_wrapper(expected):
+        return lambda baudrate, threshold, x: [expected]
+
+    x = numpy.array([-1, -1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1], dtype=numpy.float32)
+    clock = numpy.array([-1, -1, -1, 1, -1, -1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, 1, -1], dtype=numpy.float32)
+
+    # Baudrate of 0.4444 with sample rate of 2.0 means we have 4.5 samples per bit
+    vectors = []
+    vectors.append(generate_test_vector(test_vector_wrapper(clock), [0.4444, 0.0], [x], "0.4444 baudrate, 0.0 threshold"))
+    vectors.append(generate_test_vector(test_vector_wrapper(clock), [0.4444, 1.0], [x + 1.0], "0.4444 baudrate, 1.0 threshold"))
+
+    return vectors
+
 @block_spec("SumBlock", "tests/blocks/signal/sum_spec.lua")
 def generate_sum_spec():
     def process(x, y):

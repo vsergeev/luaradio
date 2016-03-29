@@ -68,6 +68,8 @@ return {
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator').FrequencyDiscriminatorBlock,
     --- Carrier Recovery
     PLLBlock = require('radio.blocks.signal.pll').PLLBlock,
+    --- Clock Recovery
+    ZeroCrossingClockRecoveryBlock = require('radio.blocks.signal.zerocrossingclockrecovery').ZeroCrossingClockRecoveryBlock,
     --- Basic Operators
     SumBlock = require('radio.blocks.signal.sum').SumBlock,
     SubtractBlock = require('radio.blocks.signal.subtract').SubtractBlock,

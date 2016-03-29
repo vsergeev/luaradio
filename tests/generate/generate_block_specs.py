@@ -1060,58 +1060,40 @@ def generate_spectrum_utils_spec():
 
 @block_spec("RDSFrameBlock", "tests/blocks/protocol/rdsframe_spec.lua")
 def generate_rdsframe_spec():
-    class RDSFrame:
-        def __init__(self, *blocks):
-            self.blocks = blocks
+    def test_vector_wrapper(frames):
+        template = "require('radio.blocks.protocol.rdsframe').RDSFrameType.vector_from_array({%s})"
+        return lambda x: [template % (','.join(frames))]
 
-        def serialize(self):
-            return "{{{0x%04x, 0x%04x, 0x%04x, 0x%04x}}}" % self.blocks
+    frame1_bits = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,0,0,1,1,0,1,1,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,1,1,0,1,1,0,0,1,0,0,0,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1,1,0], dtype=numpy.bool_)
+    frame1_object = "{{{0x3aab, 0x02c9, 0x0608, 0x6469}}}"
 
-    class RDSFrameVector(CustomVector):
-        def __init__(self, *frames):
-            self.frames = frames
+    frame2_bits = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,1,0,0,0,1,1,0,0,0,0,1,1,0,1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,1,1,0,1,1,0,0,1,0,1,0,0,1,0,0,0,1,1,0,0,0,0,1,0,0,1,0,0,0,1,0], dtype=numpy.bool_)
+    frame2_object = "{{{0x3aab, 0x82c8, 0x4849, 0x2918}}}"
 
-        def serialize(self):
-            t = [frame.serialize() for frame in self.frames]
-            return "require('radio.blocks.protocol.rdsframe').RDSFrameType.vector_from_array({" + ", ".join(t) + "})"
-
-    def process_maker(index):
-        if index == 1:
-            return lambda x: [RDSFrameVector(RDSFrame(0x3aab, 0x02c9, 0x0608, 0x6469))]
-        elif index == 2:
-            return lambda x: [RDSFrameVector(RDSFrame(0x3aab, 0x82c8, 0x4849, 0x2918))]
-        elif index == 3:
-            return lambda x: [RDSFrameVector(RDSFrame(0x3aab, 0x02ca, 0xe30a, 0x6f20))]
-        elif index == 7:
-            return lambda x: [RDSFrameVector(RDSFrame(0x3aab, 0x02c9, 0x0608, 0x6469), RDSFrame(0x3aab, 0x82c8, 0x4849, 0x2918), RDSFrame(0x3aab, 0x02ca, 0xe30a, 0x6f20))]
+    frame3_bits = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,1,1,1,0,0,0,1,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,0,0,1,0,0,1,1,0,1,1,1,1,0,0,1,0,0,0,0,0,1,1,0,1,1,1,0,1,1,0], dtype=numpy.bool_)
+    frame3_object = "{{{0x3aab, 0x02ca, 0xe30a, 0x6f20}}}"
 
     vectors = []
 
-    bits = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,0,0,1,1,0,1,1,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,1,1,0,1,1,0,0,1,0,0,0,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1,1,0]).astype(numpy.bool_)
-    x = numpy.hstack([random_bit(20), bits, random_bit(20)])
-    vectors.append(generate_test_vector(process_maker(1), [], [x], "Valid frame 1"))
+    x = numpy.hstack([random_bit(20), frame1_bits, random_bit(20)])
+    vectors.append(generate_test_vector(test_vector_wrapper([frame1_object]), [], [x], "Valid frame 1"))
 
-    bits = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,1,0,0,0,1,1,0,0,0,0,1,1,0,1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,1,1,0,1,1,0,0,1,0,1,0,0,1,0,0,0,1,1,0,0,0,0,1,0,0,1,0,0,0,1,0]).astype(numpy.bool_)
-    x = numpy.hstack([random_bit(20), bits, random_bit(20)])
-    vectors.append(generate_test_vector(process_maker(2), [], [x], "Valid frame 2"))
+    x = numpy.hstack([random_bit(20), frame2_bits, random_bit(20)])
+    vectors.append(generate_test_vector(test_vector_wrapper([frame2_object]), [], [x], "Valid frame 2"))
 
-    bits = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,1,1,1,0,0,0,1,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,0,0,1,0,0,1,1,0,1,1,1,1,0,0,1,0,0,0,0,0,1,1,0,1,1,1,0,1,1,0]).astype(numpy.bool_)
-    x = numpy.hstack([random_bit(20), bits, random_bit(20)])
-    vectors.append(generate_test_vector(process_maker(3), [], [x], "Valid frame 3"))
+    x = numpy.hstack([random_bit(20), frame3_bits, random_bit(20)])
+    vectors.append(generate_test_vector(test_vector_wrapper([frame3_object]), [], [x], "Valid frame 3"))
 
-    bits = numpy.array([0,0,1,1,1,0,1,1,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,0,0,1,1,0,1,1,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,1,1,0,1,1,0,0,1,0,0,0,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1,1,0]).astype(numpy.bool_)
-    x = numpy.hstack([random_bit(20), bits, random_bit(20)])
-    vectors.append(generate_test_vector(process_maker(1), [], [x], "Frame 1 with message bit error"))
+    x = numpy.hstack([random_bit(20), frame1_bits, random_bit(20)])
+    x[27] = not x[27]
+    vectors.append(generate_test_vector(test_vector_wrapper([frame1_object]), [], [x], "Frame 1 with message bit error"))
 
-    bits = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,0,0,1,1,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,1,0,0,0,1,1,0,0,0,0,1,1,0,1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,1,1,0,1,1,0,0,1,0,1,0,0,1,0,0,0,1,1,0,0,0,0,1,0,0,1,0,0,0,1,0]).astype(numpy.bool_)
-    x = numpy.hstack([random_bit(20), bits, random_bit(20)])
-    vectors.append(generate_test_vector(process_maker(2), [], [x], "Frame 2 with crc bit error"))
+    x = numpy.hstack([random_bit(20), frame2_bits, random_bit(20)])
+    x[39] = not x[39]
+    vectors.append(generate_test_vector(test_vector_wrapper([frame2_object]), [], [x], "Frame 2 with crc bit error"))
 
-    bits1 = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,0,0,1,1,0,1,1,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,1,1,0,1,1,0,0,1,0,0,0,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1,1,0]).astype(numpy.bool_)
-    bits2 = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,1,0,0,0,1,1,0,0,0,0,1,1,0,1,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0,1,1,0,0,1,0,1,1,0,1,1,0,0,1,0,1,0,0,1,0,0,0,1,1,0,0,0,0,1,0,0,1,0,0,0,1,0]).astype(numpy.bool_)
-    bits3 = numpy.array([0,0,1,1,1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,1,1,1,0,0,0,1,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,0,0,1,0,0,1,1,0,1,1,1,1,0,0,1,0,0,0,0,0,1,1,0,1,1,1,0,1,1,0]).astype(numpy.bool_)
-    x = numpy.hstack([bits1, bits2, bits3])
-    vectors.append(generate_test_vector(process_maker(7), [], [x], "Three contiguous frames"))
+    x = numpy.hstack([frame1_bits, frame2_bits, frame3_bits])
+    vectors.append(generate_test_vector(test_vector_wrapper([frame1_object, frame2_object, frame3_object]), [], [x], "Three contiguous frames"))
 
     return vectors
 

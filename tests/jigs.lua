@@ -7,7 +7,7 @@ local function assert_approx_equal(x, y, epsilon)
     elseif type(x) == "number" and type(x) == "number" then
         assert.is_true(math.abs(x - y) < epsilon)
     else
-        assert.are.equal(x, y)
+        assert.are.same(x, y)
     end
 end
 

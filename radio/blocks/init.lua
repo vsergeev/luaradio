@@ -82,4 +82,5 @@ return {
     AX25FrameBlock = require('radio.blocks.protocol.ax25frame').AX25FrameBlock,
     --- POCSAG
     POCSAGFrameBlock = require('radio.blocks.protocol.pocsagframe').POCSAGFrameBlock,
+    POCSAGDecodeBlock = require('radio.blocks.protocol.pocsagdecode').POCSAGDecodeBlock,
 }

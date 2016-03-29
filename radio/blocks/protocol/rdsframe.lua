@@ -63,9 +63,9 @@ end
 
 RDSFrameBlock.RDSFrameType = RDSFrameType
 
--- RDS Block Validation
+-- RDS Block Correction
 
-local function validate_block(block_bits, offset)
+local function rds_correct_block(block_bits, offset_word)
     -- Block bits layout:
     -- MMMM MMMM MMMM MMMM CC CCCC CCCC
     -- 26-bits = 16-bits message + 10-bits code word
@@ -82,7 +82,7 @@ local function validate_block(block_bits, offset)
     end
 
     -- Add offset word
-    block_bits_expected = bit.bxor(block_bits_expected, offset)
+    block_bits_expected = bit.bxor(block_bits_expected, offset_word)
 
     -- Compute CRC error
     local crc_error = bit.bxor(bit.band(block_bits_expected, 0x3ff), bit.band(block_bits, 0x3ff))
@@ -145,10 +145,10 @@ function RDSFrameBlock:process(x)
             local block_d = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*3, RDS_BLOCK_LEN)
 
             -- Validate and correct the blocks
-            correct_block_a = validate_block(block_a, RDS_OFFSET_WORDS.A)
-            correct_block_b = validate_block(block_b, RDS_OFFSET_WORDS.B)
-            correct_block_c = validate_block(block_c, RDS_OFFSET_WORDS.C) or validate_block(block_c, RDS_OFFSET_WORDS.Cp)
-            correct_block_d = validate_block(block_d, RDS_OFFSET_WORDS.D)
+            correct_block_a = rds_correct_block(block_a, RDS_OFFSET_WORDS.A)
+            correct_block_b = rds_correct_block(block_b, RDS_OFFSET_WORDS.B)
+            correct_block_c = rds_correct_block(block_c, RDS_OFFSET_WORDS.C) or rds_correct_block(block_c, RDS_OFFSET_WORDS.Cp)
+            correct_block_d = rds_correct_block(block_d, RDS_OFFSET_WORDS.D)
 
             if correct_block_a and correct_block_b and correct_block_c and correct_block_d then
                 -- Add the frame to our output buffer

@@ -21,4 +21,5 @@ return {
     -- Receivers
     RDSReceiver = require('radio.composites.rdsreceiver').RDSReceiver,
     AX25Receiver = require('radio.composites.ax25receiver').AX25Receiver,
+    POCSAGReceiver = require('radio.composites.pocsagreceiver').POCSAGReceiver,
 }

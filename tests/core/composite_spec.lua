@@ -116,9 +116,9 @@ describe("composite", function ()
     it("input/output aliasing", function ()
         local blk = radio.CompositeBlock()
 
-        -- Check aliased pipe inputs / outputs
+        -- Check aliased pipe properties
 
-        blk:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.Float32Type)}, {block.Output("out", radio.Integer32Type)})
+        blk:add_type_signature({block.Input("in1", radio.Float32Type), block.Input("in2", radio.Float32Type)}, {block.Output("out1", radio.Integer32Type), block.Output("out2", radio.BitType)})
 
         assert.is.equal(1, #blk.signatures)
         assert.is.equal(2, #blk.inputs)
@@ -126,15 +126,17 @@ describe("composite", function ()
         assert.is_true(object.isinstanceof(blk.inputs[2], pipe.AliasedPipeInput))
         assert.is.equal("in1", blk.inputs[1].name)
         assert.is.equal("in2", blk.inputs[2].name)
-        assert.is.equal(1, #blk.outputs)
+        assert.is.equal(2, #blk.outputs)
         assert.is_true(object.isinstanceof(blk.outputs[1], pipe.AliasedPipeOutput))
-        assert.is.equal("out", blk.outputs[1].name)
+        assert.is_true(object.isinstanceof(blk.outputs[2], pipe.AliasedPipeOutput))
+        assert.is.equal("out1", blk.outputs[1].name)
+        assert.is.equal("out2", blk.outputs[2].name)
 
         -- Test blocks for composition
 
         local TestBlock1 = block.factory("TestBlock1")
         function TestBlock1:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {})
+            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.BitType)})
         end
 
         local TestBlock2 = block.factory("TestBlock2")
@@ -144,24 +146,65 @@ describe("composite", function ()
 
         local TestBlock3 = block.factory("TestBlock3")
         function TestBlock3:instantiate()
-            self:add_type_signature({}, {block.Output("out", radio.Integer32Type)})
+            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Integer32Type)})
         end
 
         local b1 = TestBlock1()
         local b2 = TestBlock2()
         local b3 = TestBlock3()
 
-        -- Check valid connections
+        -- Check valid composite to block aliases
+
+        --[[
+                         blk
+                    --------------
+            in1 -> | --> [b1] --> | -> out1
+            in2 -> | --> [b2]     |
+                   | \-> [b3] --> | -> out2
+                   ---------------
+        --]]
 
         blk:connect(blk, "in1", b1, "in")
         blk:connect(blk, "in2", b2, "in")
-        blk:connect(blk, "out", b3, "out")
+        blk:connect(blk, "in2", b3, "in")
+        blk:connect(blk, "out1", b1, "out")
+        blk:connect(blk, "out2", b3, "out")
 
-        assert.is.equal(b1.inputs[1], blk.inputs[1].real_input)
-        assert.is.equal(b2.inputs[1], blk.inputs[2].real_input)
-        assert.is.equal(b3.outputs[1], blk.outputs[1].real_output)
+        assert.is.equal(1, #blk.inputs[1].real_inputs)
+        assert.is.equal(2, #blk.inputs[2].real_inputs)
+        assert.is.equal(b1.inputs[1], blk.inputs[1].real_inputs[1])
+        assert.is.equal(b2.inputs[1], blk.inputs[2].real_inputs[1])
+        assert.is.equal(b3.inputs[1], blk.inputs[2].real_inputs[2])
+        assert.is.equal(b1.outputs[1], blk.outputs[1].real_output)
+        assert.is.equal(b3.outputs[1], blk.outputs[2].real_output)
 
-        -- Check invalid connections
+        -- Check valid composite to composite aliases
+
+        --[[
+
+                          blk2
+                  ---------------------|
+            in -> | --> in1 [blk] out2 | -> out
+                  | \-> in2            |
+                  ---------------------
+
+        ]]--
+
+        local blk2 = radio.CompositeBlock()
+
+        blk2:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.Integer32Type)})
+
+        blk2:connect(blk2, 'in', blk, 'in1')
+        blk2:connect(blk2, 'in', blk, 'in2')
+        blk2:connect(blk2, 'out', blk, 'out2')
+
+        assert.is.equal(3, #blk2.inputs[1].real_inputs)
+        assert.is.equal(b1.inputs[1], blk2.inputs[1].real_inputs[1])
+        assert.is.equal(b2.inputs[1], blk2.inputs[1].real_inputs[2])
+        assert.is.equal(b3.inputs[1], blk2.inputs[1].real_inputs[3])
+        assert.is.equal(b3.outputs[1], blk2.outputs[1].real_output)
+
+        -- Check invalid composite to block aliases
 
         local blk = radio.CompositeBlock()
 
@@ -169,12 +212,7 @@ describe("composite", function ()
 
         -- Invalid pipe direction
         assert.has_error(function () blk:connect(blk, "out", b1, "in") end)
-        assert.has_error(function () blk:connect(blk, "in1", b3, "out") end)
-
-        -- Duplicate input connection
-        blk:connect(blk, "in1", b1, "in")
-        assert.has_error(function () blk:connect(blk, "in1", b2, "in") end)
-        assert.has_error(function () blk:connect(b2, "in", blk, "in1") end)
+        assert.has_error(function () blk:connect(blk, "in", b3, "out") end)
 
         -- Duplicate output connection
         local b4 = TestBlock3()

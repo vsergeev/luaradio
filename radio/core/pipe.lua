@@ -43,7 +43,7 @@ function AliasedPipeInput.new(owner, name)
     local self = setmetatable({}, AliasedPipeInput)
     self.owner = owner
     self.name = name
-    self.real_input = nil
+    self.real_inputs = {}
     return self
 end
 

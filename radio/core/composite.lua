@@ -60,58 +60,62 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
     assert(src_pipe, string.format("Source pipe \"%s\" of block \"%s\" not found.", src_pipe_name, src.name))
     assert(dst_pipe, string.format("Destination pipe \"%s\" of block \"%s\" not found.", dst_pipe_name, dst.name))
 
-    -- Map aliased outputs or aliased inputs to their real pipes
-    src_pipe = (object.isinstanceof(src_pipe, pipe.AliasedPipeInput) and src_pipe.real_input) and src_pipe.real_input or src_pipe
-    src_pipe = (object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and src_pipe.real_output) and src_pipe.real_output or src_pipe
-    dst_pipe = (object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) and dst_pipe.real_input) and dst_pipe.real_input or dst_pipe
-    dst_pipe = (object.isinstanceof(dst_pipe, pipe.AliasedPipeOutput) and dst_pipe.real_output) and dst_pipe.real_output or dst_pipe
+    -- If this is a block to block connection in a top composite block
+    if src ~= self and dst ~= self then
+        -- Map aliased outputs and inputs to their real pipes
+        src_pipe = object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and src_pipe.real_output or src_pipe
+        dst_pipes = object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) and dst_pipe.real_inputs or {dst_pipe}
 
-    if object.isinstanceof(src_pipe, pipe.PipeOutput) and object.isinstanceof(dst_pipe, pipe.PipeInput) then
-        -- If we are connecting an output pipe to an input pipe
+        for i = 1, #dst_pipes do
+            -- Assert input is not already connected
+            assert(not self._connections[dst_pipes[i]], "Input already connected.")
 
-        -- Assert input is not already connected
-        assert(not self._connections[dst_pipe], "Input already connected.")
+            -- Create a pipe from output to input
+            local p = pipe.Pipe(src_pipe, dst_pipes[i])
+            -- Link the pipe to the input and output ends
+            src_pipe.pipes[#src_pipe.pipes+1] = p
+            dst_pipes[i].pipe = p
 
-        -- Create a pipe from output to input
-        local p = pipe.Pipe(src_pipe, dst_pipe)
-        -- Link the pipe to the input and output ends
-        src_pipe.pipes[#src_pipe.pipes+1] = p
-        dst_pipe.pipe = p
+            -- Update our connections table
+            self._connections[dst_pipes[i]] = src_pipe
 
-        -- Update our connections table
-        self._connections[dst_pipe] = src_pipe
-
-        io.stderr:write(string.format("Connected source %s.%s to destination %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
-    elseif object.isinstanceof(src_pipe, pipe.AliasedPipeInput) and object.isinstanceof(dst_pipe, pipe.PipeInput) then
-        -- Assert input is not already connected
-        assert(not src_pipe.real_input, "Aliased input already connected.")
-
-        -- If we are aliasing a composite block input pipe to a real input pipe
-        src_pipe.real_input = dst_pipe
-        io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
-    elseif object.isinstanceof(src_pipe, pipe.PipeInput) and object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) then
-        -- Assert input is not already connected
-        assert(not dst_pipe.real_input, "Aliased input already connected.")
-
-        -- If we are aliasing a composite block input pipe to a real input pipe
-        dst_pipe.real_input = src_pipe
-        io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", dst.name, dst_pipe.name, src.name, src_pipe.name))
-    elseif object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(dst_pipe, pipe.PipeOutput) then
-        -- Assert output is not already connected
-        assert(not src_pipe.real_output, "Aliased output already connected.")
-
-        -- If we are aliasing a composite block input pipe to a real input pipe
-        src_pipe.real_output = dst_pipe
-        io.stderr:write(string.format("Aliased output %s.%s to input %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
-    elseif object.isinstanceof(src_pipe, pipe.PipeOutput) and object.isinstanceof(dst_pipe, pipe.AliasedPipeOutput) then
-        -- Assert output is not already connected
-        assert(not dst_pipe.real_output, "Aliased output already connected.")
-
-        -- If we are aliasing a composite block input pipe to a real input pipe
-        dst_pipe.real_output = src_pipe
-        io.stderr:write(string.format("Aliased output %s.%s to input %s.%s\n", dst.name, dst_pipe.name, src.name, src_pipe.name))
+            io.stderr:write(string.format("Connected source %s.%s to destination %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
+        end
     else
-        error("Malformed pipe connection.")
+        -- Otherwise, we are aliasing an input or output of a composite block
+
+        -- Map src and dst pipe to alias pipe and real pipe
+        local alias_pipe = (src == self) and src_pipe or dst_pipe
+        local target_pipe = (src == self) and dst_pipe or src_pipe
+
+        if object.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and object.isinstanceof(target_pipe, pipe.PipeInput) then
+            -- If we are aliasing a composite block input to a concrete block input
+
+            alias_pipe.real_inputs[#alias_pipe.real_inputs + 1] = target_pipe
+            io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name))
+        elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(target_pipe, pipe.PipeOutput) then
+            -- If we are aliasing a composite block output to a concrete block output
+
+            assert(not alias_pipe.real_output, "Aliased output already connected.")
+            alias_pipe.real_output = target_pipe
+            io.stderr:write(string.format("Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name))
+        elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and object.isinstanceof(target_pipe, pipe.AliasedPipeInput) then
+            -- If we are aliasing a composite block input to a composite block input
+
+            -- Absorb destination alias real inputs
+            for i = 1, #target_pipe.real_inputs do
+                alias_pipe.real_inputs[#alias_pipe.real_inputs + 1] = target_pipe.real_inputs[i]
+            end
+            io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name))
+        elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(target_pipe, pipe.AliasedPipeOutput) then
+            -- If we are aliasing a composite block output to a composite block output
+
+            assert(not alias_pipe.real_output, "Aliased output already connected.")
+            alias_pipe.real_output = target_pipe.real_output
+            io.stderr:write(string.format("Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name))
+        else
+            error("Malformed pipe connection.")
+        end
     end
 end
 

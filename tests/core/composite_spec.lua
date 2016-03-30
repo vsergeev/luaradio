@@ -189,6 +189,8 @@ describe("composite", function ()
                                 Composite3
                          Composite1      Composite2
               [0] - [  [ [A] - [B] ] - [ [A] - [B] ] - [1]
+                                |
+                               [C]
 
         --]]
 
@@ -200,8 +202,9 @@ describe("composite", function ()
         local c1 = radio.CompositeBlock()
         local c1a = TestBlock()
         local c1b = TestBlock()
+        local c1c = TestBlock()
         c1:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
-        c1:connect(c1a, c1b)
+        c1:connect(c1a, c1b, c1c)
         c1:connect(c1, "in", c1a, "in")
         c1:connect(c1, "out", c1b, "out")
 
@@ -237,19 +240,20 @@ describe("composite", function ()
 
         local expected_blocks = {
             [b0] = true, [c1a] = true, [c1b] = true,
-            [c2a] = true, [c2b] = true, [b1] = true
+            [c1c] = true, [c2a] = true, [c2b] = true,
+            [b1] = true
         }
 
         local expected_connections = {
             [c1a.inputs[1]] = b0.outputs[1], [c1b.inputs[1]] = c1a.outputs[1],
-            [c2a.inputs[1]] = c1b.outputs[1], [c2b.inputs[1]] = c2a.outputs[1],
-            [b1.inputs[1]] = c2b.outputs[1]
+            [c1c.inputs[1]] = c1b.outputs[1], [c2a.inputs[1]] = c1b.outputs[1],
+            [c2b.inputs[1]] = c2a.outputs[1], [b1.inputs[1]] = c2b.outputs[1]
         }
 
         local blocks, connections = composite._crawl_connections(top._connections)
 
-        assert.is.equal(6, util.table_length(blocks))
-        assert.is.equal(5, util.table_length(connections))
+        assert.is.equal(7, util.table_length(blocks))
+        assert.is.equal(6, util.table_length(connections))
         assert.is.same(expected_blocks, blocks)
         assert.is.same(expected_connections, connections)
     end)

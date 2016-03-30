@@ -129,10 +129,17 @@ local function crawl_connections(connections)
             for _, block in ipairs({src, dst}) do
                 -- If we haven't seen this block before
                 if not blocks[block] then
-                    -- Add its input -> output mapping to our connections table
+                    -- Add all of the block's inputs our connections table
                     for i=1, #block.inputs do
                         if block.inputs[i].pipe then
                             connections_copy[block.inputs[i]] = block.inputs[i].pipe.pipe_output
+                        end
+                    end
+                    -- Add all of the block's outputs to to our connection table
+                    for i=1, #block.outputs do
+                        for j=1, #block.outputs[i].pipes do
+                            local input = block.outputs[i].pipes[j].pipe_input
+                            connections_copy[input] = block.outputs[i]
                         end
                     end
 

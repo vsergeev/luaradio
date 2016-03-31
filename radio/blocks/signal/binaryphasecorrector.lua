@@ -31,11 +31,11 @@ function BinaryPhaseCorrectorBlock:process(x)
             phi = (phi > math.pi/2) and (phi - math.pi) or phi
 
             -- Pop last element of our table
-            local last_phi = self.phi_state.data[self.phi_state.length-1].value
+            local last_phi = self.phi_state.data[0].value
             -- Shift the state samples down
-            ffi.C.memmove(self.phi_state.data[1], self.phi_state.data[0], (self.phi_state.length-1)*ffi.sizeof(self.phi_state.data[0]))
+            ffi.C.memmove(self.phi_state.data[0], self.phi_state.data[1], (self.phi_state.length-1)*ffi.sizeof(self.phi_state.data[0]))
             -- Insert phi sample into state
-            self.phi_state.data[0].value = phi
+            self.phi_state.data[self.phi_state.length-1].value = phi
 
             -- Update the moving average
             self.phi_moving_average = self.phi_moving_average + phi/self.num_samples - last_phi/self.num_samples

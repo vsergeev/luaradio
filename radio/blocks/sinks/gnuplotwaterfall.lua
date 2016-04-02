@@ -15,6 +15,8 @@ function GnuplotWaterfallSink:instantiate(num_samples, title, options)
     self.rows = self.options.plot_height or 64
     self.columns = num_samples
     self.num_psd_averages = 1
+    self.min_magnitude = self.options.min_magnitude or -150
+    self.max_magnitude = self.options.max_magnitude or 0
 
     assert(self.overlap < 1, "Overlap should be a fraction in [0.00, 1.00).")
 
@@ -177,7 +179,7 @@ function GnuplotWaterfallSink:process(x)
 
             -- Compute new pixel row
             for i = 0, self.columns-1 do
-                local value = normalize(self.psd_average.data[i].value, -150, 0)
+                local value = normalize(self.psd_average.data[i].value, self.min_magnitude, self.max_magnitude)
                 self.pixels[self.rows-1][i] = value_to_pixel(value)
             end
 

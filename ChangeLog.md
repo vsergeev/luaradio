@@ -1,3 +1,35 @@
+* (Prototype) v0.0.12 - 04/07/2016
+    * Rename wbfm_rtlsdr demo to rtlsdr_wbfm_mono.
+    * Rename rds_rtlsdr demo to rtlsdr_rds.
+    * Improve plotting, variable names, and performance of rtlsdr_wbfm_mono and rtlsdr_rds demos.
+    * Add new protocol blocks:
+        * AX25FrameBlock
+        * POCSAGFrameBlock
+        * POCSAGDecodeBlock
+    * Refactor RDSFrameBlock and RDSDecodeBlock.
+    * Add new demos:
+        * rtlsdr_wbfm_stereo
+        * rtlsdr_nbfm
+        * rtlsdr_am_envelope
+        * rtlsdr_am_synchronous
+        * rtlsdr_ssb
+        * wavfile_ssb_modulator
+        * rtlsdr_ax25
+        * rtlsdr_pocsag
+    * Add new composite blocks:
+        * NBFMDemodulator
+        * AMEnvelopeDemodulator
+        * AMSynchronousDemodulator
+        * SSBDemodulator
+        * SSBModulator
+        * WBFMMonoDemodulator
+        * WBFMStereoDemodulator
+        * RDSReceiver
+        * AX25Receiver
+        * POCSAGReceiver
+    * Use composite blocks in rds-timeync and fmradio embed demos.
+    * Improve unit tests.
+
 * (Prototype) v0.0.11 - 04/01/2016
     * Fix execution of composite blocks with intermediate sinks.
     * Add support for aliasing a composite block input to multiple block inputs.

@@ -3,7 +3,6 @@ local radio = require('radio')
 local jigs = require('tests.jigs')
 
 local BitType = radio.BitType
-local bits_to_number = require('radio.types.bit').bits_to_number
 
 describe("BitType", function ()
     it("size", function ()
@@ -44,22 +43,22 @@ describe("BitType", function ()
         assert.is.equal(zero, zero:bxor(zero))
     end)
 
-    it("bits_to_number()", function ()
+    it("tonumber()", function ()
         local bits = BitType.vector_from_array({1, 0, 1, 0, 0, 1, 0, 1, 0})
 
-        -- Normal usage
-        assert.is.equal(330, bits_to_number(bits))
+        -- Default usage: zero offset, full length, MSB first
+        assert.is.equal(330, BitType.tonumber(bits))
 
         -- Offset
-        assert.is.equal(74, bits_to_number(bits, 1))
+        assert.is.equal(74, BitType.tonumber(bits, 1))
 
         -- Offset and length
-        assert.is.equal(10, bits_to_number(bits, 0, 4))
+        assert.is.equal(10, BitType.tonumber(bits, 0, 4))
 
         -- LSB first
-        assert.is.equal(165, bits_to_number(bits, 0, bits.length, false))
+        assert.is.equal(165, BitType.tonumber(bits, 0, bits.length, "lsb"))
 
-        -- LSB first, offset, and length
-        assert.is.equal(2, bits_to_number(bits, 1, 4, false))
+        -- Offset, length, LSB first
+        assert.is.equal(2, BitType.tonumber(bits, 1, 4, "lsb"))
     end)
 end)

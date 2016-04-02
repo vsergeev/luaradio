@@ -7,7 +7,4 @@ return {
     Integer32Type = require('radio.types.integer32').Integer32Type,
     ByteType = require('radio.types.byte').ByteType,
     BitType = require('radio.types.bit').BitType,
-
-    -- Helper functions
-    bits_to_number = require('radio.types.bit').bits_to_number,
 }

@@ -137,10 +137,10 @@ function RDSFrameBlock:process(x)
         -- Try to validate the frame
         if self.rds_frame_length == RDS_FRAME_LEN then
             -- Extract blocks as numbers
-            local block_a = types.bits_to_number(self.rds_frame, RDS_BLOCK_LEN*0, RDS_BLOCK_LEN)
-            local block_b = types.bits_to_number(self.rds_frame, RDS_BLOCK_LEN*1, RDS_BLOCK_LEN)
-            local block_c = types.bits_to_number(self.rds_frame, RDS_BLOCK_LEN*2, RDS_BLOCK_LEN)
-            local block_d = types.bits_to_number(self.rds_frame, RDS_BLOCK_LEN*3, RDS_BLOCK_LEN)
+            local block_a = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*0, RDS_BLOCK_LEN)
+            local block_b = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*1, RDS_BLOCK_LEN)
+            local block_c = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*2, RDS_BLOCK_LEN)
+            local block_d = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*3, RDS_BLOCK_LEN)
 
             -- Validate and correct the blocks
             correct_block_a = validate_block(block_a, RDS_OFFSET_WORDS.A)

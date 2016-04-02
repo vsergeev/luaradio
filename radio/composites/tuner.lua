@@ -1,21 +1,17 @@
 local block = require('radio.core.block')
 local types = require('radio.types')
+local blocks = require('radio.blocks')
 
-local CompositeBlock = require('radio.core.composite').CompositeBlock
-local FrequencyTranslatorBlock = require('radio.blocks.signal.frequencytranslator').FrequencyTranslatorBlock
-local LowpassFilterBlock = require('radio.blocks.signal.lowpassfilter').LowpassFilterBlock
-local DownsamplerBlock = require('radio.blocks.signal.downsampler').DownsamplerBlock
-
-local TunerBlock = block.factory("TunerBlock", CompositeBlock)
+local TunerBlock = block.factory("TunerBlock", blocks.CompositeBlock)
 
 function TunerBlock:instantiate(offset, bandwidth, decimation, options)
-    CompositeBlock.instantiate(self)
+    blocks.CompositeBlock.instantiate(self)
 
     options = options or {}
 
-    local translator = FrequencyTranslatorBlock(offset)
-    local filter = LowpassFilterBlock(options.num_taps or 128, bandwidth/2, options.window)
-    local downsampler = DownsamplerBlock(decimation)
+    local translator = blocks.FrequencyTranslatorBlock(offset)
+    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, bandwidth/2, options.window)
+    local downsampler = blocks.DownsamplerBlock(decimation)
     self:connect(translator, filter, downsampler)
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})

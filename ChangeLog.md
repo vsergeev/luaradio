@@ -1,3 +1,37 @@
+* (Prototype) v0.0.11 - 04/01/2016
+    * Fix execution of composite blocks with intermediate sinks.
+    * Add support for aliasing a composite block input to multiple block inputs.
+    * Add vector_from_array() vector constructor to ObjectType.
+    * Move bits_to_number() helper function to BitType.tonumber() static method.
+    * Simplify DecimatorBlock, InterpolatorBlock, RationalResamplerBlock constructors.
+    * Fix scaling in InterpolatorBlock and RationalResamplerBlock.
+    * Fix low pass filter cutoff in TunerBlock.
+    * Fix output data type in FloatToComplexBlock type signature.
+    * Fix output data type in RawFileSource type signature.
+    * Fix size type bug in RawFileSource.
+    * Fix file repeat in WAVFileSource.
+    * Add RF gain and frequency correction options to RtlSdrSource.
+    * Add magnitude reference level option to GnuplotSpectrumSink.
+    * Add min/max magnitude options to GnuplotWaterfallSink.
+    * Disable file stream buffering in RawFileSink, JSONSink, and PrintSink.
+    * Add filename and file descriptor support to PrintSink.
+    * Add invert option to DifferentialDecoderBlock.
+    * Normalize passband gain to 1.0 in FIR window design functions.
+    * Add support for specifying a normalized nyquist frequency to filter blocks.
+    * Add support for complex taps to FIRFilterBlock.
+    * Add complex bandpass and bandstop FIR window design functions.
+    * Add new signal blocks:
+        * ComplexBandpassFilterBlock
+        * ComplexBandstopFilterBlock
+        * ComplexConjugateBlock
+        * ZeroCrossingClockRecoveryBlock
+    * Add new sink blocks:
+        * PortAudioSink
+    * Improve unit tests.
+    * Add composite block unit tests.
+    * Improve namespacing with package inits for blocks and composites.
+    * Simplify block imports in composite blocks.
+
 * (Prototype) v0.0.10 - 03/10/2016
     * Add abs_squared() method to ComplexFloat32Type.
     * Add cosine, sine, square, triangle, sawtooth, and constant real signals to SignalSource.

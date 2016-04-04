@@ -23,7 +23,7 @@ local RDS_CORRECT_MESSAGE = {
     [0x303] = 0x0002000, [0x35d] = 0x0001000, [0x372] = 0x0000800, [0x1b9] = 0x0000400,
 }
 
-local RDS_CORRECT_CODE_WORD = {
+local RDS_CORRECT_CODEWORD = {
     [0x001] = true, [0x002] = true, [0x004] = true, [0x008] = true,
     [0x010] = true, [0x020] = true, [0x040] = true, [0x080] = true,
     [0x100] = true, [0x200] = true,
@@ -68,7 +68,7 @@ RDSFrameBlock.RDSFrameType = RDSFrameType
 local function rds_correct_block(block_bits, offset_word)
     -- Block bits layout:
     -- MMMM MMMM MMMM MMMM CC CCCC CCCC
-    -- 26-bits = 16-bits message + 10-bits code word
+    -- 26-bits block = 16-bits message + 10-bits code word
 
     -- Reconstruct block bits from received message bits and code matrix
     local block_bits_expected = 0
@@ -76,7 +76,7 @@ local function rds_correct_block(block_bits, offset_word)
     for i=0,15 do
         -- If message bit i is set
         if bit.band(block_bits, bit.lshift(1, 10+i)) ~= 0 then
-            -- Add in the code matrix row corresponding to this message bit
+            -- XOR in the code matrix row corresponding to this message bit
             block_bits_expected = bit.bxor(block_bits_expected, RDS_CODE_MATRIX[i])
         end
     end
@@ -105,7 +105,7 @@ local function rds_correct_block(block_bits, offset_word)
 
     -- If there is a single bit error in the code word, correct it and return
     -- the corrected bits
-    if RDS_CORRECT_CODE_WORD[crc_error] then
+    if RDS_CORRECT_CODEWORD[crc_error] then
         -- Return block bits expected with the corrected code word
         return block_bits_expected
     end
@@ -119,26 +119,25 @@ function RDSFrameBlock:process(x)
     local i = 0
 
     while i < x.length do
-        -- Advance our frame buffer
+        -- Shift in as many bits as we can into the frame buffer
         if self.rds_frame_length < RDS_FRAME_LEN then
-            -- Calculate the maximum number of bits we can shift
+            -- Calculate the maximum number of bits we can shift from x
             local n = math.min(RDS_FRAME_LEN - self.rds_frame_length, x.length-i)
 
-            -- Shift in as many bits as possible from x
             ffi.C.memcpy(self.rds_frame.data[self.rds_frame_length], x.data[i], n*ffi.sizeof(self.rds_frame.data[0]))
             i, self.rds_frame_length = i + n, self.rds_frame_length + n
         elseif self.rds_frame_length == RDS_FRAME_LEN then
-            -- Shift state down by 1 bit
+            -- Shift frame buffer down by one bit
             ffi.C.memmove(self.rds_frame.data[0], self.rds_frame.data[1], (RDS_FRAME_LEN-1)*ffi.sizeof(self.rds_frame.data[0]))
 
-            -- Shift in 1 bit from x
+            -- Shift in one bit from x
             self.rds_frame.data[RDS_FRAME_LEN-1] = x.data[i]
             i = i + 1
         end
 
         -- Try to validate the frame
         if self.rds_frame_length == RDS_FRAME_LEN then
-            -- Extract blocks as numbers
+            -- Convert block bits to numbers
             local block_a = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*0, RDS_BLOCK_LEN)
             local block_b = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*1, RDS_BLOCK_LEN)
             local block_c = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*2, RDS_BLOCK_LEN)
@@ -150,26 +149,26 @@ function RDSFrameBlock:process(x)
             correct_block_c = rds_correct_block(block_c, RDS_OFFSET_WORDS.C) or rds_correct_block(block_c, RDS_OFFSET_WORDS.Cp)
             correct_block_d = rds_correct_block(block_d, RDS_OFFSET_WORDS.D)
 
+            -- If we have a correct RDS frame
             if correct_block_a and correct_block_b and correct_block_c and correct_block_d then
+                -- Extract the 16 data bits from each block
+                local data_a = bit.rshift(correct_block_a, 10)
+                local data_b = bit.rshift(correct_block_b, 10)
+                local data_c = bit.rshift(correct_block_c, 10)
+                local data_d = bit.rshift(correct_block_d, 10)
+
                 -- Add the frame to our output buffer
-                local frame = RDSFrameType({{
-                                    bit.rshift(correct_block_a, 10),
-                                    bit.rshift(correct_block_b, 10),
-                                    bit.rshift(correct_block_c, 10),
-                                    bit.rshift(correct_block_d, 10)
-                              }})
+                local frame = RDSFrameType({{data_a, data_b, data_c, data_d}})
                 out:append(frame)
 
-                -- Set synchronized and reset frame length
+                -- Set synchronized and reset frame buffer
                 self.synchronized = true
                 self.rds_frame_length = 0
             else
-                -- If we were synchronized just now
+                -- If we lost synchronization
                 if self.synchronized then
                     io.stderr:write(string.format("[RDSFrameBlock] Lost sync!     [ 0x%07x ] [ 0x%07x ] [ 0x%07x ] [ 0x%07x ]\n", block_a, block_b, block_c, block_d))
-                    local function tobool(x) return x and true or false end
-                    io.stderr:write(string.format("[RDSFrameBlock]                [ %-9s ] [ %-9s ] [ %-9s ] [ %-9s ]\n", tobool(correct_block_a), tobool(correct_block_b), tobool(correct_block_c), tobool(correct_block_d)))
-
+                    io.stderr:write(string.format("[RDSFrameBlock]                [ %-9s ] [ %-9s ] [ %-9s ] [ %-9s ]\n", correct_block_a ~= false, correct_block_b ~= false, correct_block_c ~= false, correct_block_d ~= false))
                     self.synchronized = false
                 end
             end

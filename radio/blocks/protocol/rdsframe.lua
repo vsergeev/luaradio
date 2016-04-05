@@ -9,28 +9,36 @@ local types = require('radio.types')
 local RDS_FRAME_LEN = 104
 local RDS_BLOCK_LEN = 26
 
-local RDS_CODE_MATRIX = {
-    [15] = 0x2000077, [14] = 0x10002e7, [13] = 0x08003af, [12] = 0x040030b,
-    [11] = 0x0200359, [10] = 0x0100370, [ 9] = 0x00801b8, [ 8] = 0x00400dc,
-    [ 7] = 0x002006e, [ 6] = 0x0010037, [ 5] = 0x00082c7, [ 4] = 0x00043bf,
-    [ 3] = 0x0002303, [ 2] = 0x000135d, [ 1] = 0x0000b72, [ 0] = 0x00005b9,
+-- Non-linear offset words, used to distinguish blocks
+local RDS_OFFSET_WORDS = {
+    A = 0x0fc, B = 0x198, C = 0x168, Cp = 0x350, D = 0x1b4,
 }
 
-local RDS_CORRECT_MESSAGE = {
+-- Parity check matrix H transpose
+--   (26x10) H^T = | P |  (16 x 10)
+--                 | I |  (10 x 10)
+local RDS_PARITY_CHECK_MATRIX = {
+    [0x0000000] = 0x000,
+    [0x2000000] = 0x077, [0x1000000] = 0x2e7, [0x0800000] = 0x3af, [0x0400000] = 0x30b,
+    [0x0200000] = 0x359, [0x0100000] = 0x370, [0x0080000] = 0x1b8, [0x0040000] = 0x0dc,
+    [0x0020000] = 0x06e, [0x0010000] = 0x037, [0x0008000] = 0x2c7, [0x0004000] = 0x3bf,
+    [0x0002000] = 0x303, [0x0001000] = 0x35d, [0x0000800] = 0x372, [0x0000400] = 0x1b9,
+    [0x0000200] = 0x200, [0x0000100] = 0x100, [0x0000080] = 0x080, [0x0000040] = 0x040,
+    [0x0000020] = 0x020, [0x0000010] = 0x010, [0x0000008] = 0x008, [0x0000004] = 0x004,
+    [0x0000002] = 0x002, [0x0000001] = 0x001,
+}
+
+-- Correction matrix for single bit correction
+-- Mapping of syndrome to bit error position
+local RDS_CORRECT_MATRIX = {
+    [0x000] = 0x0000000,
     [0x077] = 0x2000000, [0x2e7] = 0x1000000, [0x3af] = 0x0800000, [0x30b] = 0x0400000,
     [0x359] = 0x0200000, [0x370] = 0x0100000, [0x1b8] = 0x0080000, [0x0dc] = 0x0040000,
     [0x06e] = 0x0020000, [0x037] = 0x0010000, [0x2c7] = 0x0008000, [0x3bf] = 0x0004000,
     [0x303] = 0x0002000, [0x35d] = 0x0001000, [0x372] = 0x0000800, [0x1b9] = 0x0000400,
-}
-
-local RDS_CORRECT_CODEWORD = {
-    [0x001] = true, [0x002] = true, [0x004] = true, [0x008] = true,
-    [0x010] = true, [0x020] = true, [0x040] = true, [0x080] = true,
-    [0x100] = true, [0x200] = true,
-}
-
-local RDS_OFFSET_WORDS = {
-    A = 0x0fc, B = 0x198, C = 0x168, Cp = 0x350, D = 0x1b4,
+    [0x200] = 0x0000200, [0x100] = 0x0000100, [0x080] = 0x0000080, [0x040] = 0x0000040,
+    [0x020] = 0x0000020, [0x010] = 0x0000010, [0x008] = 0x0000008, [0x004] = 0x0000004,
+    [0x002] = 0x0000002, [0x001] = 0x0000001,
 }
 
 -- RDS Frame Type
@@ -67,50 +75,35 @@ RDSFrameBlock.RDSFrameType = RDSFrameType
 
 local function rds_correct_block(block_bits, offset_word)
     -- Block bits layout:
-    -- MMMM MMMM MMMM MMMM CC CCCC CCCC
-    -- 26-bits block = 16-bits message + 10-bits code word
+    --  MMMM MMMM MMMM MMMM CC CCCC CCCC
+    -- 26-bits block = 16-bits message + 10-bits error correcting code
 
-    -- Reconstruct block bits from received message bits and code matrix
-    local block_bits_expected = 0
+    -- Subtract offset word
+    local block_bits_received = bit.bxor(block_bits, offset_word)
 
-    for i=0,15 do
-        -- If message bit i is set
-        if bit.band(block_bits, bit.lshift(1, 10+i)) ~= 0 then
-            -- XOR in the code matrix row corresponding to this message bit
-            block_bits_expected = bit.bxor(block_bits_expected, RDS_CODE_MATRIX[i])
-        end
+    -- Compute syndrome (transpose)
+    --  s^T = (H x)^T = x^T H^T
+    local syndrome = 0
+    for i = 25, 0, -1 do
+        local mask = bit.band(block_bits_received, bit.lshift(1, i))
+        syndrome = bit.bxor(syndrome, RDS_PARITY_CHECK_MATRIX[mask])
     end
 
-    -- Add offset word
-    block_bits_expected = bit.bxor(block_bits_expected, offset_word)
-
-    -- Compute CRC error
-    local crc_error = bit.bxor(bit.band(block_bits_expected, 0x3ff), bit.band(block_bits, 0x3ff))
-
-    -- If there is no error, return the original block bits
-    if crc_error == 0 then
+    -- If the syndrome is zero, there is no error and return the original block
+    -- bits
+    if syndrome == 0 then
         return block_bits
     end
 
-    -- If there is a single bit error in the message, correct it and return the
+    -- If there is a single correctable bit error, correct it and return the
     -- corrected bits
-    if RDS_CORRECT_MESSAGE[crc_error] then
-        -- Correct message bit
-        block_bits_expected = bit.bxor(block_bits_expected, RDS_CORRECT_MESSAGE[crc_error])
-        -- Correct code word
-        block_bits_expected = bit.bxor(block_bits_expected, crc_error)
-
-        return block_bits_expected
+    if RDS_CORRECT_MATRIX[syndrome] then
+        return bit.bxor(block_bits, RDS_CORRECT_MATRIX[syndrome])
     end
 
-    -- If there is a single bit error in the code word, correct it and return
-    -- the corrected bits
-    if RDS_CORRECT_CODEWORD[crc_error] then
-        -- Return block bits expected with the corrected code word
-        return block_bits_expected
-    end
+    -- FIXME implement >1 bit error correction
 
-    -- If the block is erroneous and uncorrectable, return false
+    -- If the block is uncorrectable, return false
     return false
 end
 

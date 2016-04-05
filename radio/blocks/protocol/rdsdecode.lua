@@ -10,9 +10,8 @@ local RDSFrameType = require('radio.blocks.protocol.rdsframe').RDSFrameType
 
 local RDSPacketType = types.ObjectType.factory()
 
-function RDSPacketType.new(frame, header, data)
+function RDSPacketType.new(header, data)
     local self = setmetatable({}, RDSPacketType)
-    self.frame = frame
     self.header = header
     self.data = data
     return self
@@ -20,40 +19,73 @@ end
 
 -- RDS Frame Decoders
 
-local function rds_decode_basic_tuning(version, frame)
-    -- Traffic announce flag = block2[4]
-    local traffic_announce_flag = bit.band(frame[2], 0x10) ~= 0 and true or false
-    -- Music/speech switch flag = block2[3]
-    local music_speech_flag = bit.band(frame[2], 0x08) ~= 0 and true or false
-    -- Text address = block2[1:0]
-    local text_address = bit.band(frame[2], 0x03)
-    -- Decoder identification bit = block2[2]
-    local decoder_identification = {position = 3-text_address, value = bit.band(frame[2], 0x04) ~= 0 and true or false}
-    -- Alternative frequencies (present in version 0) = block3[15:8], block3[7:0]
-    local alternate_frequencies = (version == 0) and {bit.rshift(frame[3], 8), bit.band(frame[3], 0xff)} or nil
-    -- Text = block4[15:8], block4[7:0]
-    local text_data = string.char(bit.rshift(frame[4], 8), bit.band(frame[4], 0xff))
+local function rds_decode_header(frame)
+    -- See RDS Standard 2.2, pg. 13
+
+    -- Program Identification code = blocks[0][15:0]
+    local pi_code = frame.blocks[0]
+    -- Group code = blocks[1][15:12]
+    local group_code = bit.rshift(frame.blocks[1], 12)
+    -- Group version = blocks[1][11]
+    local group_version = bit.band(bit.rshift(frame.blocks[1], 11), 0x1)
+    -- Traffic program code = blocks[1][10]
+    local tp_code = bit.band(bit.rshift(frame.blocks[1], 10), 0x1)
+    -- Program type code = blocks[1][9:5]
+    local pty_code = bit.band(bit.rshift(frame.blocks[1], 5), 0x1f)
 
     return {
-        type = 'basictuning',
-        traffic_announce_flag = traffic_announce_flag,
-        music_speech_flag = music_speech_flag,
-        decoder_identification = decoder_identification,
-        alternate_frequencies = alternate_frequencies,
-        text_address = text_address,
-        text_data = text_data
+        pi_code = pi_code,
+        group_code = group_code,
+        group_version = group_version,
+        tp_code = tp_code,
+        pty_code = pty_code,
     }
 end
 
-local function rds_decode_radiotext(version, frame)
-    -- A/B flag = block2[4]
-    local ab_flag = bit.band(frame[2], 0x10) ~= 0 and true or false
-    -- Text address = block2[3:0]
-    local text_address = bit.band(frame[2], 0x0f)
-    -- Text (4 characters for version 0, 2 characters for version 1)
-    local text_data = (version == 0) and
-                   string.char(bit.rshift(frame[3], 8), bit.band(frame[3], 0xff), bit.rshift(frame[4], 8), bit.band(frame[4], 0xff))
-                   or string.char(bit.rshift(frame[4], 8), bit.band(frame[4], 0xff))
+local function rds_decode_basic_tuning(header, frame)
+    -- See RDS Standard 3.1.5.1, pg. 21
+
+    -- Traffic announce code = blocks[1][4]
+    local ta_code = bit.band(bit.rshift(frame.blocks[1], 4), 0x1)
+    -- Music/speech switch code = blocks[1][3]
+    local ms_code = bit.band(bit.rshift(frame.blocks[1], 3), 0x1)
+    -- Text address = blocks[1][1:0]
+    local text_address = bit.band(frame.blocks[1], 0x3)
+    -- Decoder identification position = ~text address
+    local di_position = 3-text_address
+    -- Decoder identification bit value = blocks[1][2]
+    local di_value = bit.band(bit.rshift(frame.blocks[1], 2), 0x1)
+    -- Alternative frequencies code = blocks[2][15:8], blocks[2][7:0] (present in version 0 only)
+    local af_code = (header.group_version == 0) and {bit.rshift(frame.blocks[2], 8), bit.band(frame.blocks[2], 0xff)} or nil
+    -- Text = blocks[3][15:8], blocks[3][7:0]
+    local text_data = string.char(bit.rshift(frame.blocks[3], 8), bit.band(frame.blocks[3], 0xff))
+
+    return {
+        type = 'basictuning',
+        ta_code = ta_code,
+        ms_code = ms_code,
+        di_position = di_position,
+        di_value = di_value,
+        af_code = af_code,
+        text_address = text_address,
+        text_data = text_data,
+    }
+end
+
+local function rds_decode_radiotext(header, frame)
+    -- See RDS Standard 3.1.5.3, pg. 25
+
+    -- A/B flag = blocks[1][4]
+    local ab_flag = bit.band(bit.rshift(frame.blocks[1], 4), 0x1)
+    -- Text address = blocks[1][3:0]
+    local text_address = bit.band(frame.blocks[1], 0x0f)
+    -- Text data = 4 characters for version 0, 2 characters for version 1
+    local text_data
+    if header.group_version == 0 then
+        text_data = string.char(bit.rshift(frame.blocks[2], 8), bit.band(frame.blocks[2], 0xff), bit.rshift(frame.blocks[3], 8), bit.band(frame.blocks[3], 0xff))
+    else
+        text_data = string.char(bit.rshift(frame.blocks[3], 8), bit.band(frame.blocks[3], 0xff))
+    end
 
     return {
         type = 'radiotext',
@@ -63,23 +95,23 @@ local function rds_decode_radiotext(version, frame)
     }
 end
 
-local function rds_decode_datetime(version, frame)
+local function rds_decode_datetime(header, frame)
     -- See RDS Standard 3.1.5.6, pg. 28
-    -- Modified Julian Day code = block2[1:0], block3[15:1]
-    local mjd = bit.bor(bit.lshift(bit.band(frame[2], 0x3), 15), bit.rshift(bit.band(frame[3], 0xfffe), 1))
-    -- Hour = frame3[0], frame4[15:12]
-    local hour = bit.bor(bit.lshift(bit.band(frame[3], 0x1), 4), bit.rshift(bit.band(frame[4], 0xf000), 12))
-    -- Minute = frame4[11:6]
-    local minute = bit.band(bit.rshift(frame[4], 6), 0x3f)
-    -- Offset = frame4[5:0]
-    local offset = bit.band(frame[4], 0x3f)
+
+    -- Modified Julian Day code = blocks[1][1:0], blocks[2][15:1]
+    local mjd = bit.bor(bit.lshift(bit.band(frame.blocks[1], 0x3), 15), bit.rshift(bit.band(frame.blocks[2], 0xfffe), 1))
+    -- Hour = blocks[2][0], blocks[3][15:12]
+    local hour = bit.bor(bit.lshift(bit.band(frame.blocks[2], 0x1), 4), bit.rshift(bit.band(frame.blocks[3], 0xf000), 12))
+    -- Minute = blocks[3][11:6]
+    local minute = bit.band(bit.rshift(frame.blocks[3], 6), 0x3f)
+    -- Offset = blocks[3][5:0]
+    local offset = bit.band(frame.blocks[3], 0x3f)
 
     -- Convert offset to signed hours
     offset = (bit.band(offset, 0x20) ~= 0) and -bit.band(offset, 0x1f) or bit.band(offset, 0x1f)
     offset = offset * 0.5
 
-    -- See RDS Standard Annex G, pg. 81
-    -- Convert MJD to year, month, day
+    -- Convert MJD to year, month, day (RDS Standard Annex G, pg. 81)
     local yp = math.floor((mjd - 15078.2)/365.25)
     local mp = math.floor((mjd - 14956.1 - math.floor(yp * 365.25)) / 30.6001)
     local k = (mp == 14 or mp == 15) and 1 or 0
@@ -94,34 +126,6 @@ local function rds_decode_datetime(version, frame)
     }
 end
 
--- RDS Frame Decoder table
-
-local function rds_decoder_index(group, version)
-    return group*2 + version
-end
-
-local rds_decoder_table = {
-    [rds_decoder_index(0x0, 0)] = rds_decode_basic_tuning,
-    [rds_decoder_index(0x0, 1)] = rds_decode_basic_tuning,
-    [rds_decoder_index(0x2, 0)] = rds_decode_radiotext,
-    [rds_decoder_index(0x2, 1)] = rds_decode_radiotext,
-    [rds_decoder_index(0x4, 0)] = rds_decode_datetime,
-}
-
--- RDS Program Type Table
-
--- See RDS Standard Annex F, pg. 95
-local RDS_PTY_TABLE = {
-    [0] = "None", [1] = "News", [2] = "Information", [3] = "Sports",
-    [4] = "Talk", [5] = "Rock", [6] = "Classic Rock", [7] = "Adult Hits",
-    [8] = "Soft Rock", [9] = "Top 40", [10] = "Country", [11] = "Oldies",
-    [12] = "Soft", [13] = "Nostalgia", [14] = "Jazz", [15] = "Classical",
-    [16] = "Rhythm and Blues", [17] = "Soft Rhythm and Blues", [18] = "Foreign Language",
-    [19] = "Religious Music", [20] = "Religious Talk", [21] = "Personality", [22] = "Public",
-    [23] = "College", [24] = "Unassigned", [25] = "Unassigned", [26] = "Unassigned",
-    [27] = "Unassigned", [28] = "Unassigned", [29] = "Weather", [30] = "Emergency Test",
-}
-
 -- RDS Decode Block
 
 local RDSDecodeBlock = block.factory("RDSDecodeBlock")
@@ -134,33 +138,27 @@ function RDSDecodeBlock:process(x)
     local out = RDSPacketType.vector()
 
     for i = 0, x.length-1 do
-        -- Extract frame blocks
-        local frame = {x.data[i].blocks[0], x.data[i].blocks[1], x.data[i].blocks[2], x.data[i].blocks[3]}
-        io.stderr:write(tostring(x.data[i]) .. "\n")
-
-        -- Extract header
-        local header = {
-            -- Program Identification Code = block1[15:0]
-            pi = frame[1],
-            -- Group type code = block2[15:12]
-            group = bit.rshift(frame[2], 12),
-            -- Version code = block2[11]
-            version = bit.band(bit.rshift(frame[2], 11), 0x1),
-            -- Traffic program code = block2[10]
-            tp = bit.band(frame[2], 0x400) ~= 0 and true or false,
-            -- Program type code = block2[9:5]
-            pty_code = bit.band(bit.rshift(frame[2], 5), 0x1f),
-        }
-        -- Look up the program type
-        header.pty = RDS_PTY_TABLE[header.pty_code]
+        -- Decode header
+        local header = rds_decode_header(x.data[i])
 
         -- Decode data
-        local index = rds_decoder_index(header.group, header.version)
-        local data = rds_decoder_table[index] and rds_decoder_table[index](header.version, frame) or nil
+        local data
+        if header.group_code == 0x0 then
+            data = rds_decode_basic_tuning(header, x.data[i])
+        elseif header.group_code == 0x2 then
+            data = rds_decode_radiotext(header, x.data[i])
+        elseif header.group_code == 0x4 and header.group_version == 0 then
+            data = rds_decode_datetime(header, x.data[i])
+        else
+            -- Unsupported group/version, so return the raw frame
+            data = {
+                type = 'raw',
+                frame = {x.data[i].blocks[0], x.data[i].blocks[1], x.data[i].blocks[2], x.data[i].blocks[3]},
+            }
+        end
 
-        -- Assemble packet
-        local packet = RDSPacketType(frame, header, data)
-        out:append(packet)
+        -- Emit the decoded frame
+        out:append(RDSPacketType(header, data))
     end
 
     return out

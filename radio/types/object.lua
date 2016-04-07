@@ -135,7 +135,7 @@ end
 ObjectVector = object.class_factory()
 
 function ObjectVector.new(type, num)
-    return setmetatable({data = {}, length = 0, size = 0, type = type}, ObjectVector)
+    return setmetatable({data = {}, length = num or 0, size = 0, type = type}, ObjectVector)
 end
 
 function ObjectVector:resize(num)

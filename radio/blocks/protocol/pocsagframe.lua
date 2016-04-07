@@ -6,7 +6,7 @@ local types = require('radio.types')
 
 -- POCSAG Related constants
 
-local POCSAGFramerState = { IDLE = 1, FRAME_SYNC = 2, BATCH = 3 }
+local POCSAGFramerState = { FRAME_SYNC = 1, BATCH = 2 }
 
 local POCSAG_PREAMBLE_LENGTH = 576
 local POCSAG_BATCH_LENGTH = 544
@@ -73,10 +73,9 @@ local POCSAGFrameBlock = block.factory("POCSAGFrameBlock")
 
 function POCSAGFrameBlock:instantiate()
     -- Raw frame buffer
-    self.buffer = types.BitType.vector(POCSAG_PREAMBLE_LENGTH)
+    self.buffer = types.BitType.vector(POCSAG_BATCH_LENGTH)
     self.buffer_length = 0
-    self.state = POCSAGFramerState.IDLE
-    self.frame_sync_search_count = 0
+    self.state = POCSAGFramerState.FRAME_SYNC
 
     -- Current frame
     self.frame = nil
@@ -125,35 +124,15 @@ function POCSAGFrameBlock:process(x)
 
     while i < x.length do
         -- Shift in as many bits as we can into the frame buffer
-        if self.buffer_length < POCSAG_PREAMBLE_LENGTH then
+        if self.buffer_length < POCSAG_BATCH_LENGTH then
             -- Calculate the maximum number of bits we can shift
-            local n = math.min(POCSAG_PREAMBLE_LENGTH - self.buffer_length, x.length-i)
+            local n = math.min(POCSAG_BATCH_LENGTH - self.buffer_length, x.length-i)
 
             ffi.C.memcpy(self.buffer.data[self.buffer_length], x.data[i], n*ffi.sizeof(self.buffer.data[0]))
             i, self.buffer_length = i + n, self.buffer_length + n
         end
 
-        if self.state == POCSAGFramerState.IDLE and self.buffer_length == POCSAG_PREAMBLE_LENGTH then
-            -- Compute the correlation of buffer with preamble
-            local corr = 0
-            for i = 0, POCSAG_PREAMBLE_LENGTH-1 do
-                local preamble_value = ((i+1) % 2)
-                corr = corr + (2*preamble_value - 1) * (2*self.buffer.data[i].value - 1)
-            end
-
-            -- If correlation is over 568 / 576, preamble is detected
-            -- This allows for up to 4 bit errors.
-            if corr >= 568 then
-                io.stderr:write(string.format('[POCSAGFrameBlock] Preamble detected with correlation %d/576\n', corr))
-                self.state = POCSAGFramerState.FRAME_SYNC
-                self.frame_sync_search_count = 0
-                self.buffer_length = 0
-            else
-                -- Shift buffer one bit down
-                ffi.C.memmove(self.buffer.data, self.buffer.data[1], self.buffer_length - 1)
-                self.buffer_length = self.buffer_length - 1
-            end
-        elseif self.state == POCSAGFramerState.FRAME_SYNC and self.buffer_length >= POCSAG_CODEWORD_LENGTH then
+        if self.state == POCSAGFramerState.FRAME_SYNC and self.buffer_length >= POCSAG_CODEWORD_LENGTH then
             -- Compute the correlation of frame buffer with frame sync codeword
             local corr = 0
             for i = 0, 32-1 do
@@ -166,19 +145,10 @@ function POCSAGFrameBlock:process(x)
                 io.stderr:write(string.format('[POCSAGFrameBlock] Frame sync codeword detected with correlation %d/32\n', corr))
                 -- Switch to batch state
                 self.state = POCSAGFramerState.BATCH
-            elseif self.frame_sync_search_count >= POCSAG_BATCH_LENGTH then
-                -- If we've examined an entire batch length worth of bits,
-                -- without encountering the frame sync codeword, give up on
-                -- finding the sync and switch back to idle
-                io.stderr:write("[POCSAGFrameBlock] Frame sync codeword not detected, going idle\n")
-                self.state = POCSAGFramerState.IDLE
             else
                 -- Shift frame buffer down by one bit
                 ffi.C.memmove(self.buffer.data, self.buffer.data[1], self.buffer_length - 1)
                 self.buffer_length = self.buffer_length - 1
-
-                -- Increment our frame sync search bit count
-                self.frame_sync_search_count = self.frame_sync_search_count + 1
             end
         elseif self.state == POCSAGFramerState.BATCH and self.buffer_length >= POCSAG_BATCH_LENGTH then
             -- Check for frame sync codeword
@@ -193,9 +163,9 @@ function POCSAGFrameBlock:process(x)
                     self.frame = nil
                 end
 
-                -- Switch back to idle, looking for a preamble
+                -- Switch back to frame sync state
                 io.stderr:write(string.format('[POCSAGFrameBlock] End of frame (invalid frame sync codeword %s)\n', bit.tohex(codeword)))
-                self.state = POCSAGFramerState.IDLE
+                self.state = POCSAGFramerState.FRAME_SYNC
                 goto continue
             end
 

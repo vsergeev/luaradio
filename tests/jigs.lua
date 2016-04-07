@@ -91,9 +91,8 @@ local function TestBlock(block_class, vectors, options)
                     -- Assemble single sample input vectors
                     local single_sample_inputs = {}
                     for i=1, #test_vector.inputs do
-                        local data_type = test_vector.inputs[i].type
-                        local sample = test_vector.inputs[i].data[sample_index]
-                        single_sample_inputs[i] = data_type.vector_from_array({sample})
+                        single_sample_inputs[i] = test_vector.inputs[i].type.vector()
+                        single_sample_inputs[i]:append(test_vector.inputs[i].data[sample_index])
                     end
 
                     -- Run process on single sample input vectors

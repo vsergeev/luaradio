@@ -6,6 +6,7 @@ local object = require('radio.core.object')
 local block = require('radio.core.block')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
+local debug = require('radio.core.debug')
 
 local CompositeBlock = block.factory("CompositeBlock")
 
@@ -79,7 +80,7 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
             -- Update our connections table
             self._connections[dst_pipes[i]] = src_pipe
 
-            io.stderr:write(string.format("Connected source %s.%s to destination %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name))
+            debug.printf("[CompositeBlock] Connected source %s.%s to destination %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name)
         end
     else
         -- Otherwise, we are aliasing an input or output of a composite block
@@ -92,13 +93,13 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
             -- If we are aliasing a composite block input to a concrete block input
 
             alias_pipe.real_inputs[#alias_pipe.real_inputs + 1] = target_pipe
-            io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name))
+            debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
         elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(target_pipe, pipe.PipeOutput) then
             -- If we are aliasing a composite block output to a concrete block output
 
             assert(not alias_pipe.real_output, "Aliased output already connected.")
             alias_pipe.real_output = target_pipe
-            io.stderr:write(string.format("Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name))
+            debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
         elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and object.isinstanceof(target_pipe, pipe.AliasedPipeInput) then
             -- If we are aliasing a composite block input to a composite block input
 
@@ -106,13 +107,13 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
             for i = 1, #target_pipe.real_inputs do
                 alias_pipe.real_inputs[#alias_pipe.real_inputs + 1] = target_pipe.real_inputs[i]
             end
-            io.stderr:write(string.format("Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name))
+            debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
         elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(target_pipe, pipe.AliasedPipeOutput) then
             -- If we are aliasing a composite block output to a composite block output
 
             assert(not alias_pipe.real_output, "Aliased output already connected.")
             alias_pipe.real_output = target_pipe.real_output
-            io.stderr:write(string.format("Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name))
+            debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
         else
             error("Malformed pipe connection.")
         end
@@ -342,10 +343,10 @@ function CompositeBlock:_prepare_to_run()
         pipe_input.pipe:initialize()
     end
 
-    io.stderr:write("Execution order:\n")
+    debug.print("[CompositeBlock] Execution order:")
     for _, k in ipairs(execution_order) do
-        local s = string.gsub(tostring(k), "\n", "\n\t")
-        io.stderr:write("\t" .. s .. "\n")
+        local s = string.gsub(tostring(k), "\n", "\n[CompositeBlock]\t")
+        debug.print("[CompositeBlock]\t" .. s)
     end
 
     return all_connections, execution_order
@@ -419,7 +420,7 @@ function CompositeBlock:start(multiprocess)
             -- Check for SIGINT
             assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
             if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
-                io.stderr:write("Received SIGINT. Shutting down...\n")
+                debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
                 running = false
             end
         end
@@ -509,10 +510,10 @@ function CompositeBlock:wait()
             assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
 
             if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
-                io.stderr:write("Received SIGINT. Shutting down...\n")
+                debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
                 break
             elseif ffi.C.sigismember(sigset, ffi.C.SIGCHLD) == 1 then
-                io.stderr:write("Child exited. Shutting down...\n")
+                debug.print("[CompositeBlock] Child exited. Shutting down...")
                 break
             end
         end

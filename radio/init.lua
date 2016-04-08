@@ -1,3 +1,5 @@
+assert(pcall(require, 'ffi') and pcall(require, 'jit'), 'Error: LuaRadio requires LuaJIT.')
+
 local M = {
     -- Core modules
     platform = require('radio.core.platform'),

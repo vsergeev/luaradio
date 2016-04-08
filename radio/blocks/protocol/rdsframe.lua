@@ -2,6 +2,7 @@ local ffi = require('ffi')
 local bit = require('bit')
 
 local block = require('radio.core.block')
+local debug = require('radio.core.debug')
 local types = require('radio.types')
 
 -- RDS Related constants
@@ -160,8 +161,8 @@ function RDSFrameBlock:process(x)
             else
                 -- If we lost synchronization
                 if self.synchronized then
-                    io.stderr:write(string.format("[RDSFrameBlock] Lost sync!     [ 0x%07x ] [ 0x%07x ] [ 0x%07x ] [ 0x%07x ]\n", block_a, block_b, block_c, block_d))
-                    io.stderr:write(string.format("[RDSFrameBlock]                [ %-9s ] [ %-9s ] [ %-9s ] [ %-9s ]\n", correct_block_a ~= false, correct_block_b ~= false, correct_block_c ~= false, correct_block_d ~= false))
+                    debug.printf("[RDSFrameBlock] Lost sync!     [ 0x%07x ] [ 0x%07x ] [ 0x%07x ] [ 0x%07x ]\n", block_a, block_b, block_c, block_d)
+                    debug.printf("[RDSFrameBlock]                [ %-9s ] [ %-9s ] [ %-9s ] [ %-9s ]\n", correct_block_a ~= false, correct_block_b ~= false, correct_block_c ~= false, correct_block_d ~= false)
                     self.synchronized = false
                 end
             end

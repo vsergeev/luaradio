@@ -2,6 +2,7 @@ local ffi = require('ffi')
 local bit = require('bit')
 
 local block = require('radio.core.block')
+local debug = require('radio.core.debug')
 local types = require('radio.types')
 
 -- AX25 Related Constants
@@ -199,7 +200,7 @@ function AX25FrameBlock:process(x)
                 local frame = ax25_validate_frame(unstuffed_frame) and ax25_extract_frame(unstuffed_frame)
 
                 if frame then
-                    io.stderr:write(string.format('[AX25FrameBlock] Valid frame detected, length %d bytes\n', unstuffed_frame.length/8 - 4))
+                    debug.printf('[AX25FrameBlock] Valid frame detected, length %d bytes\n', unstuffed_frame.length/8 - 4)
 
                     -- Emit the frame
                     out:append(frame)

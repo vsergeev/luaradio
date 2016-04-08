@@ -46,9 +46,6 @@ NUMPY_VECTOR_TYPE = {
     numpy.bool_: "radio.BitType.vector_from_array({%s})",
 }
 
-class CustomVector(object):
-    pass
-
 def serialize(x):
     if isinstance(x, list):
         t = [serialize(e) for e in x]
@@ -56,8 +53,6 @@ def serialize(x):
     elif isinstance(x, numpy.ndarray):
         t = [NUMPY_SERIALIZE_TYPE[type(x[0])](e) for e in x]
         return NUMPY_VECTOR_TYPE[type(x[0])] % ", ".join(t)
-    elif isinstance(x, CustomVector):
-        return x.serialize()
     elif isinstance(x , dict):
         t = []
         for k in sorted(x.keys()):

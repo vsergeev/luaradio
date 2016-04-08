@@ -590,12 +590,12 @@ def generate_rationalresampler_spec():
         return [x_decim.astype(type(x[0]))]
 
     vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [2, 3], [x], "2 up, 3 down, 256 ComplexFloat32 input, 170 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [7, 5], [x], "7 up, 5 down, 256 ComplexFloat32 input, 358 ComplexFloat32 output"))
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [2, 3], [x], "2 up, 3 down, 256 Float32 input, 170 Float32 output"))
-    vectors.append(generate_test_vector(process, [7, 5], [x], "7 up, 5 down, 256 Float32 input, 358 Float32 output"))
+    x = random_complex64(32)
+    vectors.append(generate_test_vector(process, [2, 3], [x], "2 up, 3 down, 32 ComplexFloat32 input, 21 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [7, 5], [x], "7 up, 5 down, 32 ComplexFloat32 input, 44 ComplexFloat32 output"))
+    x = random_float32(32)
+    vectors.append(generate_test_vector(process, [2, 3], [x], "2 up, 3 down, 32 Float32 input, 21 Float32 output"))
+    vectors.append(generate_test_vector(process, [7, 5], [x], "7 up, 5 down, 32 Float32 input, 44 Float32 output"))
 
     return vectors
 

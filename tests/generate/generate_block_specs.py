@@ -565,16 +565,16 @@ def generate_interpolator_spec():
         return [scipy.signal.lfilter(b, 1, x_interp).astype(type(x[0]))]
 
     vectors = []
-    x = random_complex64(256)
-    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 256 ComplexFloat32 input, 512 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 256 ComplexFloat32 input, 768 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 256 ComplexFloat32 input, 1024 ComplexFloat32 output"))
-    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 256 ComplexFloat32 input, 1792 ComplexFloat32 output"))
-    x = random_float32(256)
-    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 256 Float32 input, 512 Float32 output"))
-    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 256 Float32 input, 768 Float32 output"))
-    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 256 Float32 input, 1024 Float32 output"))
-    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 256 Float32 input, 1792 Float32 output"))
+    x = random_complex64(32)
+    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 32 ComplexFloat32 input, 64 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 32 ComplexFloat32 input, 96 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 32 ComplexFloat32 input, 128 ComplexFloat32 output"))
+    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 32 ComplexFloat32 input, 224 ComplexFloat32 output"))
+    x = random_float32(32)
+    vectors.append(generate_test_vector(process, [2], [x], "2 Factor, 32 Float32 input, 64 Float32 output"))
+    vectors.append(generate_test_vector(process, [3], [x], "3 Factor, 32 Float32 input, 96 Float32 output"))
+    vectors.append(generate_test_vector(process, [4], [x], "4 Factor, 32 Float32 input, 128 Float32 output"))
+    vectors.append(generate_test_vector(process, [7], [x], "7 Factor, 32 Float32 input, 224 Float32 output"))
 
     return vectors
 

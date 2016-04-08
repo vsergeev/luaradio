@@ -263,8 +263,6 @@ def generate_firfilter_spec():
 def generate_iirfilter_spec():
     def gentaps(n):
         b, a = scipy.signal.butter(n-1, 0.5)
-        b = numpy.around(b, PRECISION)
-        a = numpy.around(a, PRECISION)
         return [b.astype(numpy.float32), a.astype(numpy.float32)]
 
     def process(b_taps, a_taps, x):
@@ -1316,7 +1314,7 @@ def generate_iqfile_spec():
                 y = x
             elif type(x[0]) == numpy.float64:
                 y = x.astype(numpy.float32)
-            return [numpy.around(numpy.array([numpy.complex64(complex(y[i], y[i+1])) for i in range(0, len(y), 2)]), PRECISION)]
+            return [numpy.array([numpy.complex64(complex(y[i], y[i+1])) for i in range(0, len(y), 2)])]
 
         return process
 
@@ -1369,7 +1367,7 @@ def generate_realfile_spec():
                 y = x
             elif type(x[0]) == numpy.float64:
                 y = x.astype(numpy.float32)
-            return [numpy.around(y, PRECISION)]
+            return [y]
 
         return process
 

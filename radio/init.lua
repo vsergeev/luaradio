@@ -1,6 +1,6 @@
 assert(pcall(require, 'ffi') and pcall(require, 'jit'), 'Error: LuaRadio requires LuaJIT.')
 
-local M = {
+local radio = {
     -- Core modules
     platform = require('radio.core.platform'),
     object = require('radio.core.object'),
@@ -15,18 +15,18 @@ local M = {
 }
 
 -- Expose all types in top namespace
-for k,v in pairs(M.types) do
-    M[k] = v
+for k,v in pairs(radio.types) do
+    radio[k] = v
 end
 
 -- Expose all blocks in top namespace
-for k,v in pairs(M.blocks) do
-    M[k] = v
+for k,v in pairs(radio.blocks) do
+    radio[k] = v
 end
 
 -- Expose all composites in top namespace
-for k,v in pairs(M.composites) do
-    M[k] = v
+for k,v in pairs(radio.composites) do
+    radio[k] = v
 end
 
-return M
+return radio

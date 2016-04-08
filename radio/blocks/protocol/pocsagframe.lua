@@ -2,6 +2,7 @@ local ffi = require('ffi')
 local bit = require('bit')
 
 local block = require('radio.core.block')
+local debug = require('radio.core.debug')
 local types = require('radio.types')
 
 -- POCSAG Related constants
@@ -142,7 +143,7 @@ function POCSAGFrameBlock:process(x)
             -- If correlation is over 28 / 32, frame sync codeword is detected
             -- This allows for up to 2 bit errors.
             if corr >= 28 then
-                io.stderr:write(string.format('[POCSAGFrameBlock] Frame sync codeword detected with correlation %d/32\n', corr))
+                debug.printf('[POCSAGFrameBlock] Frame sync codeword detected with correlation %d/32\n', corr)
                 -- Switch to batch state
                 self.state = POCSAGFramerState.BATCH
             else
@@ -164,12 +165,12 @@ function POCSAGFrameBlock:process(x)
                 end
 
                 -- Switch back to frame sync state
-                io.stderr:write(string.format('[POCSAGFrameBlock] End of frame (invalid frame sync codeword %s)\n', bit.tohex(codeword)))
+                debug.printf('[POCSAGFrameBlock] End of frame (invalid frame sync codeword %s)\n', bit.tohex(codeword))
                 self.state = POCSAGFramerState.FRAME_SYNC
                 goto continue
             end
 
-            io.stderr:write('[POCSAGFrameBlock] Frame sync codeword found!\n')
+            debug.print('[POCSAGFrameBlock] Frame sync codeword found!')
 
             -- Extract and correct the 16 codewords of the batch
             local invalid_codeword_count = 0
@@ -196,7 +197,7 @@ function POCSAGFrameBlock:process(x)
                         self.buffer_length = self.buffer_length - (j+1)*32
 
                         -- Switch back to frame sync state
-                        io.stderr:write('[POCSAGFrameBlock] Two invalid codewords detected, going to frame sync\n')
+                        debug.print('[POCSAGFrameBlock] Two invalid codewords detected, going to frame sync')
                         self.state = POCSAGFramerState.FRAME_SYNC
                         goto continue
                     end

@@ -48,7 +48,7 @@ if platform.os == "Linux" then
     -- Signal definitions
     ffi.cdef("enum { SIGINT = 2, SIGTERM = 15, SIGCHLD = 17 };")
     -- sigprocmask() definitions
-    ffi.cdef("enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 1 };")
+    ffi.cdef("enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 2 };")
 elseif platform.os == "BSD" then
     -- Look up page size
     platform.page_size = ffi.C.sysconf(0x2f)

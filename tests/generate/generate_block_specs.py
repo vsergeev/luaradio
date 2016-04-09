@@ -1272,9 +1272,9 @@ def generate_null_spec():
             return [numpy.array([0 for _ in range(256)]).astype(numpy.int32)]
 
     vectors = []
-    vectors.append(generate_test_vector(process, ["radio.ComplexFloat32Type", 1], [], []))
-    vectors.append(generate_test_vector(process, ["radio.Float32Type", 1], [], []))
-    vectors.append(generate_test_vector(process, ["radio.Integer32Type", 1], [], []))
+    vectors.append(generate_test_vector(process, ["radio.ComplexFloat32Type", 1], [], "Data type ComplexFloat32, rate 1"))
+    vectors.append(generate_test_vector(process, ["radio.Float32Type", 1], [], "Data type Float32, rate 1"))
+    vectors.append(generate_test_vector(process, ["radio.Integer32Type", 1], [], "Data type Integer32, rate 1"))
 
     return vectors
 

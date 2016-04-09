@@ -67,6 +67,34 @@ void luaradio_free(radio_t *radio);
  */
 const char *luaradio_strerror(radio_t *radio);
 
+/**
+ * @brief Get the LuaRadio version as a string, e.g. "0.0.12".
+ * @return version string
+ */
+const char *luaradio_version(void);
+
+/**
+ * @brief Get the LuaRadio version as a number, encoded in decimal as xxyyzz. For example, 5.1.2 would be 50102.
+ * @return version number
+ */
+unsigned int luaradio_version_number(void);
+
+/**
+ * @brief Version information structure.
+ */
+typedef struct {
+    unsigned int major; /**< major version number */
+    unsigned int minor; /**< minor version number */
+    unsigned int patch; /**< patch version number */
+    const char *commit_id; /**< commit id string */
+} luaradio_version_t;
+
+/**
+ * @brief Get the LuaRadio version information.
+ * @return version information structure
+ */
+const luaradio_version_t *luaradio_version_info(void);
+
 /* Basic LuaRadio types */
 
 /**

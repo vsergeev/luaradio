@@ -30,12 +30,17 @@ STANDALONE_BINS = $(patsubst $(STANDALONE_DIR)/%.c, $(BUILD_DIR)/$(STANDALONE_DI
 
 OPT = -O3
 DEBUG =
-GIT_VERSION = $(shell git describe --abbrev --always --tags --dirty)
+
+VERSION_MAJOR = $(shell git describe --tags --abbrev=0 | sed 's/v\([0-9]*\).[0-9]*.[0-9]*/\1/')
+VERSION_MINOR = $(shell git describe --tags --abbrev=0 | sed 's/v[0-9]*.\([0-9]*\).[0-9]*/\1/')
+VERSION_PATCH = $(shell git describe --tags --abbrev=0 | sed 's/v[0-9]*.[0-9]*.\([0-9]*\)/\1/')
+VERSION_COMMIT = $(shell git describe --abbrev --always --tags --dirty)
 
 CFLAGS = $(shell pkg-config --cflags luajit)
 CFLAGS += -fPIC
 CFLAGS += $(OPT) $(DEBUG) $(INCLUDES)
-CFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
+CFLAGS += -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_PATCH=$(VERSION_PATCH)
+CFLAGS += -DVERSION_COMMIT=\"$(VERSION_COMMIT)\"
 CFLAGS += -Wall -Wextra -Wcast-align -Wcast-qual -Wimplicit
 CFLAGS += -Wpointer-arith -Wswitch -Wredundant-decls -Wreturn-type
 CFLAGS += -Wshadow -Wunused -Wno-unused-parameter

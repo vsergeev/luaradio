@@ -168,3 +168,24 @@ void luaradio_free(radio_t *radio) {
 const char *luaradio_strerror(radio_t *radio) {
     return radio->errmsg;
 }
+
+#define _STRINGIFY(s) #s
+#define STRINGIFY(s) _STRINGIFY(s)
+
+const char *luaradio_version(void) {
+    return "v" STRINGIFY(VERSION_MAJOR) "." STRINGIFY(VERSION_MINOR) "." STRINGIFY(VERSION_PATCH);
+}
+
+unsigned int luaradio_version_number(void) {
+    return VERSION_MAJOR*10000 + VERSION_MINOR*100 + VERSION_PATCH;
+}
+
+const luaradio_version_t *luaradio_version_info(void) {
+    static luaradio_version_t version = {
+        .major = VERSION_MAJOR,
+        .minor = VERSION_MINOR,
+        .patch = VERSION_PATCH,
+        .commit_id = VERSION_COMMIT,
+    };
+    return &version;
+}

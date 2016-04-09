@@ -905,7 +905,7 @@ def generate_complextoreal_spec():
     return vectors
 
 @block_spec("ComplexToImagBlock", "tests/blocks/signal/complextoimag_spec.lua")
-def generate_complextoreal_spec():
+def generate_complextoimag_spec():
     def process(x):
         return [numpy.imag(x)]
 

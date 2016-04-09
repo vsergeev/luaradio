@@ -2,7 +2,6 @@ SRC_DIR = ..
 DEMO_DIR = demos
 TEST_DIR = tests
 BUILD_DIR = build
-STANDALONE_DIR = standalone
 GEN_DIR = $(BUILD_DIR)/gen
 
 ################################################################################
@@ -13,7 +12,6 @@ LUA_SRCS = $(shell find $(SRC_DIR)/radio -type f -name "*.lua")
 
 DEMO_SRCS = $(DEMO_DIR)/fmradio.c $(DEMO_DIR)/rds-timesync.c
 TEST_SRCS = $(TEST_DIR)/test_api.c
-STANDALONE_SRCS = $(STANDALONE_DIR)/luaradio.c
 
 ################################################################################
 
@@ -24,7 +22,6 @@ LIB_OBJS := $(patsubst $(GEN_DIR)/%.c, $(BUILD_DIR)/%.o, $(LUA_C_SRCS)) $(patsub
 
 DEMO_BINS = $(patsubst $(DEMO_DIR)/%.c, $(BUILD_DIR)/$(DEMO_DIR)/%, $(DEMO_SRCS))
 TEST_BINS = $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/$(TEST_DIR)/%, $(TEST_SRCS))
-STANDALONE_BINS = $(patsubst $(STANDALONE_DIR)/%.c, $(BUILD_DIR)/$(STANDALONE_DIR)/%, $(STANDALONE_SRCS))
 
 ################################################################################
 
@@ -59,7 +56,7 @@ LUAJIT = luajit
 ################################################################################
 
 .PHONY: all
-all: lib tests demos standalone
+all: lib tests demos
 
 .PHONY: lib
 lib: $(SHARED_LIB) $(STATIC_LIB)
@@ -69,9 +66,6 @@ demos: $(SHARED_LIB) $(DEMO_BINS)
 
 .PHONY: tests
 tests: $(SHARED_LIB) $(TEST_BINS)
-
-.PHONY: standalone
-standalone: $(STANDALONE_BINS)
 
 .PHONY: runtests
 runtests: $(TEST_BINS)
@@ -84,10 +78,6 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 ################################################################################
-
-$(BUILD_DIR)/$(STANDALONE_DIR)/%: $(STANDALONE_DIR)/%.c $(SHARED_LIB)
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -I./ $< -o $@ -L$(BUILD_DIR) -l$(LIBNAME) $(LIBFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS)
 
 $(BUILD_DIR)/$(TEST_DIR)/%: $(TEST_DIR)/%.c $(SHARED_LIB)
 	@mkdir -p $(dir $@)

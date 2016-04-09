@@ -6,7 +6,7 @@ ffi.cdef[[
     typedef struct {
         uint32_t x;
         uint32_t y;
-    } test_t;
+    } elem_t;
 
     int memcmp(const void *s1, const void *s2, size_t n);
 ]]
@@ -14,34 +14,34 @@ ffi.cdef[[
 describe("vector", function ()
     it("constructor", function ()
         -- Vector of 0
-        local v = Vector(ffi.typeof("test_t"), 0)
+        local v = Vector(ffi.typeof("elem_t"), 0)
         assert.is_true(v.data ~= nil)
         assert.is.equal(0, v.length)
         assert.is.equal(0, v.size)
-        assert.is.equal(ffi.typeof("test_t"), v.type)
+        assert.is.equal(ffi.typeof("elem_t"), v.type)
 
         -- Vector of 5
-        local v = Vector(ffi.typeof("test_t"), 5)
+        local v = Vector(ffi.typeof("elem_t"), 5)
         assert.is_true(v.data ~= nil)
         assert.is.equal(5, v.length)
-        assert.is.equal(5*ffi.sizeof("test_t"), v.size)
-        assert.is.equal(ffi.typeof("test_t"), v.type)
-        assert.is_true(ffi.C.memcmp(v.data, string.rep("\x00", 5*ffi.sizeof("test_t")), 5*ffi.sizeof("test_t")) == 0)
+        assert.is.equal(5*ffi.sizeof("elem_t"), v.size)
+        assert.is.equal(ffi.typeof("elem_t"), v.type)
+        assert.is_true(ffi.C.memcmp(v.data, string.rep("\x00", 5*ffi.sizeof("elem_t")), 5*ffi.sizeof("elem_t")) == 0)
 
         -- Modify third element
         v.data[2].x = 5
         v.data[2].y = 5
-        assert.is_true(ffi.C.memcmp(v.data, string.rep("\x00", 5*ffi.sizeof("test_t")), 5*ffi.sizeof("test_t")) ~= 0)
+        assert.is_true(ffi.C.memcmp(v.data, string.rep("\x00", 5*ffi.sizeof("elem_t")), 5*ffi.sizeof("elem_t")) ~= 0)
     end)
 
     it("cast", function ()
         -- Cast vector of 5
-        local buf = string.rep("\xff", ffi.sizeof("test_t")) .. string.rep("\xaa", ffi.sizeof("test_t")) .. string.rep("\x55", ffi.sizeof("test_t"))
-        local v = Vector.cast(ffi.typeof("test_t"), buf, #buf)
+        local buf = string.rep("\xff", ffi.sizeof("elem_t")) .. string.rep("\xaa", ffi.sizeof("elem_t")) .. string.rep("\x55", ffi.sizeof("elem_t"))
+        local v = Vector.cast(ffi.typeof("elem_t"), buf, #buf)
         assert.is_true(v.data ~= nil)
         assert.is.equal(3, v.length)
-        assert.is.equal(3*ffi.sizeof("test_t"), v.size)
-        assert.is.equal(ffi.typeof("test_t"), v.type)
+        assert.is.equal(3*ffi.sizeof("elem_t"), v.size)
+        assert.is.equal(ffi.typeof("elem_t"), v.type)
 
         -- Check elements
         assert.is.equal(0xffffffff, v.data[0].x)
@@ -54,24 +54,24 @@ describe("vector", function ()
 
     it("append", function ()
         -- Empty vector
-        local v = Vector(ffi.typeof("test_t"))
+        local v = Vector(ffi.typeof("elem_t"))
 
         -- Append elements
-        v:append(ffi.new("test_t", 0xdeadbeef, 0xcafecafe))
+        v:append(ffi.new("elem_t", 0xdeadbeef, 0xcafecafe))
         assert.is.equal(1, v.length)
-        assert.is.equal(ffi.sizeof("test_t"), v.size)
+        assert.is.equal(ffi.sizeof("elem_t"), v.size)
 
-        v:append(ffi.new("test_t", 0xaaaaaaaa, 0xbbbbbbbb))
+        v:append(ffi.new("elem_t", 0xaaaaaaaa, 0xbbbbbbbb))
         assert.is.equal(2, v.length)
-        assert.is.equal(2*ffi.sizeof("test_t"), v.size)
+        assert.is.equal(2*ffi.sizeof("elem_t"), v.size)
 
-        v:append(ffi.new("test_t", 0xcccccccc, 0xdddddddd))
+        v:append(ffi.new("elem_t", 0xcccccccc, 0xdddddddd))
         assert.is.equal(3, v.length)
-        assert.is.equal(3*ffi.sizeof("test_t"), v.size)
+        assert.is.equal(3*ffi.sizeof("elem_t"), v.size)
 
-        v:append(ffi.new("test_t", 0xeeeeeeee, 0xffffffff))
+        v:append(ffi.new("elem_t", 0xeeeeeeee, 0xffffffff))
         assert.is.equal(4, v.length)
-        assert.is.equal(4*ffi.sizeof("test_t"), v.size)
+        assert.is.equal(4*ffi.sizeof("elem_t"), v.size)
 
         -- Check elements
         assert.is.equal(0xdeadbeef, v.data[0].x)
@@ -86,20 +86,20 @@ describe("vector", function ()
 
     it("resize", function ()
         -- Empty vector
-        local v = Vector(ffi.typeof("test_t"))
+        local v = Vector(ffi.typeof("elem_t"))
 
         -- Append elements
-        v:append(ffi.new("test_t", 0xdeadbeef, 0xcafecafe))
-        v:append(ffi.new("test_t", 0xaaaaaaaa, 0xbbbbbbbb))
-        v:append(ffi.new("test_t", 0xcccccccc, 0xdddddddd))
-        v:append(ffi.new("test_t", 0xeeeeeeee, 0xffffffff))
+        v:append(ffi.new("elem_t", 0xdeadbeef, 0xcafecafe))
+        v:append(ffi.new("elem_t", 0xaaaaaaaa, 0xbbbbbbbb))
+        v:append(ffi.new("elem_t", 0xcccccccc, 0xdddddddd))
+        v:append(ffi.new("elem_t", 0xeeeeeeee, 0xffffffff))
         assert.is.equal(4, v.length)
-        assert.is.equal(4*ffi.sizeof("test_t"), v.size)
+        assert.is.equal(4*ffi.sizeof("elem_t"), v.size)
 
         -- Resize to existing capacity
         v:resize(4)
         assert.is.equal(4, v.length)
-        assert.is.equal(4*ffi.sizeof("test_t"), v.size)
+        assert.is.equal(4*ffi.sizeof("elem_t"), v.size)
 
         -- Check elements
         assert.is.equal(0xdeadbeef, v.data[0].x)
@@ -114,7 +114,7 @@ describe("vector", function ()
         -- Resize to one less
         v:resize(3)
         assert.is.equal(3, v.length)
-        assert.is.equal(3*ffi.sizeof("test_t"), v.size)
+        assert.is.equal(3*ffi.sizeof("elem_t"), v.size)
 
         -- Check elements
         assert.is.equal(0xdeadbeef, v.data[0].x)
@@ -127,7 +127,7 @@ describe("vector", function ()
         -- Resize to 5
         v:resize(5)
         assert.is.equal(5, v.length)
-        assert.is.equal(5*ffi.sizeof("test_t"), v.size)
+        assert.is.equal(5*ffi.sizeof("elem_t"), v.size)
 
         -- Check elements
         assert.is.equal(0xdeadbeef, v.data[0].x)
@@ -149,9 +149,9 @@ describe("vector", function ()
         -- Resize to 10
         v:resize(10)
         assert.is.equal(10, v.length)
-        assert.is.equal(10*ffi.sizeof("test_t"), v.size)
+        assert.is.equal(10*ffi.sizeof("elem_t"), v.size)
 
         -- Check memory
-        assert.is_true(ffi.C.memcmp(v.data, string.rep("\x00", 10*ffi.sizeof("test_t")), 10*ffi.sizeof("test_t")) == 0)
+        assert.is_true(ffi.C.memcmp(v.data, string.rep("\x00", 10*ffi.sizeof("elem_t")), 10*ffi.sizeof("elem_t")) == 0)
     end)
 end)

@@ -4,48 +4,44 @@
 
 #include <luaradio.h>
 
+#define abs(x) ((x > 0) ? x : -x)
+
 int main(void) {
     radio_t *radio;
 
+    /* Test context creation */
     assert((radio = luaradio_new()) != NULL);
 
-    /* Return nothing */
+    /* Test invalid load: no return */
     assert(luaradio_load(radio, "x = 5") < 0);
 
-    /* Return not radio.CompositeBlock instance */
+    /* Test invalid load: not radio.CompositeBlock instance */
     assert(luaradio_load(radio, "return 5") < 0);
 
-    /* Return radio.CompositeBlock instance */
+    /* Test valid load: radio.CompositeBlock instance */
     assert(luaradio_load(radio, "return radio.CompositeBlock()") == 0);
-
-    /* Run and start instance */
     assert(luaradio_start(radio) == 0);
     assert(luaradio_stop(radio) == 0);
 
-    /* Return not radio.CompositeBlock instance */
+    /* Test invalid load: not radio.CompositeBlock instance */
     assert(luaradio_load(radio, "return 5") < 0);
-
-    /* Ensure start fails */
     assert(luaradio_start(radio) < 0);
 
-    /* Run a simple pipeline */
-    float buf[1024];
-    int src_pipe_fds[2];
-    int snk_pipe_fds[2];
-
-    assert(pipe(src_pipe_fds) == 0);
-    assert(pipe(snk_pipe_fds) == 0);
-
     /* Load buf with incrementing floats */
+    float buf[256];
     for (unsigned int i = 0; i < sizeof(buf)/sizeof(buf[0]); i++) {
         buf[i] = (float)i;
     }
 
-    /* Load buf into pipe */
+    /* Create source pipe and load buf into it */
+    int src_pipe_fds[2];
+    assert(pipe(src_pipe_fds) == 0);
     assert(write(src_pipe_fds[1], buf, sizeof(buf)) == sizeof(buf));
-
-    /* Close write end of pipe */
     assert(close(src_pipe_fds[1]) == 0);
+
+    /* Create sink pipe */
+    int snk_pipe_fds[2];
+    assert(pipe(snk_pipe_fds) == 0);
 
     /* Prepare script */
     const char *script_template =
@@ -61,22 +57,16 @@ int main(void) {
     char script[2048];
     snprintf(script, sizeof(script), script_template, src_pipe_fds[0], snk_pipe_fds[1]);
 
-    /* Load the script */
+    /* Load and run the script */
     assert(luaradio_load(radio, script) == 0);
-
-    /* Start the script */
     assert(luaradio_start(radio) == 0);
-
-    /* Wait for it to finish */
     assert(luaradio_wait(radio) == 0);
 
-    /* Read into buf */
+    /* Read sink pipe into buf */
     assert(read(snk_pipe_fds[0], buf, sizeof(buf)) == sizeof(buf));
 
-    /* Check inputs got doubled */
-    /* FIXME assumes little endian */
+    /* Check buf got doubled (FIXME assumes little endian) */
     for (unsigned int i = 0; i < sizeof(buf)/sizeof(buf[0]); i++) {
-        #define abs(x) ((x > 0) ? x : -x)
         assert(abs(buf[i]  - ((float)i*2)) < 1e-6);
     }
 

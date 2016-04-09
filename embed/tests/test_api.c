@@ -49,9 +49,9 @@ int main(void) {
 
     /* Prepare script */
     const char *script_template =
-        "local b0 = radio.FileDescriptorSource(%d, 'f32le', 1)\n"
+        "local b0 = radio.RealFileSource(%d, 'f32le', 1)\n"
         "local b1 = radio.SumBlock()\n"
-        "local b2 = radio.FileDescriptorSink(%d)\n"
+        "local b2 = radio.RealFileSink(%d, 'f32le')\n"
         "local top = radio.CompositeBlock()\n"
         ""
         "top:connect(b0, 'out', b1, 'in1')\n"

@@ -1327,7 +1327,7 @@ def generate_iqfile_spec():
         buf = array.tobytes() if not byteswap else array.byteswap().tobytes()
         buf = ''.join(["\\x%02x" % b for b in buf])
         # Build test vector
-        vectors.append(generate_test_vector(process_factory(array), ["buffer.open(\"%s\")" % buf, "\"%s\"" % fmt, 1], [], fmt))
+        vectors.append(generate_test_vector(process_factory(array), ["buffer.open(\"%s\")" % buf, "\"%s\"" % fmt, 1], [], "Data type %s, rate 1" % fmt))
 
     return vectors
 

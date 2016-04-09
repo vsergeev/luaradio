@@ -1,3 +1,17 @@
+* (Prototype) v0.0.13 - 04/09/2016
+    * Add luaradio executable with help, version, platform, and verbosity options.
+    * Add version string and version number to radio package.
+    * Add version string, version number, and version info to C API.
+    * Add LuaJIT interpreter check to radio package init.
+    * Add debug module for gated printing of debug messages.
+    * Use debug module instead of io.stderr in several blocks.
+    * Remove C luaradio executable.
+    * Rename demos/ to examples/.
+    * Rename embed/demos/ to embed/examples/.
+    * Update C API unit test.
+    * Fix running certain composite block unit tests on FreeBSD.
+    * Refactor Python unit test generators and split them into separate files.
+
 * (Prototype) v0.0.12 - 04/07/2016
     * Rename wbfm_rtlsdr demo to rtlsdr_wbfm_mono.
     * Rename rds_rtlsdr demo to rtlsdr_rds.

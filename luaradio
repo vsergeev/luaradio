@@ -1,0 +1,95 @@
+#!/usr/bin/env luajit
+
+--------------------------------------------------------------------------------
+-- Load radio package
+--------------------------------------------------------------------------------
+
+-- Add ./?/init.lua to package path to support loading the package locally
+-- (e.g. when running directly from the repository)
+package.path = "./?/init.lua;" .. package.path
+
+-- Possible package paths:
+--  Local package:      e.g. ./radio/init.lua
+--  Lua package:        e.g. /usr/share/lua/5.1/radio/init.lua
+--  Local C package:    e.g. ./radio.so
+--  C package:          e.g. /usr/lib/lua/5.1/radio.so
+
+-- Preload the radio package
+package.preload['radio'] = require('radio')
+
+local radio = require('radio')
+
+--------------------------------------------------------------------------------
+-- Option handlers
+--------------------------------------------------------------------------------
+
+local function print_usage()
+    local usage =
+        "Usage: %s [options] <script> [args]\n" ..
+        "\n" ..
+        "Options:\n" ..
+        "   -h, --help      Print help and exit\n" ..
+        "   --version       Print version and exit\n" ..
+        "   --platform      Dump platform and exit\n" ..
+        "   -v, --verbose   Enable debug verbosity"
+
+    print(string.format(usage, arg[0]))
+    os.exit(0)
+end
+
+local function print_version()
+    local version = "LuaRadio version %s"
+
+    print(string.format(version, radio.version))
+    os.exit(0)
+end
+
+local function print_platform()
+    local lines = {}
+    lines[#lines + 1] = string.format("os              %s", radio.platform.os)
+    lines[#lines + 1] = string.format("arch            %s", radio.platform.arch)
+    lines[#lines + 1] = string.format("page size       %d", tonumber(radio.platform.page_size))
+    lines[#lines + 1] = "features"
+
+    local colorize = {[true] = "\x1b[1;32mtrue\x1b[0m", [false] = "\x1b[1;31mfalse\x1b[0m"}
+    for k,v in pairs(radio.platform.features) do
+        lines[#lines + 1] = string.format("    %-12s%s", k, colorize[v])
+    end
+
+    print(table.concat(lines, "\n"))
+    os.exit(0)
+end
+
+local function enable_verbose()
+    radio.debug.enabled = true
+end
+
+local options_table = {
+    ["-h"]          = print_usage,
+    ["--help"]      = print_usage,
+    ["--version"]   = print_version,
+    ["--platform"]  = print_platform,
+    ["-v"]          = enable_verbose,
+    ["--verbose"]   = enable_verbose,
+}
+
+--------------------------------------------------------------------------------
+-- Process arguments
+--------------------------------------------------------------------------------
+
+if #arg < 1 then
+    print_usage()
+end
+
+-- Extract and handle options
+while #arg >= 1 do
+    if options_table[arg[1]] then
+        options_table[arg[1]]()
+    else
+        break
+    end
+    table.remove(arg, 1)
+end
+
+-- Run script
+dofile(table.remove(arg, 1))

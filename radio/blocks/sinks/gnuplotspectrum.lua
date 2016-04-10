@@ -151,6 +151,10 @@ function GnuplotSpectrumSink:process(x)
 end
 
 function GnuplotSpectrumSink:cleanup()
+    if not self.gnuplot_f then
+        return
+    end
+
     self.gnuplot_f:write("quit\n")
     self.gnuplot_f:close()
 end

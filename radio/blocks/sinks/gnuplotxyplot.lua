@@ -100,6 +100,10 @@ function GnuplotXYPlotSink:process_complex(x)
 end
 
 function GnuplotXYPlotSink:cleanup()
+    if not self.gnuplot_f then
+        return
+    end
+
     self.gnuplot_f:write("quit\n")
     self.gnuplot_f:close()
 end

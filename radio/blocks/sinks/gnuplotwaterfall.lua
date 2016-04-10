@@ -195,6 +195,10 @@ function GnuplotWaterfallSink:process(x)
 end
 
 function GnuplotWaterfallSink:cleanup()
+    if not self.gnuplot_f then
+        return
+    end
+
     self.gnuplot_f:write("quit\n")
     self.gnuplot_f:close()
 end

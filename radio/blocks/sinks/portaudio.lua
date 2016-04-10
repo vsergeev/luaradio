@@ -96,6 +96,11 @@ function PortAudioSink:process(...)
 end
 
 function PortAudioSink:cleanup()
+    -- If we never got around to creating a stream
+    if not self.stream then
+        return
+    end
+
     -- Stop the stream
     local err = libportaudio.Pa_StopStream(self.stream[0])
     assert(err == 0, "Pa_StopStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))

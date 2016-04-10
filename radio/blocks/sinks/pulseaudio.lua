@@ -92,6 +92,11 @@ function PulseAudioSink:process(...)
 end
 
 function PulseAudioSink:cleanup()
+    -- If we never got around to creating a PulseAudio connection
+    if not self.pa_conn then
+        return
+    end
+
     -- Close and free our PulseAudio connection
     libpulse.pa_simple_free(self.pa_conn)
 end

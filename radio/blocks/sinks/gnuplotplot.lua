@@ -73,6 +73,10 @@ function GnuplotPlotSink:process(x)
 end
 
 function GnuplotPlotSink:cleanup()
+    if not self.gnuplot_f then
+        return
+    end
+
     self.gnuplot_f:write("quit\n")
     self.gnuplot_f:close()
 end

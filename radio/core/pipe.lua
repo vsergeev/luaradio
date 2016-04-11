@@ -134,7 +134,7 @@ if platform.features.vmsplice then
             void *iov_base;
             size_t iov_len;
         };
-        int vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned int flags);
+        ssize_t vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned int flags);
     ]]
 
     local iov = ffi.new("struct iovec")
@@ -142,7 +142,7 @@ if platform.features.vmsplice then
     function platform_read(fd, buf, size)
         iov.iov_base = buf
         iov.iov_len = size
-        local bytes_read = ffi.C.vmsplice(fd, iov, 1, 0)
+        local bytes_read = tonumber(ffi.C.vmsplice(fd, iov, 1, 0))
         if bytes_read < 0 then
             error("vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
@@ -152,7 +152,7 @@ if platform.features.vmsplice then
     function platform_write(fd, buf, size)
         iov.iov_base = buf
         iov.iov_len = size
-        local bytes_written = ffi.C.vmsplice(fd, iov, 1, 0)
+        local bytes_written = tonumber(ffi.C.vmsplice(fd, iov, 1, 0))
         if bytes_written <= 0 then
             error("vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
@@ -162,12 +162,12 @@ if platform.features.vmsplice then
 else
 
     ffi.cdef[[
-        int read(int fd, void *buf, size_t count);
-        int write(int fd, const void *buf, size_t count);
+        ssize_t read(int fd, void *buf, size_t count);
+        ssize_t write(int fd, const void *buf, size_t count);
     ]]
 
     function platform_read(fd, buf, size)
-        local bytes_read = ffi.C.read(fd, buf, size)
+        local bytes_read = tonumber(ffi.C.read(fd, buf, size))
         if bytes_read < 0 then
             error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
@@ -175,7 +175,7 @@ else
     end
 
     function platform_write(fd, buf, size)
-        local bytes_written = ffi.C.write(fd, buf, size)
+        local bytes_written = tonumber(ffi.C.write(fd, buf, size))
         if bytes_written <= 0 then
             error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end

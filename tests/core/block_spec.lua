@@ -231,7 +231,7 @@ describe("block", function ()
             self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
         end
         function TestRateTripler:get_rate()
-            return self.inputs[1].pipe:get_rate()*3
+            return block.Block.get_rate(self)*3
         end
 
         local TestRateHalver = block.factory("TestRateHalver")
@@ -239,7 +239,7 @@ describe("block", function ()
             self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
         end
         function TestRateHalver:get_rate()
-            return self.inputs[1].pipe:get_rate()/2
+            return block.Block.get_rate(self)/2
         end
 
         -- Mock pipe class

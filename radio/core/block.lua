@@ -94,6 +94,8 @@ function Block:differentiate(input_data_types)
 end
 
 function Block:get_rate()
+    assert(self.signature, "Block not yet differentiated.")
+
     assert(#self.inputs > 0, "get_rate() not implemented for source " .. self.name .. ".")
 
     -- Default to copying rate from first input

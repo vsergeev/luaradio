@@ -178,12 +178,19 @@ describe("block", function ()
         -- Source blocks should define rate
 
         local blk = TestSource()
+
+        -- Test getting rate before differentiation error
+        assert.has_errors(function () blk:get_rate() end)
+
         blk:differentiate({})
+
+        -- Test undefined get_rate() for source block error
         assert.has_error(function () blk:get_rate() end)
 
         function TestSource:get_rate()
             return 5
         end
+
         assert.is.equal(5, blk:get_rate())
 
         -- A few more blocks

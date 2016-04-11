@@ -26,8 +26,8 @@ ffi.cdef[[
 
 -- Platform specific lookups
 if platform.os == "Linux" then
-    -- Look up page size
-    platform.page_size = ffi.C.sysconf(0x1e)
+    -- Look up page size (_SC_PAGESIZE)
+    platform.page_size = tonumber(ffi.C.sysconf(30))
     -- vmsplice() system call available
     platform.features.vmsplice = true
     -- Signal definitions
@@ -35,15 +35,15 @@ if platform.os == "Linux" then
     -- sigprocmask() definitions
     ffi.cdef("enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 2 };")
 elseif platform.os == "BSD" then
-    -- Look up page size
-    platform.page_size = ffi.C.sysconf(0x2f)
+    -- Look up page size (_SC_PAGESIZE)
+    platform.page_size = tonumber(ffi.C.sysconf(47))
     -- Signal definitions
     ffi.cdef("enum { SIGINT = 2, SIGTERM = 15, SIGCHLD = 20 };")
     -- sigprocmask() definitions
     ffi.cdef("enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };")
 elseif platform.os == "OSX" then
-    -- Look up page size
-    platform.page_size = ffi.C.sysconf(0x1d)
+    -- Look up page size (_SC_PAGESIZE)
+    platform.page_size = tonumber(ffi.C.sysconf(29))
     -- Signal definitions
     ffi.cdef("enum { SIGINT = 2, SIGTERM = 15, SIGCHLD = 20 };")
     -- sigprocmask() definitions

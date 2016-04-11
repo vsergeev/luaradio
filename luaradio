@@ -48,7 +48,7 @@ local function print_platform()
     local lines = {}
     lines[#lines + 1] = string.format("os              %s", radio.platform.os)
     lines[#lines + 1] = string.format("arch            %s", radio.platform.arch)
-    lines[#lines + 1] = string.format("page size       %d", tonumber(radio.platform.page_size))
+    lines[#lines + 1] = string.format("page size       %d", radio.platform.page_size)
     lines[#lines + 1] = "features"
 
     local colorize = {[true] = "\x1b[1;32mtrue\x1b[0m", [false] = "\x1b[1;31mfalse\x1b[0m"}

@@ -88,18 +88,32 @@ describe("block", function ()
 
         local blk = TestBlock()
 
+        -- Test getting input/output types before differentiation
+        assert.has_error(function () blk:get_input_types() end)
+        assert.has_error(function () blk:get_output_types() end)
+
+        -- Test valid differentiations
         blk:differentiate({radio.ComplexFloat32Type, radio.Float32Type})
         assert.is.equal(blk.signatures[1], blk.signature)
+        assert.is.same({radio.ComplexFloat32Type, radio.Float32Type}, blk:get_input_types())
+        assert.is.same({radio.Float32Type}, blk:get_output_types())
 
         blk:differentiate({radio.Float32Type, radio.Integer32Type})
         assert.is.equal(blk.signatures[2], blk.signature)
+        assert.is.same({radio.Float32Type, radio.Integer32Type}, blk:get_input_types())
+        assert.is.same({radio.Integer32Type}, blk:get_output_types())
 
         blk:differentiate({radio.Integer32Type, radio.ByteType})
         assert.is.equal(blk.signatures[3], blk.signature)
+        assert.is.same({radio.Integer32Type, radio.ByteType}, blk:get_input_types())
+        assert.is.same({radio.ByteType}, blk:get_output_types())
 
         blk:differentiate({radio.BitType, radio.BitType})
         assert.is.equal(blk.signatures[4], blk.signature)
+        assert.is.same({radio.BitType, radio.BitType}, blk:get_input_types())
+        assert.is.same({radio.BitType}, blk:get_output_types())
 
+        -- Test invalid differentiations
         assert.has_error(function () blk:differentiate({}) end)
         assert.has_error(function () blk:differentiate({radio.ComplexFloat32Type}) end)
         assert.has_error(function () blk:differentiate({radio.Float32Type}) end)
@@ -127,14 +141,20 @@ describe("block", function ()
         blk:differentiate({radio.Float32Type})
         assert.is.equal(TestBlock.initialize_float, blk.initialize)
         assert.is.equal(TestBlock.process_float, blk.process)
+        assert.is.same({radio.Float32Type}, blk:get_input_types())
+        assert.is.same({}, blk:get_output_types())
 
         blk:differentiate({radio.Integer32Type})
         assert.is.equal(TestBlock.initialize_integer, blk.initialize)
         assert.is.equal(TestBlock.process_integer, blk.process)
+        assert.is.same({radio.Integer32Type}, blk:get_input_types())
+        assert.is.same({}, blk:get_output_types())
 
         blk:differentiate({radio.BitType})
         assert.is.equal(TestBlock.initialize, blk.initialize)
         assert.is.equal(TestBlock.process, blk.process)
+        assert.is.same({radio.BitType}, blk:get_input_types())
+        assert.is.same({}, blk:get_output_types())
 
         -- Test source differentiation
 
@@ -147,6 +167,8 @@ describe("block", function ()
         local blk = TestSource()
         blk:differentiate({})
         assert.is.equal(blk.signatures[1], blk.signature)
+        assert.is.same({}, blk:get_input_types())
+        assert.is.same({radio.Float32Type}, blk:get_output_types())
 
         -- Test function-based type differentiation
 
@@ -158,12 +180,16 @@ describe("block", function ()
         end
 
         local blk = TestBlock()
+
         blk:differentiate({0})
         assert.is.equal(blk.signatures[1], blk.signature)
+
         blk:differentiate({1})
         assert.is.equal(blk.signatures[2], blk.signature)
+
         blk:differentiate({2})
         assert.is.equal(blk.signatures[1], blk.signature)
+
         blk:differentiate({3})
         assert.is.equal(blk.signatures[2], blk.signature)
     end)

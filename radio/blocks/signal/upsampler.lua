@@ -12,7 +12,7 @@ function UpsamplerBlock:instantiate(factor)
 end
 
 function UpsamplerBlock:get_rate()
-    return self.inputs[1].pipe:get_rate()*self.factor
+    return block.Block.get_rate(self)*self.factor
 end
 
 function UpsamplerBlock:initialize()

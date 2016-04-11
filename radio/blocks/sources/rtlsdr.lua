@@ -50,37 +50,57 @@ function RtlSdrSource:initialize()
     self.dev = ffi.new("rtlsdr_dev_t *[1]")
 
     -- Open device
-    assert(librtlsdr.rtlsdr_open(self.dev, 0) == 0, "rtlsdr_open() failed.")
+    if librtlsdr.rtlsdr_open(self.dev, 0) ~= 0 then
+        error("rtlsdr_open() failed.")
+    end
 
     -- Set sample rate
-    assert(librtlsdr.rtlsdr_set_sample_rate(self.dev[0], self.rate) == 0, "rtlsdr_set_sample_rate() failed.")
+    if librtlsdr.rtlsdr_set_sample_rate(self.dev[0], self.rate) ~= 0 then
+        error("rtlsdr_set_sample_rate() failed.")
+    end
 
     -- Set frequency
-    assert(librtlsdr.rtlsdr_set_center_freq(self.dev[0], self.frequency) == 0, "rtlsdr_set_center_freq() failed.")
+    if librtlsdr.rtlsdr_set_center_freq(self.dev[0], self.frequency) ~= 0 then
+        error("rtlsdr_set_center_freq() failed.")
+    end
 
     if self.autogain then
         -- Set autogain
-        assert(librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 0) == 0, "rtlsdr_set_tuner_gain_mode() failed.")
+        if librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 0) ~= 0 then
+            error("rtlsdr_set_tuner_gain_mode() failed.")
+        end
 
         -- Enable AGC
-        assert(librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 1) == 0, "rtlsdr_set_agc_mode() failed.")
+        if librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 1) ~= 0 then
+            error("rtlsdr_set_agc_mode() failed.")
+        end
     else
         -- Disable autogain
-        assert(librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 1) == 0, "rtlsdr_set_tuner_gain_mode() failed.")
+        if librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 1) ~= 0 then
+            error("rtlsdr_set_tuner_gain_mode() failed.")
+        end
 
         -- Disable AGC
-        assert(librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 0) == 0, "rtlsdr_set_agc_mode() failed.")
+        if librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 0) ~= 0 then
+            error("rtlsdr_set_agc_mode() failed.")
+        end
 
         -- Set RF gain
-        assert(librtlsdr.rtlsdr_set_tuner_gain(self.dev[0], math.floor(self.rf_gain*10)) == 0, "rtlsdr_set_tuner_gain() failed.")
+        if librtlsdr.rtlsdr_set_tuner_gain(self.dev[0], math.floor(self.rf_gain*10)) ~= 0 then
+            error("rtlsdr_set_tuner_gain() failed.")
+        end
     end
 
     -- Set frequency correction
     local ret = librtlsdr.rtlsdr_set_freq_correction(self.dev[0], math.floor(self.freq_correction))
-    assert(ret == 0 or ret == -2, "rtlsdr_set_freq_correction() failed.")
+    if ret ~= 0 and ret ~= -2 then
+        error("rtlsdr_set_freq_correction() failed.")
+    end
 
     -- Reset endpoint buffer
-    assert(librtlsdr.rtlsdr_reset_buffer(self.dev[0]) == 0, "rtlsdr_reset_buffer() failed.")
+    if librtlsdr.rtlsdr_reset_buffer(self.dev[0]) ~= 0 then
+        error("rtlsdr_reset_buffer() failed.")
+    end
 
     -- Allocate read buffer
     self.buf_size = 65536
@@ -91,8 +111,12 @@ end
 
 function RtlSdrSource:process()
     -- Read buffer
-    assert(librtlsdr.rtlsdr_read_sync(self.dev[0], self.buf, self.buf_size, self.n_read) == 0, "rtlsdr_read_sync() failed.")
-    assert(self.n_read[0] == self.buf_size, "Short read. Aborting...")
+    if librtlsdr.rtlsdr_read_sync(self.dev[0], self.buf, self.buf_size, self.n_read) ~= 0 then
+        error("rtlsdr_read_sync() failed.")
+    end
+    if self.n_read[0] ~= self.buf_size then
+        error("Short read. Aborting...")
+    end
 
     -- Convert to complex u8 to complex floats
     local out = types.ComplexFloat32Type.vector(self.buf_size/2)

@@ -356,7 +356,9 @@ function CompositeBlock:start(multiprocess)
     -- Default to multiprocess
     multiprocess = (multiprocess == nil) and true or multiprocess
 
-    assert(not self._running, "CompositeBlock already running!")
+    if self._running then
+        error("CompositeBlock already running!")
+    end
 
     -- Install dummy signal handler for SIGCHLD as BSD platforms
     -- discard this signal by default.
@@ -367,17 +369,25 @@ function CompositeBlock:start(multiprocess)
     ffi.C.sigemptyset(sigset)
     ffi.C.sigaddset(sigset, ffi.C.SIGINT)
     ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
-    assert(ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) == 0, "sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
+        error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 
     -- Prepare to run
     local all_connections, execution_order = self:_prepare_to_run()
 
-    -- Clear any pending signals
+    -- Clear any pending SIGINT or SIGCHLD signals
     while true do
-        assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.sigpending(sigset) ~= 0 then
+            error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+
         if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 or ffi.C.sigismember(sigset, ffi.C.SIGCHLD) == 1 then
+            -- Consume this signal
             local sig = ffi.new("int[1]")
-            assert(ffi.C.sigwait(sigset, sig) == 0, "sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            if ffi.C.sigwait(sigset, sig) ~= 0 then
+                error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
         else
             break
         end
@@ -411,7 +421,9 @@ function CompositeBlock:start(multiprocess)
             end
 
             -- Check for SIGINT
-            assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            if ffi.C.sigpending(sigset) ~= 0 then
+                error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
             if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
                 debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
                 running = false
@@ -428,7 +440,9 @@ function CompositeBlock:start(multiprocess)
         -- Fork and run blocks
         for _, block in ipairs(execution_order) do
             local pid = ffi.C.fork()
-            assert(pid >= 0, "fork(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            if pid < 0 then
+                error("fork(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
 
             if pid == 0 then
                 -- Create a set of pipe inputs and outputs to save
@@ -484,7 +498,9 @@ function CompositeBlock:stop()
 
         -- Wait for all children
         for _, pid in pairs(self._pids) do
-            assert(ffi.C.waitpid(pid, nil, 0) ~= -1, "waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            if ffi.C.waitpid(pid, nil, 0) == -1 then
+                error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
         end
 
         -- Mark ourselves as not running
@@ -500,7 +516,10 @@ function CompositeBlock:wait()
         while true do
             -- FIXME cleaner check that is still portable?
             ffi.C.sleep(1)
-            assert(ffi.C.sigpending(sigset) == 0, "sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+
+            if ffi.C.sigpending(sigset) ~= 0 then
+                error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
 
             if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
                 debug.print("[CompositeBlock] Received SIGINT. Shutting down...")

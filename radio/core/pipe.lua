@@ -11,6 +11,7 @@ function PipeInput.new(owner, name)
     local self = setmetatable({}, PipeInput)
     self.owner = owner
     self.name = name
+    self.data_type = nil
     self.pipe = nil
     return self
 end
@@ -26,6 +27,7 @@ function PipeOutput.new(owner, name)
     local self = setmetatable({}, PipeOutput)
     self.owner = owner
     self.name = name
+    self.data_type = nil
     self.pipes = {}
     return self
 end
@@ -61,12 +63,19 @@ end
 -- Pipe class
 local Pipe = object.class_factory()
 
-function Pipe.new(pipe_output, pipe_input, data_type)
+function Pipe.new(pipe_output, pipe_input)
     local self = setmetatable({}, Pipe)
     self.pipe_output = pipe_output
     self.pipe_input = pipe_input
-    self.data_type = data_type
     return self
+end
+
+function Pipe:get_rate()
+    return self.pipe_output.owner:get_rate()
+end
+
+function Pipe:get_data_type()
+    return self.pipe_output.data_type
 end
 
 ffi.cdef[[
@@ -75,6 +84,9 @@ ffi.cdef[[
 ]]
 
 function Pipe:initialize()
+    -- Look up our data type
+    self.data_type = self:get_data_type()
+
     -- Create UNIX pipe
     local pipe_fds = ffi.new("int[2]")
     assert(ffi.C.pipe(pipe_fds) == 0, "pipe(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
@@ -86,10 +98,6 @@ function Pipe:initialize()
     self._buf = platform.alloc(self._buf_capacity)
     self._buf_size = 0
     self._buf_read_offset = 0
-end
-
-function Pipe:get_rate()
-    return self.pipe_output.owner:get_rate()
 end
 
 function Pipe:read_max()

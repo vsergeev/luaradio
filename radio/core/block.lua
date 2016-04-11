@@ -91,6 +91,12 @@ function Block:differentiate(input_data_types)
     self.signature, _ = next(signature_candidates)
     self.initialize = self.signature.initialize_func
     self.process = self.signature.process_func
+    for i = 1, #input_data_types do
+        self.inputs[i].data_type = input_data_types[i]
+    end
+    for i = 1, #self.signature.outputs do
+        self.outputs[i].data_type = self.signature.outputs[i].data_type
+    end
 end
 
 function Block:get_rate()

@@ -319,18 +319,11 @@ function CompositeBlock:_prepare_to_run()
         -- Gather input data types to this block
         local input_data_types = {}
         for _, input in ipairs(block.inputs) do
-            input_data_types[#input_data_types+1] = input.pipe.data_type
+            input_data_types[#input_data_types+1] = input.pipe:get_data_type()
         end
 
         -- Differentiate the block
         block:differentiate(input_data_types)
-
-        -- Set output pipe data types
-        for i = 1, #block.signature.outputs do
-            for _, pipe in ipairs(block.outputs[i].pipes) do
-                pipe.data_type = block.signature.outputs[i].data_type
-            end
-        end
     end
 
     -- Initialize all blocks

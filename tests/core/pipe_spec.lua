@@ -49,7 +49,8 @@ describe("pipe", function ()
 
             for _, write_num in ipairs({1, 123, test_vector.length}) do
                 for _, read_num in ipairs({1, 123, test_vector.length}) do
-                    local p = pipe.Pipe(nil, nil, data_type)
+                    local p = pipe.Pipe()
+                    p.get_data_type = function () return data_type end
                     p:initialize()
 
                     -- Write and read offsets into test vector
@@ -123,7 +124,8 @@ describe("pipe", function ()
 
         for _, write_num in ipairs({1, 123, test_vector.length}) do
             for _, read_num in ipairs({1, 123, test_vector.length}) do
-                local p = pipe.Pipe(nil, nil, FooType)
+                local p = pipe.Pipe()
+                p.get_data_type = function () return FooType end
                 p:initialize()
 
                 -- Write and read counts of test vector
@@ -190,13 +192,14 @@ describe("pipe", function ()
 
         -- Create three pipes
         local pipes = {
-            pipe.Pipe(nil, nil, radio.ByteType),
-            pipe.Pipe(nil, nil, radio.Float32Type),
-            pipe.Pipe(nil, nil, radio.ComplexFloat32Type),
+            pipe.Pipe(),
+            pipe.Pipe(),
+            pipe.Pipe(),
         }
 
         -- Initialize pipes
         for i = 1, #pipes do
+            pipes[i].get_data_type = function () return test_vectors[i].type end
             pipes[i]:initialize(true)
         end
 
@@ -280,7 +283,7 @@ describe("pipe", function ()
         b0:differentiate({})
         b1:differentiate({radio.Float32Type})
 
-        local p = pipe.Pipe(b0.outputs[1], b1.inputs[1], radio.Float32Type)
+        local p = pipe.Pipe(b0.outputs[1], b1.inputs[1])
         b0.outputs[1].pipes = {p}
         b1.inputs[1].pipe = p
 

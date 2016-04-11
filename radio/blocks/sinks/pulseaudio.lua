@@ -70,7 +70,9 @@ function PulseAudioSink:process(...)
         -- Open PulseAudio connection
         self.pa_conn = ffi.new("pa_simple *")
         self.pa_conn = libpulse.pa_simple_new(nil, "LuaRadio", ffi.C.PA_STREAM_PLAYBACK, nil, "PulseAudioSink", self.sample_spec, nil, nil, error_code)
-        assert(self.pa_conn ~= nil, "pa_simple_new(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
+        if self.pa_conn == nil then
+            error("pa_simple_new(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
+        end
     end
 
     local interleaved_samples
@@ -88,7 +90,9 @@ function PulseAudioSink:process(...)
 
     -- Write to our PulseAudio connection
     local ret = libpulse.pa_simple_write(self.pa_conn, interleaved_samples.data, interleaved_samples.size, error_code)
-    assert(ret >= 0, "pa_simple_write(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
+    if ret < 0 then
+        error("pa_simple_write(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
+    end
 end
 
 function PulseAudioSink:cleanup()

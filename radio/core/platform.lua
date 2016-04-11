@@ -12,6 +12,7 @@ local platform = {
     arch = ffi.arch,
     page_size = 4096,
     cpu_count = -1,
+    cpu_model = "unknown",
     features = {
         volk = false,
         fftw3f = false,
@@ -31,6 +32,12 @@ if platform.os == "Linux" then
     platform.page_size = tonumber(ffi.C.sysconf(30))
     -- Look up CPU count (_SC_NPROCESSORS_ONLN)
     platform.cpu_count = tonumber(ffi.C.sysconf(84))
+    -- Look up CPU model
+    local f = io.open("/proc/cpuinfo", "r")
+    if f then
+        platform.cpu_model = f:read("*all"):match("model name%s*:%s*([^\n]*)")
+        f:close()
+    end
     -- vmsplice() system call available
     platform.features.vmsplice = true
     -- Signal definitions
@@ -42,6 +49,12 @@ elseif platform.os == "BSD" then
     platform.page_size = tonumber(ffi.C.sysconf(47))
     -- Look up CPU count (_SC_NPROCESSORS_ONLN)
     platform.cpu_count = tonumber(ffi.C.sysconf(58))
+    -- Look up CPU model
+    ffi.cdef("int sysctlbyname(const char *name, void *oldp, size_t *oldlenp, const void *newp, size_t newlen);")
+    local buf, sz = ffi.new("char[32]"), ffi.new("size_t[1]", {32})
+    if ffi.C.sysctlbyname("hw.model", buf, sz, nil, 0) == 0 then
+        platform.cpu_model = ffi.string(buf, sz[0])
+    end
     -- Signal definitions
     ffi.cdef("enum { SIGINT = 2, SIGTERM = 15, SIGCHLD = 20 };")
     -- sigprocmask() definitions
@@ -51,6 +64,12 @@ elseif platform.os == "OSX" then
     platform.page_size = tonumber(ffi.C.sysconf(29))
     -- Look up CPU count (_SC_NPROCESSORS_ONLN)
     platform.cpu_count = tonumber(ffi.C.sysconf(58))
+    -- Look up CPU model
+    ffi.cdef("int sysctlbyname(const char *name, void *oldp, size_t *oldlenp, const void *newp, size_t newlen);")
+    local buf, sz = ffi.new("char[32]"), ffi.new("size_t[1]", {32})
+    if ffi.C.sysctlbyname("hw.model", buf, sz, nil, 0) == 0 then
+        platform.cpu_model = ffi.string(buf, sz[0])
+    end
     -- Signal definitions
     ffi.cdef("enum { SIGINT = 2, SIGTERM = 15, SIGCHLD = 20 };")
     -- sigprocmask() definitions

@@ -31,7 +31,7 @@ void *memmove(void *dest, const void *src, size_t n);
 ]]
 
 function IIRFilterBlock:initialize()
-    self.data_type = self.signature.inputs[1].data_type
+    self.data_type = self:get_input_types()[1]
     self.input_state = self.data_type.vector(self.b_taps.length)
     self.output_state = self.data_type.vector(self.a_taps.length-1)
 end

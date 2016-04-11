@@ -89,7 +89,9 @@ function Pipe:initialize()
 
     -- Create UNIX pipe
     local pipe_fds = ffi.new("int[2]")
-    assert(ffi.C.pipe(pipe_fds) == 0, "pipe(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if ffi.C.pipe(pipe_fds) ~= 0 then
+        error("pipe(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
     self._rfd = pipe_fds[0]
     self._wfd = pipe_fds[1]
 
@@ -141,7 +143,9 @@ if platform.features.vmsplice then
         iov.iov_base = buf
         iov.iov_len = size
         local bytes_read = ffi.C.vmsplice(fd, iov, 1, 0)
-        assert(bytes_read >= 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if bytes_read < 0 then
+            error("vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
         return bytes_read
     end
 
@@ -149,7 +153,9 @@ if platform.features.vmsplice then
         iov.iov_base = buf
         iov.iov_len = size
         local bytes_written = ffi.C.vmsplice(fd, iov, 1, 0)
-        assert(bytes_written > 0, "vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if bytes_written <= 0 then
+            error("vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
         return bytes_written
     end
 
@@ -162,13 +168,17 @@ else
 
     function platform_read(fd, buf, size)
         local bytes_read = ffi.C.read(fd, buf, size)
-        assert(bytes_read >= 0, "read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if bytes_read < 0 then
+            error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
         return bytes_read
     end
 
     function platform_write(fd, buf, size)
         local bytes_written = ffi.C.write(fd, buf, size)
-        assert(bytes_written > 0, "write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if bytes_written <= 0 then
+            error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
         return bytes_written
     end
 
@@ -212,14 +222,18 @@ end
 
 function Pipe:close_input()
     if self._rfd then
-        assert(ffi.C.close(self._rfd) == 0, "close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.close(self._rfd) ~= 0 then
+            error("close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
         self._rfd = nil
     end
 end
 
 function Pipe:close_output()
     if self._wfd then
-        assert(ffi.C.close(self._wfd) == 0, "close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.close(self._wfd) ~= 0 then
+            error("close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
         self._wfd = nil
     end
 end

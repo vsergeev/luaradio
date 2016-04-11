@@ -74,7 +74,9 @@ ffi.cdef[[
 
 platform.alloc = function (size)
     local ptr = ffi.new("void *[1]")
-    assert(ffi.C.posix_memalign(ptr, platform.page_size, size) == 0, "posix_memalign(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if ffi.C.posix_memalign(ptr, platform.page_size, size) ~= 0 then
+        error("posix_memalign(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
     return ffi.gc(ptr[0], ffi.C.free)
 end
 

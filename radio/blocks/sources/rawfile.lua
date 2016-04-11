@@ -47,10 +47,14 @@ ffi.cdef[[
 function RawFileSource:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "rb")
-        assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     else
         self.file = ffi.C.fdopen(self.fd, "rb")
-        assert(self.file ~= nil, "fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 end
 
@@ -71,7 +75,9 @@ function RawFileSource:process()
                 return nil
             end
         else
-            assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            if ffi.C.ferror(self.file) ~= 0 then
+                error("fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
         end
     end
 
@@ -89,7 +95,9 @@ end
 
 function RawFileSource:cleanup()
     if self.filename then
-        assert(ffi.C.fclose(self.file) == 0, "fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fclose(self.file) ~= 0 then
+            error("fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 end
 

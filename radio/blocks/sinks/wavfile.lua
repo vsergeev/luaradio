@@ -127,10 +127,14 @@ end
 function WAVFileSink:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "wb")
-        assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     else
         self.file = ffi.C.fdopen(self.fd, "wb")
-        assert(self.file ~= nil, "fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 
     -- Create headers
@@ -156,7 +160,9 @@ function WAVFileSink:initialize()
     self.wave_subchunk2_header.size = 0 -- Populate in cleanup()
 
     -- Seek file past headers for now
-    assert(ffi.C.fseek(self.file, ffi.sizeof(self.riff_header) + ffi.sizeof(self.wave_subchunk1_header) + ffi.sizeof(self.wave_subchunk2_header), ffi.C.SEEK_SET) == 0, "fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if ffi.C.fseek(self.file, ffi.sizeof(self.riff_header) + ffi.sizeof(self.wave_subchunk1_header) + ffi.sizeof(self.wave_subchunk2_header), ffi.C.SEEK_SET) ~= 0 then
+        error("fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 end
 
 local function swap_bytes(x)
@@ -191,8 +197,10 @@ function WAVFileSink:process(...)
     end
 
     -- Write to file
-    local num_samples_written = ffi.C.fwrite(raw_samples, ffi.sizeof(self.format.ctype), num_samples_per_channel * self.num_channels, self.file)
-    assert(num_samples_written == num_samples_per_channel * self.num_channels, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    local num_samples = ffi.C.fwrite(raw_samples, ffi.sizeof(self.format.ctype), num_samples_per_channel * self.num_channels, self.file)
+    if num_samples ~= num_samples_per_channel * self.num_channels then
+        error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 
     -- Update our sample count
     self.num_samples = self.num_samples + num_samples_per_channel
@@ -214,17 +222,29 @@ function WAVFileSink:cleanup()
     ffi.C.rewind(self.file)
 
     -- Write headers
-    assert(ffi.C.fwrite(self.riff_header, ffi.sizeof(self.riff_header), 1, self.file) == 1, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    assert(ffi.C.fwrite(self.wave_subchunk1_header, ffi.sizeof(self.wave_subchunk1_header), 1, self.file) == 1, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    assert(ffi.C.fwrite(self.wave_subchunk2_header, ffi.sizeof(self.wave_subchunk2_header), 1, self.file) == 1, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if ffi.C.fwrite(self.riff_header, ffi.sizeof(self.riff_header), 1, self.file) ~= 1 then
+        error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+    if ffi.C.fwrite(self.wave_subchunk1_header, ffi.sizeof(self.wave_subchunk1_header), 1, self.file) ~= 1 then
+        error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+    if ffi.C.fwrite(self.wave_subchunk2_header, ffi.sizeof(self.wave_subchunk2_header), 1, self.file) ~= 1 then
+        error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 
     -- Seek to the end of file
-    assert(ffi.C.fseek(self.file, 0, ffi.C.SEEK_END) == 0, "fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if ffi.C.fseek(self.file, 0, ffi.C.SEEK_END) ~= 0 then
+        error("fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 
     if self.filename then
-        assert(ffi.C.fclose(self.file) == 0, "fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fclose(self.file) ~= 0 then
+            error("fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     else
-        assert(ffi.C.fflush(self.file) == 0, "fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fflush(self.file) ~= 0 then
+            error("fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 end
 

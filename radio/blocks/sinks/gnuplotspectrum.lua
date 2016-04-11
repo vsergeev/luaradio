@@ -28,7 +28,7 @@ end
 
 function GnuplotSpectrumSink:initialize_gnuplot()
     local sample_rate = self:get_rate()
-    local data_type = self.signature.inputs[1].data_type
+    local data_type = self:get_input_types()[1]
 
     -- Initialize gnuplot
     self.gnuplot_f = io.popen("gnuplot >/dev/null 2>&1", "w")

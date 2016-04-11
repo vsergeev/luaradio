@@ -46,9 +46,12 @@ end
 
 local function print_platform()
     local lines = {}
+    lines[#lines + 1] = string.format("luajit          %s", radio.platform.luajit_version)
     lines[#lines + 1] = string.format("os              %s", radio.platform.os)
     lines[#lines + 1] = string.format("arch            %s", radio.platform.arch)
     lines[#lines + 1] = string.format("page size       %d", radio.platform.page_size)
+    lines[#lines + 1] = string.format("cpu count       %d", radio.platform.cpu_count)
+    lines[#lines + 1] = string.format("cpu model       %s", radio.platform.cpu_model)
     lines[#lines + 1] = "features"
 
     local colorize = {[true] = "\x1b[1;32mtrue\x1b[0m", [false] = "\x1b[1;31mfalse\x1b[0m"}

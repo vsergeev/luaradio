@@ -20,7 +20,7 @@ ffi.cdef[[
     typedef struct FILE FILE;
     FILE *fopen(const char *path, const char *mode);
     int fileno(FILE *stream);
-    int write(int fd, const void *buf, size_t count);
+    ssize_t write(int fd, const void *buf, size_t count);
     int fclose(FILE *stream);
 ]]
 

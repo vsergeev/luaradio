@@ -15,7 +15,7 @@ function DownsamplerBlock:instantiate(factor)
 end
 
 function DownsamplerBlock:get_rate()
-    return self.inputs[1].pipe:get_rate()/self.factor
+    return block.Block.get_rate(self)/self.factor
 end
 
 function DownsamplerBlock:initialize()

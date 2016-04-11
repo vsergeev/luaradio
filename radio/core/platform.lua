@@ -11,6 +11,7 @@ local platform = {
     os = ffi.os,
     arch = ffi.arch,
     page_size = 4096,
+    cpu_count = -1,
     features = {
         volk = false,
         fftw3f = false,
@@ -28,6 +29,8 @@ ffi.cdef[[
 if platform.os == "Linux" then
     -- Look up page size (_SC_PAGESIZE)
     platform.page_size = tonumber(ffi.C.sysconf(30))
+    -- Look up CPU count (_SC_NPROCESSORS_ONLN)
+    platform.cpu_count = tonumber(ffi.C.sysconf(84))
     -- vmsplice() system call available
     platform.features.vmsplice = true
     -- Signal definitions
@@ -37,6 +40,8 @@ if platform.os == "Linux" then
 elseif platform.os == "BSD" then
     -- Look up page size (_SC_PAGESIZE)
     platform.page_size = tonumber(ffi.C.sysconf(47))
+    -- Look up CPU count (_SC_NPROCESSORS_ONLN)
+    platform.cpu_count = tonumber(ffi.C.sysconf(58))
     -- Signal definitions
     ffi.cdef("enum { SIGINT = 2, SIGTERM = 15, SIGCHLD = 20 };")
     -- sigprocmask() definitions
@@ -44,6 +49,8 @@ elseif platform.os == "BSD" then
 elseif platform.os == "OSX" then
     -- Look up page size (_SC_PAGESIZE)
     platform.page_size = tonumber(ffi.C.sysconf(29))
+    -- Look up CPU count (_SC_NPROCESSORS_ONLN)
+    platform.cpu_count = tonumber(ffi.C.sysconf(58))
     -- Signal definitions
     ffi.cdef("enum { SIGINT = 2, SIGTERM = 15, SIGCHLD = 20 };")
     -- sigprocmask() definitions

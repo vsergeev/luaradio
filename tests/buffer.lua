@@ -6,8 +6,9 @@ ffi.cdef[[
     int fileno(FILE *stream);
     int unlink(const char *pathname);
 
-    int write(int fd, const void *buf, size_t count);
-    int read(int fd, void *buf, size_t count);
+    typedef intptr_t ssize_t;
+    ssize_t write(int fd, const void *buf, size_t count);
+    ssize_t read(int fd, void *buf, size_t count);
 
     typedef uint64_t off_t;
     off_t lseek(int fildes, off_t offset, int whence);

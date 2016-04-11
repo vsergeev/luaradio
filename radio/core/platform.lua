@@ -1,10 +1,6 @@
 local os = require('os')
 local ffi = require('ffi')
 
-ffi.cdef[[
-    long sysconf(int name);
-]]
-
 local function getenv_flag(name)
     local value = string.lower(os.getenv(name) or "")
     return (value == "1" or value == "y" or value == "true" or value == "yes")
@@ -23,21 +19,10 @@ local platform = {
     libs = {},
 }
 
--- Load libvolk if it is available
-local libvolk_available, libvolk = pcall(ffi.load, "volk")
-if libvolk_available then
-    platform.libs.volk = libvolk
-    platform.features.volk = true
-else
-    io.stderr:write("Warning: libvolk not found. LuaRadio will run without volk acceleration.\n")
-end
-
--- Load libfftw3f if it is available
-local libfftw3f_available, libfftw3f = pcall(ffi.load, "fftw3f")
-if libfftw3f_available then
-    platform.libs.fftw3f = libfftw3f
-    platform.features.fftw3f = true
-end
+-- POSIX sysconf()
+ffi.cdef[[
+    long sysconf(int name);
+]]
 
 -- Platform specific lookups
 if platform.os == "Linux" then
@@ -83,6 +68,22 @@ platform.alloc = function (size)
         error("posix_memalign(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
     return ffi.gc(ptr[0], ffi.C.free)
+end
+
+-- Load libvolk if it is available
+local libvolk_available, libvolk = pcall(ffi.load, "volk")
+if libvolk_available then
+    platform.libs.volk = libvolk
+    platform.features.volk = true
+else
+    io.stderr:write("Warning: libvolk not found. LuaRadio will run without volk acceleration.\n")
+end
+
+-- Load libfftw3f if it is available
+local libfftw3f_available, libfftw3f = pcall(ffi.load, "fftw3f")
+if libfftw3f_available then
+    platform.libs.fftw3f = libfftw3f
+    platform.features.fftw3f = true
 end
 
 -- Disable features with env vars

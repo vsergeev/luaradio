@@ -31,10 +31,14 @@ ffi.cdef[[
 function JSONSink:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "wb")
-        assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     elseif self.fd then
         self.file = ffi.C.fdopen(self.fd, "wb")
-        assert(self.file ~= nil, "fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     elseif self.file then
         -- Noop
     end
@@ -45,19 +49,26 @@ function JSONSink:process(x)
         local s = x.data[i]:to_json() .. "\n"
 
         -- Write to file
-        local bytes_written = ffi.C.fwrite(s, 1, #s, self.file)
-        assert(bytes_written == #s, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fwrite(s, 1, #s, self.file) ~= #s then
+            error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 
     -- Flush file
-    assert(ffi.C.fflush(self.file) == 0, "fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if ffi.C.fflush(self.file) ~= 0 then
+        error("fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 end
 
 function JSONSink:cleanup()
     if self.filename then
-        assert(ffi.C.fclose(self.file) == 0, "fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fclose(self.file) ~= 0 then
+            error("fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     elseif self.fd then
-        assert(ffi.C.fflush(self.file) == 0, "fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fflush(self.file) ~= 0 then
+            error("fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     else
         self.file:flush()
     end

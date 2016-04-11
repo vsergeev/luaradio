@@ -6,15 +6,16 @@ local types = require('radio.types')
 local ThrottleBlock = block.factory("ThrottleBlock")
 
 function ThrottleBlock:instantiate()
-    -- Accept all input types
-    self:add_type_signature({block.Input("in", function (type) return true end)}, {block.Output("out", nil)})
+    -- Add a dummy type signature
+    self:add_type_signature({block.Input("in", nil)}, {block.Output("out", nil)})
 end
 
 function ThrottleBlock:differentiate(input_data_types)
-    block.Block.differentiate(self, input_data_types)
+    -- Absorb data type into dummy type signature
+    self.signatures[1].inputs[1].data_type = input_data_types[1]
+    self.signatures[1].outputs[1].data_type = input_data_types[1]
 
-    -- Copy input data type to output data type
-    self.signature.outputs[1].data_type = input_data_types[1]
+    block.Block.differentiate(self, input_data_types)
 end
 
 function ThrottleBlock:initialize()

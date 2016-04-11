@@ -83,10 +83,14 @@ ffi.cdef[[
 function RealFileSink:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "wb")
-        assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     else
         self.file = ffi.C.fdopen(self.fd, "wb")
-        assert(self.file ~= nil, "fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 end
 
@@ -116,14 +120,20 @@ function RealFileSink:process(x)
 
     -- Write to file
     local num_samples = ffi.C.fwrite(raw_samples, ffi.sizeof(self.format.ctype), x.length, self.file)
-    assert(num_samples == x.length, "fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if num_samples ~= x.length then
+        error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 end
 
 function RealFileSink:cleanup()
     if self.filename then
-        assert(ffi.C.fclose(self.file) == 0, "fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fclose(self.file) ~= 0 then
+            error("fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     else
-        assert(ffi.C.fflush(self.file) == 0, "fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fflush(self.file) ~= 0 then
+            error("fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 end
 

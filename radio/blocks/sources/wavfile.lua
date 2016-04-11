@@ -122,21 +122,29 @@ function WAVFileSource:initialize()
 
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "rb")
-        assert(self.file ~= nil, "fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     else
         self.file = ffi.C.fdopen(self.fd, "rb")
-        assert(self.file ~= nil, "fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if self.file == nil then
+            error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 
     -- Read headers
     self.riff_header = ffi.new("riff_header_t")
-    assert(tonumber(ffi.C.fread(self.riff_header, ffi.sizeof(self.riff_header), 1, self.file)) == 1, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-
+    if tonumber(ffi.C.fread(self.riff_header, ffi.sizeof(self.riff_header), 1, self.file)) ~= 1 then
+        error("fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
     self.wave_subchunk1_header = ffi.new("wave_subchunk1_header_t")
-    assert(tonumber(ffi.C.fread(self.wave_subchunk1_header, ffi.sizeof(self.wave_subchunk1_header), 1, self.file)) == 1, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-
+    if tonumber(ffi.C.fread(self.wave_subchunk1_header, ffi.sizeof(self.wave_subchunk1_header), 1, self.file)) ~= 1 then
+        error("fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
     self.wave_subchunk2_header = ffi.new("wave_subchunk2_header_t")
-    assert(tonumber(ffi.C.fread(self.wave_subchunk2_header, ffi.sizeof(self.wave_subchunk2_header), 1, self.file)) == 1, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if tonumber(ffi.C.fread(self.wave_subchunk2_header, ffi.sizeof(self.wave_subchunk2_header), 1, self.file)) ~= 1 then
+        error("fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 
     -- Byte swap if needed for endianness
     if ffi.abi("be") then
@@ -195,12 +203,16 @@ function WAVFileSource:process()
             if self.repeat_on_eof then
                 -- Rewind past header
                 local header_length = ffi.sizeof("riff_header_t") + ffi.sizeof("wave_subchunk1_header_t") + ffi.sizeof("wave_subchunk2_header_t")
-                assert(ffi.C.fseek(self.file, header_length, ffi.C.SEEK_SET) == 0, "fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                if ffi.C.fseek(self.file, header_length, ffi.C.SEEK_SET) ~= 0 then
+                    error("fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                end
             else
                 return nil
             end
         else
-            assert(ffi.C.ferror(self.file) == 0, "fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            if ffi.C.ferror(self.file) ~= 0 then
+                error("fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
         end
     end
 
@@ -229,7 +241,9 @@ end
 
 function WAVFileSource:cleanup()
     if self.filename then
-        assert(ffi.C.fclose(self.file) == 0, "fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        if ffi.C.fclose(self.file) ~= 0 then
+            error("fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 end
 

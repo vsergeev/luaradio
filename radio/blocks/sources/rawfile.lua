@@ -66,7 +66,7 @@ function RawFileSource:process()
     end
 
     -- Read from file
-    local bytes_read = ffi.C.fread(self.buf, 1, self.buf_capacity - unread_length, self.file)
+    local bytes_read = tonumber(ffi.C.fread(self.buf, 1, self.buf_capacity - unread_length, self.file))
     if bytes_read < (self.buf_capacity - unread_length) then
         if bytes_read == 0 and ffi.C.feof(self.file) ~= 0 then
             if self.repeat_on_eof then
@@ -82,7 +82,7 @@ function RawFileSource:process()
     end
 
     -- Update size and reset unread offset
-    self.buf_size = tonumber(unread_length + bytes_read)
+    self.buf_size = unread_length + bytes_read
     self.buf_offset = 0
 
     -- Deserialize as many elements as possible

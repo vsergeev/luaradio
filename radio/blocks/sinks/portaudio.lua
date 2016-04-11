@@ -57,16 +57,22 @@ end
 function PortAudioSink:initialize_portaudio()
     -- Initialize PortAudio
     local err = libportaudio.Pa_Initialize()
-    assert(err == 0, "Pa_Initialize(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    if err ~= 0 then
+        error("Pa_Initialize(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    end
 
     -- Open default stream
     self.stream = ffi.new("PaStream *[1]")
     local err = libportaudio.Pa_OpenDefaultStream(self.stream, 0, self.num_channels, ffi.C.paFloat32, self:get_rate(), 32768, nil, nil)
-    assert(err == 0, "Pa_OpenDefaultStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    if err ~= 0 then
+        error("Pa_OpenDefaultStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    end
 
     -- Start the stream
     local err = libportaudio.Pa_StartStream(self.stream[0])
-    assert(err == 0, "Pa_StartStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    if err ~= 0 then
+        error("Pa_StartStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    end
 end
 
 function PortAudioSink:process(...)
@@ -92,7 +98,9 @@ function PortAudioSink:process(...)
 
     -- Write to our PortAudio connection
     local err = libportaudio.Pa_WriteStream(self.stream[0], interleaved_samples.data, samples[1].length)
-    assert(err == 0, "Pa_WriteStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    if err ~= 0 then
+        error("Pa_WriteStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    end
 end
 
 function PortAudioSink:cleanup()
@@ -103,15 +111,21 @@ function PortAudioSink:cleanup()
 
     -- Stop the stream
     local err = libportaudio.Pa_StopStream(self.stream[0])
-    assert(err == 0, "Pa_StopStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    if err ~= 0 then
+        error("Pa_StopStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    end
 
     -- Close the stream
     local err = libportaudio.Pa_CloseStream(self.stream[0])
-    assert(err == 0, "Pa_StopStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    if err ~= 0 then
+        error("Pa_StopStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    end
 
     -- Terminate PortAudio
     local err = libportaudio.Pa_Terminate()
-    assert(err == 0, "Pa_Terminate(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    if err ~= 0 then
+        error("Pa_Terminate(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
+    end
 end
 
 return {PortAudioSink = PortAudioSink}

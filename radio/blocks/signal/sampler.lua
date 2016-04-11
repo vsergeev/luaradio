@@ -15,7 +15,7 @@ function SamplerBlock:instantiate()
 end
 
 function SamplerBlock:initialize()
-    self.data_type = self.signature.inputs[1].data_type
+    self.data_type = self:get_input_types()[1]
 end
 
 function SamplerBlock:process(data, clock)

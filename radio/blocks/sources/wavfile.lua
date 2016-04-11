@@ -134,15 +134,15 @@ function WAVFileSource:initialize()
 
     -- Read headers
     self.riff_header = ffi.new("riff_header_t")
-    if tonumber(ffi.C.fread(self.riff_header, ffi.sizeof(self.riff_header), 1, self.file)) ~= 1 then
+    if ffi.C.fread(self.riff_header, ffi.sizeof(self.riff_header), 1, self.file) ~= 1 then
         error("fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
     self.wave_subchunk1_header = ffi.new("wave_subchunk1_header_t")
-    if tonumber(ffi.C.fread(self.wave_subchunk1_header, ffi.sizeof(self.wave_subchunk1_header), 1, self.file)) ~= 1 then
+    if ffi.C.fread(self.wave_subchunk1_header, ffi.sizeof(self.wave_subchunk1_header), 1, self.file) ~= 1 then
         error("fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
     self.wave_subchunk2_header = ffi.new("wave_subchunk2_header_t")
-    if tonumber(ffi.C.fread(self.wave_subchunk2_header, ffi.sizeof(self.wave_subchunk2_header), 1, self.file)) ~= 1 then
+    if ffi.C.fread(self.wave_subchunk2_header, ffi.sizeof(self.wave_subchunk2_header), 1, self.file) ~= 1 then
         error("fread(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 

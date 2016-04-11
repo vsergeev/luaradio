@@ -65,6 +65,11 @@ elseif platform.os == "OSX" then
     ffi.cdef("enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };")
 end
 
+-- POSIX ssize_t definition
+ffi.cdef[[
+    typedef intptr_t ssize_t;
+]]
+
 -- POSIX Aligned memory allocator
 ffi.cdef[[
     int posix_memalign(void **memptr, size_t alignment, size_t size);

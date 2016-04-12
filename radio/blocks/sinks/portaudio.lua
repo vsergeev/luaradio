@@ -50,7 +50,7 @@ local libportaudio_available, libportaudio = pcall(ffi.load, "portaudio")
 function PortAudioSink:initialize()
     -- Check library is available
     if not libportaudio_available then
-        error("PortAudioSink: libportaudio not found.")
+        error("PortAudioSink: libportaudio not found. Is PortAudio installed?")
     end
 end
 

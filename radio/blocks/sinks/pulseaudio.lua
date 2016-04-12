@@ -51,7 +51,7 @@ local libpulse_available, libpulse = pcall(ffi.load, "pulse-simple")
 function PulseAudioSink:initialize()
     -- Check library is available
     if not libpulse_available then
-        error("PulseAudioSink: libpulse-simple not found.")
+        error("PulseAudioSink: libpulse-simple not found. Is PulseAudio installed?")
     end
 
     -- Prepare sample spec

@@ -46,7 +46,9 @@ function RtlSdrSource:initialize()
     if not librtlsdr_available then
         error("RtlSdrSource: librtlsdr not found. Is librtlsdr installed?")
     end
+end
 
+function RtlSdrSource:initialize_rtlsdr()
     self.dev = ffi.new("rtlsdr_dev_t *[1]")
 
     -- Open device
@@ -110,6 +112,11 @@ function RtlSdrSource:initialize()
 end
 
 function RtlSdrSource:process()
+    -- Initialize the rtlsdr in our own running process
+    if not self.dev then
+        self:initialize_rtlsdr()
+    end
+
     -- Read buffer
     if librtlsdr.rtlsdr_read_sync(self.dev[0], self.buf, self.buf_size, self.n_read) ~= 0 then
         error("rtlsdr_read_sync() failed.")

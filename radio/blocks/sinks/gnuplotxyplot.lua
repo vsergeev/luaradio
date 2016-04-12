@@ -21,7 +21,7 @@ end
 
 function GnuplotXYPlotSink:initialize()
     -- Check gnuplot exists
-    assert(os.execute("gnuplot --version >/dev/null 2>&1") == 0, "gnuplot not found.")
+    assert(os.execute("gnuplot --version >/dev/null 2>&1") == 0, "gnuplot not found. Is gnuplot installed?")
 end
 
 function GnuplotXYPlotSink:initialize_gnuplot()

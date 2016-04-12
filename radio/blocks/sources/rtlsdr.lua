@@ -39,12 +39,12 @@ ffi.cdef[[
     int rtlsdr_reset_buffer(rtlsdr_dev_t *dev);
     int rtlsdr_read_sync(rtlsdr_dev_t *dev, void *buf, int len, int *n_read);
 ]]
-local librtlsdr_found, librtlsdr = pcall(ffi.load, "rtlsdr")
+local librtlsdr_available, librtlsdr = pcall(ffi.load, "rtlsdr")
 
 function RtlSdrSource:initialize()
     -- Check library is available
-    if not librtlsdr_found then
-        error("RtlSdrSource: librtlsdr not found.")
+    if not librtlsdr_available then
+        error("RtlSdrSource: librtlsdr not found. Is librtlsdr installed?")
     end
 
     self.dev = ffi.new("rtlsdr_dev_t *[1]")

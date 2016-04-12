@@ -63,7 +63,7 @@ function PortAudioSink:initialize_portaudio()
 
     -- Open default stream
     self.stream = ffi.new("PaStream *[1]")
-    local err = libportaudio.Pa_OpenDefaultStream(self.stream, 0, self.num_channels, ffi.C.paFloat32, self:get_rate(), 32768, nil, nil)
+    local err = libportaudio.Pa_OpenDefaultStream(self.stream, 0, self.num_channels, ffi.C.paFloat32, self:get_rate(), 0, nil, nil)
     if err ~= 0 then
         error("Pa_OpenDefaultStream(): " .. ffi.string(libportaudio.Pa_GetErrorText(err)))
     end
@@ -78,7 +78,7 @@ end
 function PortAudioSink:process(...)
     local samples = {...}
 
-    -- Initialize PortAudio in our own process
+    -- Initialize PortAudio in our own running process
     if not self.stream then
         self:initialize_portaudio()
     end

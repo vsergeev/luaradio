@@ -8,6 +8,7 @@ end
 
 -- Default platform configuration
 local platform = {
+    luajit_version = jit.version,
     os = ffi.os,
     arch = ffi.arch,
     page_size = 4096,

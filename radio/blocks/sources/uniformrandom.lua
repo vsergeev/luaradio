@@ -7,18 +7,42 @@ local UniformRandomSource = block.factory("UniformRandomSource")
 
 local random_generator_table = {
     [types.ComplexFloat32Type] =
-        function () return types.ComplexFloat32Type(2*math.random()-1, 2*math.random()-1) end,
+        function (a, b)
+            a, b = a or -1.0, b or 1.0
+            return function ()
+                return types.ComplexFloat32Type((b-a)*math.random()-b, (b-a)*math.random()-b)
+            end
+        end,
     [types.Float32Type] =
-        function () return types.Float32Type(2*math.random()-1) end,
+        function (a, b)
+            a, b = a or -1.0, b or 1.0
+            return function ()
+                return types.Float32Type((b-a)*math.random()-b)
+            end
+        end,
     [types.Integer32Type] =
-        function () return types.Integer32Type(math.random(-2147483648, 2147483647)) end,
+        function (a, b)
+            a, b = a or -2147483648, b or 2147483647
+            return function ()
+                return types.Integer32Type(math.random(a, b))
+            end
+        end,
     [types.ByteType] =
-        function () return types.ByteType(math.random(0, 255)) end,
+        function (a, b)
+            a = a or 0, b or 255
+            return function ()
+                return types.ByteType(math.random(a, b))
+            end
+        end,
     [types.BitType] =
-        function () return types.BitType(math.random(0, 1)) end,
+        function (a, b)
+            return function ()
+                return types.BitType(math.random(0, 1))
+            end
+        end,
 }
 
-function UniformRandomSource:instantiate(data_type, rate)
+function UniformRandomSource:instantiate(data_type, rate, range)
     if not random_generator_table[data_type] then
         error("Unsupported data type.")
     end
@@ -26,6 +50,7 @@ function UniformRandomSource:instantiate(data_type, rate)
     self.rate = rate or 1
     self.chunk_size = 8192
     self.data_type = data_type
+    self.generator = random_generator_table[data_type](unpack(range or {}))
 
     self:add_type_signature({}, {block.Output("out", data_type)})
 end
@@ -38,7 +63,7 @@ function UniformRandomSource:process()
     local samples = self.data_type.vector(self.chunk_size)
 
     for i=0, samples.length-1 do
-        samples.data[i] = random_generator_table[self.data_type]()
+        samples.data[i] = self.generator()
     end
 
     return samples

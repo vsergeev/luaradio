@@ -3,7 +3,7 @@ local math = require('math')
 local block = require('radio.core.block')
 local types = require('radio.types')
 
-local RandomSource = block.factory("RandomSource")
+local UniformRandomSource = block.factory("UniformRandomSource")
 
 local random_generator_table = {
     [types.ComplexFloat32Type] =
@@ -18,7 +18,7 @@ local random_generator_table = {
         function () return types.BitType(math.random(0, 1)) end,
 }
 
-function RandomSource:instantiate(data_type, rate)
+function UniformRandomSource:instantiate(data_type, rate)
     if not random_generator_table[data_type] then
         error("Unsupported data type.")
     end
@@ -30,11 +30,11 @@ function RandomSource:instantiate(data_type, rate)
     self:add_type_signature({}, {block.Output("out", data_type)})
 end
 
-function RandomSource:get_rate()
+function UniformRandomSource:get_rate()
     return self.rate
 end
 
-function RandomSource:process()
+function UniformRandomSource:process()
     local samples = self.data_type.vector(self.chunk_size)
 
     for i=0, samples.length-1 do
@@ -44,4 +44,4 @@ function RandomSource:process()
     return samples
 end
 
-return {RandomSource = RandomSource}
+return {UniformRandomSource = UniformRandomSource}

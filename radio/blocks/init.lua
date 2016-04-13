@@ -8,7 +8,7 @@ return {
     RealFileSource = require('radio.blocks.sources.realfile').RealFileSource,
     WAVFileSource = require('radio.blocks.sources.wavfile').WAVFileSource,
     RawFileSource = require('radio.blocks.sources.rawfile').RawFileSource,
-    RandomSource = require('radio.blocks.sources.random').RandomSource,
+    UniformRandomSource = require('radio.blocks.sources.uniformrandom').UniformRandomSource,
     SignalSource = require('radio.blocks.sources.signal').SignalSource,
     RtlSdrSource = require('radio.blocks.sources.rtlsdr').RtlSdrSource,
 

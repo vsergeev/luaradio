@@ -40,8 +40,8 @@ def generate():
                 expected_vector = s32_to_float32(wav_vector)
 
             # Reshape vectors with num channels
-            wav_vector.shape = (len(wav_vector) / num_channels, num_channels)
-            expected_vector.shape = (len(expected_vector) / num_channels, num_channels)
+            wav_vector.shape = (len(wav_vector) // num_channels, num_channels)
+            expected_vector.shape = (len(expected_vector) // num_channels, num_channels)
 
             # Write WAV file to bytes array
             f_buf = io.BytesIO()

@@ -21,7 +21,7 @@ def generate():
 
         # Fix the averaged out DC component
         win = scipy.signal.get_window(window_type, len(samples))
-        psd_samples[len(samples) / 2] = numpy.abs(numpy.sum(samples * win))**2 / (sample_rate * numpy.sum(win * win))
+        psd_samples[len(samples) // 2] = numpy.abs(numpy.sum(samples * win))**2 / (sample_rate * numpy.sum(win * win))
 
         if logarithmic:
             # Calculate 10*log10() of PSD

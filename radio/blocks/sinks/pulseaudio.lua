@@ -29,8 +29,8 @@ ffi.cdef[[
         uint32_t rate;
         uint8_t channels;
     } pa_sample_spec;
-    typedef void pa_buffer_attr;
-    typedef void pa_channel_map;
+    typedef struct pa_buffer_attr pa_buffer_attr;
+    typedef struct pa_channel_map pa_channel_map;
 
     typedef enum pa_stream_direction {
         PA_STREAM_NODIRECTION,

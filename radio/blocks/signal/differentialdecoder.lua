@@ -15,12 +15,12 @@ function DifferentialDecoderBlock:process(x)
 
     for i = 0, x.length-1 do
         if self.invert then
-            out.data[i] = self.prev_bit:bxor(x.data[i]):bnot()
+            out.data[i].value = (bit.bxor(self.prev_bit.value, x.data[i].value) + 1) % 2
         else
-            out.data[i] = self.prev_bit:bxor(x.data[i])
+            out.data[i].value = bit.bxor(self.prev_bit.value, x.data[i].value)
         end
 
-        self.prev_bit = types.BitType(x.data[i].value)
+        self.prev_bit.value = x.data[i].value
     end
 
     return out

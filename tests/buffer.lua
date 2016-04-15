@@ -1,7 +1,7 @@
 local ffi = require('ffi')
 
 ffi.cdef[[
-    typedef void FILE;
+    typedef struct _IO_FILE FILE;
     FILE *fopen(const char *path, const char *mode);
     int fileno(FILE *stream);
     int unlink(const char *pathname);

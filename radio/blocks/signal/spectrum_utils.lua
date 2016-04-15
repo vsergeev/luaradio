@@ -133,7 +133,7 @@ if platform.features.fftw3f then
 elseif platform.features.volk then
 
     ffi.cdef[[
-    void (*volk_32fc_s32fc_x2_rotator_32fc)(complex_float32_t* outVector, const complex_float32_t* inVector, const complex_float32_t phase_inc, complex_float32_t* phase, unsigned int num_points);
+    void (*volk_32fc_s32fc_x2_rotator_32fc_a)(complex_float32_t* outVector, const complex_float32_t* inVector, const complex_float32_t phase_inc, complex_float32_t* phase, unsigned int num_points);
     void (*volk_32fc_32f_multiply_32fc_a)(complex_float32_t* cVector, const complex_float32_t* aVector, const float32_t* bVector, unsigned int num_points);
     void (*volk_32fc_x2_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const complex_float32_t* taps, unsigned int num_points);
     ]]
@@ -153,7 +153,7 @@ elseif platform.features.volk then
             local omega = (-2*math.pi*k)/self.num_samples
             local rotator = types.ComplexFloat32Type(math.cos(omega), math.sin(omega))
             local phase = types.ComplexFloat32Type(1, 0)
-            libvolk.volk_32fc_s32fc_x2_rotator_32fc(self.exponentials[k].data, dc_vec.data, rotator, phase, self.num_samples)
+            libvolk.volk_32fc_s32fc_x2_rotator_32fc_a(self.exponentials[k].data, dc_vec.data, rotator, phase, self.num_samples)
         end
 
     end

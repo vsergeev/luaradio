@@ -15,8 +15,6 @@ function FMDeemphasisFilterBlock:instantiate(tau)
 end
 
 function FMDeemphasisFilterBlock:initialize()
-    IIRFilterBlock.initialize(self)
-
     --[[
         Single-pole low pass filter transfer function:
             H(s) = 1/(tau*s + 1)
@@ -36,6 +34,8 @@ function FMDeemphasisFilterBlock:initialize()
     self.b_taps.data[1].value = 1/(1 + 2*self.tau*self:get_rate())
     self.a_taps.data[0].value = 1
     self.a_taps.data[1].value = (1 - 2*self.tau*self:get_rate())/(1 + 2*self.tau*self:get_rate())
+
+    IIRFilterBlock.initialize(self)
 end
 
 return {FMDeemphasisFilterBlock = FMDeemphasisFilterBlock}

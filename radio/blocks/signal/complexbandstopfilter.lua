@@ -17,8 +17,6 @@ function ComplexBandstopFilterBlock:instantiate(num_taps, cutoff_frequencies, wi
 end
 
 function ComplexBandstopFilterBlock:initialize()
-    FIRFilterBlock.initialize(self)
-
     -- Compute Nyquist frequency
     local nyquist_frequency = self.nyquist_frequency or (self:get_rate()/2)
 
@@ -26,6 +24,8 @@ function ComplexBandstopFilterBlock:initialize()
     local cutoffs = {self.cutoff_frequencies[1]/nyquist_frequency, self.cutoff_frequencies[2]/nyquist_frequency}
     local taps = filter_utils.firwin_complex_bandstop(self.taps.length, cutoffs, self.window_type)
     self.taps = types.ComplexFloat32Type.vector_from_array(taps)
+
+    FIRFilterBlock.initialize(self)
 end
 
 return {ComplexBandstopFilterBlock = ComplexBandstopFilterBlock}

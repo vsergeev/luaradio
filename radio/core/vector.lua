@@ -34,20 +34,19 @@ function Vector:resize(num)
         return
     end
 
-    -- Calculate new capacity
+    -- Calculate new capacity (grow exponentially)
     local capacity = math.max(num, 2*self._capacity)
     -- Calculate new buffer size
-    local size = capacity*ffi.sizeof(self.type)
-    -- Allocate buffer
-    local buf = platform.alloc(size)
-    -- Zero buffer
-    ffi.C.memset(buf, 0, size)
+    local bufsize = capacity*ffi.sizeof(self.type)
+    -- Allocate and zero buffer
+    local buf = platform.alloc(bufsize)
+    ffi.C.memset(buf, 0, bufsize)
     -- Cast to specified pointer type
     local ptr = ffi.cast(ffi.typeof("$ *", self.type), buf)
     -- Copy old data
     ffi.C.memcpy(buf, self._buffer, math.min(self.size, num*ffi.sizeof(self.type)))
 
-    -- Adjust state
+    -- Update state
     self.data = ptr
     self.length = num
     self.size = num*ffi.sizeof(self.type)

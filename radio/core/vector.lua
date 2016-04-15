@@ -35,7 +35,7 @@ function Vector:resize(num)
     end
 
     -- Calculate new capacity
-    local capacity = math.max(1, 2*self._capacity)
+    local capacity = math.max(num, 2*self._capacity)
     -- Calculate new buffer size
     local size = capacity*ffi.sizeof(self.type)
     -- Allocate buffer

@@ -91,7 +91,7 @@ end
 if platform.features.fftw3f then
 
     ffi.cdef[[
-    typedef void * fftwf_plan;
+    typedef struct fftwf_plan_s *fftwf_plan;
     typedef complex_float32_t fftwf_complex;
 
     fftwf_plan fftwf_plan_dft_1d(int n, fftwf_complex *in, fftwf_complex *out, int sign, unsigned flags);

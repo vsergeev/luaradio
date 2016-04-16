@@ -25,6 +25,7 @@ return {
     GnuplotXYPlotSink = require('radio.blocks.sinks.gnuplotxyplot').GnuplotXYPlotSink,
     GnuplotSpectrumSink = require('radio.blocks.sinks.gnuplotspectrum').GnuplotSpectrumSink,
     GnuplotWaterfallSink = require('radio.blocks.sinks.gnuplotwaterfall').GnuplotWaterfallSink,
+    BenchmarkSink = require('radio.blocks.sinks.benchmark').BenchmarkSink,
 
     -- Signal Blocks
     --- Filtering

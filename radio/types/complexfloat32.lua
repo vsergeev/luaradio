@@ -9,6 +9,11 @@ typedef struct {
 } complex_float32_t;
 ]]
 
+ffi.cdef[[
+float atan2f(float y, float x);
+float sqrtf(float x);
+]]
+
 local mt = {}
 
 function mt:__add(other)
@@ -50,11 +55,11 @@ function mt:scalar_div(other)
 end
 
 function mt:arg()
-    return math.atan2(self.imag, self.real)
+    return ffi.C.atan2f(self.imag, self.real)
 end
 
 function mt:abs()
-    return math.sqrt(self.real*self.real + self.imag*self.imag)
+    return ffi.C.sqrtf(self.real*self.real + self.imag*self.imag)
 end
 
 function mt:abs_squared()

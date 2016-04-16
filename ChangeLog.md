@@ -1,3 +1,17 @@
+* (Prototype) v0.0.15 - 04/18/2016
+    * Add BenchmarkSink block.
+    * Remove old LuaRadio and GNURadio benchmark scripts.
+    * Add more comprehensive LuaRadio and GNURadio benchmark suites.
+    * Improve performance of arg() and abs() methods of ComplexFloat32Type.
+    * Improve performance of several blocks:
+        * DelayBlock
+        * DifferentialDecoderBlock
+        * FrequencyDiscriminatorBlock
+        * SignalSource
+        * FIRFilterBlock
+        * HilbertTransformBlock
+    * Fix unit tests descriptions for DelayBlock and IIRFilterBlock.
+
 * (Prototype) v0.0.14 - 04/15/2016
     * Fix resizing zero length vectors.
     * Add get_input_types() and get_output_types() methods to Block base class.

@@ -1,3 +1,17 @@
+* (Prototype) v0.0.14 - 04/15/2016
+    * Fix resizing zero length vectors.
+    * Add get_input_types() and get_output_types() methods to Block base class.
+    * Simplify repeated code in some blocks with Block base class methods.
+    * Improve portability of several C definitions with typedefs.
+    * Fix C error message construction throughout the codebase.
+    * Fix clean up in several sinks on early exit before process() is run.
+    * Add install hints to error messages for library soft dependencies.
+    * Add CPU count, CPU model, LuaJIT version lookups to platform module and
+      the luaradio runner platform dump.
+    * Fix RtlSdrSource initialization on Mac OS X platform.
+    * Rename RandomSource to UniformRandomSource and add support for custom
+      range and seed.
+
 * (Prototype) v0.0.13 - 04/09/2016
     * Add luaradio executable with help, version, platform, and verbosity options.
     * Add version string and version number to radio package.

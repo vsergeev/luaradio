@@ -42,21 +42,30 @@ local random_generator_table = {
         end,
 }
 
-function UniformRandomSource:instantiate(data_type, rate, range)
+function UniformRandomSource:instantiate(data_type, rate, range, options)
     if not random_generator_table[data_type] then
         error("Unsupported data type.")
     end
+
+    options = options or {}
 
     self.rate = rate or 1
     self.chunk_size = 8192
     self.data_type = data_type
     self.generator = random_generator_table[data_type](unpack(range or {}))
+    self.seed = options.seed or nil
 
     self:add_type_signature({}, {block.Output("out", data_type)})
 end
 
 function UniformRandomSource:get_rate()
     return self.rate
+end
+
+function UniformRandomSource:initialize()
+    if self.seed then
+        math.randomseed(self.seed)
+    end
 end
 
 function UniformRandomSource:process()

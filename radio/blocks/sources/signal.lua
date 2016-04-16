@@ -1,3 +1,4 @@
+local ffi = require('ffi')
 local math = require('math')
 
 local block = require('radio.core.block')
@@ -29,6 +30,11 @@ function SignalSource:get_rate()
     return self.rate
 end
 
+ffi.cdef[[
+    float cosf(float x);
+    float sinf(float x);
+]]
+
 -- Complex Exponential
 
 function SignalSource:initialize_exponential()
@@ -41,10 +47,13 @@ function SignalSource:process_exponential()
     local out = types.ComplexFloat32Type.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
-        out.data[i].real = math.cos(self.phase)*self.amplitude
-        out.data[i].imag = math.sin(self.phase)*self.amplitude
+        out.data[i].real = ffi.C.cosf(self.phase)*self.amplitude
+        out.data[i].imag = ffi.C.sinf(self.phase)*self.amplitude
         self.phase = self.phase + self.omega
-        self.phase = (self.phase > 2*math.pi) and (self.phase - 2*math.pi) or self.phase
+    end
+
+    while self.phase > 2*math.pi do
+        self.phase = self.phase - 2*math.pi
     end
 
     return out
@@ -63,9 +72,12 @@ function SignalSource:process_cosine()
     local out = types.Float32Type.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
-        out.data[i].value = math.cos(self.phase) * self.amplitude + self.offset
+        out.data[i].value = ffi.C.cosf(self.phase) * self.amplitude + self.offset
         self.phase = self.phase + self.omega
-        self.phase = (self.phase > 2*math.pi) and (self.phase - 2*math.pi) or self.phase
+    end
+
+    while self.phase > 2*math.pi do
+        self.phase = self.phase - 2*math.pi
     end
 
     return out
@@ -75,9 +87,12 @@ function SignalSource:process_sine()
     local out = types.Float32Type.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
-        out.data[i].value = math.sin(self.phase) * self.amplitude + self.offset
+        out.data[i].value = ffi.C.sinf(self.phase) * self.amplitude + self.offset
         self.phase = self.phase + self.omega
-        self.phase = (self.phase > 2*math.pi) and (self.phase - 2*math.pi) or self.phase
+    end
+
+    while self.phase > 2*math.pi do
+        self.phase = self.phase - 2*math.pi
     end
 
     return out

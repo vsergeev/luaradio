@@ -3,8 +3,8 @@ local radio = require('radio')
 local jigs = require('tests.jigs')
 
 local object = require('radio.core.object')
+local ObjectVector = require('radio.core.vector').ObjectVector
 local ObjectType = radio.ObjectType
-local ObjectVector = require('radio.types.object').ObjectVector
 
 describe("ObjectVector", function ()
     it("basics", function ()

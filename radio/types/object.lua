@@ -4,7 +4,8 @@ local json = require('radio.thirdparty.json')
 
 local object = require('radio.core.object')
 
-local ObjectVector
+local ObjectVector = require('radio.core.vector').ObjectVector
+
 local ObjectType = object.class_factory()
 
 function ObjectType.factory(custom_mt)
@@ -127,29 +128,4 @@ function ObjectType.factory(custom_mt)
     return CustomType
 end
 
--- ObjectVector
-
--- This is a simple wrapper to a Lua array that implements a Vector compatible
--- interface.
-
-ObjectVector = object.class_factory()
-
-function ObjectVector.new(type, num)
-    return setmetatable({data = {}, length = num or 0, size = 0, type = type}, ObjectVector)
-end
-
-function ObjectVector:resize(num)
-    if num < self.length then
-        for i = num, self.length do
-            self.data[i] = nil
-        end
-    end
-    self.length = num
-end
-
-function ObjectVector:append(elem)
-    self.data[self.length] = elem
-    self.length = self.length + 1
-end
-
-return {ObjectType = ObjectType, ObjectVector = ObjectVector}
+return {ObjectType = ObjectType}

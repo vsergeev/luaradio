@@ -8,7 +8,7 @@ ffi.cdef[[
     void *memcpy(void *dest, const void *src, size_t n);
 ]]
 
--- Vector object
+-- Vector class
 
 local Vector = object.class_factory()
 
@@ -87,4 +87,29 @@ function Vector.cast(ctype, buf, size)
     return setmetatable({data = ptr, length = num, _capacity = num, size = size, type = ctype, _buffer = buf}, Vector)
 end
 
-return {Vector = Vector}
+-- ObjectVector class
+
+-- This is a simple wrapper to a Lua array that implements a Vector compatible
+-- interface.
+
+ObjectVector = object.class_factory()
+
+function ObjectVector.new(type, num)
+    return setmetatable({data = {}, length = num or 0, size = 0, type = type}, ObjectVector)
+end
+
+function ObjectVector:resize(num)
+    if num < self.length then
+        for i = num, self.length do
+            self.data[i] = nil
+        end
+    end
+    self.length = num
+end
+
+function ObjectVector:append(elem)
+    self.data[self.length] = elem
+    self.length = self.length + 1
+end
+
+return {Vector = Vector, ObjectVector = ObjectVector}

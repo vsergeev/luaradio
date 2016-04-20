@@ -1,28 +1,21 @@
 local block = require('radio.core.block')
 local types = require('radio.types')
+local blocks = require('radio.blocks')
 
-local CompositeBlock = require('radio.core.composite').CompositeBlock
-local ComplexBandpassFilterBlock = require('radio.blocks.signal.complexbandpassfilter').ComplexBandpassFilterBlock
-local PLLBlock = require('radio.blocks.signal.pll').PLLBlock
-local MultiplyConjugateBlock = require('radio.blocks.signal.multiplyconjugate').MultiplyConjugateBlock
-local ComplexToRealBlock = require('radio.blocks.signal.complextoreal').ComplexToRealBlock
-local MultiplyConstantBlock = require('radio.blocks.signal.multiplyconstant').MultiplyConstantBlock
-local LowpassFilterBlock = require('radio.blocks.signal.lowpassfilter').LowpassFilterBlock
-
-local AMSynchronousDemodulator = block.factory("AMSynchronousDemodulator", CompositeBlock)
+local AMSynchronousDemodulator = block.factory("AMSynchronousDemodulator", blocks.CompositeBlock)
 
 function AMSynchronousDemodulator:instantiate(ifreq, bandwidth, gain)
-    CompositeBlock.instantiate(self)
+    blocks.CompositeBlock.instantiate(self)
 
     bandwidth = bandwidth or 5e3
     gain = gain or 1.0
 
-    local rf_filter = ComplexBandpassFilterBlock(257, {ifreq - bandwidth, ifreq + bandwidth})
-    local pll = PLLBlock(1000, ifreq - 100, ifreq + 100)
-    local mixer = MultiplyConjugateBlock()
-    local am_demod = ComplexToRealBlock()
-    local af_gain = MultiplyConstantBlock(gain)
-    local af_filter = LowpassFilterBlock(256, bandwidth)
+    local rf_filter = blocks.ComplexBandpassFilterBlock(257, {ifreq - bandwidth, ifreq + bandwidth})
+    local pll = blocks.PLLBlock(1000, ifreq - 100, ifreq + 100)
+    local mixer = blocks.MultiplyConjugateBlock()
+    local am_demod = blocks.ComplexToRealBlock()
+    local af_gain = blocks.MultiplyConstantBlock(gain)
+    local af_filter = blocks.LowpassFilterBlock(256, bandwidth)
     self:connect(rf_filter, pll)
     self:connect(rf_filter, 'out', mixer, 'in1')
     self:connect(pll, 'out', mixer, 'in2')

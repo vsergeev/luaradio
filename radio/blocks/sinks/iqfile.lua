@@ -147,4 +147,4 @@ function IQFileSink:cleanup()
     end
 end
 
-return {IQFileSink = IQFileSink}
+return IQFileSink

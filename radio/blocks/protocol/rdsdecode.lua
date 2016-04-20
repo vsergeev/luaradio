@@ -134,6 +134,8 @@ function RDSDecodeBlock:instantiate()
     self:add_type_signature({block.Input("in", RDSFrameType)}, {block.Output("out", RDSPacketType)})
 end
 
+RDSDecodeBlock.RDSPacketType = RDSPacketType
+
 function RDSDecodeBlock:process(x)
     local out = RDSPacketType.vector()
 
@@ -164,4 +166,4 @@ function RDSDecodeBlock:process(x)
     return out
 end
 
-return {RDSPacketType = RDSPacketType, RDSDecodeBlock = RDSDecodeBlock}
+return RDSDecodeBlock

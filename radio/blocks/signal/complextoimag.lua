@@ -17,4 +17,4 @@ function ComplexToImagBlock:process(x)
     return out
 end
 
-return {ComplexToImagBlock = ComplexToImagBlock}
+return ComplexToImagBlock

@@ -56,4 +56,4 @@ function BenchmarkSink:cleanup()
     end
 end
 
-return {BenchmarkSink = BenchmarkSink}
+return BenchmarkSink

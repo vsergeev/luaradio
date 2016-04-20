@@ -1,25 +1,25 @@
 return {
     --- Spectrum Manipulation
-    TunerBlock = require('radio.composites.tuner').TunerBlock,
+    TunerBlock = require('radio.composites.tuner'),
 
     --- Sample Rate Conversion
-    DecimatorBlock = require('radio.composites.decimator').DecimatorBlock,
-    InterpolatorBlock = require('radio.composites.interpolator').InterpolatorBlock,
-    RationalResamplerBlock = require('radio.composites.rationalresampler').RationalResamplerBlock,
+    DecimatorBlock = require('radio.composites.decimator'),
+    InterpolatorBlock = require('radio.composites.interpolator'),
+    RationalResamplerBlock = require('radio.composites.rationalresampler'),
 
     -- Demodulators
-    NBFMDemodulator = require('radio.composites.nbfmdemodulator').NBFMDemodulator,
-    WBFMMonoDemodulator = require('radio.composites.wbfmmonodemodulator').WBFMMonoDemodulator,
-    WBFMStereoDemodulator = require('radio.composites.wbfmstereodemodulator').WBFMStereoDemodulator,
-    AMEnvelopeDemodulator = require('radio.composites.amenvelopedemodulator').AMEnvelopeDemodulator,
-    AMSynchronousDemodulator = require('radio.composites.amsynchronousdemodulator').AMSynchronousDemodulator,
-    SSBDemodulator = require('radio.composites.ssbdemodulator').SSBDemodulator,
+    NBFMDemodulator = require('radio.composites.nbfmdemodulator'),
+    WBFMMonoDemodulator = require('radio.composites.wbfmmonodemodulator'),
+    WBFMStereoDemodulator = require('radio.composites.wbfmstereodemodulator'),
+    AMEnvelopeDemodulator = require('radio.composites.amenvelopedemodulator'),
+    AMSynchronousDemodulator = require('radio.composites.amsynchronousdemodulator'),
+    SSBDemodulator = require('radio.composites.ssbdemodulator'),
 
     -- Modulators
-    SSBModulator = require('radio.composites.ssbmodulator').SSBModulator,
+    SSBModulator = require('radio.composites.ssbmodulator'),
 
     -- Receivers
-    RDSReceiver = require('radio.composites.rdsreceiver').RDSReceiver,
-    AX25Receiver = require('radio.composites.ax25receiver').AX25Receiver,
-    POCSAGReceiver = require('radio.composites.pocsagreceiver').POCSAGReceiver,
+    RDSReceiver = require('radio.composites.rdsreceiver'),
+    AX25Receiver = require('radio.composites.ax25receiver'),
+    POCSAGReceiver = require('radio.composites.pocsagreceiver'),
 }

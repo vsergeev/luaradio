@@ -18,4 +18,4 @@ function FloatToComplexBlock:process(real, imag)
     return out
 end
 
-return {FloatToComplexBlock = FloatToComplexBlock}
+return FloatToComplexBlock

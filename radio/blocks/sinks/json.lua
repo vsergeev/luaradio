@@ -74,4 +74,4 @@ function JSONSink:cleanup()
     end
 end
 
-return {JSONSink = JSONSink}
+return JSONSink

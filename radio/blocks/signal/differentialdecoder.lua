@@ -26,4 +26,4 @@ function DifferentialDecoderBlock:process(x)
     return out
 end
 
-return {DifferentialDecoderBlock = DifferentialDecoderBlock}
+return DifferentialDecoderBlock

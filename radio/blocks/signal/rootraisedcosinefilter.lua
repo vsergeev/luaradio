@@ -4,7 +4,7 @@ local block = require('radio.core.block')
 local types = require('radio.types')
 local filter_utils = require('radio.blocks.signal.filter_utils')
 
-local FIRFilterBlock = require('radio.blocks.signal.firfilter').FIRFilterBlock
+local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 
 local RootRaisedCosineFilterBlock = block.factory("RootRaisedCosineFilterBlock", FIRFilterBlock)
 
@@ -25,4 +25,4 @@ function RootRaisedCosineFilterBlock:initialize()
     FIRFilterBlock.initialize(self)
 end
 
-return {RootRaisedCosineFilterBlock = RootRaisedCosineFilterBlock}
+return RootRaisedCosineFilterBlock

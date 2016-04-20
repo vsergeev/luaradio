@@ -19,4 +19,4 @@ function ComplexToFloatBlock:process(x)
     return real, imag
 end
 
-return {ComplexToFloatBlock = ComplexToFloatBlock}
+return ComplexToFloatBlock

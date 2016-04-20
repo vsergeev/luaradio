@@ -4,7 +4,7 @@ local block = require('radio.core.block')
 local types = require('radio.types')
 local filter_utils = require('radio.blocks.signal.filter_utils')
 
-local FIRFilterBlock = require('radio.blocks.signal.firfilter').FIRFilterBlock
+local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 
 local ComplexBandpassFilterBlock = block.factory("ComplexBandpassFilterBlock", FIRFilterBlock)
 
@@ -28,4 +28,4 @@ function ComplexBandpassFilterBlock:initialize()
     FIRFilterBlock.initialize(self)
 end
 
-return {ComplexBandpassFilterBlock = ComplexBandpassFilterBlock}
+return ComplexBandpassFilterBlock

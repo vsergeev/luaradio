@@ -78,4 +78,4 @@ function UniformRandomSource:process()
     return samples
 end
 
-return {UniformRandomSource = UniformRandomSource}
+return UniformRandomSource

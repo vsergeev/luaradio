@@ -101,4 +101,4 @@ function RawFileSource:cleanup()
     end
 end
 
-return {RawFileSource = RawFileSource}
+return RawFileSource

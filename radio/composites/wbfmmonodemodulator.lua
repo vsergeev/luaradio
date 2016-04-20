@@ -20,4 +20,4 @@ function WBFMMonoDemodulator:instantiate(tau)
     self:connect(self, "out", af_deemphasis, "out")
 end
 
-return {WBFMMonoDemodulator = WBFMMonoDemodulator}
+return WBFMMonoDemodulator

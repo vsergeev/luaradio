@@ -20,4 +20,4 @@ function AMEnvelopeDemodulator:instantiate(bandwidth, gain)
     self:connect(self, "out", af_filter, "out")
 end
 
-return {AMEnvelopeDemodulator = AMEnvelopeDemodulator}
+return AMEnvelopeDemodulator

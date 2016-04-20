@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-local CStructType = require('radio.types.cstruct').CStructType
+local CStructType = require('radio.types.cstruct')
 
 ffi.cdef[[
 typedef struct {
@@ -80,4 +80,4 @@ end
 
 local ComplexFloat32Type = CStructType.factory("complex_float32_t", mt)
 
-return {ComplexFloat32Type = ComplexFloat32Type}
+return ComplexFloat32Type

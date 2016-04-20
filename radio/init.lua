@@ -12,10 +12,13 @@ local radio = {
     block = require('radio.core.block'),
     util = require('radio.core.util'),
     debug = require('radio.core.debug'),
+
     -- Types
     types = require('radio.types'),
+
     -- Blocks
     blocks = require('radio.blocks'),
+
     -- Composites
     composites = require('radio.composites'),
 }

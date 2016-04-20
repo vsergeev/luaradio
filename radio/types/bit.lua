@@ -1,7 +1,7 @@
 local ffi = require('ffi')
 local bit = require('bit')
 
-local CStructType = require('radio.types.cstruct').CStructType
+local CStructType = require('radio.types.cstruct')
 
 ffi.cdef[[
 typedef struct {
@@ -55,4 +55,4 @@ end
 
 local BitType = CStructType.factory("bit_t", mt)
 
-return {BitType = BitType}
+return BitType

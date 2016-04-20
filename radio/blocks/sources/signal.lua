@@ -169,4 +169,4 @@ function SignalSource:process_constant()
     return out
 end
 
-return {SignalSource = SignalSource}
+return SignalSource

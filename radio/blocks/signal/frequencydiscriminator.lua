@@ -65,4 +65,4 @@ else
 
 end
 
-return {FrequencyDiscriminatorBlock = FrequencyDiscriminatorBlock}
+return FrequencyDiscriminatorBlock

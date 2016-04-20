@@ -50,4 +50,4 @@ function ZeroCrossingClockRecoveryBlock:process(x)
     return out
 end
 
-return {ZeroCrossingClockRecoveryBlock = ZeroCrossingClockRecoveryBlock}
+return ZeroCrossingClockRecoveryBlock

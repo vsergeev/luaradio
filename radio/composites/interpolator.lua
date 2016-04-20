@@ -20,4 +20,4 @@ function InterpolatorBlock:instantiate(interpolation, options)
     self:connect(self, "out", filter, "out")
 end
 
-return {InterpolatorBlock = InterpolatorBlock}
+return InterpolatorBlock

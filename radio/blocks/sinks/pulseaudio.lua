@@ -105,4 +105,4 @@ function PulseAudioSink:cleanup()
     libpulse.pa_simple_free(self.pa_conn)
 end
 
-return {PulseAudioSink = PulseAudioSink}
+return PulseAudioSink

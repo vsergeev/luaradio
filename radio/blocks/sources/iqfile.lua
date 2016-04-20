@@ -165,4 +165,4 @@ function IQFileSource:cleanup()
     end
 end
 
-return {IQFileSource = IQFileSource}
+return IQFileSource

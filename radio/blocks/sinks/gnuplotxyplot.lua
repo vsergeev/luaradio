@@ -108,4 +108,4 @@ function GnuplotXYPlotSink:cleanup()
     self.gnuplot_f:close()
 end
 
-return {GnuplotXYPlotSink = GnuplotXYPlotSink}
+return GnuplotXYPlotSink

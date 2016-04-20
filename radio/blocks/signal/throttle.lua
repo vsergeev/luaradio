@@ -33,4 +33,4 @@ function ThrottleBlock:process(x)
     return x
 end
 
-return {ThrottleBlock = ThrottleBlock}
+return ThrottleBlock

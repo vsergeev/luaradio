@@ -4,7 +4,7 @@ local block = require('radio.core.block')
 local types = require('radio.types')
 local filter_utils = require('radio.blocks.signal.filter_utils')
 
-local IIRFilterBlock = require('radio.blocks.signal.iirfilter').IIRFilterBlock
+local IIRFilterBlock = require('radio.blocks.signal.iirfilter')
 
 local FMDeemphasisFilterBlock = block.factory("FMDeemphasisFilterBlock", IIRFilterBlock)
 
@@ -38,4 +38,4 @@ function FMDeemphasisFilterBlock:initialize()
     IIRFilterBlock.initialize(self)
 end
 
-return {FMDeemphasisFilterBlock = FMDeemphasisFilterBlock}
+return FMDeemphasisFilterBlock

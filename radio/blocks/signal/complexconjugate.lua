@@ -17,4 +17,4 @@ function ComplexConjugateBlock:process(x)
     return out
 end
 
-return {ComplexConjugateBlock = ComplexConjugateBlock}
+return ComplexConjugateBlock

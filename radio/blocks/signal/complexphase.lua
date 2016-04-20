@@ -17,4 +17,4 @@ function ComplexPhaseBlock:process(x)
     return out
 end
 
-return {ComplexPhaseBlock = ComplexPhaseBlock}
+return ComplexPhaseBlock

@@ -159,4 +159,4 @@ function GnuplotSpectrumSink:cleanup()
     self.gnuplot_f:close()
 end
 
-return {GnuplotSpectrumSink = GnuplotSpectrumSink}
+return GnuplotSpectrumSink

@@ -128,4 +128,4 @@ function PortAudioSink:cleanup()
     end
 end
 
-return {PortAudioSink = PortAudioSink}
+return PortAudioSink

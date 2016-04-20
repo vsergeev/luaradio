@@ -23,4 +23,4 @@ function RationalResamplerBlock:instantiate(interpolation, decimation, options)
     self:connect(self, "out", downsampler, "out")
 end
 
-return {RationalResamplerBlock = RationalResamplerBlock}
+return RationalResamplerBlock

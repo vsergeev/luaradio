@@ -243,4 +243,4 @@ function POCSAGFrameBlock:process(x)
     return out
 end
 
-return {POCSAGFrameType = POCSAGFrameType, POCSAGFrameBlock = POCSAGFrameBlock}
+return POCSAGFrameBlock

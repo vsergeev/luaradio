@@ -55,4 +55,4 @@ function RawFileSink:cleanup()
     end
 end
 
-return {RawFileSink = RawFileSink}
+return RawFileSink

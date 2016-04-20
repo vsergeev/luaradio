@@ -1,7 +1,7 @@
 local ffi = require('ffi')
 local bit = require('bit')
 
-local CStructType = require('radio.types.cstruct').CStructType
+local CStructType = require('radio.types.cstruct')
 
 ffi.cdef[[
 typedef struct {
@@ -45,4 +45,4 @@ end
 
 local Integer32Type = CStructType.factory("integer32_t", mt)
 
-return {Integer32Type = Integer32Type}
+return Integer32Type

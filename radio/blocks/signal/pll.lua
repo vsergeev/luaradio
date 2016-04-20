@@ -141,4 +141,4 @@ function PLLBlock:process(x)
     return out, err
 end
 
-return {PLLBlock = PLLBlock}
+return PLLBlock

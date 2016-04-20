@@ -128,4 +128,4 @@ function ObjectType.factory(custom_mt)
     return CustomType
 end
 
-return {ObjectType = ObjectType}
+return ObjectType

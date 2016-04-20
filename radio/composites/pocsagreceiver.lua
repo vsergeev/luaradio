@@ -38,4 +38,4 @@ function POCSAGReceiver:instantiate(baudrate)
     self:connect(self, "out", decoder, "out")
 end
 
-return {POCSAGReceiver = POCSAGReceiver}
+return POCSAGReceiver

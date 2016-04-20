@@ -51,4 +51,4 @@ function DelayBlock:process(x)
     return out
 end
 
-return {DelayBlock = DelayBlock}
+return DelayBlock

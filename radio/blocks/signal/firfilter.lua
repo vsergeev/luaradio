@@ -208,4 +208,4 @@ else
 
 end
 
-return {FIRFilterBlock = FIRFilterBlock}
+return FIRFilterBlock

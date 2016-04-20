@@ -155,4 +155,4 @@ function RealFileSource:cleanup()
     end
 end
 
-return {RealFileSource = RealFileSource}
+return RealFileSource

@@ -35,4 +35,4 @@ function DownsamplerBlock:process(x)
     return out
 end
 
-return {DownsamplerBlock = DownsamplerBlock}
+return DownsamplerBlock

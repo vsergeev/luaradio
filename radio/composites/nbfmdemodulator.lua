@@ -20,4 +20,4 @@ function NBFMDemodulator:instantiate(deviation, bandwidth)
     self:connect(self, "out", af_filter, "out")
 end
 
-return {NBFMDemodulator = NBFMDemodulator}
+return NBFMDemodulator

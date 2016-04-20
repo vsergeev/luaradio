@@ -81,4 +81,4 @@ function GnuplotPlotSink:cleanup()
     self.gnuplot_f:close()
 end
 
-return {GnuplotPlotSink = GnuplotPlotSink}
+return GnuplotPlotSink

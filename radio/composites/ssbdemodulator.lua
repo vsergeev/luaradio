@@ -22,4 +22,4 @@ function SSBDemodulator:instantiate(sideband, bandwidth, gain)
     self:connect(self, "out", af_filter, "out")
 end
 
-return {SSBDemodulator = SSBDemodulator}
+return SSBDemodulator

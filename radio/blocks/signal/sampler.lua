@@ -34,4 +34,4 @@ function SamplerBlock:process(data, clock)
     return out
 end
 
-return {SamplerBlock = SamplerBlock}
+return SamplerBlock

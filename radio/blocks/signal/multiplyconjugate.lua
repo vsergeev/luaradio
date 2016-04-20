@@ -37,4 +37,4 @@ else
 
 end
 
-return {MultiplyConjugateBlock = MultiplyConjugateBlock}
+return MultiplyConjugateBlock

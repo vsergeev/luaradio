@@ -172,4 +172,4 @@ function RDSFrameBlock:process(x)
     return out
 end
 
-return {RDSFrameType = RDSFrameType, RDSFrameBlock = RDSFrameBlock}
+return RDSFrameBlock

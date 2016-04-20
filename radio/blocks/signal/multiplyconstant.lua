@@ -53,4 +53,4 @@ function MultiplyConstantBlock:process_complex_by_float(x)
     return out
 end
 
-return {MultiplyConstantBlock = MultiplyConstantBlock}
+return MultiplyConstantBlock

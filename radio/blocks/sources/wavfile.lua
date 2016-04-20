@@ -247,4 +247,4 @@ function WAVFileSource:cleanup()
     end
 end
 
-return {WAVFileSource = WAVFileSource}
+return WAVFileSource

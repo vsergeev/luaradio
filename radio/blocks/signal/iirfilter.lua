@@ -94,4 +94,4 @@ function IIRFilterBlock:process_scalar(x)
     return out
 end
 
-return {IIRFilterBlock = IIRFilterBlock}
+return IIRFilterBlock

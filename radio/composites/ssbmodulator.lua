@@ -26,4 +26,4 @@ function SSBModulator:instantiate(sideband, bandwidth)
     self:connect(self, "out", sb_filter, "out")
 end
 
-return {SSBModulator = SSBModulator}
+return SSBModulator

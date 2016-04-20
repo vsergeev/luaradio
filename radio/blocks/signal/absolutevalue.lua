@@ -19,4 +19,4 @@ function AbsoluteValueBlock:process(x)
     return out
 end
 
-return {AbsoluteValueBlock = AbsoluteValueBlock}
+return AbsoluteValueBlock

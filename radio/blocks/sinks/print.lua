@@ -74,4 +74,4 @@ function PrintSink:cleanup()
     end
 end
 
-return {PrintSink = PrintSink}
+return PrintSink

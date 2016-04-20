@@ -26,4 +26,4 @@ function AMSynchronousDemodulator:instantiate(ifreq, bandwidth, gain)
     self:connect(self, "out", af_filter, "out")
 end
 
-return {AMSynchronousDemodulator = AMSynchronousDemodulator}
+return AMSynchronousDemodulator

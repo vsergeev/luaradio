@@ -21,4 +21,4 @@ function SumBlock:process(x, y)
     return out
 end
 
-return {SumBlock = SumBlock}
+return SumBlock

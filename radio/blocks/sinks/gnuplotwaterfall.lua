@@ -203,4 +203,4 @@ function GnuplotWaterfallSink:cleanup()
     self.gnuplot_f:close()
 end
 
-return {GnuplotWaterfallSink = GnuplotWaterfallSink}
+return GnuplotWaterfallSink

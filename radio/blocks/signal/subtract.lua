@@ -21,4 +21,4 @@ function SubtractBlock:process(x, y)
     return out
 end
 
-return {SubtractBlock = SubtractBlock}
+return SubtractBlock

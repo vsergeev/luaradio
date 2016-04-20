@@ -19,4 +19,4 @@ function TunerBlock:instantiate(offset, bandwidth, decimation, options)
     self:connect(self, "out", downsampler, "out")
 end
 
-return {TunerBlock = TunerBlock}
+return TunerBlock

@@ -17,4 +17,4 @@ function ComplexMagnitudeBlock:process(x)
     return out
 end
 
-return {ComplexMagnitudeBlock = ComplexMagnitudeBlock}
+return ComplexMagnitudeBlock

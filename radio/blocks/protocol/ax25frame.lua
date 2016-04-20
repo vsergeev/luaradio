@@ -232,4 +232,4 @@ function AX25FrameBlock:process(x)
     return out
 end
 
-return {AX25FrameType = AX25FrameType, AX25FrameBlock = AX25FrameBlock}
+return AX25FrameBlock

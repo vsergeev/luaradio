@@ -55,4 +55,4 @@ else
 
 end
 
-return {FrequencyTranslatorBlock = FrequencyTranslatorBlock}
+return FrequencyTranslatorBlock

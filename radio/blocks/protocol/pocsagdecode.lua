@@ -114,4 +114,4 @@ function POCSAGDecodeBlock:process(x)
     return out
 end
 
-return {POCSAGMessageType = POCSAGMessageType, POCSAGDecodeBlock = POCSAGDecodeBlock}
+return POCSAGDecodeBlock

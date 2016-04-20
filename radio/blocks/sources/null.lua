@@ -19,4 +19,4 @@ function NullSource:process()
     return self.out
 end
 
-return {NullSource = NullSource}
+return NullSource

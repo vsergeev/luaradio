@@ -29,4 +29,4 @@ function UpsamplerBlock:process(x)
     return out
 end
 
-return {UpsamplerBlock = UpsamplerBlock}
+return UpsamplerBlock

@@ -48,4 +48,4 @@ function BinaryPhaseCorrectorBlock:process(x)
     return out
 end
 
-return {BinaryPhaseCorrectorBlock = BinaryPhaseCorrectorBlock}
+return BinaryPhaseCorrectorBlock

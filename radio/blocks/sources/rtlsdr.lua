@@ -135,4 +135,4 @@ function RtlSdrSource:process()
     return out
 end
 
-return {RtlSdrSource = RtlSdrSource}
+return RtlSdrSource

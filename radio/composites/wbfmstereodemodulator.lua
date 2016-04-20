@@ -49,4 +49,4 @@ function WBFMStereoDemodulator:instantiate(tau)
     self:connect(self, "right", right_af_deemphasis, "out")
 end
 
-return {WBFMStereoDemodulator = WBFMStereoDemodulator}
+return WBFMStereoDemodulator

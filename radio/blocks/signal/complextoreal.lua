@@ -17,4 +17,4 @@ function ComplexToRealBlock:process(x)
     return out
 end
 
-return {ComplexToRealBlock = ComplexToRealBlock}
+return ComplexToRealBlock

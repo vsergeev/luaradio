@@ -1,7 +1,8 @@
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')
-local nbfmdemodulator = require('radio.composites.nbfmdemodulator')
+
+local NBFMDemodulator = require('radio.composites.nbfmdemodulator')
 
 local AX25Receiver = block.factory("AX25Receiver", blocks.CompositeBlock)
 
@@ -12,7 +13,7 @@ function AX25Receiver:instantiate()
     local fm_bandwidth = 3e3
     local baudrate = 1200
 
-    local nbfm_demod = nbfmdemodulator.NBFMDemodulator(fm_deviation, fm_bandwidth)
+    local nbfm_demod = NBFMDemodulator(fm_deviation, fm_bandwidth)
     local hilbert = blocks.HilbertTransformBlock(129)
     local translator = blocks.FrequencyTranslatorBlock(-1700)
     local afsk_filter = blocks.LowpassFilterBlock(128, 750)
@@ -34,4 +35,4 @@ function AX25Receiver:instantiate()
     self:connect(self, "out", framer, "out")
 end
 
-return {AX25Receiver = AX25Receiver}
+return AX25Receiver

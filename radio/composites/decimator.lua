@@ -19,4 +19,4 @@ function DecimatorBlock:instantiate(decimation, options)
     self:connect(self, "out", downsampler, "out")
 end
 
-return {DecimatorBlock = DecimatorBlock}
+return DecimatorBlock

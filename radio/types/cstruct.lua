@@ -70,4 +70,4 @@ function CStructType.factory(ct, custom_mt)
     return CustomType
 end
 
-return {CStructType = CStructType}
+return CStructType

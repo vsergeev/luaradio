@@ -43,4 +43,4 @@ function RDSReceiver:instantiate(tau)
     self:connect(self, "out", framer, "out")
 end
 
-return {RDSReceiver = RDSReceiver}
+return RDSReceiver

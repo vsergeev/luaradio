@@ -248,4 +248,4 @@ function WAVFileSink:cleanup()
     end
 end
 
-return {WAVFileSink = WAVFileSink}
+return WAVFileSink

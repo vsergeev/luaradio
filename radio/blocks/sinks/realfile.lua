@@ -137,4 +137,4 @@ function RealFileSink:cleanup()
     end
 end
 
-return {RealFileSink = RealFileSink}
+return RealFileSink

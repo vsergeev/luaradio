@@ -55,4 +55,4 @@ else
 
 end
 
-return {MultiplyBlock = MultiplyBlock}
+return MultiplyBlock

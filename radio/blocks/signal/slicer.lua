@@ -19,4 +19,4 @@ function SlicerBlock:process(x)
     return out
 end
 
-return {SlicerBlock = SlicerBlock}
+return SlicerBlock

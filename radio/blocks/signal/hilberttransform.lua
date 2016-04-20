@@ -95,4 +95,4 @@ else
 
 end
 
-return {HilbertTransformBlock = HilbertTransformBlock}
+return HilbertTransformBlock

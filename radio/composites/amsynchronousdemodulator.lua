@@ -21,7 +21,7 @@ function AMSynchronousDemodulator:instantiate(ifreq, bandwidth, gain)
     self:connect(pll, 'out', mixer, 'in2')
     self:connect(mixer, am_demod, af_gain, af_filter)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.Float32)})
     self:connect(self, "in", rf_filter, "in")
     self:connect(self, "out", af_filter, "out")
 end

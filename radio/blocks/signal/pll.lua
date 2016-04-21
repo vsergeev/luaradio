@@ -10,7 +10,7 @@ function PLLBlock:instantiate(loop_bandwidth, frequency_min, frequency_max, mult
     self.freq_max = frequency_max
     self.multiplier = multiplier or 1.0
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type), block.Output("error", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32), block.Output("error", types.Float32)})
 end
 
 --
@@ -111,13 +111,13 @@ function PLLBlock:initialize()
 end
 
 function PLLBlock:process(x)
-    local out = types.ComplexFloat32Type.vector(x.length)
-    local err = types.Float32Type.vector(x.length)
+    local out = types.ComplexFloat32.vector(x.length)
+    local err = types.Float32.vector(x.length)
 
     for i = 0, x.length-1 do
         -- VCO
-        local vco_output = types.ComplexFloat32Type(math.cos(self.phi_locked), math.sin(self.phi_locked))
-        out.data[i] = types.ComplexFloat32Type(math.cos(self.phi_multiplied), math.sin(self.phi_multiplied))
+        local vco_output = types.ComplexFloat32(math.cos(self.phi_locked), math.sin(self.phi_locked))
+        out.data[i] = types.ComplexFloat32(math.cos(self.phi_multiplied), math.sin(self.phi_multiplied))
 
         -- Phase Detector
         err.data[i].value = (x.data[i] * vco_output:conj()):arg()

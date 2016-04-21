@@ -8,13 +8,13 @@ local SignalSource = block.factory("SignalSource")
 
 function SignalSource:instantiate(signal, frequency, rate, options)
     local supported_signals = {
-        exponential = {process = SignalSource.process_exponential, initialize = SignalSource.initialize_exponential, type = types.ComplexFloat32Type},
-        cosine = {process = SignalSource.process_cosine, initialize = SignalSource.initialize_cosine_sine, type = types.Float32Type},
-        sine = {process = SignalSource.process_sine, initialize = SignalSource.initialize_cosine_sine, type = types.Float32Type},
-        square = {process = SignalSource.process_square, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32Type},
-        triangle = {process = SignalSource.process_triangle, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32Type},
-        sawtooth = {process = SignalSource.process_sawtooth, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32Type},
-        constant = {process = SignalSource.process_constant, initialize = SignalSource.initialize_constant, type = types.Float32Type},
+        exponential = {process = SignalSource.process_exponential, initialize = SignalSource.initialize_exponential, type = types.ComplexFloat32},
+        cosine = {process = SignalSource.process_cosine, initialize = SignalSource.initialize_cosine_sine, type = types.Float32},
+        sine = {process = SignalSource.process_sine, initialize = SignalSource.initialize_cosine_sine, type = types.Float32},
+        square = {process = SignalSource.process_square, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32},
+        triangle = {process = SignalSource.process_triangle, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32},
+        sawtooth = {process = SignalSource.process_sawtooth, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32},
+        constant = {process = SignalSource.process_constant, initialize = SignalSource.initialize_constant, type = types.Float32},
     }
     assert(supported_signals[signal], "Unsupported signal \"" .. signal .. "\".")
 
@@ -44,7 +44,7 @@ function SignalSource:initialize_exponential()
 end
 
 function SignalSource:process_exponential()
-    local out = types.ComplexFloat32Type.vector(self.chunk_size)
+    local out = types.ComplexFloat32.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         out.data[i].real = ffi.C.cosf(self.phase)*self.amplitude
@@ -69,7 +69,7 @@ function SignalSource:initialize_cosine_sine()
 end
 
 function SignalSource:process_cosine()
-    local out = types.Float32Type.vector(self.chunk_size)
+    local out = types.Float32.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         out.data[i].value = ffi.C.cosf(self.phase) * self.amplitude + self.offset
@@ -84,7 +84,7 @@ function SignalSource:process_cosine()
 end
 
 function SignalSource:process_sine()
-    local out = types.Float32Type.vector(self.chunk_size)
+    local out = types.Float32.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         out.data[i].value = ffi.C.sinf(self.phase) * self.amplitude + self.offset
@@ -110,7 +110,7 @@ function SignalSource:initialize_square_triangle_sawtooth()
 end
 
 function SignalSource:process_square()
-    local out = types.Float32Type.vector(self.chunk_size)
+    local out = types.Float32.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         if self.phi < math.pi then
@@ -126,7 +126,7 @@ function SignalSource:process_square()
 end
 
 function SignalSource:process_triangle()
-    local out = types.Float32Type.vector(self.chunk_size)
+    local out = types.Float32.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         if self.phi < math.pi then
@@ -142,7 +142,7 @@ function SignalSource:process_triangle()
 end
 
 function SignalSource:process_sawtooth()
-    local out = types.Float32Type.vector(self.chunk_size)
+    local out = types.Float32.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         out.data[i].value = (-1 + (1 / math.pi)*self.phi)*self.amplitude + self.offset
@@ -160,7 +160,7 @@ function SignalSource:initialize_constant()
 end
 
 function SignalSource:process_constant()
-    local out = types.Float32Type.vector(self.chunk_size)
+    local out = types.Float32.vector(self.chunk_size)
 
     for i = 0, out.length-1 do
         out.data[i].value = self.amplitude

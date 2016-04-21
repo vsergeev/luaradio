@@ -6,38 +6,38 @@ local types = require('radio.types')
 local UniformRandomSource = block.factory("UniformRandomSource")
 
 local random_generator_table = {
-    [types.ComplexFloat32Type] =
+    [types.ComplexFloat32] =
         function (a, b)
             a, b = a or -1.0, b or 1.0
             return function ()
-                return types.ComplexFloat32Type((b-a)*math.random()-b, (b-a)*math.random()-b)
+                return types.ComplexFloat32((b-a)*math.random()-b, (b-a)*math.random()-b)
             end
         end,
-    [types.Float32Type] =
+    [types.Float32] =
         function (a, b)
             a, b = a or -1.0, b or 1.0
             return function ()
-                return types.Float32Type((b-a)*math.random()-b)
+                return types.Float32((b-a)*math.random()-b)
             end
         end,
-    [types.Integer32Type] =
+    [types.Integer32] =
         function (a, b)
             a, b = a or -2147483648, b or 2147483647
             return function ()
-                return types.Integer32Type(math.random(a, b))
+                return types.Integer32(math.random(a, b))
             end
         end,
-    [types.ByteType] =
+    [types.Byte] =
         function (a, b)
             a = a or 0, b or 255
             return function ()
-                return types.ByteType(math.random(a, b))
+                return types.Byte(math.random(a, b))
             end
         end,
-    [types.BitType] =
+    [types.Bit] =
         function (a, b)
             return function ()
-                return types.BitType(math.random(0, 1))
+                return types.Bit(math.random(0, 1))
             end
         end,
 }

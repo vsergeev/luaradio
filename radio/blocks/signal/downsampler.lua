@@ -9,9 +9,9 @@ function DownsamplerBlock:instantiate(factor)
     self.factor = factor
     self.index = 0
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
-    self:add_type_signature({block.Input("in", types.Integer32Type)}, {block.Output("out", types.Integer32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
+    self:add_type_signature({block.Input("in", types.Integer32)}, {block.Output("out", types.Integer32)})
 end
 
 function DownsamplerBlock:get_rate()

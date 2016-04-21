@@ -5,23 +5,23 @@ local types = require('radio.types')
 local MultiplyConstantBlock = block.factory("MultiplyConstantBlock")
 
 function MultiplyConstantBlock:instantiate(constant)
-    -- Convert constant to Float32Type or ComplexFloat32Type
+    -- Convert constant to Float32 or ComplexFloat32
     if object.isinstanceof(constant, "number") then
-        self.constant = types.Float32Type(constant)
-    elseif object.isinstanceof(constant, types.Float32Type) then
+        self.constant = types.Float32(constant)
+    elseif object.isinstanceof(constant, types.Float32) then
         self.constant = constant
-    elseif object.isinstanceof(constant, types.ComplexFloat32Type) then
+    elseif object.isinstanceof(constant, types.ComplexFloat32) then
         self.constant = constant
     else
         error("Unsupported constant type.")
     end
 
-    if object.isinstanceof(constant, types.ComplexFloat32Type) then
+    if object.isinstanceof(constant, types.ComplexFloat32) then
         -- Only allow complex inputs for a complex constant
-        self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)}, self.process_complex_by_complex)
+        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, self.process_complex_by_complex)
     else
-        self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)}, self.process_float_by_float)
-        self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)}, self.process_complex_by_float)
+        self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, self.process_float_by_float)
+        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, self.process_complex_by_float)
     end
 end
 

@@ -9,20 +9,20 @@ local types = require('radio.types')
 local FIRFilterBlock = block.factory("FIRFilterBlock")
 
 function FIRFilterBlock:instantiate(taps)
-    if object.isinstanceof(taps, vector.Vector) and taps.type == types.Float32Type then
+    if object.isinstanceof(taps, vector.Vector) and taps.type == types.Float32 then
         self.taps = taps
-    elseif object.isinstanceof(taps, vector.Vector) and taps.type == types.ComplexFloat32Type then
+    elseif object.isinstanceof(taps, vector.Vector) and taps.type == types.ComplexFloat32 then
         self.taps = taps
     else
-        self.taps = types.Float32Type.vector_from_array(taps)
+        self.taps = types.Float32.vector_from_array(taps)
     end
 
-    if self.taps.type == types.ComplexFloat32Type then
-        self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)}, FIRFilterBlock.process_complex_complex)
-        self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.ComplexFloat32Type)}, FIRFilterBlock.process_real_complex)
+    if self.taps.type == types.ComplexFloat32 then
+        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_complex)
+        self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_real_complex)
     else
-        self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)}, FIRFilterBlock.process_complex_real)
-        self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)}, FIRFilterBlock.process_real_real)
+        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_real)
+        self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, FIRFilterBlock.process_real_real)
     end
 end
 
@@ -53,7 +53,7 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function FIRFilterBlock:process_complex_complex(x)
-        local out = types.ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -71,7 +71,7 @@ if platform.features.volk then
     end
 
     function FIRFilterBlock:process_real_complex(x)
-        local out = types.ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -89,7 +89,7 @@ if platform.features.volk then
     end
 
     function FIRFilterBlock:process_complex_real(x)
-        local out = types.ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -107,7 +107,7 @@ if platform.features.volk then
     end
 
     function FIRFilterBlock:process_real_real(x)
-        local out = types.Float32Type.vector(x.length)
+        local out = types.Float32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -127,7 +127,7 @@ if platform.features.volk then
 else
 
     function FIRFilterBlock:process_complex_complex(x)
-        local out = types.ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -147,7 +147,7 @@ else
     end
 
     function FIRFilterBlock:process_real_complex(x)
-        local out = types.ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -167,7 +167,7 @@ else
     end
 
     function FIRFilterBlock:process_complex_real(x)
-        local out = types.ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -187,7 +187,7 @@ else
     end
 
     function FIRFilterBlock:process_real_real(x)
-        local out = types.Float32Type.vector(x.length)
+        local out = types.Float32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))

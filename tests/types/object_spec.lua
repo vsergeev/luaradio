@@ -4,7 +4,7 @@ local jigs = require('tests.jigs')
 
 local object = require('radio.core.object')
 local ObjectVector = require('radio.core.vector').ObjectVector
-local ObjectType = radio.ObjectType
+local ObjectType = radio.types.ObjectType
 
 describe("ObjectVector", function ()
     it("basics", function ()
@@ -50,7 +50,7 @@ describe("ObjectVector", function ()
     end)
 end)
 
-describe("ObjectType", function ()
+describe("ObjectType factory", function ()
     -- Test type
     local TestType = ObjectType.factory()
 

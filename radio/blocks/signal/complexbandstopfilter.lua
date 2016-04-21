@@ -9,7 +9,7 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 local ComplexBandstopFilterBlock = block.factory("ComplexBandstopFilterBlock", FIRFilterBlock)
 
 function ComplexBandstopFilterBlock:instantiate(num_taps, cutoff_frequencies, window_type, nyquist_frequency)
-    FIRFilterBlock.instantiate(self, types.ComplexFloat32Type.vector(num_taps))
+    FIRFilterBlock.instantiate(self, types.ComplexFloat32.vector(num_taps))
 
     self.cutoff_frequencies = cutoff_frequencies
     self.window_type = (window_type == nil) and "hamming" or window_type
@@ -23,7 +23,7 @@ function ComplexBandstopFilterBlock:initialize()
     -- Generate and populate taps
     local cutoffs = {self.cutoff_frequencies[1]/nyquist_frequency, self.cutoff_frequencies[2]/nyquist_frequency}
     local taps = filter_utils.firwin_complex_bandstop(self.taps.length, cutoffs, self.window_type)
-    self.taps = types.ComplexFloat32Type.vector_from_array(taps)
+    self.taps = types.ComplexFloat32.vector_from_array(taps)
 
     FIRFilterBlock.initialize(self)
 end

@@ -12,7 +12,7 @@ function GnuplotPlotSink:instantiate(num_samples, title, options)
 
     self.sample_count = 0
 
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {})
+    self:add_type_signature({block.Input("in", types.Float32)}, {})
 end
 
 function GnuplotPlotSink:initialize()

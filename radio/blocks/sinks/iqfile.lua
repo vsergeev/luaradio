@@ -75,7 +75,7 @@ function IQFileSink:instantiate(file, format)
 
     self.format = supported_formats[format]
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {})
 end
 
 -- File I/O

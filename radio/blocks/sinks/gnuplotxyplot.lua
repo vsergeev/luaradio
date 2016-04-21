@@ -13,9 +13,9 @@ function GnuplotXYPlotSink:instantiate(num_samples, title, options)
     self.sample_count = 0
 
     if options.complex then
-        self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {}, self.process_complex)
+        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {}, self.process_complex)
     else
-        self:add_type_signature({block.Input("x", types.Float32Type), block.Input("y", types.Float32Type)}, {})
+        self:add_type_signature({block.Input("x", types.Float32), block.Input("y", types.Float32)}, {})
     end
 end
 

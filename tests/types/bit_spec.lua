@@ -2,22 +2,22 @@ local ffi = require('ffi')
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-local BitType = radio.BitType
+local Bit = radio.types.Bit
 
-describe("BitType", function ()
+describe("Bit type", function ()
     it("size", function ()
         -- Check underlying struct size
-        assert.is.equal(1, ffi.sizeof(BitType))
+        assert.is.equal(1, ffi.sizeof(Bit))
     end)
 
     it("operations", function ()
-        local one = BitType(1)
-        local zero = BitType(0)
+        local one = Bit(1)
+        local zero = Bit(0)
 
 
         -- Comparison
-        assert.is.equal(one, BitType(1))
-        assert.is.equal(zero, BitType(0))
+        assert.is.equal(one, Bit(1))
+        assert.is.equal(zero, Bit(0))
         assert.is.not_equal(one, zero)
 
         -- bnot()
@@ -44,21 +44,21 @@ describe("BitType", function ()
     end)
 
     it("tonumber()", function ()
-        local bits = BitType.vector_from_array({1, 0, 1, 0, 0, 1, 0, 1, 0})
+        local bits = Bit.vector_from_array({1, 0, 1, 0, 0, 1, 0, 1, 0})
 
         -- Default usage: zero offset, full length, MSB first
-        assert.is.equal(330, BitType.tonumber(bits))
+        assert.is.equal(330, Bit.tonumber(bits))
 
         -- Offset
-        assert.is.equal(74, BitType.tonumber(bits, 1))
+        assert.is.equal(74, Bit.tonumber(bits, 1))
 
         -- Offset and length
-        assert.is.equal(10, BitType.tonumber(bits, 0, 4))
+        assert.is.equal(10, Bit.tonumber(bits, 0, 4))
 
         -- LSB first
-        assert.is.equal(165, BitType.tonumber(bits, 0, bits.length, "lsb"))
+        assert.is.equal(165, Bit.tonumber(bits, 0, bits.length, "lsb"))
 
         -- Offset, length, LSB first
-        assert.is.equal(2, BitType.tonumber(bits, 1, 4, "lsb"))
+        assert.is.equal(2, Bit.tonumber(bits, 1, 4, "lsb"))
     end)
 end)

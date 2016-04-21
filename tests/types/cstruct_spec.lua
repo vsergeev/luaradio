@@ -2,9 +2,9 @@ local ffi = require('ffi')
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-local CStructType = radio.CStructType
+local CStructType = radio.types.CStructType
 
-describe("CStructType", function ()
+describe("CStructType factory", function ()
     -- Test struct
     ffi.cdef[[
         typedef struct {

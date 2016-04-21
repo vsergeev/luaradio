@@ -53,6 +53,6 @@ function mt.tonumber(vec, offset, length, order)
     return x
 end
 
-local BitType = CStructType.factory("bit_t", mt)
+local Bit = CStructType.factory("bit_t", mt)
 
-return BitType
+return Bit

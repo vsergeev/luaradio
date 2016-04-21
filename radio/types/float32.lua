@@ -46,6 +46,6 @@ function mt:__tostring()
     return "Float32<value=" .. self.value .. ">"
 end
 
-local Float32Type = CStructType.factory("float32_t", mt)
+local Float32 = CStructType.factory("float32_t", mt)
 
-return Float32Type
+return Float32

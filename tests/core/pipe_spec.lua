@@ -6,7 +6,7 @@ local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
 
 function random_byte_vector(n)
-    local vec = radio.ByteType.vector(n)
+    local vec = radio.types.Byte.vector(n)
     for i = 0, vec.length - 1 do
         vec.data[i].value = math.random(0, 255)
     end
@@ -14,7 +14,7 @@ function random_byte_vector(n)
 end
 
 function random_float32_vector(n)
-    local vec = radio.Float32Type.vector(n)
+    local vec = radio.types.Float32.vector(n)
     for i = 0, vec.length - 1 do
         vec.data[i].value = 2*math.random() - 1.0
     end
@@ -22,7 +22,7 @@ function random_float32_vector(n)
 end
 
 function random_complexfloat32_vector(n)
-    local vec = radio.ComplexFloat32Type.vector(n)
+    local vec = radio.types.ComplexFloat32.vector(n)
     for i = 0, vec.length - 1 do
         vec.data[i].real = 2*math.random() - 1.0
         vec.data[i].imag = 2*math.random() - 1.0
@@ -37,9 +37,9 @@ ffi.cdef[[
 
 describe("pipe", function ()
     local cstruct_types = {
-        ByteType = {data_type = radio.ByteType, random_vector_fn = random_byte_vector},
-        Float32Type = {data_type = radio.Float32Type, random_vector_fn = random_float32_vector},
-        ComplexFloat32Type = {data_type = radio.Float32Type, random_vector_fn = random_float32_vector},
+        ["Byte"] = {data_type = radio.types.Byte, random_vector_fn = random_byte_vector},
+        ["Float32"] = {data_type = radio.types.Float32, random_vector_fn = random_float32_vector},
+        ["ComplexFloat32"] = {data_type = radio.types.Float32, random_vector_fn = random_float32_vector},
     }
 
     for type_name, _ in pairs(cstruct_types) do
@@ -106,7 +106,7 @@ describe("pipe", function ()
     end
 
     it("write and read object type", function ()
-        local FooType = radio.ObjectType.factory()
+        local FooType = radio.types.ObjectType.factory()
 
         function FooType.new(a, b, c)
             return setmetatable({a = a, b = b, c = c}, FooType)
@@ -263,7 +263,7 @@ describe("pipe", function ()
         local TestSource = block.factory("TestSource")
 
         function TestSource:instantiate()
-            self:add_type_signature({}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({}, {block.Output("out", radio.types.Float32)})
         end
 
         function TestSource:get_rate()
@@ -273,7 +273,7 @@ describe("pipe", function ()
         local TestSink = block.factory("TestSink")
 
         function TestSink:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {})
         end
 
         -- Connect TestSource to TestSink
@@ -281,7 +281,7 @@ describe("pipe", function ()
         local b1 = TestSink()
 
         b0:differentiate({})
-        b1:differentiate({radio.Float32Type})
+        b1:differentiate({radio.types.Float32})
 
         local p = pipe.Pipe(b0.outputs[1], b1.inputs[1])
         b0.outputs[1].pipes = {p}

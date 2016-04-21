@@ -38,7 +38,7 @@ function RDSReceiver:instantiate(tau)
     self:connect(bitclock_delay, 'out', sampler, 'clock')
     self:connect(sampler, bit_demod, bit_slicer, bit_decoder, framer)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", blocks.RDSFrameBlock.RDSFrameType)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", blocks.RDSFrameBlock.RDSFrameType)})
     self:connect(self, "in", fm_demod, "in")
     self:connect(self, "out", framer, "out")
 end

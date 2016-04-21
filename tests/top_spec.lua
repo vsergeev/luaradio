@@ -43,8 +43,8 @@ describe("top level test", function ()
             assert.is.equal(#test_vectors.SNK_TEST_VECTOR, #buf)
 
             -- Deserialize actual and expected test vectors
-            local actual = radio.Float32Type.deserialize(buf, #test_vectors.SNK_TEST_VECTOR/4)
-            local expected = radio.Float32Type.deserialize(test_vectors.SNK_TEST_VECTOR, #test_vectors.SNK_TEST_VECTOR/4)
+            local actual = radio.types.Float32.deserialize(buf, #test_vectors.SNK_TEST_VECTOR/4)
+            local expected = radio.types.Float32.deserialize(test_vectors.SNK_TEST_VECTOR, #test_vectors.SNK_TEST_VECTOR/4)
 
             jigs.assert_vector_equal(expected, actual, 1e-6)
         end)

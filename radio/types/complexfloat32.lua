@@ -78,6 +78,6 @@ function mt:__tostring()
     return "ComplexFloat32<real=" .. self.real .. ", imag=" .. self.imag .. ">"
 end
 
-local ComplexFloat32Type = CStructType.factory("complex_float32_t", mt)
+local ComplexFloat32 = CStructType.factory("complex_float32_t", mt)
 
-return ComplexFloat32Type
+return ComplexFloat32

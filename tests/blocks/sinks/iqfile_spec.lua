@@ -5,7 +5,7 @@ local buffer = require('tests.buffer')
 math.randomseed(1)
 
 local function random_complexfloat32(n)
-    local vec = radio.ComplexFloat32Type.vector(n)
+    local vec = radio.types.ComplexFloat32.vector(n)
     for i = 0, n-1 do
         vec.data[i].real = 2*math.random() - 1
         vec.data[i].imag = 2*math.random() - 1
@@ -38,7 +38,7 @@ describe("IQFileSink", function ()
             -- Write test vector to sink
             local snk_fd = buffer.open()
             local snk = radio.IQFileSink(snk_fd, fmt)
-            snk:differentiate({radio.ComplexFloat32Type})
+            snk:differentiate({radio.types.ComplexFloat32})
             snk:initialize()
             snk:process(test_vector)
             snk:cleanup()

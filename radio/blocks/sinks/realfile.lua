@@ -67,7 +67,7 @@ function RealFileSink:instantiate(file, format)
 
     self.format = supported_formats[format]
 
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {})
+    self:add_type_signature({block.Input("in", types.Float32)}, {})
 end
 
 -- File I/O

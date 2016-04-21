@@ -17,8 +17,8 @@ function GnuplotSpectrumSink:instantiate(num_samples, title, options)
 
     assert(self.overlap < 1, "Overlap should be a fraction in [0.00, 1.00).")
 
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {})
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {})
+    self:add_type_signature({block.Input("in", types.Float32)}, {})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {})
 end
 
 function GnuplotSpectrumSink:initialize()
@@ -48,7 +48,7 @@ function GnuplotSpectrumSink:initialize_gnuplot()
         -- Default to one-sided spectrum if input is real
         local onesided = (self.options.onesided == nil) and true or self.options.onesided
 
-        if data_type == types.Float32Type and onesided then
+        if data_type == types.Float32 and onesided then
             self.gnuplot_f:write(string.format("set xrange [0:%f]\n", sample_rate/2))
         else
             self.gnuplot_f:write(string.format("set xrange [%f:%f]\n", -sample_rate/2, sample_rate/2))
@@ -84,7 +84,7 @@ function GnuplotSpectrumSink:initialize_gnuplot()
     self.num_plot_update = math.floor(self.update_time*sample_rate)
 
     -- Create our PSD averaging buffer
-    self.psd_average = types.Float32Type.vector(self.num_samples)
+    self.psd_average = types.Float32.vector(self.num_samples)
     self.psd_average_count = 0
 end
 

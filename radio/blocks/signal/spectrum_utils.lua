@@ -11,7 +11,7 @@ local DFT = object.class_factory()
 function DFT.new(num_samples, data_type, window_type, sample_rate)
     local self = setmetatable({}, DFT)
 
-    if data_type ~= types.ComplexFloat32Type and data_type ~= types.Float32Type then
+    if data_type ~= types.ComplexFloat32 and data_type ~= types.Float32 then
         error("Unsupported data type.")
     end
 
@@ -27,7 +27,7 @@ end
 
 function DFT:initialize()
     -- Generate window
-    self.window = types.Float32Type.vector_from_array(window_utils.window(self.num_samples, self.window_type, true))
+    self.window = types.Float32.vector_from_array(window_utils.window(self.num_samples, self.window_type, true))
 
     -- Calculate the window energy
     self.window_energy = 0
@@ -36,7 +36,7 @@ function DFT:initialize()
     end
 
     -- Pick complex or real DFT
-    if self.data_type == types.ComplexFloat32Type then
+    if self.data_type == types.ComplexFloat32 then
         self.dft = self.dft_complex
     else
         self.dft = self.dft_real
@@ -49,9 +49,9 @@ function DFT:initialize()
     end
 
     -- Create sample buffers
-    self.windowed_samples = types.ComplexFloat32Type.vector(self.num_samples)
-    self.dft_samples = types.ComplexFloat32Type.vector(self.num_samples)
-    self.psd_samples = types.Float32Type.vector(self.num_samples)
+    self.windowed_samples = types.ComplexFloat32.vector(self.num_samples)
+    self.dft_samples = types.ComplexFloat32.vector(self.num_samples)
+    self.psd_samples = types.Float32.vector(self.num_samples)
 
     -- Initialize the DFT
     self:initialize_dft()
@@ -141,18 +141,18 @@ elseif platform.features.volk then
 
     function DFT:initialize_dft()
         -- Generate a DC vector
-        local dc_vec = types.ComplexFloat32Type.vector(self.num_samples)
+        local dc_vec = types.ComplexFloat32.vector(self.num_samples)
         for i = 0, self.num_samples-1 do
-            dc_vec.data[i] = types.ComplexFloat32Type(1, 0)
+            dc_vec.data[i] = types.ComplexFloat32(1, 0)
         end
 
         -- Generate complex exponentials
         self.exponentials = {}
         for k = 0, self.num_samples-1 do
-            self.exponentials[k] = types.ComplexFloat32Type.vector(self.num_samples)
+            self.exponentials[k] = types.ComplexFloat32.vector(self.num_samples)
             local omega = (-2*math.pi*k)/self.num_samples
-            local rotator = types.ComplexFloat32Type(math.cos(omega), math.sin(omega))
-            local phase = types.ComplexFloat32Type(1, 0)
+            local rotator = types.ComplexFloat32(math.cos(omega), math.sin(omega))
+            local phase = types.ComplexFloat32(1, 0)
             libvolk.volk_32fc_s32fc_x2_rotator_32fc_a(self.exponentials[k].data, dc_vec.data, rotator, phase, self.num_samples)
         end
 
@@ -176,10 +176,10 @@ else
         -- Generate complex exponentials
         self.exponentials = {}
         for k = 0, self.num_samples-1 do
-            self.exponentials[k] = types.ComplexFloat32Type.vector(self.num_samples)
+            self.exponentials[k] = types.ComplexFloat32.vector(self.num_samples)
             local omega = (-2*math.pi*k)/self.num_samples
             for n = 0, self.num_samples-1 do
-                self.exponentials[k].data[n] = types.ComplexFloat32Type(math.cos(omega*n), math.sin(omega*n))
+                self.exponentials[k].data[n] = types.ComplexFloat32(math.cos(omega*n), math.sin(omega*n))
             end
         end
     end
@@ -266,7 +266,7 @@ end
 
 function DFT:dft_real(samples)
     -- Convert real samples to complex samples
-    local complex_samples = types.ComplexFloat32Type.vector(self.num_samples)
+    local complex_samples = types.ComplexFloat32.vector(self.num_samples)
     for i = 0, self.num_samples-1 do
         complex_samples.data[i].real = samples.data[i].value
     end

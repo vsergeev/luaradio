@@ -9,11 +9,11 @@ function PulseAudioSink:instantiate(num_channels)
     self.num_channels = num_channels or 1
 
     if self.num_channels == 1 then
-        self:add_type_signature({block.Input("in", types.Float32Type)}, {})
+        self:add_type_signature({block.Input("in", types.Float32)}, {})
     else
         local block_inputs = {}
         for i = 1, self.num_channels do
-            block_inputs[#block_inputs+1] = block.Input("in" .. i, types.Float32Type)
+            block_inputs[#block_inputs+1] = block.Input("in" .. i, types.Float32)
         end
         self:add_type_signature(block_inputs, {})
     end
@@ -80,7 +80,7 @@ function PulseAudioSink:process(...)
         interleaved_samples = samples[1]
     else
         -- Interleave samples
-        interleaved_samples = types.Float32Type.vector(self.num_channels*samples[1].length)
+        interleaved_samples = types.Float32.vector(self.num_channels*samples[1].length)
         for i = 0, samples[1].length-1 do
             for j = 0, self.num_channels-1 do
                 interleaved_samples.data[i*self.num_channels + j] = samples[j+1].data[i]

@@ -42,6 +42,6 @@ function mt:__tostring()
     return "Byte<value=" .. self.value .. ">"
 end
 
-local ByteType = CStructType.factory("byte_t", mt)
+local Byte = CStructType.factory("byte_t", mt)
 
-return ByteType
+return Byte

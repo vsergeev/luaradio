@@ -17,8 +17,8 @@ function RationalResamplerBlock:instantiate(interpolation, decimation, options)
     local downsampler = blocks.DownsamplerBlock(decimation)
     self:connect(scaler, upsampler, filter, downsampler)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
     self:connect(self, "in", scaler, "in")
     self:connect(self, "out", downsampler, "out")
 end

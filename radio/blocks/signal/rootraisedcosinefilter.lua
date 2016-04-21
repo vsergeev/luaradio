@@ -9,7 +9,7 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 local RootRaisedCosineFilterBlock = block.factory("RootRaisedCosineFilterBlock", FIRFilterBlock)
 
 function RootRaisedCosineFilterBlock:instantiate(num_taps, beta, symbol_rate)
-    FIRFilterBlock.instantiate(self, types.Float32Type.vector(num_taps))
+    FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
 
     self.beta = beta
     self.symbol_rate = symbol_rate

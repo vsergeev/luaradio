@@ -15,16 +15,16 @@ function HilbertTransformBlock:instantiate(num_taps, window_type)
 
     -- Generate Hilbert transform taps
     local h = filter_utils.fir_hilbert_transform(num_taps, window_type)
-    self.hilbert_taps = types.Float32Type.vector(num_taps)
+    self.hilbert_taps = types.Float32.vector(num_taps)
     for i = 0, num_taps-1 do
         self.hilbert_taps.data[i].value = h[i+1]
     end
 
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.ComplexFloat32)})
 end
 
 function HilbertTransformBlock:initialize()
-    self.state = types.Float32Type.vector(self.hilbert_taps.length)
+    self.state = types.Float32.vector(self.hilbert_taps.length)
 
     -- Reverse taps
     local reversed_taps = self.hilbert_taps.type.vector(self.hilbert_taps.length)
@@ -46,7 +46,7 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function HilbertTransformBlock:process(x)
-        local out = types.ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.hilbert_taps.length - 1)], (self.hilbert_taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -70,7 +70,7 @@ if platform.features.volk then
 else
 
   function HilbertTransformBlock:process(x)
-        local out = types.ComplexFloat32Type.vector(x.length)
+        local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.hilbert_taps.length - 1)], (self.hilbert_taps.length-1)*ffi.sizeof(self.state.data[0]))

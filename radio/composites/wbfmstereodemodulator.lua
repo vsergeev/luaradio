@@ -43,7 +43,7 @@ function WBFMStereoDemodulator:instantiate(tau)
     self:connect(l_sum, left_af_deemphasis)
     self:connect(r_sub, right_af_deemphasis)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("left", types.Float32Type), block.Output("right", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("left", types.Float32), block.Output("right", types.Float32)})
     self:connect(self, "in", fm_demod, "in")
     self:connect(self, "left", left_af_deemphasis, "out")
     self:connect(self, "right", right_af_deemphasis, "out")

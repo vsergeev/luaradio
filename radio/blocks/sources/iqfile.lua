@@ -79,7 +79,7 @@ function IQFileSource:instantiate(file, format, rate, repeat_on_eof)
 
     self.chunk_size = 8192
 
-    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
 end
 
 function IQFileSource:get_rate()
@@ -148,7 +148,7 @@ function IQFileSource:process()
     end
 
     -- Convert raw samples to complex float32 samples
-    local samples = types.ComplexFloat32Type.vector(num_samples)
+    local samples = types.ComplexFloat32.vector(num_samples)
     for i = 0, num_samples-1 do
         samples.data[i].real = (raw_samples[i].real.value - self.format.offset)*self.format.scale
         samples.data[i].imag = (raw_samples[i].imag.value - self.format.offset)*self.format.scale

@@ -15,7 +15,7 @@ function RtlSdrSource:instantiate(frequency, rate, options)
     self.rf_gain = self.options.rf_gain or 10.0
     self.freq_correction = self.options.freq_correction or 0.0
 
-    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
 end
 
 function RtlSdrSource:get_rate()
@@ -126,7 +126,7 @@ function RtlSdrSource:process()
     end
 
     -- Convert to complex u8 to complex floats
-    local out = types.ComplexFloat32Type.vector(self.buf_size/2)
+    local out = types.ComplexFloat32.vector(self.buf_size/2)
     for i = 0, out.length-1 do
         out.data[i].real = (self.buf[2*i]   - 127.5) * (1/127.5)
         out.data[i].imag = (self.buf[2*i+1] - 127.5) * (1/127.5)

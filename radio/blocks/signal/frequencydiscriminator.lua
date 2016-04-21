@@ -7,10 +7,10 @@ local types = require('radio.types')
 local FrequencyDiscriminatorBlock = block.factory("FrequencyDiscriminatorBlock")
 
 function FrequencyDiscriminatorBlock:instantiate(gain)
-    self.prev_sample = types.ComplexFloat32Type()
+    self.prev_sample = types.ComplexFloat32()
     self.gain = gain or 1.0
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.Float32)})
 end
 
 if platform.features.volk then
@@ -22,8 +22,8 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function FrequencyDiscriminatorBlock:process(x)
-        local tmp = types.ComplexFloat32Type.vector(x.length)
-        local out = types.Float32Type.vector(x.length)
+        local tmp = types.ComplexFloat32.vector(x.length)
+        local out = types.Float32.vector(x.length)
 
         -- Multiply element-wise of samples by conjugate of previous samples
         --      [a b c d e f g h] * ~[p a b c d e f g]
@@ -34,7 +34,7 @@ if platform.features.volk then
         libvolk.volk_32fc_s32f_atan2_32f_a(out.data, tmp.data, self.gain, x.length)
 
         -- Save last sample of x to be the next previous sample
-        self.prev_sample = types.ComplexFloat32Type(x.data[x.length-1].real, x.data[x.length-1].imag)
+        self.prev_sample = types.ComplexFloat32(x.data[x.length-1].real, x.data[x.length-1].imag)
 
         return out
     end
@@ -42,8 +42,8 @@ if platform.features.volk then
 else
 
     function FrequencyDiscriminatorBlock:process(x)
-        local tmp = types.ComplexFloat32Type.vector(x.length)
-        local out = types.Float32Type.vector(x.length)
+        local tmp = types.ComplexFloat32.vector(x.length)
+        local out = types.Float32.vector(x.length)
 
         -- Multiply element-wise of samples by conjugate of previous samples
         --      [a b c d e f g h] * ~[p a b c d e f g]
@@ -58,7 +58,7 @@ else
         end
 
         -- Save last sample of x to be the next previous sample
-        self.prev_sample = types.ComplexFloat32Type(x.data[x.length-1].real, x.data[x.length-1].imag)
+        self.prev_sample = types.ComplexFloat32(x.data[x.length-1].real, x.data[x.length-1].imag)
 
         return out
     end

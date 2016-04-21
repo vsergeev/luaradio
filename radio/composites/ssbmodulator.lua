@@ -21,7 +21,7 @@ function SSBModulator:instantiate(sideband, bandwidth)
         self:connect(af_filter, hilbert, sb_filter)
     end
 
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.ComplexFloat32)})
     self:connect(self, "in", af_filter, "in")
     self:connect(self, "out", sb_filter, "out")
 end

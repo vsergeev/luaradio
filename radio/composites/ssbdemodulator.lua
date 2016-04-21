@@ -17,7 +17,7 @@ function SSBDemodulator:instantiate(sideband, bandwidth, gain)
     local af_filter = blocks.LowpassFilterBlock(256, bandwidth)
     self:connect(sb_filter, am_demod, af_gain, af_filter)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.Float32)})
     self:connect(self, "in", sb_filter, "in")
     self:connect(self, "out", af_filter, "out")
 end

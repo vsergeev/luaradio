@@ -23,11 +23,6 @@ local radio = {
     composites = require('radio.composites'),
 }
 
--- Expose all types in top namespace
-for k,v in pairs(radio.types) do
-    radio[k] = v
-end
-
 -- Expose all blocks in top namespace
 for k,v in pairs(radio.blocks) do
     radio[k] = v

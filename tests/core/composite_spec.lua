@@ -10,22 +10,22 @@ describe("composite", function ()
     it("connection logic", function ()
         local TestSource = block.factory("TestSource")
         function TestSource:instantiate()
-            self:add_type_signature({}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestBlock = block.factory("TestBlock")
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestSumBlock = block.factory("TestSumBlock")
         function TestSumBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestSink = block.factory("TestSink")
         function TestSink:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {})
         end
 
 
@@ -118,7 +118,7 @@ describe("composite", function ()
 
         -- Check aliased pipe properties
 
-        blk:add_type_signature({block.Input("in1", radio.Float32Type), block.Input("in2", radio.Float32Type)}, {block.Output("out1", radio.Integer32Type), block.Output("out2", radio.BitType)})
+        blk:add_type_signature({block.Input("in1", radio.types.Float32), block.Input("in2", radio.types.Float32)}, {block.Output("out1", radio.types.Integer32), block.Output("out2", radio.types.Bit)})
 
         assert.is.equal(1, #blk.signatures)
         assert.is.equal(2, #blk.inputs)
@@ -136,17 +136,17 @@ describe("composite", function ()
 
         local TestBlock1 = block.factory("TestBlock1")
         function TestBlock1:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.BitType)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Bit)})
         end
 
         local TestBlock2 = block.factory("TestBlock2")
         function TestBlock2:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {})
         end
 
         local TestBlock3 = block.factory("TestBlock3")
         function TestBlock3:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Integer32Type)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Integer32)})
         end
 
         local b1 = TestBlock1()
@@ -192,7 +192,7 @@ describe("composite", function ()
 
         local blk2 = radio.CompositeBlock()
 
-        blk2:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.Integer32Type)})
+        blk2:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Integer32)})
 
         blk2:connect(blk2, 'in', blk, 'in1')
         blk2:connect(blk2, 'in', blk, 'in2')
@@ -208,7 +208,7 @@ describe("composite", function ()
 
         local blk = radio.CompositeBlock()
 
-        blk:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.Float32Type)}, {block.Output("out", radio.Integer32Type)})
+        blk:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.Float32)}, {block.Output("out", radio.types.Integer32)})
 
         -- Invalid pipe direction
         assert.has_error(function () blk:connect(blk, "out", b1, "in") end)
@@ -234,14 +234,14 @@ describe("composite", function ()
 
         local TestBlock = block.factory("TestBlock")
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local c1 = radio.CompositeBlock()
         local c1a = TestBlock()
         local c1b = TestBlock()
         local c1c = TestBlock()
-        c1:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+        c1:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         c1:connect(c1a, c1b, c1c)
         c1:connect(c1, "in", c1a, "in")
         c1:connect(c1, "out", c1b, "out")
@@ -249,13 +249,13 @@ describe("composite", function ()
         local c2 = radio.CompositeBlock()
         local c2a = TestBlock()
         local c2b = TestBlock()
-        c2:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+        c2:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         c2:connect(c2a, c2b)
         c2:connect(c2, "in", c2a, "in")
         c2:connect(c2, "out", c2b, "out")
 
         local c3 = radio.CompositeBlock()
-        c3:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+        c3:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         c3:connect(c1, c2)
         c3:connect(c3, "in", c1, "in")
         c3:connect(c3, "out", c2, "out")
@@ -305,12 +305,12 @@ describe("composite", function ()
 
         local TestBlock = block.factory("TestBlock")
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestSumBlock = block.factory("TestSumBlock")
         function TestSumBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
@@ -355,12 +355,12 @@ describe("composite", function ()
 
         local TestBlock = block.factory("TestBlock")
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestSumBlock = block.factory("TestSumBlock")
         function TestSumBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
@@ -405,12 +405,12 @@ describe("composite", function ()
 
         local TestBlock = block.factory("TestBlock")
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestSumBlock = block.factory("TestSumBlock")
         function TestSumBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
@@ -456,12 +456,12 @@ describe("composite", function ()
 
         local TestBlock = block.factory("TestBlock")
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestSumBlock = block.factory("TestSumBlock")
         function TestSumBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
@@ -499,22 +499,22 @@ describe("composite", function ()
     it("running errors", function ()
         local TestSource = block.factory("TestSource")
         function TestSource:instantiate()
-            self:add_type_signature({}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestBlock = block.factory("TestBlock")
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestSumBlock = block.factory("TestSumBlock")
         function TestSumBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.ComplexFloat32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local TestSink = block.factory("TestSink")
         function TestSink:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {})
         end
 
         -- Unconnected inputs
@@ -538,7 +538,7 @@ describe("composite", function ()
 
         local TestSumBlock = block.factory("TestSumBlock")
         function TestSumBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.Float32Type)}, {block.Output("out", radio.ComplexFloat32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.Float32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()

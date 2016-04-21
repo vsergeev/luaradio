@@ -6,12 +6,12 @@ local DifferentialDecoderBlock = block.factory("DifferentialDecoderBlock")
 function DifferentialDecoderBlock:instantiate(invert)
     self.invert = (invert == nil) and false or invert
 
-    self.prev_bit = types.BitType(0)
-    self:add_type_signature({block.Input("in", types.BitType)}, {block.Output("out", types.BitType)})
+    self.prev_bit = types.Bit(0)
+    self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", types.Bit)})
 end
 
 function DifferentialDecoderBlock:process(x)
-    local out = types.BitType.vector(x.length)
+    local out = types.Bit.vector(x.length)
 
     for i = 0, x.length-1 do
         if self.invert then

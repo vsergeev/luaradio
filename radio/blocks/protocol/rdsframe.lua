@@ -63,11 +63,11 @@ local RDSFrameType = types.CStructType.factory("rds_frame_t", rds_frame_type_mt)
 local RDSFrameBlock = block.factory("RDSFrameBlock")
 
 function RDSFrameBlock:instantiate()
-    self.rds_frame = types.BitType.vector(RDS_FRAME_LEN)
+    self.rds_frame = types.Bit.vector(RDS_FRAME_LEN)
     self.rds_frame_length = 0
     self.synchronized = false
 
-    self:add_type_signature({block.Input("in", types.BitType)}, {block.Output("out", RDSFrameType)})
+    self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", RDSFrameType)})
 end
 
 RDSFrameBlock.RDSFrameType = RDSFrameType
@@ -132,10 +132,10 @@ function RDSFrameBlock:process(x)
         -- Try to validate the frame
         if self.rds_frame_length == RDS_FRAME_LEN then
             -- Convert block bits to numbers
-            local block_a = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*0, RDS_BLOCK_LEN)
-            local block_b = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*1, RDS_BLOCK_LEN)
-            local block_c = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*2, RDS_BLOCK_LEN)
-            local block_d = types.BitType.tonumber(self.rds_frame, RDS_BLOCK_LEN*3, RDS_BLOCK_LEN)
+            local block_a = types.Bit.tonumber(self.rds_frame, RDS_BLOCK_LEN*0, RDS_BLOCK_LEN)
+            local block_b = types.Bit.tonumber(self.rds_frame, RDS_BLOCK_LEN*1, RDS_BLOCK_LEN)
+            local block_c = types.Bit.tonumber(self.rds_frame, RDS_BLOCK_LEN*2, RDS_BLOCK_LEN)
+            local block_d = types.Bit.tonumber(self.rds_frame, RDS_BLOCK_LEN*3, RDS_BLOCK_LEN)
 
             -- Validate and correct the blocks
             correct_block_a = rds_correct_block(block_a, RDS_OFFSET_WORDS.A)

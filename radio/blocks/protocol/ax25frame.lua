@@ -32,10 +32,10 @@ local AX25FrameBlock = block.factory("AX25FrameBlock")
 
 function AX25FrameBlock:instantiate()
     self.state = AX25FramerState.IDLE
-    self.byte_buffer = types.BitType.vector(8)
+    self.byte_buffer = types.Bit.vector(8)
     self.byte_buffer_length = 0
 
-    self:add_type_signature({block.Input("in", types.BitType)}, {block.Output("out", AX25FrameType)})
+    self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", AX25FrameType)})
 end
 
 AX25FrameBlock.AX25FrameType = AX25FrameType
@@ -62,7 +62,7 @@ local function ax25_compute_crc(bits, length)
 end
 
 local function ax25_unstuff_frame(raw_frame)
-    local frame = types.BitType.vector()
+    local frame = types.Bit.vector()
     local ones_count = 0
 
     for i = 0, raw_frame.length-1 do
@@ -93,7 +93,7 @@ local function ax25_validate_frame(frame)
 
     -- Check frame check sequence
     local computed_crc = ax25_compute_crc(frame, frame.length-16)
-    local expected_crc = types.BitType.tonumber(frame, frame.length-16, 16, "lsb")
+    local expected_crc = types.Bit.tonumber(frame, frame.length-16, 16, "lsb")
     if computed_crc ~= expected_crc then
         return false
     end
@@ -114,7 +114,7 @@ local function ax25_extract_frame(frame)
             if bit_index >= (frame.length - 16) then
                 return nil
             end
-            byte, bit_index = types.BitType.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
+            byte, bit_index = types.Bit.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
             address.callsign = address.callsign .. string.char(bit.rshift(byte, 1))
         end
 
@@ -122,7 +122,7 @@ local function ax25_extract_frame(frame)
         if bit_index >= (frame.length - 16) then
             return nil
         end
-        byte, bit_index = types.BitType.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
+        byte, bit_index = types.Bit.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
         address.ssid = bit.rshift(byte, 1)
 
         -- Add the address to our address list
@@ -139,7 +139,7 @@ local function ax25_extract_frame(frame)
     if bit_index >= (frame.length - 16) then
         return nil
     end
-    control, bit_index = types.BitType.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
+    control, bit_index = types.Bit.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
 
     local pid = nil
     local payload = nil
@@ -150,12 +150,12 @@ local function ax25_extract_frame(frame)
         if bit_index >= (frame.length-16) then
             return nil
         end
-        pid, bit_index = types.BitType.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
+        pid, bit_index = types.Bit.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
 
         -- Extract payload
         payload = ""
         while bit_index < (frame.length-16) do
-            byte, bit_index = types.BitType.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
+            byte, bit_index = types.Bit.tonumber(frame, bit_index, 8, "lsb"), bit_index + 8
             payload = payload .. string.char(byte)
         end
     end
@@ -177,11 +177,11 @@ function AX25FrameBlock:process(x)
         end
 
         if self.state == AX25FramerState.IDLE and self.byte_buffer_length == 8 then
-            if types.BitType.tonumber(self.byte_buffer, 0, 8, "lsb") == AX25_FLAG_FIELD then
+            if types.Bit.tonumber(self.byte_buffer, 0, 8, "lsb") == AX25_FLAG_FIELD then
                 -- If we encounter the start flag
 
                 -- Create a raw frame buffer and switch to FRAME
-                self.raw_frame = types.BitType.vector()
+                self.raw_frame = types.Bit.vector()
                 self.byte_buffer_length = 0
                 self.state = AX25FramerState.FRAME
             else
@@ -190,7 +190,7 @@ function AX25FrameBlock:process(x)
                 self.byte_buffer_length = self.byte_buffer_length - 1
             end
         elseif self.state == AX25FramerState.FRAME and self.byte_buffer_length == 8 then
-            if types.BitType.tonumber(self.byte_buffer, 0, 8, "lsb") == AX25_FLAG_FIELD then
+            if types.Bit.tonumber(self.byte_buffer, 0, 8, "lsb") == AX25_FLAG_FIELD then
                 -- If we encounter the end flag
 
                 -- Unstuff the frame
@@ -212,7 +212,7 @@ function AX25FrameBlock:process(x)
                     -- Reset the frame buffer and stay in FRAME,
                     -- since the flag sequence may be the start flag
                     self.byte_buffer_length = 0
-                    self.raw_frame = types.BitType.vector()
+                    self.raw_frame = types.Bit.vector()
                 end
             elseif self.raw_frame.length > AX25_RAW_FRAME_MAXLEN then
                 -- If our raw frame got too large, abandon it and switch to IDLE

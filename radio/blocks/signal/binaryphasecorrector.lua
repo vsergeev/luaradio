@@ -10,9 +10,9 @@ local BinaryPhaseCorrectorBlock = block.factory("BinaryPhaseCorrectorBlock")
 function BinaryPhaseCorrectorBlock:instantiate(num_samples)
     self.num_samples = num_samples
     self.phi_moving_average = 0.0
-    self.phi_state = types.Float32Type.vector(self.num_samples)
+    self.phi_state = types.Float32.vector(self.num_samples)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
 end
 
 ffi.cdef[[
@@ -20,7 +20,7 @@ void *memmove(void *dest, const void *src, size_t n);
 ]]
 
 function BinaryPhaseCorrectorBlock:process(x)
-    local out = types.ComplexFloat32Type.vector(x.length)
+    local out = types.ComplexFloat32.vector(x.length)
 
     for i = 0, x.length-1 do
         if x.data[i].real ~= 0 then
@@ -42,7 +42,7 @@ function BinaryPhaseCorrectorBlock:process(x)
         end
 
         -- Adjust the phase of this sample with the moving average
-        out.data[i] = x.data[i] * types.ComplexFloat32Type(math.cos(-self.phi_moving_average), math.sin(-self.phi_moving_average))
+        out.data[i] = x.data[i] * types.ComplexFloat32(math.cos(-self.phi_moving_average), math.sin(-self.phi_moving_average))
     end
 
     return out

@@ -71,7 +71,7 @@ function RealFileSource:instantiate(file, format, rate, repeat_on_eof)
 
     self.chunk_size = 8192
 
-    self:add_type_signature({}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({}, {block.Output("out", types.Float32)})
 end
 
 function RealFileSource:get_rate()
@@ -139,7 +139,7 @@ function RealFileSource:process()
     end
 
     -- Convert raw samples to float32 samples
-    local samples = types.Float32Type.vector(num_samples)
+    local samples = types.Float32.vector(num_samples)
     for i = 0, num_samples-1 do
         samples.data[i].value = (raw_samples[i].value - self.format.offset)*self.format.scale
     end

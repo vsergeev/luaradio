@@ -43,6 +43,6 @@ function mt:__tostring()
     return "Integer32<value=" .. self.value .. ">"
 end
 
-local Integer32Type = CStructType.factory("integer32_t", mt)
+local Integer32 = CStructType.factory("integer32_t", mt)
 
-return Integer32Type
+return Integer32

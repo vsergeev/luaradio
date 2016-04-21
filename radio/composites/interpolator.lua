@@ -14,8 +14,8 @@ function InterpolatorBlock:instantiate(interpolation, options)
     local filter = blocks.LowpassFilterBlock(options.num_taps or 128, 1/interpolation, options.window, 1.0)
     self:connect(scaler, upsampler, filter)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
     self:connect(self, "in", scaler, "in")
     self:connect(self, "out", filter, "out")
 end

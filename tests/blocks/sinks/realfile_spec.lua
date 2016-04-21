@@ -5,7 +5,7 @@ local buffer = require('tests.buffer')
 math.randomseed(1)
 
 local function random_float32(n)
-    local vec = radio.Float32Type.vector(n)
+    local vec = radio.types.Float32.vector(n)
     for i = 0, n-1 do
         vec.data[i].value = 2*math.random() - 1
     end
@@ -37,7 +37,7 @@ describe("RealFileSink", function ()
             -- Write test vector to sink
             local snk_fd = buffer.open()
             local snk = radio.RealFileSink(snk_fd, fmt)
-            snk:differentiate({radio.Float32Type})
+            snk:differentiate({radio.types.Float32})
             snk:initialize()
             snk:process(test_vector)
             snk:cleanup()

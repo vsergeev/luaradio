@@ -9,7 +9,7 @@ local IIRFilterBlock = require('radio.blocks.signal.iirfilter')
 local FMDeemphasisFilterBlock = block.factory("FMDeemphasisFilterBlock", IIRFilterBlock)
 
 function FMDeemphasisFilterBlock:instantiate(tau)
-    IIRFilterBlock.instantiate(self, types.Float32Type.vector(2), types.Float32Type.vector(2))
+    IIRFilterBlock.instantiate(self, types.Float32.vector(2), types.Float32.vector(2))
 
     self.tau = tau
 end

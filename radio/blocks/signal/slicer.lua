@@ -6,11 +6,11 @@ local SlicerBlock = block.factory("SlicerBlock")
 function SlicerBlock:instantiate(threshold)
     self.threshold = threshold or 0.0
 
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.BitType)})
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Bit)})
 end
 
 function SlicerBlock:process(x)
-    local out = types.BitType.vector(x.length)
+    local out = types.Bit.vector(x.length)
 
     for i = 0, x.length-1 do
         out.data[i].value = (x.data[i].value > self.threshold) and 1 or 0

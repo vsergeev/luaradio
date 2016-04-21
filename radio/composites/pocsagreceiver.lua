@@ -32,7 +32,7 @@ function POCSAGReceiver:instantiate(baudrate)
     self:connect(clock_recovery, 'out', sampler, 'clock')
     self:connect(sampler, bit_slicer, framer, decoder)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", blocks.POCSAGDecodeBlock.POCSAGMessageType)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", blocks.POCSAGDecodeBlock.POCSAGMessageType)})
     self:connect(self, "in", space_filter, "in")
     self:connect(self, "in", mark_filter, "in")
     self:connect(self, "out", decoder, "out")

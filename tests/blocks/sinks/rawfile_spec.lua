@@ -7,7 +7,7 @@ SNK_TEST_VECTOR = "\x00\x00\x00\x0a\x93\xa3\x66\x6f\x6f\xa3\x62\x61\x72\x7b\x00\
 describe("RawFileSource", function ()
     it("test vector", function ()
         -- Create new object type
-        local FooType = radio.ObjectType.factory()
+        local FooType = radio.types.ObjectType.factory()
 
         function FooType.new(a, b, c)
             return setmetatable({a, b, c}, FooType)

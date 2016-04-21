@@ -10,8 +10,8 @@ local ClockState = {LOW = 1, HIGH = 2}
 function SamplerBlock:instantiate()
     self.clock_hysteresis = ClockState.LOW
 
-    self:add_type_signature({block.Input("data", types.ComplexFloat32Type), block.Input("clock", types.Float32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-    self:add_type_signature({block.Input("data", types.Float32Type), block.Input("clock", types.Float32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("data", types.ComplexFloat32), block.Input("clock", types.Float32)}, {block.Output("out", types.ComplexFloat32)})
+    self:add_type_signature({block.Input("data", types.Float32), block.Input("clock", types.Float32)}, {block.Output("out", types.Float32)})
 end
 
 function SamplerBlock:initialize()

@@ -9,7 +9,7 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 local HighpassFilterBlock = block.factory("HighpassFilterBlock", FIRFilterBlock)
 
 function HighpassFilterBlock:instantiate(num_taps, cutoff_frequency, window_type, nyquist_frequency)
-    FIRFilterBlock.instantiate(self, types.Float32Type.vector(num_taps))
+    FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
 
     self.cutoff_frequency = cutoff_frequency
     self.window_type = (window_type == nil) and "hamming" or window_type

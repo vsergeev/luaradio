@@ -9,9 +9,9 @@ function DelayBlock:instantiate(num_samples)
     assert(num_samples > 0, "Number of delay samples must be greater than 0.")
     self.num_samples = num_samples
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)})
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)})
-    self:add_type_signature({block.Input("in", types.Integer32Type)}, {block.Output("out", types.Integer32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
+    self:add_type_signature({block.Input("in", types.Integer32)}, {block.Output("out", types.Integer32)})
 end
 
 function DelayBlock:initialize()

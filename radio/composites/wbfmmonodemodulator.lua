@@ -15,7 +15,7 @@ function WBFMMonoDemodulator:instantiate(tau)
     local af_deemphasis = blocks.FMDeemphasisFilterBlock(tau)
     self:connect(fm_demod, af_filter, af_deemphasis)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.Float32Type)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.Float32)})
     self:connect(self, "in", fm_demod, "in")
     self:connect(self, "out", af_deemphasis, "out")
 end

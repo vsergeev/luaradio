@@ -32,8 +32,8 @@ describe("block", function ()
 
         -- Basic type signature
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.ComplexFloat32Type)}, {block.Output("out", radio.Float32Type)})
-            self:add_type_signature({block.Input("in1", radio.Float32Type), block.Input("in2", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Float32)})
+            self:add_type_signature({block.Input("in1", radio.types.Float32), block.Input("in2", radio.types.Float32)}, {block.Output("out", radio.types.Float32)})
         end
 
         local blk = TestBlock()
@@ -46,27 +46,27 @@ describe("block", function ()
 
         -- Test invalid input descriptor
         function TestBlock:instantiate()
-            self:add_type_signature({block.Output("in", radio.Float32Type)}, {})
+            self:add_type_signature({block.Output("in", radio.types.Float32)}, {})
         end
         assert.has_error(function () TestBlock() end)
 
         -- Test invalid output descriptor
         function TestBlock:instantiate()
-            self:add_type_signature({}, {block.Input("out", radio.Float32Type)})
+            self:add_type_signature({}, {block.Input("out", radio.types.Float32)})
         end
         assert.has_error(function () TestBlock() end)
 
         -- Test mismatched number of inputs error
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.Float32Type)})
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.ComplexFloat32Type)}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Float32)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Float32)})
         end
         assert.has_error(function () TestBlock() end)
 
         -- Test mismatched number of outputs error
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out", radio.Float32Type)})
-            self:add_type_signature({block.Input("in", radio.ComplexFloat32Type)}, {block.Output("out1", radio.Float32Type), block.Output("out2", radio.Float32Type)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Float32)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out1", radio.types.Float32), block.Output("out2", radio.types.Float32)})
         end
         assert.has_error(function () TestBlock() end)
     end)
@@ -76,14 +76,14 @@ describe("block", function ()
 
         -- Test differentiation
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.ComplexFloat32Type), block.Input("in2", radio.Float32Type)},
-                                    {block.Output("out", radio.Float32Type)})
-            self:add_type_signature({block.Input("in1", radio.Float32Type), block.Input("in2", radio.Integer32Type)},
-                                    {block.Output("out", radio.Integer32Type)})
-            self:add_type_signature({block.Input("in1", radio.Integer32Type), block.Input("in2", radio.ByteType)},
-                                    {block.Output("out", radio.ByteType)})
-            self:add_type_signature({block.Input("in1", radio.BitType), block.Input("in2", radio.BitType)},
-                                    {block.Output("out", radio.BitType)})
+            self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.Float32)},
+                                    {block.Output("out", radio.types.Float32)})
+            self:add_type_signature({block.Input("in1", radio.types.Float32), block.Input("in2", radio.types.Integer32)},
+                                    {block.Output("out", radio.types.Integer32)})
+            self:add_type_signature({block.Input("in1", radio.types.Integer32), block.Input("in2", radio.types.Byte)},
+                                    {block.Output("out", radio.types.Byte)})
+            self:add_type_signature({block.Input("in1", radio.types.Bit), block.Input("in2", radio.types.Bit)},
+                                    {block.Output("out", radio.types.Bit)})
         end
 
         local blk = TestBlock()
@@ -93,36 +93,36 @@ describe("block", function ()
         assert.has_error(function () blk:get_output_types() end)
 
         -- Test valid differentiations
-        blk:differentiate({radio.ComplexFloat32Type, radio.Float32Type})
+        blk:differentiate({radio.types.ComplexFloat32, radio.types.Float32})
         assert.is.equal(blk.signatures[1], blk.signature)
-        assert.is.same({radio.ComplexFloat32Type, radio.Float32Type}, blk:get_input_types())
-        assert.is.same({radio.Float32Type}, blk:get_output_types())
+        assert.is.same({radio.types.ComplexFloat32, radio.types.Float32}, blk:get_input_types())
+        assert.is.same({radio.types.Float32}, blk:get_output_types())
 
-        blk:differentiate({radio.Float32Type, radio.Integer32Type})
+        blk:differentiate({radio.types.Float32, radio.types.Integer32})
         assert.is.equal(blk.signatures[2], blk.signature)
-        assert.is.same({radio.Float32Type, radio.Integer32Type}, blk:get_input_types())
-        assert.is.same({radio.Integer32Type}, blk:get_output_types())
+        assert.is.same({radio.types.Float32, radio.types.Integer32}, blk:get_input_types())
+        assert.is.same({radio.types.Integer32}, blk:get_output_types())
 
-        blk:differentiate({radio.Integer32Type, radio.ByteType})
+        blk:differentiate({radio.types.Integer32, radio.types.Byte})
         assert.is.equal(blk.signatures[3], blk.signature)
-        assert.is.same({radio.Integer32Type, radio.ByteType}, blk:get_input_types())
-        assert.is.same({radio.ByteType}, blk:get_output_types())
+        assert.is.same({radio.types.Integer32, radio.types.Byte}, blk:get_input_types())
+        assert.is.same({radio.types.Byte}, blk:get_output_types())
 
-        blk:differentiate({radio.BitType, radio.BitType})
+        blk:differentiate({radio.types.Bit, radio.types.Bit})
         assert.is.equal(blk.signatures[4], blk.signature)
-        assert.is.same({radio.BitType, radio.BitType}, blk:get_input_types())
-        assert.is.same({radio.BitType}, blk:get_output_types())
+        assert.is.same({radio.types.Bit, radio.types.Bit}, blk:get_input_types())
+        assert.is.same({radio.types.Bit}, blk:get_output_types())
 
         -- Test invalid differentiations
         assert.has_error(function () blk:differentiate({}) end)
-        assert.has_error(function () blk:differentiate({radio.ComplexFloat32Type}) end)
-        assert.has_error(function () blk:differentiate({radio.Float32Type}) end)
-        assert.has_error(function () blk:differentiate({radio.Integer32Type}) end)
-        assert.has_error(function () blk:differentiate({radio.BitType}) end)
-        assert.has_error(function () blk:differentiate({radio.ComplexFloat32Type, radio.ComplexFloat32Type}) end)
-        assert.has_error(function () blk:differentiate({radio.Float32Type, radio.BitType}) end)
-        assert.has_error(function () blk:differentiate({radio.Integer32Type, radio.BitType}) end)
-        assert.has_error(function () blk:differentiate({radio.BitType, radio.ByteType}) end)
+        assert.has_error(function () blk:differentiate({radio.types.ComplexFloat32}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Float32}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Integer32}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Bit}) end)
+        assert.has_error(function () blk:differentiate({radio.types.ComplexFloat32, radio.types.ComplexFloat32}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Float32, radio.types.Bit}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Integer32, radio.types.Bit}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Bit, radio.types.Byte}) end)
 
         -- Test custom type signature dependent initialize and process functions
 
@@ -131,29 +131,29 @@ describe("block", function ()
         function TestBlock:process_float() end
         function TestBlock:process_integer() end
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {}, TestBlock.process_float, TestBlock.initialize_float)
-            self:add_type_signature({block.Input("in", radio.Integer32Type)}, {}, TestBlock.process_integer, TestBlock.initialize_integer)
-            self:add_type_signature({block.Input("in", radio.BitType)}, {})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {}, TestBlock.process_float, TestBlock.initialize_float)
+            self:add_type_signature({block.Input("in", radio.types.Integer32)}, {}, TestBlock.process_integer, TestBlock.initialize_integer)
+            self:add_type_signature({block.Input("in", radio.types.Bit)}, {})
         end
 
         local blk = TestBlock()
 
-        blk:differentiate({radio.Float32Type})
+        blk:differentiate({radio.types.Float32})
         assert.is.equal(TestBlock.initialize_float, blk.initialize)
         assert.is.equal(TestBlock.process_float, blk.process)
-        assert.is.same({radio.Float32Type}, blk:get_input_types())
+        assert.is.same({radio.types.Float32}, blk:get_input_types())
         assert.is.same({}, blk:get_output_types())
 
-        blk:differentiate({radio.Integer32Type})
+        blk:differentiate({radio.types.Integer32})
         assert.is.equal(TestBlock.initialize_integer, blk.initialize)
         assert.is.equal(TestBlock.process_integer, blk.process)
-        assert.is.same({radio.Integer32Type}, blk:get_input_types())
+        assert.is.same({radio.types.Integer32}, blk:get_input_types())
         assert.is.same({}, blk:get_output_types())
 
-        blk:differentiate({radio.BitType})
+        blk:differentiate({radio.types.Bit})
         assert.is.equal(TestBlock.initialize, blk.initialize)
         assert.is.equal(TestBlock.process, blk.process)
-        assert.is.same({radio.BitType}, blk:get_input_types())
+        assert.is.same({radio.types.Bit}, blk:get_input_types())
         assert.is.same({}, blk:get_output_types())
 
         -- Test source differentiation
@@ -161,14 +161,14 @@ describe("block", function ()
         local TestSource = block.factory("TestSource")
 
         function TestSource:instantiate()
-            self:add_type_signature({}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({}, {block.Output("out", radio.types.Float32)})
         end
 
         local blk = TestSource()
         blk:differentiate({})
         assert.is.equal(blk.signatures[1], blk.signature)
         assert.is.same({}, blk:get_input_types())
-        assert.is.same({radio.Float32Type}, blk:get_output_types())
+        assert.is.same({radio.types.Float32}, blk:get_output_types())
 
         -- Test function-based type differentiation
 
@@ -198,7 +198,7 @@ describe("block", function ()
         local TestSource = block.factory("TestSource")
 
         function TestSource:instantiate()
-            self:add_type_signature({}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({}, {block.Output("out", radio.types.Float32)})
         end
 
         -- Source blocks should define rate
@@ -223,12 +223,12 @@ describe("block", function ()
 
         local TestBlock = block.factory("TestBlock")
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Float32)})
         end
 
         local TestRateTripler = block.factory("TestRateTripler")
         function TestRateTripler:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Float32)})
         end
         function TestRateTripler:get_rate()
             return block.Block.get_rate(self)*3
@@ -236,7 +236,7 @@ describe("block", function ()
 
         local TestRateHalver = block.factory("TestRateHalver")
         function TestRateHalver:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Float32)})
         end
         function TestRateHalver:get_rate()
             return block.Block.get_rate(self)/2
@@ -266,10 +266,10 @@ describe("block", function ()
 
         -- Differentiate blocks
         b0:differentiate({})
-        b1:differentiate({radio.Float32Type})
-        b2:differentiate({radio.Float32Type})
-        b3:differentiate({radio.Float32Type})
-        b4:differentiate({radio.Float32Type})
+        b1:differentiate({radio.types.Float32})
+        b2:differentiate({radio.types.Float32})
+        b3:differentiate({radio.types.Float32})
+        b4:differentiate({radio.types.Float32})
 
         -- Connect pipes
         for _, blks in ipairs({{b0, b1}, {b1, b2}, {b2, b3}, {b3, b4}}) do
@@ -293,7 +293,7 @@ describe("block", function ()
         -- Implement some basic methods
         function TestBlock:instantiate(a)
             self.a = a
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Float32)})
         end
 
         function TestBlock:initialize()
@@ -306,7 +306,7 @@ describe("block", function ()
 
         -- Use the block
         local blk = TestBlock(5)
-        blk:differentiate({radio.Float32Type})
+        blk:differentiate({radio.types.Float32})
         blk:initialize()
         local out = blk:process(10)
 
@@ -320,7 +320,7 @@ describe("block", function ()
 
         function TestBlock:instantiate(a)
             self.a = a
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Float32)})
         end
 
         function TestBlock:process(x)
@@ -336,7 +336,7 @@ describe("block", function ()
         end
 
         local blk = TestDerivedBlock()
-        blk:differentiate({radio.Float32Type})
+        blk:differentiate({radio.types.Float32})
         blk:initialize()
         local out = blk:process(2)
 
@@ -353,7 +353,7 @@ describe("block", function ()
             self.vec = vec
             self.index = 0
 
-            self:add_type_signature({}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({}, {block.Output("out", radio.types.Float32)})
         end
 
         function TestSource:process()
@@ -361,7 +361,7 @@ describe("block", function ()
                 return nil
             end
 
-            local out = radio.Float32Type.vector_from_array({self.vec.data[self.index]})
+            local out = radio.types.Float32.vector_from_array({self.vec.data[self.index]})
             self.index = self.index + 1
 
             return out
@@ -373,7 +373,7 @@ describe("block", function ()
 
         function MockPipe.new()
             local self = setmetatable({}, MockPipe)
-            self.vec = radio.Float32Type.vector()
+            self.vec = radio.types.Float32.vector()
             return self
         end
 
@@ -384,7 +384,7 @@ describe("block", function ()
         end
 
         -- Create a TestSource with two output pipes
-        local expected_vec = radio.Float32Type.vector_from_array({42, 22, 10, 123, 15})
+        local expected_vec = radio.types.Float32.vector_from_array({42, 22, 10, 123, 15})
         local blk = TestSource(expected_vec)
         local p1, p2 = MockPipe(), MockPipe()
         blk:differentiate({})
@@ -409,14 +409,14 @@ describe("block", function ()
         local TestBlock = block.factory("TestBlock")
 
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in", radio.Float32Type)}, {block.Output("out", radio.Float32Type)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Float32)})
         end
 
         function TestBlock:process(x)
-            local out = radio.Float32Type.vector(x.length)
+            local out = radio.types.Float32.vector(x.length)
 
             for i = 0, x.length-1 do
-                out.data[i] = radio.Float32Type(x.data[i].value*2)
+                out.data[i] = radio.types.Float32(x.data[i].value*2)
             end
 
             return out
@@ -428,7 +428,7 @@ describe("block", function ()
 
         function MockPipe.new()
             local self = setmetatable({}, MockPipe)
-            self.vec = radio.Float32Type.vector()
+            self.vec = radio.types.Float32.vector()
             return self
         end
 
@@ -444,7 +444,7 @@ describe("block", function ()
             end
 
             local out = self.vec
-            self.vec = radio.Float32Type.vector()
+            self.vec = radio.types.Float32.vector()
             return out
         end
 
@@ -459,13 +459,13 @@ describe("block", function ()
         -- Create a TestBlock with an input pipe and 2 output pipes
         local blk = TestBlock()
         local p_in, p_out1, p_out2 = MockPipe(), MockPipe(), MockPipe()
-        blk:differentiate({radio.Float32Type})
+        blk:differentiate({radio.types.Float32})
         blk.inputs[1].pipe = p_in
         blk.outputs[1].pipes = {p_out1, p_out2}
         blk:initialize()
 
         -- Load the input pipe
-        p_in.vec = radio.Float32Type.vector_from_array({1, 2, 3, 4, 5})
+        p_in.vec = radio.types.Float32.vector_from_array({1, 2, 3, 4, 5})
 
         -- Hook spy onto block cleanup()
         local cleanup_spy = spy.on(blk, "cleanup")
@@ -477,7 +477,7 @@ describe("block", function ()
         assert.spy(cleanup_spy).was.called()
 
         -- Check the output pipe
-        local expected_vec = radio.Float32Type.vector_from_array({2, 4, 6, 8, 10})
+        local expected_vec = radio.types.Float32.vector_from_array({2, 4, 6, 8, 10})
         assert.is.equal(expected_vec, p_out1.vec)
         assert.is.equal(expected_vec, p_out2.vec)
     end)
@@ -486,12 +486,12 @@ describe("block", function ()
         local TestBlock = block.factory("TestBlock")
 
         function TestBlock:instantiate()
-            self:add_type_signature({block.Input("in1", radio.Float32Type), block.Input("in2", radio.Float32Type)}, {block.Output("out1", radio.Float32Type), block.Output("out2", radio.Float32Type)})
+            self:add_type_signature({block.Input("in1", radio.types.Float32), block.Input("in2", radio.types.Float32)}, {block.Output("out1", radio.types.Float32), block.Output("out2", radio.types.Float32)})
         end
 
         function TestBlock:process(x, y)
-            local out_sum = radio.Float32Type.vector(x.length)
-            local out_mul = radio.Float32Type.vector(x.length)
+            local out_sum = radio.types.Float32.vector(x.length)
+            local out_mul = radio.types.Float32.vector(x.length)
 
             for i = 0, x.length-1  do
                 out_sum.data[i] = x.data[i] + y.data[i]
@@ -507,7 +507,7 @@ describe("block", function ()
 
         function MockPipe.new(n_read)
             local self = setmetatable({}, MockPipe)
-            self.vec = radio.Float32Type.vector()
+            self.vec = radio.types.Float32.vector()
             self.n_read = n_read
             return self
         end
@@ -530,7 +530,7 @@ describe("block", function ()
         end
 
         function MockPipe:read_n(n)
-            local out = radio.Float32Type.vector(n)
+            local out = radio.types.Float32.vector(n)
 
             -- Copy elements to out
             for i = 0, n-1 do
@@ -553,7 +553,7 @@ describe("block", function ()
         local blk = TestBlock()
         local p_in1, p_in2, p_out1, p_out2 = MockPipe(3), MockPipe(7)
         local p_out1, p_out2 = MockPipe(), MockPipe()
-        blk:differentiate({radio.Float32Type, radio.Float32Type})
+        blk:differentiate({radio.types.Float32, radio.types.Float32})
         blk.inputs[1].pipe = p_in1
         blk.inputs[2].pipe = p_in2
         blk.outputs[1].pipes = {p_out1}
@@ -562,10 +562,10 @@ describe("block", function ()
 
         -- Load the input pipes
         for i = 1, 1024 do
-            p_in1.vec:append(radio.Float32Type(i))
+            p_in1.vec:append(radio.types.Float32(i))
         end
         for i = 1, 956 do
-            p_in2.vec:append(radio.Float32Type(i))
+            p_in2.vec:append(radio.types.Float32(i))
         end
 
         -- Hook spy onto block cleanup()
@@ -578,13 +578,13 @@ describe("block", function ()
         assert.spy(cleanup_spy).was.called()
 
         -- Check output pipes
-        local expected_vec1 = radio.Float32Type.vector()
-        local expected_vec2 = radio.Float32Type.vector()
+        local expected_vec1 = radio.types.Float32.vector()
+        local expected_vec2 = radio.types.Float32.vector()
         for i = 1, 956 do
-            expected_vec1:append(radio.Float32Type(i + i))
+            expected_vec1:append(radio.types.Float32(i + i))
         end
         for i = 1, 956 do
-            expected_vec2:append(radio.Float32Type(i * i))
+            expected_vec2:append(radio.types.Float32(i * i))
         end
         assert.is.equal(956, p_out1.vec.length)
         assert.is.equal(956, p_out2.vec.length)

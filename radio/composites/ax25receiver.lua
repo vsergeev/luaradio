@@ -30,7 +30,7 @@ function AX25Receiver:instantiate()
     self:connect(clock_recoverer, 'out', sampler, 'clock')
     self:connect(sampler, bit_slicer, bit_decoder, framer)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", blocks.AX25FrameBlock.AX25FrameType)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", blocks.AX25FrameBlock.AX25FrameType)})
     self:connect(self, "in", nbfm_demod, "in")
     self:connect(self, "out", framer, "out")
 end

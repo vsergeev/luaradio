@@ -15,7 +15,7 @@ local POCSAG_CODEWORD_LENGTH = 32
 local POCSAG_WORD_TYPE_MASK = 0x80000000
 local POCSAG_IDLE_CODEWORD = 0x7a89c197
 local POCSAG_FRAME_SYNC_CODEWORD = 0x7cd215d8
-local POCSAG_FRAME_SYNC_CODEWORD_BITS = types.BitType.vector_from_array(
+local POCSAG_FRAME_SYNC_CODEWORD_BITS = types.Bit.vector_from_array(
     {0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0}
 )
 
@@ -74,14 +74,14 @@ local POCSAGFrameBlock = block.factory("POCSAGFrameBlock")
 
 function POCSAGFrameBlock:instantiate()
     -- Raw frame buffer
-    self.buffer = types.BitType.vector(POCSAG_BATCH_LENGTH)
+    self.buffer = types.Bit.vector(POCSAG_BATCH_LENGTH)
     self.buffer_length = 0
     self.state = POCSAGFramerState.FRAME_SYNC
 
     -- Current frame
     self.frame = nil
 
-    self:add_type_signature({block.Input("in", types.BitType)}, {block.Output("out", POCSAGFrameType)})
+    self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", POCSAGFrameType)})
 end
 
 POCSAGFrameBlock.POCSAGFrameType = POCSAGFrameType
@@ -153,7 +153,7 @@ function POCSAGFrameBlock:process(x)
             end
         elseif self.state == POCSAGFramerState.BATCH and self.buffer_length >= POCSAG_BATCH_LENGTH then
             -- Check for frame sync codeword
-            local codeword = types.BitType.tonumber(self.buffer, 0, 32)
+            local codeword = types.Bit.tonumber(self.buffer, 0, 32)
             local fs_codeword = pocsag_correct_codeword(codeword)
 
             -- If the codeword does not match the frame sync codeword
@@ -175,7 +175,7 @@ function POCSAGFrameBlock:process(x)
             -- Extract and correct the 16 codewords of the batch
             local invalid_codeword_count = 0
             for j = 1, 16 do
-                local codeword = pocsag_correct_codeword(types.BitType.tonumber(self.buffer, j*32, 32))
+                local codeword = pocsag_correct_codeword(types.Bit.tonumber(self.buffer, j*32, 32))
                 invalid_codeword_count = (codeword == false) and (invalid_codeword_count+1) or 0
 
                 if codeword == false then

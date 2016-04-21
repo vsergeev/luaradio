@@ -56,11 +56,11 @@ function WAVFileSource:instantiate(file, num_channels, repeat_on_eof)
 
     -- Build type signature
     if num_channels == 1 then
-        self:add_type_signature({}, {block.Output("out", types.Float32Type)})
+        self:add_type_signature({}, {block.Output("out", types.Float32)})
     else
         local block_outputs = {}
         for i = 1, num_channels do
-            block_outputs[#block_outputs+1] = block.Output("out" .. i, types.Float32Type)
+            block_outputs[#block_outputs+1] = block.Output("out" .. i, types.Float32)
         end
         self:add_type_signature({}, block_outputs)
     end
@@ -226,7 +226,7 @@ function WAVFileSource:process()
     -- Build an samples vector for each channel
     local samples = {}
     for i = 1, self.num_channels do
-        samples[i] = types.Float32Type.vector(num_samples/self.num_channels)
+        samples[i] = types.Float32.vector(num_samples/self.num_channels)
     end
 
     -- Convert raw samples to float32 samples for each channel

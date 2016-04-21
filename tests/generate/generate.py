@@ -43,10 +43,10 @@ NUMPY_SERIALIZE_TYPE = {
 }
 
 NUMPY_VECTOR_TYPE = {
-    numpy.complex64: "radio.ComplexFloat32Type.vector_from_array({%s})",
-    numpy.float32: "radio.Float32Type.vector_from_array({%s})",
-    numpy.int32: "radio.Integer32Type.vector_from_array({%s})",
-    numpy.bool_: "radio.BitType.vector_from_array({%s})",
+    numpy.complex64: "radio.types.ComplexFloat32.vector_from_array({%s})",
+    numpy.float32: "radio.types.Float32.vector_from_array({%s})",
+    numpy.int32: "radio.types.Integer32.vector_from_array({%s})",
+    numpy.bool_: "radio.types.Bit.vector_from_array({%s})",
 }
 
 
@@ -63,9 +63,9 @@ def serialize(x):
             t.append(serialize(k) + " = " + serialize(x[k]))
         return "{" + ", ".join(t) + "}"
     elif isinstance(x, numpy.complex64):
-        return "radio.ComplexFloat32Type(%.*f, %.*f)" % (PRECISION, x.real, PRECISION, x.imag)
+        return "radio.types.ComplexFloat32(%.*f, %.*f)" % (PRECISION, x.real, PRECISION, x.imag)
     elif isinstance(x, numpy.float32):
-        return "radio.Float32Type(%.*f)" % (PRECISION, x)
+        return "radio.types.Float32(%.*f)" % (PRECISION, x)
     elif isinstance(x, bool):
         return "true" if x else "false"
     else:

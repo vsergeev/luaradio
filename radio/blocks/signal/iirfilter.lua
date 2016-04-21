@@ -8,22 +8,22 @@ local vector = require('radio.core.vector')
 local IIRFilterBlock = block.factory("IIRFilterBlock")
 
 function IIRFilterBlock:instantiate(b_taps, a_taps)
-    if object.isinstanceof(b_taps, vector.Vector) and b_taps.type == types.Float32Type then
+    if object.isinstanceof(b_taps, vector.Vector) and b_taps.type == types.Float32 then
         self.b_taps = b_taps
     else
-        self.b_taps = types.Float32Type.vector_from_array(b_taps)
+        self.b_taps = types.Float32.vector_from_array(b_taps)
     end
 
-    if object.isinstanceof(a_taps, vector.Vector) and a_taps.type == types.Float32Type then
+    if object.isinstanceof(a_taps, vector.Vector) and a_taps.type == types.Float32 then
         assert(a_taps.length >= 1, "Feedback taps must be at least length 1.")
         self.a_taps = a_taps
     else
         assert(#a_taps >= 1, "Feedback taps must be at least length 1.")
-        self.a_taps = types.Float32Type.vector_from_array(a_taps)
+        self.a_taps = types.Float32.vector_from_array(a_taps)
     end
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32Type)}, {block.Output("out", types.ComplexFloat32Type)}, IIRFilterBlock.process_complex)
-    self:add_type_signature({block.Input("in", types.Float32Type)}, {block.Output("out", types.Float32Type)}, IIRFilterBlock.process_scalar)
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, IIRFilterBlock.process_complex)
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, IIRFilterBlock.process_scalar)
 end
 
 ffi.cdef[[
@@ -37,7 +37,7 @@ function IIRFilterBlock:initialize()
 end
 
 function IIRFilterBlock:process_complex(x)
-    local out = types.ComplexFloat32Type.vector(x.length)
+    local out = types.ComplexFloat32.vector(x.length)
 
     for i = 0, x.length-1 do
         -- Shift the input state samples down
@@ -66,7 +66,7 @@ function IIRFilterBlock:process_complex(x)
 end
 
 function IIRFilterBlock:process_scalar(x)
-    local out = types.Float32Type.vector(x.length)
+    local out = types.Float32.vector(x.length)
 
     for i = 0, x.length-1 do
         -- Shift the input state samples down

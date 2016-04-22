@@ -1,3 +1,8 @@
+---
+-- Object data type base class.
+-- @datatype ObjectType
+-- @classmod ObjectType
+
 local ffi = require('ffi')
 local msgpack = require('radio.thirdparty.MessagePack')
 local json = require('radio.thirdparty.json')
@@ -8,14 +13,36 @@ local ObjectVector = require('radio.core.vector').ObjectVector
 
 local ObjectType = class.factory()
 
+---
+-- Construct a new data type based on a Lua object. The data type will be
+-- serializable between blocks in a flow graph.
+--
+-- The `new()` constructor must be provided by the implementation.
+--
+-- @static
+-- @tparam[opt={}] table methods Table of methods and metamethods
+-- @treturn class Data type
 function ObjectType.factory(methods)
     local CustomType = class.factory(ObjectType)
 
     -- Constructors
+
+    ---
+    -- Construct a new vector of this type.
+    --
+    -- @function ObjectType.vector
+    -- @tparam int num Number of elements in the vector
+    -- @treturn ObjectVector Vector
     function CustomType.vector(num)
         return ObjectVector(CustomType, num)
     end
 
+    ---
+    -- Construct a new vector of this type initialized from an array.
+    --
+    -- @function ObjectType.vector_from_array
+    -- @tparam array arr Array with element initializers
+    -- @treturn ObjectVector Vector
     function CustomType.vector_from_array(arr)
         local vec = ObjectVector(CustomType)
         for i = 1, #arr do
@@ -24,27 +51,58 @@ function ObjectType.factory(methods)
         return vec
     end
 
-    -- Serializers
+    -- Serialization/Deserialization
+
+    ---
+    -- Serialize this object with MessagePack.
+    --
+    -- @function ObjectType:to_msgpack
+    -- @treturn string MessagePack serialized object
     function CustomType:to_msgpack()
         return msgpack.pack(self)
     end
 
+    ---
+    -- Serialize this object with JSON.
+    --
+    -- @function ObjectType:to_json
+    -- @treturn string JSON serialized object
     function CustomType:to_json()
         return json.encode(self)
     end
 
-    -- Deserializers
+    ---
+    -- Deserialize an instance of this type with MessagePack.
+    --
+    -- @function ObjectType:from_msgpack
+    -- @tparam string str MessagePack serialized object
+    -- @treturn ObjectType Deserialized object
     function CustomType.from_msgpack(str)
         local obj = msgpack.unpack(str)
         return setmetatable(obj, CustomType)
     end
 
+    ---
+    -- Deserialize an instance of this type with JSON.
+    --
+    -- @function ObjectType:from_json
+    -- @tparam string str JSON serialized object
+    -- @treturn ObjectType Deserialized object
     function CustomType.from_json(str)
         local obj = json.decode(str)
         return setmetatable(obj, CustomType)
     end
 
     -- Buffer serialization interface
+
+    ---
+    -- Serialize a ObjectType vector into a buffer.
+    --
+    -- @local
+    -- @function ObjectType.serialize
+    -- @tparam Vector vec Vector
+    -- @treturn cdata Buffer
+    -- @treturn int Size
     function CustomType.serialize(vec)
         local buf = ""
 
@@ -67,12 +125,28 @@ function ObjectType.factory(methods)
         return buf, #buf
     end
 
+    ---
+    -- Deserialize a buffer into a ObjectType read-only vector.
+    --
+    -- @local
+    -- @function ObjectType.deserialize
+    -- @tparam cdata buf Buffer
+    -- @tparam int size Size
+    -- @treturn Vector Vector
     function CustomType.deserialize(buf, size)
         local num_elems = CustomType.deserialize_count(buf, size)
         local vec = CustomType.deserialize_partial(buf, num_elems)
         return vec
     end
 
+    ---
+    -- Partially deserialize a buffer into a ObjectType read-only vector.
+    --
+    -- @local
+    -- @function ObjectType.deserialize
+    -- @tparam cdata buf Buffer
+    -- @tparam int count Count of elements
+    -- @treturn Vector Vector
     function CustomType.deserialize_partial(buf, count)
         local vec = ObjectVector(CustomType)
 
@@ -97,6 +171,14 @@ function ObjectType.factory(methods)
         return vec, (p-buf)
     end
 
+    ---
+    -- Deserialize count of ObjectType elements in a buffer.
+    --
+    -- @local
+    -- @function ObjectType.deserialize
+    -- @tparam cdata buf Buffer
+    -- @tparam int size Size
+    -- @treturn int Count
     function CustomType.deserialize_count(buf, size)
         local num_elems = 0
 

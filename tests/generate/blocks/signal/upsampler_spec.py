@@ -25,11 +25,4 @@ def generate():
     vectors.append(TestVector([4], [x], process(4, x), "4 Factor, 256 Float32 input, 1024 Float32 output"))
     vectors.append(TestVector([7], [x], process(7, x), "7 Factor, 256 Float32 input, 1792 Float32 output"))
 
-    x = random_integer32(256)
-    vectors.append(TestVector([1], [x], process(1, x), "1 Factor, 256 Integer32 input, 256 Integer32 output"))
-    vectors.append(TestVector([2], [x], process(2, x), "2 Factor, 256 Integer32 input, 512 Integer32 output"))
-    vectors.append(TestVector([3], [x], process(3, x), "3 Factor, 256 Integer32 input, 768 Integer32 output"))
-    vectors.append(TestVector([4], [x], process(4, x), "4 Factor, 256 Integer32 input, 1024 Integer32 output"))
-    vectors.append(TestVector([7], [x], process(7, x), "7 Factor, 256 Integer32 input, 1792 Integer32 output"))
-
     return BlockSpec("UpsamplerBlock", "tests/blocks/signal/upsampler_spec.lua", vectors, 1e-6)

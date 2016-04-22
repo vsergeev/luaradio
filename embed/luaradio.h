@@ -113,13 +113,6 @@ typedef struct {
 } float32_t;
 
 /**
- * @brief 32-bit integer type.
- */
-typedef struct {
-    int32_t value;
-} integer32_t;
-
-/**
  * @brief 8-bit byte type.
  */
 typedef struct {

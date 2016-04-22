@@ -118,7 +118,7 @@ describe("composite", function ()
 
         -- Check aliased pipe properties
 
-        blk:add_type_signature({block.Input("in1", radio.types.Float32), block.Input("in2", radio.types.Float32)}, {block.Output("out1", radio.types.Integer32), block.Output("out2", radio.types.Bit)})
+        blk:add_type_signature({block.Input("in1", radio.types.Float32), block.Input("in2", radio.types.Float32)}, {block.Output("out1", radio.types.Byte), block.Output("out2", radio.types.Bit)})
 
         assert.is.equal(1, #blk.signatures)
         assert.is.equal(2, #blk.inputs)
@@ -146,7 +146,7 @@ describe("composite", function ()
 
         local TestBlock3 = block.factory("TestBlock3")
         function TestBlock3:instantiate()
-            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Integer32)})
+            self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Byte)})
         end
 
         local b1 = TestBlock1()
@@ -192,7 +192,7 @@ describe("composite", function ()
 
         local blk2 = radio.CompositeBlock()
 
-        blk2:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Integer32)})
+        blk2:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Byte)})
 
         blk2:connect(blk2, 'in', blk, 'in1')
         blk2:connect(blk2, 'in', blk, 'in2')
@@ -208,7 +208,7 @@ describe("composite", function ()
 
         local blk = radio.CompositeBlock()
 
-        blk:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.Float32)}, {block.Output("out", radio.types.Integer32)})
+        blk:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.Float32)}, {block.Output("out", radio.types.Byte)})
 
         -- Invalid pipe direction
         assert.has_error(function () blk:connect(blk, "out", b1, "in") end)

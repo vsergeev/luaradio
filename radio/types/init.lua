@@ -2,7 +2,6 @@ return {
     -- Basic types
     ComplexFloat32 = require('radio.types.complexfloat32'),
     Float32 = require('radio.types.float32'),
-    Integer32 = require('radio.types.integer32'),
     Byte = require('radio.types.byte'),
     Bit = require('radio.types.bit'),
 

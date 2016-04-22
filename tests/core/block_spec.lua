@@ -78,9 +78,9 @@ describe("block", function ()
         function TestBlock:instantiate()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.Float32)},
                                     {block.Output("out", radio.types.Float32)})
-            self:add_type_signature({block.Input("in1", radio.types.Float32), block.Input("in2", radio.types.Integer32)},
-                                    {block.Output("out", radio.types.Integer32)})
-            self:add_type_signature({block.Input("in1", radio.types.Integer32), block.Input("in2", radio.types.Byte)},
+            self:add_type_signature({block.Input("in1", radio.types.Float32), block.Input("in2", radio.types.Byte)},
+                                    {block.Output("out", radio.types.Byte)})
+            self:add_type_signature({block.Input("in1", radio.types.Bit), block.Input("in2", radio.types.Byte)},
                                     {block.Output("out", radio.types.Byte)})
             self:add_type_signature({block.Input("in1", radio.types.Bit), block.Input("in2", radio.types.Bit)},
                                     {block.Output("out", radio.types.Bit)})
@@ -98,14 +98,14 @@ describe("block", function ()
         assert.is.same({radio.types.ComplexFloat32, radio.types.Float32}, blk:get_input_types())
         assert.is.same({radio.types.Float32}, blk:get_output_types())
 
-        blk:differentiate({radio.types.Float32, radio.types.Integer32})
+        blk:differentiate({radio.types.Float32, radio.types.Byte})
         assert.is.equal(blk.signatures[2], blk.signature)
-        assert.is.same({radio.types.Float32, radio.types.Integer32}, blk:get_input_types())
-        assert.is.same({radio.types.Integer32}, blk:get_output_types())
+        assert.is.same({radio.types.Float32, radio.types.Byte}, blk:get_input_types())
+        assert.is.same({radio.types.Byte}, blk:get_output_types())
 
-        blk:differentiate({radio.types.Integer32, radio.types.Byte})
+        blk:differentiate({radio.types.Bit, radio.types.Byte})
         assert.is.equal(blk.signatures[3], blk.signature)
-        assert.is.same({radio.types.Integer32, radio.types.Byte}, blk:get_input_types())
+        assert.is.same({radio.types.Bit, radio.types.Byte}, blk:get_input_types())
         assert.is.same({radio.types.Byte}, blk:get_output_types())
 
         blk:differentiate({radio.types.Bit, radio.types.Bit})
@@ -117,12 +117,12 @@ describe("block", function ()
         assert.has_error(function () blk:differentiate({}) end)
         assert.has_error(function () blk:differentiate({radio.types.ComplexFloat32}) end)
         assert.has_error(function () blk:differentiate({radio.types.Float32}) end)
-        assert.has_error(function () blk:differentiate({radio.types.Integer32}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Byte}) end)
         assert.has_error(function () blk:differentiate({radio.types.Bit}) end)
         assert.has_error(function () blk:differentiate({radio.types.ComplexFloat32, radio.types.ComplexFloat32}) end)
         assert.has_error(function () blk:differentiate({radio.types.Float32, radio.types.Bit}) end)
-        assert.has_error(function () blk:differentiate({radio.types.Integer32, radio.types.Bit}) end)
-        assert.has_error(function () blk:differentiate({radio.types.Bit, radio.types.Byte}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Byte, radio.types.Bit}) end)
+        assert.has_error(function () blk:differentiate({radio.types.Byte, radio.types.Byte}) end)
 
         -- Test custom type signature dependent initialize and process functions
 
@@ -132,7 +132,7 @@ describe("block", function ()
         function TestBlock:process_integer() end
         function TestBlock:instantiate()
             self:add_type_signature({block.Input("in", radio.types.Float32)}, {}, TestBlock.process_float, TestBlock.initialize_float)
-            self:add_type_signature({block.Input("in", radio.types.Integer32)}, {}, TestBlock.process_integer, TestBlock.initialize_integer)
+            self:add_type_signature({block.Input("in", radio.types.Byte)}, {}, TestBlock.process_integer, TestBlock.initialize_integer)
             self:add_type_signature({block.Input("in", radio.types.Bit)}, {})
         end
 
@@ -144,10 +144,10 @@ describe("block", function ()
         assert.is.same({radio.types.Float32}, blk:get_input_types())
         assert.is.same({}, blk:get_output_types())
 
-        blk:differentiate({radio.types.Integer32})
+        blk:differentiate({radio.types.Byte})
         assert.is.equal(TestBlock.initialize_integer, blk.initialize)
         assert.is.equal(TestBlock.process_integer, blk.process)
-        assert.is.same({radio.types.Integer32}, blk:get_input_types())
+        assert.is.same({radio.types.Byte}, blk:get_input_types())
         assert.is.same({}, blk:get_output_types())
 
         blk:differentiate({radio.types.Bit})

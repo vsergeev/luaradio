@@ -6,7 +6,6 @@ local SumBlock = block.factory("SumBlock")
 function SumBlock:instantiate()
     self:add_type_signature({block.Input("in1", types.ComplexFloat32), block.Input("in2", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
     self:add_type_signature({block.Input("in1", types.Float32), block.Input("in2", types.Float32)}, {block.Output("out", types.Float32)})
-    self:add_type_signature({block.Input("in1", types.Integer32), block.Input("in2", types.Integer32)}, {block.Output("out", types.Integer32)})
 end
 
 function SumBlock:initialize()

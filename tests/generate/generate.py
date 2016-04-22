@@ -24,10 +24,6 @@ def random_float32(n):
     return numpy.around(numpy.array([2 * random.random() - 1.0 for _ in range(n)]).astype(numpy.float32), PRECISION)
 
 
-def random_integer32(n):
-    return numpy.array([random.randint(-2147483648, 2147483647) for _ in range(n)]).astype(numpy.int32)
-
-
 def random_bit(n):
     return numpy.array([random.randint(0, 1) for _ in range(n)]).astype(numpy.bool_)
 
@@ -45,7 +41,6 @@ NUMPY_SERIALIZE_TYPE = {
 NUMPY_VECTOR_TYPE = {
     numpy.complex64: "radio.types.ComplexFloat32.vector_from_array({%s})",
     numpy.float32: "radio.types.Float32.vector_from_array({%s})",
-    numpy.int32: "radio.types.Integer32.vector_from_array({%s})",
     numpy.bool_: "radio.types.Bit.vector_from_array({%s})",
 }
 

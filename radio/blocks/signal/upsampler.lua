@@ -8,7 +8,6 @@ function UpsamplerBlock:instantiate(factor)
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
-    self:add_type_signature({block.Input("in", types.Integer32)}, {block.Output("out", types.Integer32)})
 end
 
 function UpsamplerBlock:get_rate()

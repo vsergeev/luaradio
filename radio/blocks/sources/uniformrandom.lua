@@ -20,13 +20,6 @@ local random_generator_table = {
                 return types.Float32((b-a)*math.random()-b)
             end
         end,
-    [types.Integer32] =
-        function (a, b)
-            a, b = a or -2147483648, b or 2147483647
-            return function ()
-                return types.Integer32(math.random(a, b))
-            end
-        end,
     [types.Byte] =
         function (a, b)
             a = a or 0, b or 255

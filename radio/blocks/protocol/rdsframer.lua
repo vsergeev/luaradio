@@ -1,3 +1,28 @@
+---
+-- Correct, validate, and extract 104-bit RDS data groups from a bit stream
+-- into frames.
+--
+-- @category Protocol
+-- @block RDSFramerBlock
+--
+-- @signature in:Bit > out:RDSFrameType
+--
+-- @usage
+-- local framer = radio.RDSFramerBlock()
+
+---
+-- RDS frame type, a C structure defined as:
+-- ```
+-- typedef struct {
+--     uint16_t blocks[4];
+-- } rds_frame_t;
+-- ```
+--
+-- @type RDSFrameType
+-- @category Protocol
+-- @datatype RDSFramerBlock.RDSFrameType
+-- @tparam table data Array of four data words, e.g. `{{0x3aab, 0x02c9, 0x0608, 0x6469}}`
+
 local ffi = require('ffi')
 local bit = require('bit')
 

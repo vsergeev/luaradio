@@ -1,3 +1,38 @@
+---
+-- Validate and extract AX.25 frames from a bit stream.
+--
+-- @category Protocol
+-- @block AX25FramerBlock
+--
+-- @signature in:Bit > out:AX25FrameType
+--
+-- @usage
+-- local framer = radio.AX25FramerBlock()
+
+---
+-- AX.25 frame type, a Lua object with properties:
+-- ```
+-- {
+--  addresses = {
+--      {callsign = <string>, ssid = <integer>},
+--      ...
+--  },
+--  control = <integer>,
+--  pid = <integer>,
+--  payload = <byte string>,
+-- }
+-- ```
+--
+-- @type AX25FrameType
+-- @category Protocol
+-- @datatype AX25FramerBlock.AX25FrameType
+-- @tparam array addresses Array of addresses, each a table with key `callsign`
+--                         containing a 6-character string callsign and key
+--                         `ssid` containing a 7-bit wide integer SSID
+-- @tparam int control Control field, 8-bits wide
+-- @tparam int pid PID field, 8-bits wide
+-- @tparam string payload Payload byte string (variable length)
+
 local ffi = require('ffi')
 local bit = require('bit')
 

@@ -1,3 +1,79 @@
+---
+-- Decode RDS frames into RDS packets with a header and data payload. The
+-- supported data payloads are basic tuning, radiotext, and datetime.
+--
+-- @category Protocol
+-- @block RDSDecoderBlock
+--
+-- @signature in:RDSFrameType > out:RDSPacketType
+--
+-- @usage
+-- local decoder = radio.RDSDecoderBlock()
+
+---
+-- RDS packet type, a Lua object with properties:
+-- ```
+-- {
+--  header = {
+--      pi_code = <16-bit integer>
+--      group_code = <4-bit integer>
+--      group_version = <1-bit integer>,
+--      tp_code = <1-bit integer>,
+--      pty_code = <5-bit integer>,
+--  },
+--  data = <payload object>,
+-- }
+-- ```
+--
+-- The payload object can be one of the four below.
+--
+-- Basic tuning data payload:
+-- ```
+-- {
+--  type = "basictuning",
+--  ta_code = <1-bit integer>,
+--  ms_code = <1-bit integer>,
+--  di_position = <2-bit integer>,
+--  di_value = <1-bit integer>,
+--  af_code = {<8-bit integer>, <8-bit integer>} or nil,
+--  text_address = <2-bit integer>,
+--  text_data = <string, length 2>,
+-- }
+-- ```
+--
+-- Radio text data payload:
+-- ```
+-- {
+--  type = "radiotext",
+--  ab_flag = <1-bit integer>,
+--  text_address = <4-bit integer>,
+--  text_data = <string, length 4 or 2>,
+-- }
+-- ```
+--
+-- Datetime data payload:
+-- ```
+-- {
+--  type = "datetime",
+--  date = {year = <integer>, month = <integer>, day = <integer>},
+--  time = {hour = <integer>, minute = <integer>, offset = <integer>},
+-- }
+-- ```
+--
+-- Raw data payload (for unsupported group/version codes):
+-- ```
+-- {
+--  type = "raw",
+--  frame = {<16-bit integer>, <16-bit integer>, <16-bit integer>, <16-bit integer>},
+-- }
+-- ```
+--
+-- @type RDSPacketType
+-- @category Protocol
+-- @datatype RDSDecoderBlock.RDSPacketType
+-- @tparam table header Header table, as outlined above
+-- @tparam table data Data payload table, as outlined above
+
 local bit = require('bit')
 
 local block = require('radio.core.block')

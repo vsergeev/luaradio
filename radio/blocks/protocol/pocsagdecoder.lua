@@ -1,3 +1,37 @@
+---
+-- Decode POCSAG frames into POCSAG messages. This block decodes alphanumeric
+-- strings, numeric strings, or both.
+--
+-- @category Protocol
+-- @block POCSAGDecoderBlock
+-- @tparam[opt='alphanumeric'] string mode Decoding mode, choice of
+--                                         "alphanumeric", "numeric", or
+--                                         "both".
+--
+-- @signature in:POCSAGFrameType > out:POCSAGMessageType
+--
+-- @usage
+-- local decoder = radio.POCSAGDecoderBlock()
+
+---
+-- POCSAG message type, a Lua object with properties:
+-- ```
+-- {
+--  address = <21-bit integer>,
+--  func = <2-bit integer>,
+--  alphanumeric = <string>,
+--  numeric = <string>,
+-- }
+-- ```
+--
+-- @type POCSAGMessageType
+-- @category Protocol
+-- @datatype POCSAGDecoderBlock.POCSAGMessageType
+-- @tparam int address Address bits, 21-bits wide
+-- @tparam int func Function bits, 2-bits wide
+-- @tparam string alphanumeric Decoded alphanumeric string
+-- @tparam string numeric Decoded numeric string
+
 local bit = require('bit')
 
 local block = require('radio.core.block')

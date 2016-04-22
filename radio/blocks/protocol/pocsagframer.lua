@@ -1,3 +1,33 @@
+---
+-- Detect, correct, validate, and extract POCSAG frames from a bit stream.
+-- Each frame contains a single message with address, function bits, and data,
+-- so a POCSAG transmission of several batches may yield several frames.
+--
+-- @category Protocol
+-- @block POCSAGFramerBlock
+--
+-- @signature in:Bit > out:POCSAGFrameType
+--
+-- @usage
+-- local framer = radio.POCSAGFramerBlock()
+
+---
+-- POCSAG frame type, a Lua object with properties:
+-- ```
+-- {
+--  address = <21-bit integer>,
+--  func = <2-bit integer>,
+--  data = {<20-bit integer>, ...},
+-- }
+-- ```
+--
+-- @type POCSAGFrameType
+-- @category Protocol
+-- @datatype POCSAGFramerBlock.POCSAGFrameType
+-- @tparam int address Address bits, 21-bits wide
+-- @tparam int func Function bits, 2-bits wide
+-- @tparam array data Array of data words, each 20-bits wide
+
 local ffi = require('ffi')
 local bit = require('bit')
 

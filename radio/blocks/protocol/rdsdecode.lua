@@ -125,6 +125,13 @@ local function rds_decode_datetime(header, frame)
     }
 end
 
+local function rds_decode_raw(header, frame)
+    return {
+        type = 'raw',
+        frame = {frame.blocks[0], frame.blocks[1], frame.blocks[2], frame.blocks[3]}
+    }
+end
+
 -- RDS Decode Block
 
 local RDSDecodeBlock = block.factory("RDSDecodeBlock")
@@ -151,11 +158,7 @@ function RDSDecodeBlock:process(x)
         elseif header.group_code == 0x4 and header.group_version == 0 then
             data = rds_decode_datetime(header, x.data[i])
         else
-            -- Unsupported group/version, so return the raw frame
-            data = {
-                type = 'raw',
-                frame = {x.data[i].blocks[0], x.data[i].blocks[1], x.data[i].blocks[2], x.data[i].blocks[3]},
-            }
+            data = rds_decode_raw(header, x.data[i])
         end
 
         -- Emit the decoded frame

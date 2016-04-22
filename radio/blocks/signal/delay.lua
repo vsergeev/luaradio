@@ -11,6 +11,8 @@ function DelayBlock:instantiate(num_samples)
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
+    self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", types.Bit)})
+    self:add_type_signature({block.Input("in", types.Byte)}, {block.Output("out", types.Byte)})
 end
 
 function DelayBlock:initialize()

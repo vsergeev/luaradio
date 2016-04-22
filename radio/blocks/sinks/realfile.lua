@@ -1,3 +1,29 @@
+---
+-- Sink a real-valued signal to a binary file. The file format may be
+-- 8/16/32-bit signed/unsigned integers or 32/64-bit floats, in little or big
+-- endianness. This is the real-valued counterpart of
+-- [`IQFileSink`](#iqfilesink).
+--
+-- @category Sinks
+-- @block RealFileSink
+-- @tparam string|file|int file Filename, file object, or file descriptor
+-- @tparam string format File format specifying signedness, bit width, and
+--                       endianness of samples. Choice of "s8", "u8", "u16le",
+--                       "u16be", "s16le", "s16be", "u32le", "u32be", "s32le",
+--                       "s32be", "f32le", "f32be", "f64le", "f64be".
+--
+-- @signature in:Float32 >
+--
+-- @usage
+-- -- Sink signed 8-bit real samples to a file
+-- local snk = radio.RealFileSink('samples.s8.real', 's8')
+--
+-- -- Sink little-endian 32-bit real samples to a file
+-- local snk = radio.RealFileSink('samples.f32le.real', 'f32le', 1e6, true)
+--
+-- -- Sink little-endian signed 16-bit real samples to stdout
+-- local snk = radio.RealFileSink(1, 's16le')
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

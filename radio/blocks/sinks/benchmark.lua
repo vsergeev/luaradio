@@ -1,3 +1,29 @@
+---
+-- Report the average rate of samples delivered to the sink.
+--
+-- ```
+-- [BenchmarkSink] 314.38 MS/s (2.52 GB/s)
+-- [BenchmarkSink] 313.32 MS/s (2.51 GB/s)
+-- [BenchmarkSink] 313.83 MS/s (2.51 GB/s)
+-- ...
+-- ```
+--
+-- @category Sinks
+-- @block BenchmarkSink
+-- @tparam[opt=io.stderr] string|file|int file Filename, file object, or file descriptor
+-- @tparam[opt=false] bool use_json Serialize aggregate results in JSON on termination
+--
+-- @signature in:any >
+--
+-- @usage
+-- -- Benchmark a source, writing periodic results to stderr
+-- local snk = radio.BenchmarkSink()
+-- top:connect(src, snk)
+--
+-- -- Benchmark a source and a block, writing final results in JSON to fd 3
+-- local snk = radio.BenchmarkSink(3, true)
+-- top:connect(src, blk, snk)
+
 local ffi = require('ffi')
 local json = require('radio.thirdparty.json')
 

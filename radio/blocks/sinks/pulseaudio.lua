@@ -1,3 +1,24 @@
+---
+-- Sink one or more real-valued signals to the system's audio device with
+-- PulseAudio. This source requires PulseAudio.
+--
+-- @category Sinks
+-- @block PulseAudioSink
+-- @tparam int num_channels Number of channels (e.g. 1 for mono, 2 for stereo)
+--
+-- @signature in:Float32 >
+-- @signature in1:Float32, in2:Float32, ... >
+--
+-- @usage
+-- -- Sink to one channel (mono) audio
+-- local snk = radio.PulseAudioSink(1)
+-- top:connect(src, snk)
+--
+-- -- Sink to two channel (stereo) audio
+-- local snk = radio.PulseAudioSink(2)
+-- top:connect(src_left, 'out', snk, 'in1')
+-- top:connect(src_right, 'out', snk, 'in2')
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

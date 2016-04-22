@@ -1,3 +1,23 @@
+---
+-- Sink a signal to a file, serialized in JSON. Samples are serialized
+-- individually and newline delimited. This sink accepts any data type that
+-- implements `to_json()`.
+--
+-- @category Sinks
+-- @block JSONSink
+-- @tparam[opt=io.stdout] string|file|int file Filename, file object, or file descriptor
+--
+-- @signature in:implementing >
+--
+-- @usage
+-- -- Sink JSON serialized samples to stdout
+-- local snk = radio.JSONSink()
+-- top:connect(src, snk)
+--
+-- -- Sink JSON serialized samples to a file
+-- local snk = radio.JSONSink('out.json')
+-- top:connect(src, snk)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

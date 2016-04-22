@@ -1,3 +1,19 @@
+---
+-- Sink a signal to a file, formatted as a string. Samples are formatted
+-- individually and newline delimited. This sink accepts any data type that
+-- implements `__tostring()`.
+--
+-- @category Sinks
+-- @block PrintSink
+-- @tparam[opt=io.stdout] string|file|int file Filename, file object, or file descriptor
+--
+-- @signature in:implementing >
+--
+-- @usage
+-- -- Sink string formatted samples to stdout
+-- local snk = radio.PrintSink()
+-- top:connect(src, snk)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

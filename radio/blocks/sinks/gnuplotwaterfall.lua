@@ -1,3 +1,41 @@
+---
+-- Plot the vertical power spectrogram (waterfall) of a complex or real-valued
+-- signal. This sink requires the gnuplot program. The power spectral density
+-- is estimated with Bartlett's or Welch's method of averaging periodograms.
+--
+-- Note: this sink's performance is currently limited and should only be used
+-- with very low sample rates, or it may otherwise throttle a flow graph.
+--
+-- @category Sinks
+-- @block GnuplotWaterfallSink
+-- @tparam[opt=1024] int num_samples Number of samples in periodogram
+-- @tparam[opt=""] string title Title of plot
+-- @tparam[opt={}] table options Additional options, specifying:
+--                            * `update_time` (number, default 0.10 seconds)
+--                            * `overlap` fraction (number from 0.0 to 1.0,
+--                            default 0.0)
+--                            * `height` in rows (number, default 64)
+--                            * `min_magnitude` (number, default -150.0 dB)
+--                            * `max_magnitude` (number, default 0.0 dB)
+--                            * `window` (string, default "hamming")
+--                            * `onesided` (boolean, default true)
+--                            * `xrange` (array of two numbers, default `nil`
+--                            for autoscale)
+--                            * `yrange` (array of two numbers, default `nil`
+--                            for autoscale)
+--                            * `extra_settings` (array of strings containing
+--                            gnuplot commands)
+--
+-- @signature in:ComplexFloat32 >
+-- @signature in:Float32 >
+--
+-- @usage
+-- -- Plot the waterfall of a 1 KHz complex exponential sampled at 250 KHz
+-- local snk = radio.SignalSource('exponential', 1e3, 250e3)
+-- local throttle = radio.ThrottleBlock()
+-- local snk = radio.GnuplotSpectrumSink()
+-- top:connect(src, throttle, snk)
+
 local ffi = require('ffi')
 local math = require('math')
 

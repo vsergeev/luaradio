@@ -1,3 +1,39 @@
+---
+-- Plot two real-valued signals, or the real and imaginary components of one
+-- complex-valued signal, in a gnuplot XY plot. This sink requires the gnuplot
+-- program. This sink should be used with relatively low sample rates, as it
+-- does not skip any samples, or it may otherwise throttle a flow graph.
+--
+-- @category Sinks
+-- @block GnuplotXYPlotSink
+-- @tparam int num_samples Number of samples to plot
+-- @tparam[opt=""] string title Title of plot
+-- @tparam[opt={}] table options Additional options, specifying:
+--                            * `complex` (bool, default false)
+--                            * `xlabel` (string, default "")
+--                            * `ylabel` (string, default "")
+--                            * `xrange` (array of two numbers, default `nil`
+--                            for autoscale)
+--                            * `yrange` (array of two numbers, default `nil`
+--                            for autoscale)
+--                            * `extra_settings` (array of strings containing
+--                            gnuplot commands)
+--
+-- @signature x:Float32, y:Float32 >
+-- @signature in:ComplexFloat32 >
+--
+-- @usage
+-- -- Plot a 1 KHz complex exponential sampled at 250 KHz
+-- local snk = radio.SignalSource('exponential', 1e3, 250e3)
+-- local throttle = radio.ThrottleBlock()
+-- local snk = radio.GnuplotXYPlotSink(1000, 'Complex Exponential', {complex = true})
+-- top:connect(src, throttle, snk)
+--
+-- -- Plot two real-valued signals
+-- local snk = radio.GnuplotXYPlotSink(1000, 'XY')
+-- top:connect(src1, 'out', snk, 'x')
+-- top:connect(src2, 'out', snk, 'y')
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

@@ -1,3 +1,27 @@
+---
+-- Sink one or more real-valued signals to a WAV file. The supported sample
+-- formats are 8-bit unsigned integer, 16-bit signed integer, and 32-bit signed
+-- integer.
+--
+-- @category Sinks
+-- @block WAVFileSink
+-- @tparam string|file|int file Filename, file object, or file descriptor
+-- @tparam int num_channels Number of channels (e.g. 1 for mono, 2 for stereo, etc.)
+-- @tparam[opt=16] int bits_per_sample Bits per sample, choice of 8, 16, or 32
+--
+-- @signature in:Float32 >
+-- @signature in1:Float32, in2:Float32, ... >
+--
+-- @usage
+-- -- Sink to a one channel WAV file
+-- local snk = radio.WAVFileSink('test.wav', 1)
+-- top:connect(src, snk)
+--
+-- -- Sink to a two channel WAV file
+-- local snk = radio.WAVFileSink('test.wav', 2)
+-- top:connect(src1, 'out', snk, 'in1')
+-- top:connect(src2, 'out', snk, 'in2')
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

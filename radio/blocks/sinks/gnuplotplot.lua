@@ -1,3 +1,29 @@
+---
+-- Plot a real-valued signal in a gnuplot time plot. This sink requires the
+-- gnuplot program. This sink should be used with relatively low sample rates,
+-- as it does not skip any samples, or it may otherwise throttle a flow graph.
+--
+-- @category Sinks
+-- @block GnuplotPlotSink
+-- @tparam int num_samples Number of samples to plot
+-- @tparam[opt=""] string title Title of plot
+-- @tparam[opt={}] table options Additional options, specifying:
+--                            * `xlabel` (string, default "Sample Number")
+--                            * `ylabel` (string, default "Value")
+--                            * `yrange` (array of two numbers, default `nil`
+--                            for autoscale)
+--                            * `extra_settings` (array of strings containing
+--                            gnuplot commands)
+--
+-- @signature in:Float32 >
+--
+-- @usage
+-- -- Plot a 1 KHz cosine sampled at 250 KHz
+-- local snk = radio.SignalSource('cosine', 1e3, 250e3)
+-- local throttle = radio.ThrottleBlock()
+-- local snk = radio.GnuplotPlotSink(1000, 'Cosine')
+-- top:connect(src, throttle, snk)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

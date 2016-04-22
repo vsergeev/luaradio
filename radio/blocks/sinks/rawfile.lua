@@ -1,3 +1,24 @@
+---
+-- Sink a signal to a binary file. The samples are serialized raw, in their
+-- native binary representation, with no signedness conversion, endian
+-- conversion, or interpretation. This is useful for serializing data types
+-- across a pipe or other file descriptor based IPC.
+--
+-- @category Sinks
+-- @block RawFileSink
+-- @tparam string|file|int file Filename, file object, or file descriptor
+--
+-- @signature in:any >
+--
+-- @usage
+-- -- Sink raw samples to a file
+-- local snk = radio.RawFileSink('samples.raw')
+-- top:connect(src, snk)
+--
+-- -- Sink raw samples to file descriptor 3
+-- local snk = radio.RawFileSink(3)
+-- top:connect(src, snk)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

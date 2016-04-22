@@ -1,3 +1,21 @@
+---
+-- Slice a real-valued signal on a threshold into a bit stream.
+--
+-- $$ y[n] = \begin{cases} 1 & \text{if } x[n] > \text{threshold} \\ 0 & \text{if } x[n] < \text{threshold} \end{cases} $$
+--
+-- @category Digital
+-- @block SlicerBlock
+-- @tparam[opt=0.0] number threshold Threshold
+--
+-- @signature in:Float32 > out:Bit
+--
+-- @usage
+-- -- Slice at default threshold 0.0
+-- local slicer = radio.SlicerBlock()
+--
+-- -- Slice at threshold 0.5
+-- local slicer = radio.SlicerBlock(0.5)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

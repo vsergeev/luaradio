@@ -1,3 +1,19 @@
+---
+-- Frequency translate a complex-valued signal by mixing it with $e^{j \omega_0
+-- n}$, where $\omega_0 = 2 \pi f_o / f_s$.
+--
+-- $$ y[n] = x[n] \; e^{j\omega_0 n} $$
+--
+-- @category Spectrum Manipulation
+-- @block FrequencyTranslatorBlock
+-- @tparam number offset Translation offset in Hz
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+--
+-- @usage
+-- -- Frequency translate -200 KHz
+-- local translator = radio.FrequencyTranslatorBlock(-200e3)
+
 local math = require('math')
 local ffi = require('ffi')
 

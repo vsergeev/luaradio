@@ -1,3 +1,21 @@
+---
+-- Sample a complex or real valued data signal on positive zero-crossing
+-- transitions of a real-valued clock signal.
+--
+-- $$ y[n] = x_{data}[m] \text{ when } \begin{align}&x_{clk}[m] > 0 \\ &x_{clk}[m-1] < 0\end{align} $$
+--
+-- @category Digital
+-- @block SamplerBlock
+--
+-- @signature data:ComplexFloat32, clock:Float32 > out:ComplexFloat32
+-- @signature data:Float32, clock:Float32 > out:Float32
+--
+-- @usage
+-- local sampler = radio.SamplerBlock()
+-- top:connect(data_src, 'out', sampler, 'data')
+-- top:connect(clock_src, 'out', sampler, 'clock')
+-- top:connect(sampler, snk)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

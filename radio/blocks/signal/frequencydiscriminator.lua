@@ -1,3 +1,19 @@
+---
+-- Frequency discriminate a complex-valued signal. This is a method of
+-- frequency demodulation.
+--
+-- $$ y[n] = \frac{\text{arg}(x[n] \; x^*[n-1])}{2 \pi k} $$
+--
+-- @category Demodulation
+-- @block FrequencyDiscriminatorBlock
+-- @tparam number modulation_index Modulation index (Carrier Deviation / Maximum Modulation Frequency)
+--
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- -- Frequency discriminator with modulation index 1.25
+-- local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
+
 local ffi = require('ffi')
 
 local platform = require('radio.core.platform')

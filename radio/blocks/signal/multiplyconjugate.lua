@@ -1,3 +1,20 @@
+---
+-- Multiply a complex-valued signal by the complex conjugate of another
+-- complex-valued signal.
+--
+-- $$ y[n] = x_{1}[n] \; x_{2}^*[n] $$
+--
+-- @category Math Operations
+-- @block MultiplyConjugateBlock
+--
+-- @signature in1:ComplexFloat32, in2:ComplexFloat32 > out:ComplexFloat32
+--
+-- @usage
+-- local multiplier = radio.MultipyConjugateBlock()
+-- top:connect(src1, 'out', multiplier, 'in1')
+-- top:connect(src2, 'out', multiplier, 'in2')
+-- top:connect(multiplier, snk)
+
 local ffi = require('ffi')
 
 local platform = require('radio.core.platform')

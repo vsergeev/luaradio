@@ -1,3 +1,15 @@
+---
+-- Compute the absolute value of a real-valued signal.
+--
+-- $$ y[n] = \text{abs}(x[n]) $$
+--
+-- @category Math Operations
+-- @block AbsoluteValueBlock
+-- @signature in:Float32 > out:Float32
+--
+-- @usage
+-- local abs = radio.AbsoluteValueBlock()
+
 local math = require('math')
 
 local block = require('radio.core.block')

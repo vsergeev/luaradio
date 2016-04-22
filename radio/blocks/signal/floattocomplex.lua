@@ -1,3 +1,17 @@
+---
+-- Compose two real-valued signals into the real and imaginary parts of a
+-- complex-valued signal.
+--
+-- $$ y[n] = x_{real}[n] + j \, x_{imag}[n] $$
+--
+-- @category Miscellaneous
+-- @block FloatToComplexBlock
+--
+-- @signature real:Float32, imag:Float32 > out:ComplexFloat32
+--
+-- @usage
+-- local floattocomplex = radio.FloatToComplexBlock()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

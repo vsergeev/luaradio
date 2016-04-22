@@ -6,6 +6,16 @@ local class = require('radio.core.class')
 local types = require('radio.types')
 local window_utils = require('radio.blocks.signal.window_utils')
 
+---
+-- Discrete Fourier Transform helper class.
+--
+-- @local
+-- @type DFT
+-- @tparam int num_samples Number of samples in transform
+-- @tparam data_type data_type Data type of samples, choice of ComplexFloat32
+--                             or Float32.
+-- @tparam[opt='hamming'] string window_type Window type
+-- @tparam number sample_rate Sample rate in Hz
 local DFT = class.factory()
 
 function DFT.new(num_samples, data_type, window_type, sample_rate)
@@ -25,6 +35,10 @@ function DFT.new(num_samples, data_type, window_type, sample_rate)
     return self
 end
 
+---
+-- Initialize DFT.
+--
+-- @local
 function DFT:initialize()
     -- Generate window
     self.window = types.Float32.vector_from_array(window_utils.window(self.num_samples, self.window_type, true))
@@ -57,6 +71,23 @@ function DFT:initialize()
     -- Initialize the DFT
     self:initialize_dft()
 end
+
+---
+-- Compute the discrete fourier transform.
+--
+-- @local
+-- @function DFT:dft
+-- @tparam Vector samples Vector of samples
+-- @treturn Vector ComplexFloat32 vector of complex-valued coefficients
+
+---
+-- Compute the power spectral density.
+--
+-- @local
+-- @function DFT:psd
+-- @tparam Vector samples Vector of samples
+-- @tparam bool logarithmic Scale power logarithmically, with `10*log10()`
+-- @treturn Vector Float32 vector of power values
 
 --------------------------------------------------------------------------------
 -- Window implementations

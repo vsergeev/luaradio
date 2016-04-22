@@ -1,3 +1,29 @@
+---
+-- Filter a complex or real valued signal with an IIR filter.
+--
+-- $$ y[n] = (x * h)[n] $$
+-- $$ \begin{align} y[n] = &\frac{1}{a_0}(b_0 x[n] + b_1 x[n-1] + ... + b_N x[n-N] \\ - &a_1 y[n-1] - a_2 y[n-2] - ... - a_M x[n-M])\end{align} $$
+--
+-- @category Filtering
+-- @block IIRFilterBlock
+-- @tparam array|vector b_taps Real-valued feedforward taps specified with a
+--                             number array or a Float32 vector
+-- @tparam array|vector a_taps Real-valued feedback taps specified with a
+--                             number array or a Float32 vector, must be at
+--                             least length 1
+--
+-- @signature in:Float32 > out:Float32
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+--
+-- @usage
+-- -- 2nd order Butterworth IIR filter, Wn=0.1
+-- local filter = radio.IIRFilterBlock({0.02008337,  0.04016673,  0.02008337}, {1, -1.56101808,  0.64135154})
+--
+-- -- 2nd order Butterworth IIR filter, Wn=0.1
+-- local b_taps = radio.types.Float32.vector_from_array({0.02008337,  0.04016673,  0.02008337})
+-- local a_taps = radio.types.Float32.vector_from_array({1, -1.56101808,  0.64135154})
+-- local filter = radio.IIRFilterBlock(b_taps, a_taps)
+
 local ffi = require('ffi')
 
 local platform = require('radio.core.platform')

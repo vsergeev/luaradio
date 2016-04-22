@@ -5,6 +5,13 @@ local window_utils = require('radio.blocks.signal.window_utils')
 -- Causal FIR filters computed from truncations of ideal IIR filters
 -- See http://www.labbookpages.co.uk/audio/firWindowing.html for derivations.
 
+---
+-- Generate the shifted, truncated coefficients of an ideal low-pass filter.
+--
+-- @local
+-- @tparam int num_taps Number of taps
+-- @tparam number cutoff Normalized cutoff frequency
+-- @treturn array Shifted impulse response taps
 local function fir_lowpass(num_taps, cutoff)
     local h = {}
 
@@ -19,6 +26,13 @@ local function fir_lowpass(num_taps, cutoff)
     return h
 end
 
+---
+-- Generate the shifted, truncated coefficients of an ideal low-pass filter.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam number cutoff Normalized cutoff frequency
+-- @treturn array Shifted impulse response taps
 local function fir_highpass(num_taps, cutoff)
     assert((num_taps % 2) == 1, "Number of taps must be odd.")
 
@@ -35,6 +49,13 @@ local function fir_highpass(num_taps, cutoff)
     return h
 end
 
+---
+-- Generate the shifted, truncated coefficients of an ideal band-pass filter.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam {number,number} cutoffs Normalized cutoff frequencies
+-- @treturn array Shifted impulse response taps
 local function fir_bandpass(num_taps, cutoffs)
     assert((num_taps % 2) == 1, "Number of taps must be odd.")
     assert(#cutoffs == 2, "Cutoffs should be a length two array.")
@@ -52,6 +73,13 @@ local function fir_bandpass(num_taps, cutoffs)
     return h
 end
 
+---
+-- Generate the shifted, truncated coefficients of an ideal band-stop filter.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam {number,number} cutoffs Normalized cutoff frequencies
+-- @treturn array Shifted impulse response taps
 local function fir_bandstop(num_taps, cutoffs)
     assert((num_taps % 2) == 1, "Number of taps must be odd.")
     assert(#cutoffs == 2, "Cutoffs should be a length two array.")
@@ -72,6 +100,14 @@ end
 -- FIR window method filter design.
 -- See http://www.labbookpages.co.uk/audio/firWindowing.html for derivations.
 
+---
+-- Apply window to and normalize magnitude of finite impulse response taps.
+--
+-- @local
+-- @tparam array h Impulse response taps
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @tparam number scale_freq Normalized frequency to scale to unity magnitude
+-- @treturn array Impulse response taps
 local function firwin(h, window_type, scale_freq)
     -- Default to hamming window
     window_type = window_type or "hamming"
@@ -94,6 +130,14 @@ local function firwin(h, window_type, scale_freq)
     return h
 end
 
+---
+-- Generate FIR low-pass filter taps by the window design method.
+--
+-- @local
+-- @tparam int num_taps Number of taps
+-- @tparam number cutoff Normalized cutoff frequency
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @treturn array Filter taps
 local function firwin_lowpass(num_taps, cutoff, window_type)
     -- Generate truncated lowpass filter taps
     local h = fir_lowpass(num_taps, cutoff)
@@ -101,6 +145,14 @@ local function firwin_lowpass(num_taps, cutoff, window_type)
     return firwin(h, window_type, 0.0)
 end
 
+---
+-- Generate FIR high-pass filter taps by the window design method.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam number cutoff Normalized cutoff frequency
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @treturn array Filter taps
 local function firwin_highpass(num_taps, cutoff, window_type)
     -- Generate truncated highpass filter taps
     local h = fir_highpass(num_taps, cutoff)
@@ -108,6 +160,14 @@ local function firwin_highpass(num_taps, cutoff, window_type)
     return firwin(h, window_type, 1.0)
 end
 
+---
+-- Generate FIR band-pass filter taps by the window design method.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam {number,number} cutoffs Normalized cutoff frequencies
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @treturn array Filter taps
 local function firwin_bandpass(num_taps, cutoffs, window_type)
     -- Generate truncated bandpass filter taps
     local h = fir_bandpass(num_taps, cutoffs)
@@ -115,6 +175,14 @@ local function firwin_bandpass(num_taps, cutoffs, window_type)
     return firwin(h, window_type, (cutoffs[1] + cutoffs[2])/2)
 end
 
+---
+-- Generate FIR band-stop filter taps by the window design method.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam {number,number} cutoffs Normalized cutoff frequencies
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @treturn array Filter taps
 local function firwin_bandstop(num_taps, cutoffs, window_type)
     -- Generate truncated bandpass filter taps
     local h = fir_bandstop(num_taps, cutoffs)
@@ -124,6 +192,16 @@ end
 
 -- Complex FIR window method filter design.
 
+---
+-- Apply window to and normalize magnitude of complex finite impulse response
+-- taps.
+--
+-- @local
+-- @tparam array h Complex impulse response taps
+-- @tparam number scale_freq Normalized center frequency of filter
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @tparam number scale_freq Normalized frequency to scale to unity magnitude
+-- @treturn array Complex impulse response taps
 local function complex_firwin(h, center_freq, window_type, scale_freq)
     -- Default to hamming window
     window_type = window_type or "hamming"
@@ -155,6 +233,15 @@ local function complex_firwin(h, center_freq, window_type, scale_freq)
     return h
 end
 
+---
+-- Generate FIR complex band-pass filter taps by the window design method.
+--
+-- @local
+-- @tparam int num_taps Number of taps
+-- @tparam {number,number} cutoffs Normalized cutoff frequencies, can be
+--                                 positive or negative
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @treturn array Complex filter taps
 local function firwin_complex_bandpass(num_taps, cutoffs, window_type)
     -- Generate truncated lowpass filter taps
     local h = fir_lowpass(num_taps, (math.max(unpack(cutoffs)) - math.min(unpack(cutoffs)))/2)
@@ -162,6 +249,15 @@ local function firwin_complex_bandpass(num_taps, cutoffs, window_type)
     return complex_firwin(h, (cutoffs[1] + cutoffs[2])/2, window_type, (cutoffs[1] + cutoffs[2])/2)
 end
 
+---
+-- Generate FIR complex band-stop filter taps by the window design method.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam {number,number} cutoffs Normalized cutoff frequencies, can be
+--                                 positive or negative
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @treturn array Complex filter taps
 local function firwin_complex_bandstop(num_taps, cutoffs, window_type)
     -- Generate truncated highpass filter taps
     local h = fir_highpass(num_taps, (math.max(unpack(cutoffs)) - math.min(unpack(cutoffs)))/2)
@@ -174,6 +270,16 @@ end
 -- FIR Root Raised Cosine Filter
 -- See https://en.wikipedia.org/wiki/Root-raised-cosine_filter
 
+---
+-- Generate an FIR approximation of a root-raised cosine filter, normalized to
+-- unity gain at DC.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam number sample_rate Sample rate in Hz
+-- @tparam number beta Roll-off factor
+-- @tparam number symbol_period Symbol period in seconds
+-- @treturn array Filter taps
 local function fir_root_raised_cosine(num_taps, sample_rate, beta, symbol_period)
     local h = {}
 
@@ -215,6 +321,13 @@ end
 -- FIR Hilbert Transform Filter
 -- See https://en.wikipedia.org/wiki/Hilbert_transform#Discrete_Hilbert_transform
 
+---
+-- Generate a windowed FIR approximation of the discrete Hilbert transform.
+--
+-- @local
+-- @tparam int num_taps Number of taps, must be odd
+-- @tparam[opt='hamming'] string window_type Window function type
+-- @treturn array Filter taps
 local function fir_hilbert_transform(num_taps, window_type)
     -- Default to hamming window
     window_type = window_type or "hamming"

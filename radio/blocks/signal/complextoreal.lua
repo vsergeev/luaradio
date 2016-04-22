@@ -1,3 +1,16 @@
+---
+-- Decompose the real part of a complex-valued signal.
+--
+-- $$ y[n] = \text{Re}(x[n]) $$
+--
+-- @category Miscellaneous
+-- @block ComplexToRealBlock
+--
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- local complextoreal = radio.ComplexToRealBlock()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

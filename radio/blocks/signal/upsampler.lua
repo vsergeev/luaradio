@@ -1,3 +1,24 @@
+---
+-- Upsample a complex or real valued signal. This block increases the sample
+-- rate for downstream blocks in the flow graph by a factor of L.
+--
+-- $$ y[n] = \begin{cases} x[n/L] & \text{for integer } n/L \\ 0 & \text{otherwise} \end{cases} $$
+--
+-- Note: this block performs no scaling or anti-alias filtering. Use the
+-- [`InterpolatorBlock`](#interpolatorblock) for signal interpolation with
+-- scaling and anti-alias filtering.
+--
+-- @category Sample Rate Manipulation
+-- @block UpsamplerBlock
+-- @tparam int factor Upsampling factor L
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+-- @signature in:Float32 > out:Float32
+--
+-- @usage
+-- -- Upsample by 5
+-- local upsampler = radio.UpsamplerBlock(5)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

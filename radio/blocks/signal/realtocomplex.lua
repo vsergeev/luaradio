@@ -1,3 +1,17 @@
+---
+-- Compose a complex-valued signal from a real-valued signal and a zero-valued
+-- imaginary part.
+--
+-- $$ y[n] = x[n] + 0 \, j $$
+--
+-- @category Miscellaneous
+-- @block RealToComplexBlock
+--
+-- @signature in:Float32 > out:ComplexFloat32
+--
+-- @usage
+-- local realtocomplex = radio.RealToComplexBlock()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

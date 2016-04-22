@@ -1,3 +1,17 @@
+---
+-- Throttle a signal to limit CPU usage and pace plotting sinks.
+--
+-- $$ y[n] = x[n] $$
+--
+-- @category Miscellaneous
+-- @block ThrottleBlock
+--
+-- @signature in:any > out:copy
+--
+-- @usage
+-- local throttle = radio.ThrottleBlock()
+-- top:connect(src, throttle, snk)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

@@ -21,6 +21,15 @@ local window_functions = {
     end
 }
 
+---
+-- Generate a window.
+--
+-- @local
+-- @tparam int M Window length
+-- @tparam string window_type Window function, choice of "rectangular",
+--                            "hamming", "hanning", "bartlett", "blackman".
+-- @tparam[opt=false] bool periodic Periodic window for spectral analysis
+-- @treturn array Window values
 local function window(M, window_type, periodic)
     if not window_functions[window_type] then
         error("Unsupported window \"" .. tostring(window_type) .. "\".")

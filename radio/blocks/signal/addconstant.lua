@@ -1,3 +1,26 @@
+---
+-- Add a real-valued constant to a complex or real valued signal, or a
+-- complex-valued constant to a complex-valued signal.
+--
+-- $$ y[n] = x[n] + C $$
+--
+-- @category Math Operations
+-- @block AddConstantBlock
+-- @tparam number|Float32|ComplexFloat32 constant Constant
+--
+-- @signature in:Float32 > out:Float32
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+--
+-- @usage
+-- -- Add a number (Float32) constant
+-- local addconstant = radio.AddConstantBlock(1.0)
+--
+-- -- Add a Float32 constant
+-- local addconstant = radio.AddConstantBlock(radio.types.Float32(1.0))
+--
+-- -- Add a ComplexFloat32 constant
+-- local addconstant = radio.AddConstantBlock(radio.types.ComplexFloat32(1.0))
+
 local block = require('radio.core.block')
 local class = require('radio.core.class')
 local types = require('radio.types')

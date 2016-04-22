@@ -1,3 +1,16 @@
+---
+-- Compute the magnitude of a complex-valued signal.
+--
+-- $$ y[n] = |x[n]| $$
+-- $$ y[n] = \sqrt{\text{Re}(x[n])^2 + \text{Im}(x[n])^2} $$
+--
+-- @category Math Operations
+-- @block ComplexMagnitudeBlock
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- local magnitude = radio.ComplexMagnitudeBlock()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

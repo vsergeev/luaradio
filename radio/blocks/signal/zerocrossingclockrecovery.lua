@@ -1,3 +1,25 @@
+---
+-- Generate a real-valued clock signal from zero-crossings in a data signal.
+-- This clock signal can then be used to sample the data signal with a
+-- [`SamplerBlock`](#samplerblock).
+--
+-- $$ y[n] = \text{ZC}(x[n], \text{baudrate}, \text{threshold}) $$
+--
+-- @category Carrier and Clock Recovery
+-- @block ZeroCrossingClockRecoveryBlock
+-- @tparam number baudrate Baudrate in symbols per second
+-- @tparam[opt=0.0] number threshold Zero-crossing threshold
+--
+-- @signature in:Float32 > out:Float32
+--
+-- @usage
+-- -- Zero-crossing clock recovery of 1200 baudrate data signal
+-- local clock_recoverer = radio.ZeroCrossingClockRecoveryBlock(1200)
+-- top:connect(src, clock_recoverer)
+-- top:connect(src, 'out', sampler, 'data')
+-- top:connect(clock_recoverer, 'out', sampler, 'clock')
+-- top:connect(sampler, snk)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

@@ -1,3 +1,16 @@
+---
+-- Compute the complex conjugate of a complex-valued signal.
+--
+-- $$ y[n] = x^*[n] $$
+--
+-- @category Math Operations
+-- @block ComplexConjugateBlock
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+--
+-- @usage
+-- local conj = radio.ComplexConjugateBlock()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

@@ -1,3 +1,21 @@
+---
+-- Delay a signal by a fixed number of samples.
+--
+-- $$ y[n] = x[n-d] $$
+--
+-- @category Miscellaneous
+-- @block DelayBlock
+-- @tparam int num_samples Number of samples to delay
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+-- @signature in:Float32 > out:Float32
+-- @signature in:Byte > out:Byte
+-- @signature in:Bit > out:Bit
+--
+-- @usage
+-- -- Delay by 128 samples
+-- local delay = radio.DelayBlock(128)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

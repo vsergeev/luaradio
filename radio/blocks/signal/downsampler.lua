@@ -1,3 +1,24 @@
+---
+-- Downsample a complex or real valued signal. This block reduces the sample
+-- rate for downstream blocks in the flow graph by a factor of M.
+--
+-- $$ y[n] = x[nM] $$
+--
+-- Note: this block performs no anti-alias filtering. Use the
+-- [`DecimatorBlock`](#decimatorblock) composite for signal decimation with
+-- anti-alias filtering.
+--
+-- @category Sample Rate Manipulation
+-- @block DownsamplerBlock
+-- @tparam int factor Downsampling factor M
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+-- @signature in:Float32 > out:Float32
+--
+-- @usage
+-- -- Downsample by 5
+-- local downsampler = radio.DownsamplerBlock(5)
+
 local math = require('math')
 
 local block = require('radio.core.block')

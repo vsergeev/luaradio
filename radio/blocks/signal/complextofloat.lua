@@ -1,3 +1,16 @@
+---
+-- Decompose the real and imaginary parts of a complex-valued signal.
+--
+-- $$ y_{real}[n],\, y_{imag}[n] = \text{Re}(x[n]),\, \text{Im}(x[n]) $$
+--
+-- @category Miscellaneous
+-- @block ComplexToFloatBlock
+--
+-- @signature in:ComplexFloat32 > real:Float32, imag:Float32
+--
+-- @usage
+-- local complextofloat = radio.ComplexToFloatBlock()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

@@ -1,3 +1,30 @@
+---
+-- Filter a complex or real valued signal with an FIR filter.
+--
+-- $$ y[n] = (x * h)[n] $$
+-- $$ y[n] = b_0 x[n] + b_1 x[n-1] + ... + b_N x[n-N] $$
+--
+-- @category Filtering
+-- @block FIRFilterBlock
+-- @tparam array|vector taps Real-valued taps specified with a number array or
+--                           a Float32 vector, or complex-valued taps specified
+--                           with a ComplexFloat32 vector
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+-- @signature in:Float32 > out:Float32
+--
+-- @usage
+-- -- Moving average FIR filter with 5 real taps
+-- local filter = radio.FIRFilterBlock({1/5, 1/5, 1/5, 1/5, 1/5})
+--
+-- -- Moving average FIR filter with 5 real taps
+-- local taps = radio.types.Float32.vector({1/5, 1/5, 1/5, 1/5, 1/5})
+-- local filter = radio.FIRFilterBlock(taps)
+--
+-- -- FIR filter with 3 complex taps
+-- local taps = radio.types.ComplexFloat32.vector({{1, 1}, {0.5, 0.5}, {0.25, 0.25}})
+-- local filter = radio.FIRFilterBlock(taps)
+
 local ffi = require('ffi')
 
 local platform = require('radio.core.platform')

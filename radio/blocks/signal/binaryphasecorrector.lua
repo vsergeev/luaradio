@@ -1,3 +1,20 @@
+---
+-- Correct the phase of a complex-valued BPSK modulated signal, by rotating it
+-- against a moving average of the phase angle.
+--
+-- $$ y[n] = x[n] \; e^{-j\phi_{avg}} $$
+--
+-- @category Digital
+-- @block BinaryPhaseCorrectorBlock
+-- @tparam int num_samples Number of samples in phase angle moving average
+-- @tparam[opt=32] int sample_interval Number of samples to skip between measurements
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+--
+-- @usage
+-- -- Binary phase corrector with a 3000 sample moving average
+-- local phase_corrector = radio.BinaryPhaseCorrector(3000)
+
 local ffi = require('ffi')
 local table = require('table')
 local math = require('math')

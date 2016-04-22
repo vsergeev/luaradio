@@ -1,3 +1,20 @@
+---
+-- Multiply two complex or real valued signals.
+--
+-- $$ y[n] = x_{1}[n] \; x_{2}[n] $$
+--
+-- @category Math Operations
+-- @block MultiplyBlock
+--
+-- @signature in1:ComplexFloat32, in2:ComplexFloat32 > out:ComplexFloat32
+-- @signature in1:Float32, in2:Float32 > out:Float32
+--
+-- @usage
+-- local multiplier = radio.MultipyBlock()
+-- top:connect(src1, 'out', multiplier, 'in1')
+-- top:connect(src2, 'out', multiplier, 'in2')
+-- top:connect(multiplier, snk)
+
 local ffi = require('ffi')
 
 local platform = require('radio.core.platform')

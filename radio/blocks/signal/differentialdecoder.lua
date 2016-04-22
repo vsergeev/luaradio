@@ -1,3 +1,17 @@
+---
+-- Differentially decode a bit stream.
+--
+-- $$ y[n] = x[n-1] \oplus x[n] $$
+--
+-- @category Digital
+-- @block DifferentialDecoderBlock
+-- @tparam[opt=false] bool invert Invert the output.
+--
+-- @signature in:Bit > out:Bit
+--
+-- @usage
+-- local diffdecoder = radio.DifferentialDecoderBlock()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

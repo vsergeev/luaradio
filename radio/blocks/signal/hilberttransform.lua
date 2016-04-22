@@ -1,3 +1,20 @@
+---
+-- Hilbert transform a real-valued signal into a complex-valued signal with a
+-- windowed FIR approximation of the IIR Hilbert transform filter.
+--
+-- $$ y[n] = x[n-N/2] + j \, (x * h_{hilb})[n] $$
+--
+-- @category Spectrum Manipulation
+-- @block HilbertTransformBlock
+-- @tparam number num_taps Number of FIR taps, must be odd
+-- @tparam[opt='hamming'] string window_type Window type
+--
+-- @signature in:Float32 > out:ComplexFloat32
+--
+-- @usage
+-- -- Hilbert transform with 129 taps
+-- local ht = radio.HilbertTransformBlock(129)
+
 local ffi = require('ffi')
 
 local platform = require('radio.core.platform')

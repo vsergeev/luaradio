@@ -1,3 +1,16 @@
+---
+-- Decompose the imaginary part of a complex-valued signal.
+--
+-- $$ y[n] = \text{Im}(x[n]) $$
+--
+-- @category Miscellaneous
+-- @block ComplexToImagBlock
+--
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- local complextoimag = radio.ComplexToImagBlock()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

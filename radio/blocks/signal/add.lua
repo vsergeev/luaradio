@@ -1,3 +1,20 @@
+---
+-- Add two complex or real valued signals.
+--
+-- $$ y[n] = x_{1}[n] + x_{2}[n] $$
+--
+-- @category Math Operations
+-- @block AddBlock
+--
+-- @signature in1:ComplexFloat32, in2:ComplexFloat32 > out:ComplexFloat32
+-- @signature in1:Float32, in2:Float32 > out:Float32
+--
+-- @usage
+-- local summer = radio.AddBlock()
+-- top:connect(src1, 'out', summer, 'in1')
+-- top:connect(src2, 'out', summer, 'in2')
+-- top:connect(summer, snk)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

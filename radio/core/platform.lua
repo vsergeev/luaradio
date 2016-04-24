@@ -1,3 +1,8 @@
+---
+-- Platform constants.
+--
+-- @module radio.core.platform
+
 local os = require('os')
 local ffi = require('ffi')
 
@@ -6,7 +11,19 @@ local function getenv_flag(name)
     return (value == "1" or value == "y" or value == "true" or value == "yes")
 end
 
--- Default platform configuration
+---
+-- Platform configuration
+-- @table radio.core.platform
+-- @tfield string luajit_version LuaJIT version (e.g. "LuaJIT 2.0.4").
+-- @tfield string os Operating System (e.g. "Linux", "OSX", "BSD").
+-- @tfield string arch Architecture (e.g. "x64", "x86", "arm").
+-- @tfield int page_size Page size (e.g. 4096).
+-- @tfield int cpu_count CPU count (e.g. 4).
+-- @tfield int cpu_model CPU model (e.g. "Intel(R) Core(TM) i5-4570T CPU @ 2.90GHz").
+-- @tfield function alloc Platform page-aligned allocator function.
+-- @tfield bool features.liquid Liquid-dsp library found and enabled.
+-- @tfield bool features.volk VOLK library found and enabled.
+-- @tfield bool features.fftw3f FFTW3F library found and enabled.
 local platform = {
     luajit_version = jit.version,
     os = ffi.os,

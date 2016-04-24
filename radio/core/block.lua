@@ -1,8 +1,25 @@
+---
+-- Support classes for creating blocks.
+--
+-- @module radio.core.block
+
 local class = require('radio.core.class')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
 
--- Input class
+---
+-- Block input port descriptor. This contains the name and data type of a block
+-- input port.
+--
+-- @type Input
+-- @tparam string name Name
+-- @tparam type|function data_type Data type, e.g. `radio.types.ComplexFloat32`, or a function predicate
+-- @usage
+-- local inputs = {radio.block.Input("in1", radio.types.ComplexFloat32),
+--                 radio.block.Input("in2", radio.types.ComplexFloat32)}
+-- local outputs = {...}
+-- ...
+-- self:add_type_signature(inputs, outputs)
 local Input = class.factory()
 
 function Input.new(name, data_type)
@@ -12,7 +29,18 @@ function Input.new(name, data_type)
     return self
 end
 
--- Output class
+---
+-- Block output port descriptor. This contains the name and data type of
+-- a block output port.
+--
+-- @type Output
+-- @tparam string name Name
+-- @tparam type data_type Data type, e.g. `radio.types.ComplexFloat32`
+-- @usage
+-- local inputs = {...}
+-- local outputs = {radio.block.Output("out", radio.types.ComplexFloat32)}
+-- ...
+-- self:add_type_signature(inputs, outputs)
 local Output = class.factory()
 
 function Output.new(name, data_type)
@@ -22,9 +50,29 @@ function Output.new(name, data_type)
     return self
 end
 
--- Block base class
+---
+-- Block base class.
+--
+-- @type Block
 local Block = class.factory()
 
+---
+-- Add a type signature.
+--
+-- @tparam array inputs Input ports, array of `radio.block.Input` instances
+-- @tparam array outputs Output ports, array of `radio.block.Output` instances
+-- @tparam[opt=nil] function process_func Optional process function for this
+--                                        type signature, defaults to
+--                                        `process()`
+-- @tparam[opt=nil] function initialize_func Optional process initialization
+--                                           for this type signature, defaults
+--                                           to `initialize()`
+-- @raise Invalid input port descriptor error.
+-- @raise Invalid output port descriptor error.
+-- @raise Invalid type signature, input count mismatch error.
+-- @raise Invalid type signature, input name mismatch error.
+-- @raise Invalid type signature, output count mismatch error.
+-- @raise Invalid type signature, output name mismatch error.
 function Block:add_type_signature(inputs, outputs, process_func, initialize_func)
     -- Assert inputs are Inputs
     for i = 1, #inputs do
@@ -77,6 +125,11 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
     }
 end
 
+---
+-- Differentiate this block to a type signature.
+--
+-- @tparam array input_data_types Array of input data types
+-- @raise No compatible type signatures found error.
 function Block:differentiate(input_data_types)
     -- Eliminate type signature candidates that don't allow the specified input
     -- names and data types
@@ -115,6 +168,12 @@ function Block:differentiate(input_data_types)
     end
 end
 
+---
+-- Get the differentiated input data type.
+--
+-- @tparam[opt=1] int index Index of input, starting at 1
+-- @treturn array Array of data types
+-- @raise Block not yet differentiated error.
 function Block:get_input_type(index)
     assert(self.signature, "Block not yet differentiated.")
 
@@ -123,6 +182,12 @@ function Block:get_input_type(index)
     return self.inputs[index] and self.inputs[index].data_type
 end
 
+---
+-- Get the differentiated output data type.
+--
+-- @tparam[opt=1] int index Index of output, starting at 1
+-- @treturn data_type Data type
+-- @raise Block not yet differentiated error.
 function Block:get_output_type(index)
     assert(self.signature, "Block not yet differentiated.")
 
@@ -131,6 +196,11 @@ function Block:get_output_type(index)
     return self.outputs[index] and self.outputs[index].data_type
 end
 
+---
+-- Get the block rate.
+--
+-- @treturn number Block rate in samples per second
+-- @raise Block not yet differentiated error.
 function Block:get_rate()
     assert(self.signature, "Block not yet differentiated.")
 
@@ -140,6 +210,9 @@ function Block:get_rate()
     return self.inputs[1].pipe:get_rate()
 end
 
+---
+-- Get a string representation with the block name and port connectivity.
+-- @treturn string String representation
 function Block:__tostring()
     local s = self.name .. "\n"
 
@@ -180,22 +253,35 @@ function Block:__tostring()
     return s
 end
 
+---
+-- Instantiate hook, default no-op implementation.
 function Block:instantiate()
     -- No operation
 end
 
+---
+-- Initialize hook, default no-op implementation.
 function Block:initialize()
     -- No operation
 end
 
+---
+-- Process hook, default implementation raises a not implemented error.
 function Block:process(...)
     error("process() not implemented")
 end
 
+---
+-- Cleanup hook, default no-op implementation.
 function Block:cleanup()
     -- No operation
 end
 
+---
+-- Run block once.
+--
+-- @local
+-- @treturn bool New samples produced
 function Block:run_once()
     local data_out
 
@@ -256,6 +342,10 @@ function Block:run_once()
     return new_samples
 end
 
+---
+-- Run block until inputs reach EOF, then call cleanup().
+--
+-- @local
 function Block:run()
     if #self.inputs == 0 then
         -- No inputs (source)
@@ -332,7 +422,33 @@ function Block:run()
     self:cleanup()
 end
 
--- Block factory derived class generator
+---
+-- @section end
+
+---
+-- Block class factory.
+--
+-- @function factory
+-- @tparam string name Block name
+-- @tparam[opt=nil] class parent_class Inherited parent class
+--
+-- @usage
+-- local MyBlock = radio.block.factory("MyBlock")
+--
+-- function MyBlock:instantiate(a, b)
+--     self.param = a + b
+--
+--     self:add_type_signature({radio.block.Input("in", radio.types.Float32)},
+--                             {radio.block.Output("out", radio.types.Float32)})
+-- end
+--
+-- function MyBlock:initialize()
+--     -- Differentiated data type and sample rate dependent initialization
+-- end
+--
+-- function MyBlock:process(x)
+--     return x
+-- end
 local function factory(name, parent_class)
     local class = class.factory(parent_class or Block)
 

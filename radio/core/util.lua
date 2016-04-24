@@ -1,19 +1,38 @@
-local function table_length(t)
+---
+-- Get the length of a table.
+--
+-- @local
+-- @tparam table table Table
+-- @treturn int Length
+local function table_length(table)
     local count = 0
-    for _, _ in pairs(t) do
+    for _, _ in pairs(table) do
         count = count + 1
     end
     return count
 end
 
-local function table_copy(t)
+---
+-- Make a shallow clone of a table.
+--
+-- @local
+-- @tparam table table Table
+-- @treturn table Cloned table
+local function table_copy(table)
     local copy = {}
-    for k, v in pairs(t) do
+    for k, v in pairs(table) do
         copy[k] = v
     end
     return copy
 end
 
+---
+-- Test if elem exists in array.
+--
+-- @local
+-- @tparam array array Array
+-- @tparam object elem Element
+-- @treturn bool Result
 local function array_exists(array, elem)
     for _, v in pairs(array) do
         if v == elem then
@@ -23,24 +42,45 @@ local function array_exists(array, elem)
     return false
 end
 
-local function array_search(array, match_func)
+---
+-- Find first element in array that satisfies predicate or return nil.
+--
+-- @local
+-- @tparam array array Array
+-- @tparam function predicate Predicate function
+-- @return Element or nil
+local function array_search(array, predicate)
     for _, v in pairs(array) do
-        if match_func(v) then
+        if predicate(v) then
             return v
         end
     end
     return nil
 end
 
-local function array_all(array, func)
+---
+-- Test if all elements in array satisfy predicate.
+--
+-- @local
+-- @tparam array array Array
+-- @tparam function predicate Predicate function
+-- @treturn bool Result
+local function array_all(array, predicate)
     for _, v in pairs(array) do
-        if not func(v) then
+        if not predicate(v) then
             return false
         end
     end
     return true
 end
 
+---
+-- Test if two arrays are equal in length and element equality.
+--
+-- @local
+-- @tparam array a Array
+-- @tparam array b Array
+-- @treturn bool Result
 local function array_equals(a, b)
     if #a ~= #b then
         return false
@@ -55,6 +95,13 @@ local function array_equals(a, b)
     return true
 end
 
+---
+-- Find elem in array or return nil.
+--
+-- @local
+-- @tparam array array Array
+-- @tparam object elem Element
+-- @treturn bool Result
 local function array_find(array, elem)
     for i = 1, #array do
         if array[i] == elem then

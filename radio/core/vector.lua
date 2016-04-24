@@ -1,3 +1,8 @@
+---
+-- Vector classes.
+--
+-- @module radio.core.vector
+
 local ffi = require('ffi')
 
 local class = require('radio.core.class')
@@ -8,7 +13,12 @@ ffi.cdef[[
     void *memcpy(void *dest, const void *src, size_t n);
 ]]
 
--- Vector class
+---
+-- A dynamic array of a C structure type.
+--
+-- @type Vector
+-- @tparam ctype ctype C type
+-- @tparam[opt=0] int num Length
 local Vector = class.factory()
 
 function Vector.new(ctype, num)
@@ -31,6 +41,15 @@ function Vector.new(ctype, num)
     return self
 end
 
+---
+-- Read-only vector constructor for an existing buffer.
+--
+-- @constructor
+-- @local
+-- @tparam ctype ctype C data type
+-- @tparam cdata buf Buffer
+-- @tparam int size Buffer size
+-- @treturn Vector Read-only vector
 function Vector.cast(ctype, buf, size)
     local self = setmetatable({}, Vector)
 
@@ -50,6 +69,11 @@ function Vector.cast(ctype, buf, size)
     return self
 end
 
+---
+-- Compare two vectors for equality.
+--
+-- @tparam vector other Other vector
+-- @treturn bool Result
 function Vector:__eq(other)
     if self.length ~= other.length then
         return false
@@ -64,6 +88,10 @@ function Vector:__eq(other)
     return true
 end
 
+---
+-- Get a string representation.
+--
+-- @treturn string String representation
 function Vector:__tostring()
     local strs = {}
 
@@ -74,6 +102,11 @@ function Vector:__tostring()
     return "[" .. table.concat(strs, ", ") .. "]"
 end
 
+---
+-- Resize the vector.
+--
+-- @tparam int num New length
+-- @treturn Vector self
 function Vector:resize(num)
     -- If we're within capacity, adjust length and size
     if num <= self._capacity then
@@ -104,6 +137,11 @@ function Vector:resize(num)
     return self
 end
 
+---
+-- Append an element to the vector.
+--
+-- @param elem Element
+-- @treturn Vector self
 function Vector:append(elem)
     self:resize(self.length + 1)
     self.data[self.length - 1] = elem
@@ -111,8 +149,12 @@ function Vector:append(elem)
     return self
 end
 
--- ObjectVector class
-
+---
+-- A dynamic array of Lua objects.
+--
+-- @type ObjectVector
+-- @tparam type type Lua class
+-- @tparam[opt=0] int num Length
 local ObjectVector = class.factory()
 
 function ObjectVector.new(type, num)
@@ -130,6 +172,10 @@ function ObjectVector.new(type, num)
     return self
 end
 
+---
+-- Get a string representation.
+--
+-- @treturn string String representation
 function ObjectVector:__tostring()
     local strs = {}
 
@@ -140,6 +186,11 @@ function ObjectVector:__tostring()
     return "[" .. table.concat(strs, ", ") .. "]"
 end
 
+---
+-- Resize the vector.
+--
+-- @tparam int num New length
+-- @treturn Vector self
 function ObjectVector:resize(num)
     if num < self.length then
         for i = num, self.length do
@@ -151,6 +202,11 @@ function ObjectVector:resize(num)
     return self
 end
 
+---
+-- Append an element to the vector.
+--
+-- @param elem Element
+-- @treturn Vector self
 function ObjectVector:append(elem)
     self.data[self.length] = elem
     self.length = self.length + 1

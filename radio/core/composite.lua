@@ -1,3 +1,6 @@
+---
+-- @module radio.core.composite
+
 local ffi = require('ffi')
 local string = require('string')
 local io = require('io')
@@ -9,15 +12,21 @@ local util = require('radio.core.util')
 local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 
+---
+-- This block is used to compose blocks into a top-level or hierarchical block.
+-- Top-level blocks may be run with the `run()` method.
+--
+-- @type CompositeBlock
 local CompositeBlock = block.factory("CompositeBlock")
-
--- Connection logic
 
 function CompositeBlock:instantiate()
     self._running = false
     self._connections = {}
 end
 
+-- Connection logic
+
+-- Overridden implementation of Block's add_type_signature().
 function CompositeBlock:add_type_signature(inputs, outputs)
     block.Block.add_type_signature(self, inputs, outputs)
 
@@ -36,6 +45,50 @@ function CompositeBlock:add_type_signature(inputs, outputs)
     end
 end
 
+---
+-- Connect blocks.
+--
+-- This method can be used in three ways:
+--
+-- 1. Linear block connections.  Connect the first output to the first input of
+-- each adjacent block. This usage is convenient for connecting blocks that
+-- only have one input port and output port (which is most blocks).
+--
+-- ``` lua
+-- top:connect(b1, b2, b3)
+-- ```
+--
+-- 2. Explicit block connections.  Connect a particular output of the first
+-- block to a particular input of the second block. The output and input ports
+-- are specified by name. This invocation is used to connect a block to another
+-- block with multiple input ports.
+--
+-- ``` lua
+-- top:connect(b1, 'out', b2, 'in2')
+-- ```
+--
+-- 3. Alias port connections. Alias a composite block's input or output port to
+-- a concrete block's input or output port. This invocation is used for
+-- connecting the boundary inputs and outputs of a hierarchical block.
+--
+-- ``` lua
+-- function MyHierarchicalBlock:instantiate()
+--     local b1, b2, b3 = ...
+--
+--     ...
+--
+--     self:connect(b1, b2, b3)
+--
+--     self:connect(self, 'in', b1, 'in')
+--     self:connect(self, 'out', b3, 'out')
+-- end
+-- ```
+--
+-- @param ... Blocks [and ports] to connect
+-- @treturn CompositeBlock self
+-- @raise Output port of block not found error.
+-- @raise Input port of block not found error.
+-- @raise Input port of block already connected error.
 function CompositeBlock:connect(...)
     if util.array_all({...}, function (b) return class.isinstanceof(b, block.Block) end) then
         local blocks = {...}
@@ -381,6 +434,19 @@ function CompositeBlock:_prepare_to_run()
     return all_connections, evaluation_order
 end
 
+---
+-- Run a top-level block. This is equivalent to calling `start()` followed by
+-- `wait()` on the top-level block.
+--
+-- @treturn CompositeBlock self
+-- @raise Block already running error.
+-- @raise Block input port unconnected error.
+-- @raise Block input port sample rate mismatch error.
+-- @raise No compatible type signatures found for block error.
+--
+-- @usage
+-- -- Run a top-level block
+-- top:run()
 function CompositeBlock:run(multiprocess)
     self:start(multiprocess)
     self:wait()
@@ -388,6 +454,18 @@ function CompositeBlock:run(multiprocess)
     return self
 end
 
+---
+-- Start a top-level block.
+--
+-- @treturn CompositeBlock self
+-- @raise Block already running error.
+-- @raise Block input port unconnected error.
+-- @raise Block input port sample rate mismatch error.
+-- @raise No compatible type signatures found for block error.
+--
+-- @usage
+-- -- Start a top-level block
+-- top:start()
 function CompositeBlock:start(multiprocess)
     if self._running then
         error("CompositeBlock already running!")
@@ -598,6 +676,14 @@ function CompositeBlock:_reap()
     end
 end
 
+---
+-- Get the status of a top-level block.
+--
+-- @treturn table Status information with fields: `running` (bool).
+-- @usage
+-- if top:status().running then
+--     print('Still running...')
+-- end
 function CompositeBlock:status()
     if not self._running then
         return {running = false}
@@ -619,6 +705,14 @@ function CompositeBlock:status()
     return {running = false}
 end
 
+---
+-- Stop a top-level block and wait until it has finished.
+--
+-- @usage
+-- -- Start a top-level block
+-- top:start()
+-- -- Stop a top-level block
+-- top:stop()
 function CompositeBlock:stop()
     if not self._running then
         return
@@ -638,6 +732,15 @@ function CompositeBlock:stop()
     self._running = false
 end
 
+---
+-- Wait for a top-level block to finish, either by natural termination or by
+-- `SIGINT`.
+--
+-- @usage
+-- -- Start a top-level block
+-- top:start()
+-- -- Wait for the top-level block to finish
+-- top:wait()
 function CompositeBlock:wait()
     if not self._running then
         return

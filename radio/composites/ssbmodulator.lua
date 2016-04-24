@@ -8,7 +8,7 @@ function SSBModulator:instantiate(sideband, bandwidth)
     blocks.CompositeBlock.instantiate(self)
 
     assert(sideband == "lsb" or sideband == "usb", "Sideband should be 'lsb' or 'usb'.")
-    bandwidth = bandwidth or 5e3
+    bandwidth = bandwidth or 3e3
 
     local af_filter = blocks.LowpassFilterBlock(128, bandwidth)
     local hilbert = blocks.HilbertTransformBlock(129)

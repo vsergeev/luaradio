@@ -130,6 +130,10 @@ function Block:get_rate()
     return self.inputs[1].pipe:get_rate()
 end
 
+function Block:instantiate()
+    -- No operation
+end
+
 function Block:initialize()
     -- No operation
 end

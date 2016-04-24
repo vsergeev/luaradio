@@ -1,3 +1,28 @@
+---
+-- Frequency translate, low-pass filter, and decimate a complex-valued signal.
+-- This block reduces the sample rate for downstream blocks in the flow graph
+-- by a factor of M.
+--
+-- $$ y[n] = (\text{FrequencyTranslate}(x[n], f_{offset}) * h_{lpf})[nM] $$
+--
+-- This block is convenient for translating signals to baseband and decimating
+-- them.
+--
+-- @category Spectrum Manipulation
+-- @block TunerBlock
+-- @tparam number offset Translation offset in Hz
+-- @tparam number bandwidth Signal bandwidth in Hz
+-- @tparam int decimation Downsampling factor M
+-- @tparam[opt={}] table options Additional options, specifying:
+--                               * `num_taps` (int, default 128)
+--                               * `window_type` (string, default "hamming")
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+--
+-- @usage
+-- -- Translate -100KHz, filter 12KHz, and decimate by 5
+-- local tuner = radio.TunerBlock(-100e3, 12e3, 5)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

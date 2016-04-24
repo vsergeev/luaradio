@@ -1,3 +1,17 @@
+---
+-- Demodulate and decode POCSAG messages from a baseband, 4.5 KHz shift FSK
+-- modulated complex-valued signal.
+--
+-- @category Receivers
+-- @block POCSAGReceiver
+--
+-- @signature in:ComplexFloat32 > out:POCSAGMessageType
+--
+-- @usage
+-- local receiver = radio.POCSAGReceiver()
+-- local snk = radio.JSONSink()
+-- top:connect(src, receiver, snk)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

@@ -1,3 +1,25 @@
+---
+-- Interpolate a complex or real valued signal. This block scales, band-limits,
+-- and upsamples the input signal. It increases the sample rate for downstream
+-- blocks in the flow graph by a factor of L.
+--
+-- $$ y'[n] = \begin{cases} Lx[n/L] & \text{for integer } n/L \\ 0 & \text{otherwise} \end{cases} $$
+-- $$ y[n] = (y' * h_{lpf})[n] $$
+--
+-- @category Sample Rate Manipulation
+-- @block InterpolatorBlock
+-- @tparam int interpolation Upsampling factor L
+-- @tparam[opt={}] table options Additional options, specifying:
+--                               * `num_taps` (int, default 128)
+--                               * `window_type` (string, default "hamming")
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+-- @signature in:Float32 > out:Float32
+--
+-- @usage
+-- -- Interpolate by 5
+-- local interpolator = radio.InterpolatorBlock(5)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

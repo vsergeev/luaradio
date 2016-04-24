@@ -1,3 +1,18 @@
+---
+-- Demodulate and decode RDS frames from a baseband, wideband FM broadcast
+-- modulated complex-valued signal.
+--
+-- @category Receivers
+-- @block RDSReceiver
+--
+-- @signature in:ComplexFloat32 > out:RDSFrameType
+--
+-- @usage
+-- local receiver = radio.RDSReceiver()
+-- local decoder = radio.RDSDecoderBlock()
+-- local snk = radio.JSONSink()
+-- top:connect(src, receiver, decoder, snk)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

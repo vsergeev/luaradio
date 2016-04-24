@@ -1,3 +1,17 @@
+---
+-- Demodulate and decode AX.25 frames from a baseband, narrowband FM, Bell 202
+-- AFSK modulated complex-valued signal.
+--
+-- @category Receivers
+-- @block AX25Receiver
+--
+-- @signature in:ComplexFloat32 > out:AX25FrameType
+--
+-- @usage
+-- local receiver = radio.AX25Receiver()
+-- local snk = radio.JSONSink()
+-- top:connect(src, receiver, snk)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

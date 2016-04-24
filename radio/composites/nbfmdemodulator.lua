@@ -1,3 +1,22 @@
+---
+-- Demodulate a baseband, narrowband FM modulated complex-valued signal.
+--
+-- $$ y[n] = \text{NBFMDemodulate}(x[n], \text{deviation}, \text{bandwidth}) $$
+--
+-- The input signal will be band-limited by the specified deviation and
+-- bandwidth with a cutoff frequency calculated by Carson's rule.
+--
+-- @category Demodulation
+-- @block NBFMDemodulator
+-- @tparam[opt=5e3] number deviation Deviation in Hz
+-- @tparam[opt=4e3] number bandwidth Bandwidth in Hz
+--
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- -- NBFM demodulator with 5KHz deviation and 4KHz bandwidth
+-- local demod = radio.NBFMDemodulator(5e3, 4e3)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

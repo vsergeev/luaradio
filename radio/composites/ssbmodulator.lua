@@ -1,3 +1,20 @@
+---
+-- Modulate a real-valued signal into a baseband, single-sideband amplitude
+-- modulated complex-valued signal.
+--
+-- $$ y[n] = \text{SSBModulate}(x[n], \text{sideband}, \text{bandwidth}) $$
+--
+-- @category Modulation
+-- @block SSBModulator
+-- @tparam string sideband Sideband, choice of "lsb" or "usb".
+-- @tparam[opt=3e3] number bandwidth Bandwidth in Hz
+--
+-- @signature in:Float32 > out:ComplexFloat32
+--
+-- @usage
+-- -- SSB LSB modulator with 3 KHz bandwidth
+-- local mod = radio.SSBModulator("lsb", 3e3)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

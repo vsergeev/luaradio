@@ -1,3 +1,18 @@
+---
+-- Demodulate a baseband, wideband FM modulated complex-valued signal into the
+-- real-valued stereo channel (L and R) signals.
+--
+-- $$ y_{left}[n], y_{right}[n] = \text{WBFMStereoDemodulate}(x[n], \tau) $$
+--
+-- @category Demodulation
+-- @block WBFMStereoDemodulator
+-- @tparam[opt=75e-6] number tau FM de-emphasis time constant
+--
+-- @signature in:ComplexFloat32 > left:Float32, right:Float32
+--
+-- @usage
+-- local demod = radio.WBFMStereoDemodulator()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

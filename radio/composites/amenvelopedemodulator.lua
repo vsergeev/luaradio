@@ -1,3 +1,19 @@
+---
+-- Demodulate a baseband, double-sideband amplitude modulated complex-valued
+-- signal with an envelope detector.
+--
+-- $$ y[n] = \text{AMDemodulate}(x[n], \text{bandwidth}) $$
+--
+-- @category Demodulation
+-- @block AMEnvelopeDemodulator
+-- @tparam[opt=5e3] number bandwidth Bandwidth in Hz
+--
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- -- AM demodulator with 5 KHz bandwidth
+-- local demod = radio.AMEnvelopeDemodulator(5e3)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

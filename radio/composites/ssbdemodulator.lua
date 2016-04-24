@@ -1,3 +1,20 @@
+---
+-- Demodulate a baseband, single-sideband amplitude modulated complex-valued
+-- signal.
+--
+-- $$ y[n] = \text{SSBDemodulate}(x[n], \text{sideband}, \text{bandwidth}) $$
+--
+-- @category Demodulation
+-- @block SSBDemodulator
+-- @tparam string sideband Sideband, choice of "lsb" or "usb".
+-- @tparam[opt=3e3] number bandwidth Bandwidth in Hz
+--
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- -- SSB LSB demodulator with 3 KHz bandwidth
+-- local demod = radio.SSBDemodulator("lsb", 3e3)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

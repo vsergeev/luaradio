@@ -1,3 +1,25 @@
+---
+-- Resample a complex or real valued signal by a rational factor. This block
+-- band-limits and resamples the input signal. It changes the sample rate for
+-- downstream blocks in the flow graph by a factor of L/M.
+--
+-- $$ y[n] = \text{Decimate}(\text{Interpolate}(x[n], L), M) $$
+--
+-- @category Sample Rate Manipulation
+-- @block RationalResamplerBlock
+-- @tparam int interpolation Upsampling factor L
+-- @tparam int decimation Downsampling factor M
+-- @tparam[opt={}] table options Additional options, specifying:
+--                               * `num_taps` (int, default 128)
+--                               * `window_type` (string, default "hamming")
+--
+-- @signature in:ComplexFloat32 > out:ComplexFloat32
+-- @signature in:Float32 > out:Float32
+--
+-- @usage
+-- -- Resample by 5/3
+-- local resampler = radio.RationalResamplerBlock(5, 3)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

@@ -1,3 +1,21 @@
+---
+-- Demodulate a double-sideband amplitude modulated complex-valued signal with
+-- a synchronous detector. The input signal should be centered on the specified
+-- intermediate frequency.
+--
+-- $$ y[n] = \text{AMDemodulate}(x[n], \text{IF}, \text{bandwidth}) $$
+--
+-- @category Demodulation
+-- @block AMSynchronousDemodulator
+-- @tparam number ifreq Intermediate frequency in Hz
+-- @tparam[opt=5e3] number bandwidth Bandwidth in Hz
+--
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- -- AM demodulator with 100 KHz IF, 5 KHz bandwidth
+-- local demod = radio.AMSynchronousDemodulator(100e3, 5e3)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

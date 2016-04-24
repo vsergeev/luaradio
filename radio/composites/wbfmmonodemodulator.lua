@@ -1,3 +1,18 @@
+---
+-- Demodulate a baseband, wideband FM modulated complex-valued signal into the
+-- real-valued mono channel (L+R) signal.
+--
+-- $$ y[n] = \text{WBFMMonoDemodulate}(x[n], \tau) $$
+--
+-- @category Demodulation
+-- @block WBFMMonoDemodulator
+-- @tparam[opt=75e-6] number tau FM de-emphasis time constant
+--
+-- @signature in:ComplexFloat32 > out:Float32
+--
+-- @usage
+-- local demod = radio.WBFMMonoDemodulator()
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 local blocks = require('radio.blocks')

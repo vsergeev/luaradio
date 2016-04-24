@@ -8,7 +8,7 @@ function SSBDemodulator:instantiate(sideband, bandwidth, gain)
     blocks.CompositeBlock.instantiate(self)
 
     assert(sideband == "lsb" or sideband == "usb", "Sideband should be 'lsb' or 'usb'.")
-    bandwidth = bandwidth or 5e3
+    bandwidth = bandwidth or 3e3
     gain = gain or 1.0
 
     local sb_filter = blocks.ComplexBandpassFilterBlock(257, (sideband == "lsb") and {0, -bandwidth} or {0, bandwidth})

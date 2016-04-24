@@ -4,7 +4,7 @@ local blocks = require('radio.blocks')
 
 local RDSReceiver = block.factory("RDSReceiver", blocks.CompositeBlock)
 
-function RDSReceiver:instantiate(tau)
+function RDSReceiver:instantiate()
     blocks.CompositeBlock.instantiate(self)
 
     local fm_demod = blocks.FrequencyDiscriminatorBlock(5.0)

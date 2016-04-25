@@ -1,5 +1,20 @@
+---
+-- LuaRadio package.
+--
+-- @module radio
+
 assert(pcall(require, 'ffi') and pcall(require, 'jit'), 'Error: LuaRadio requires LuaJIT.')
 
+---
+-- @table radio
+-- @tfield string _VERSION Package version as a string, e.g. "1.0.0".
+-- @tfield string version Package version as a string, e.g." 1.0.0".
+-- @tfield int version_number Package version as a number, encoded in decimal as xxyyzz, e.g. v1.2.15 would be 10215.
+-- @tfield table version_info Package version as a table, with keys `major`, `minor`, `patch` and integer values.
+-- @tfield module types Types module.
+-- @tfield module block Block module.
+-- @tfield module debug Debug module.
+-- @tfield module platform Platform module.
 local radio = {
     -- Version
     _VERSION = "0.0.18",

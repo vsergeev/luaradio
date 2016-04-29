@@ -8,7 +8,7 @@ local ObjectVector = require('radio.core.vector').ObjectVector
 
 local ObjectType = class.factory()
 
-function ObjectType.factory(custom_mt)
+function ObjectType.factory(methods)
     local CustomType = class.factory(ObjectType)
 
     -- Constructors
@@ -119,8 +119,8 @@ function ObjectType.factory(custom_mt)
     end
 
     -- Absorb the user-defined metatable
-    if custom_mt then
-        for k,v in pairs(custom_mt) do
+    if methods then
+        for k,v in pairs(methods) do
             mt[k] = v
         end
     end

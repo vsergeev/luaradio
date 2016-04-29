@@ -9,7 +9,7 @@ ffi.cdef[[
     int memcmp(const void *s1, const void *s2, size_t n);
 ]]
 
-function CStructType.factory(ct, custom_mt)
+function CStructType.factory(ctype, methods)
     local CustomType
 
     local mt = class.factory(CStructType)
@@ -59,14 +59,14 @@ function CStructType.factory(ct, custom_mt)
     end
 
     -- Absorb the user-defined metatable
-    if custom_mt then
-        for k,v in pairs(custom_mt) do
+    if methods then
+        for k,v in pairs(methods) do
             mt[k] = v
         end
     end
 
     -- FFI type binding
-    CustomType = ffi.metatype(ct, mt)
+    CustomType = ffi.metatype(ctype, mt)
 
     return CustomType
 end

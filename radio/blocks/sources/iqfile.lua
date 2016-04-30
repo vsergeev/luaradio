@@ -67,10 +67,12 @@ function IQFileSource:instantiate(file, format, rate, repeat_on_eof)
     }
     assert(supported_formats[format], "Unsupported format \"" .. format .. "\".")
 
-    if type(file) == "number" then
+    if type(file) == "string" then
+        self.filename = file
+    elseif type(file) == "number" then
         self.fd = file
     else
-        self.filename = file
+        self.file = file
     end
 
     self.format = supported_formats[format]
@@ -104,7 +106,7 @@ function IQFileSource:initialize()
         if self.file == nil then
             error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
-    else
+    elseif self.fd then
         self.file = ffi.C.fdopen(self.fd, "rb")
         if self.file == nil then
             error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))

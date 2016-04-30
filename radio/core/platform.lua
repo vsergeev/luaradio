@@ -15,6 +15,7 @@ local platform = {
     cpu_count = -1,
     cpu_model = "unknown",
     features = {
+        liquid = false,
         volk = false,
         fftw3f = false,
         vmsplice = false,
@@ -97,23 +98,21 @@ platform.alloc = function (size)
     return ffi.gc(ptr[0], ffi.C.free)
 end
 
--- Load libvolk if it is available
-local libvolk_available, libvolk = pcall(ffi.load, "volk")
-if libvolk_available then
-    platform.libs.volk = libvolk
-    platform.features.volk = true
-else
-    io.stderr:write("Warning: libvolk not found. LuaRadio will run without volk acceleration.\n")
+-- Load libraries
+for _, name in ipairs({"liquid", "volk", "fftw3f"}) do
+    local lib_available, lib = pcall(ffi.load, name)
+    if lib_available then
+        platform.libs[name] = lib
+        platform.features[name] = true
+    end
 end
 
--- Load libfftw3f if it is available
-local libfftw3f_available, libfftw3f = pcall(ffi.load, "fftw3f")
-if libfftw3f_available then
-    platform.libs.fftw3f = libfftw3f
-    platform.features.fftw3f = true
+if not platform.features.liquid and not platform.features.volk then
+    io.stderr:write("Warning: neither libliquid nor libvolk found. LuaRadio will run without acceleration.\n")
 end
 
 -- Disable features with env vars
+platform.features.liquid = platform.features.liquid and not getenv_flag("LUARADIO_DISABLE_LIQUID")
 platform.features.volk = platform.features.volk and not getenv_flag("LUARADIO_DISABLE_VOLK")
 platform.features.fftw3f = platform.features.fftw3f and not getenv_flag("LUARADIO_DISABLE_FFTW3")
 platform.features.vmsplice = platform.features.vmsplice and not getenv_flag("LUARADIO_DISABLE_VMSPLICE")

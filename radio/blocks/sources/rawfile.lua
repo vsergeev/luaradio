@@ -7,10 +7,12 @@ local types = require('radio.types')
 local RawFileSource = block.factory("RawFileSource")
 
 function RawFileSource:instantiate(file, data_type, rate, repeat_on_eof)
-    if type(file) == "number" then
+    if type(file) == "string" then
+        self.filename = file
+    elseif type(file) == "number" then
         self.fd = file
     else
-        self.filename = file
+        self.file = file
     end
 
     self.type = data_type
@@ -50,7 +52,7 @@ function RawFileSource:initialize()
         if self.file == nil then
             error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
-    else
+    elseif self.fd then
         self.file = ffi.C.fdopen(self.fd, "rb")
         if self.file == nil then
             error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))

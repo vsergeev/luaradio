@@ -5,10 +5,12 @@ local block = require('radio.core.block')
 local RawFileSink = block.factory("RawFileSink")
 
 function RawFileSink:instantiate(file)
-    if type(file) == "number" then
+    if type(file) == "string" then
+        self.filename = file
+    elseif type(file) == "number" then
         self.fd = file
     else
-        self.filename = file
+        self.file = file
     end
 
     -- Accept all input types
@@ -30,7 +32,9 @@ function RawFileSink:initialize()
         if self.file == nil then
             error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
+    end
 
+    if not self.fd then
         self.fd = ffi.C.fileno(self.file)
         if self.fd < 0 then
             error("fileno(): " .. ffi.string(ffi.C.strerror(ffi.errno())))

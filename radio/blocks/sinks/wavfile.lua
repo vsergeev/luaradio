@@ -54,10 +54,12 @@ function WAVFileSink:instantiate(file, num_channels, bits_per_sample)
     assert(ffi.sizeof("wave_subchunk2_header_t") == 8)
     assert(ffi.sizeof("wave_sample_s16_t") == 2)
 
-    if type(file) == "number" then
+    if type(file) == "string" then
+        self.filename = file
+    elseif type(file) == "number" then
         self.fd = file
     else
-        self.filename = file
+        self.file = file
     end
 
     self.num_channels = num_channels
@@ -130,7 +132,7 @@ function WAVFileSink:initialize()
         if self.file == nil then
             error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
-    else
+    elseif self.fd then
         self.file = ffi.C.fdopen(self.fd, "wb")
         if self.file == nil then
             error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))

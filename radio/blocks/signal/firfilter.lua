@@ -19,7 +19,6 @@ function FIRFilterBlock:instantiate(taps)
 
     if self.taps.type == types.ComplexFloat32 then
         self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_complex)
-        self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_real_complex)
     else
         self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_real)
         self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, FIRFilterBlock.process_real_real)
@@ -65,24 +64,6 @@ if platform.features.volk then
         for i = 0, x.length-1 do
             -- Inner product of state and taps
             libvolk.volk_32fc_x2_dot_prod_32fc(out.data[i], self.state.data[i], self.taps.data, self.taps.length)
-        end
-
-        return out
-    end
-
-    function FIRFilterBlock:process_real_complex(x)
-        local out = types.ComplexFloat32.vector(x.length)
-
-        -- Shift last taps_length-1 state samples to the beginning of state
-        ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
-        -- Adjust state vector length for the input
-        self.state:resize(self.taps.length - 1 + x.length)
-        -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
-
-        for i = 0, x.length-1 do
-            -- Inner product of state and taps
-            libvolk.volk_32fc_32f_dot_prod_32fc(out.data[i], self.taps.data, self.state.data[i], self.taps.length)
         end
 
         return out
@@ -140,26 +121,6 @@ else
             -- Inner product of state and taps
             for j = 0, self.taps.length-1 do
                 out.data[i] = out.data[i] + self.state.data[i+j] * self.taps.data[j]
-            end
-        end
-
-        return out
-    end
-
-    function FIRFilterBlock:process_real_complex(x)
-        local out = types.ComplexFloat32.vector(x.length)
-
-        -- Shift last taps_length-1 state samples to the beginning of state
-        ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
-        -- Adjust state vector length for the input
-        self.state:resize(self.taps.length - 1 + x.length)
-        -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
-
-        for i = 0, x.length-1 do
-            -- Inner product of state and taps
-            for j = 0, self.taps.length-1 do
-                out.data[i] = out.data[i] + self.taps.data[j]:scalar_mul(self.state.data[i+j].value)
             end
         end
 

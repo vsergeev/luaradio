@@ -206,23 +206,6 @@ local BenchmarkSuite = {
         end
     },
     {
-        "FIR Filter (64 Complex-valued taps, Real-valued input, Complex-valued output)",
-        "FIRFilterBlock",
-        function (results_fd)
-            local taps = {}
-            for i = 1, 64 do
-                taps[i] = {math.random(1.0), math.random(1.0)}
-            end
-            taps = radio.types.ComplexFloat32.vector_from_array(taps)
-
-            return radio.CompositeBlock():connect(
-                radio.NullSource(radio.types.Float32, 1.0),
-                radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
-            )
-        end
-    },
-    {
         "FIR Filter (256 Real-valued taps, Complex-valued input, Complex-valued output)",
         "FIRFilterBlock",
         function (results_fd)
@@ -268,23 +251,6 @@ local BenchmarkSuite = {
 
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
-            )
-        end
-    },
-    {
-        "FIR Filter (256 Complex-valued taps, Real-valued input, Complex-valued output)",
-        "FIRFilterBlock",
-        function (results_fd)
-            local taps = {}
-            for i = 1, 256 do
-                taps[i] = {math.random(1.0), math.random(1.0)}
-            end
-            taps = radio.types.ComplexFloat32.vector_from_array(taps)
-
-            return radio.CompositeBlock():connect(
-                radio.NullSource(radio.types.Float32, 1.0),
                 radio.FIRFilterBlock(taps),
                 radio.BenchmarkSink(results_fd)
             )

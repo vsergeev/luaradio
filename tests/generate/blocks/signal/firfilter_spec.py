@@ -43,14 +43,4 @@ def generate():
     taps = normalize(random_complex64(128))
     vectors.append(TestVector([taps], [x], process(taps, x), "128 ComplexFloat32 tap, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
 
-    x = random_float32(256)
-    taps = normalize(random_complex64(1))
-    vectors.append(TestVector([taps], [x], process(taps, x), "1 ComplexFloat32 tap, 256 Float32 input, 256 ComplexFloat32 output"))
-    taps = normalize(random_complex64(8))
-    vectors.append(TestVector([taps], [x], process(taps, x), "8 ComplexFloat32 tap, 256 Float32 input, 256 ComplexFloat32 output"))
-    taps = normalize(random_complex64(15))
-    vectors.append(TestVector([taps], [x], process(taps, x), "15 ComplexFloat32 tap, 256 Float32 input, 256 ComplexFloat32 output"))
-    taps = normalize(random_complex64(128))
-    vectors.append(TestVector([taps], [x], process(taps, x), "128 ComplexFloat32 tap, 256 Float32 input, 256 ComplexFloat32 output"))
-
     return BlockSpec("FIRFilterBlock", "tests/blocks/signal/firfilter_spec.lua", vectors, 1e-6)

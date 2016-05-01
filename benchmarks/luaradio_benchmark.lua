@@ -635,7 +635,7 @@ if test_name_match then
 
     for _, benchmark in ipairs(BenchmarkSuite) do
         local test_name = benchmark[1]
-        if test_name:lower():find(test_name_match:lower()) then
+        if test_name:lower():find(test_name_match:lower(), 1, true) then
             MatchedBenchmarkSuite[#MatchedBenchmarkSuite + 1] = benchmark
         end
     end

@@ -91,7 +91,9 @@ $(STATIC_LIB): $(LIB_OBJS)
 	ar rcs $@ $^
 
 $(SHARED_LIB): $(LIB_OBJS)
-	$(CC) $(CFLAGS) -shared -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -shared -Wl,-soname,lib$(LIBNAME).so.$(VERSION_MAJOR) -o $@.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $^ $(LDFLAGS)
+	ln -rs $@.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $@.$(VERSION_MAJOR)
+	ln -rs $@.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $@
 
 $(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

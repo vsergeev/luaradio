@@ -14,5 +14,5 @@ def generate():
     vectors.append(TestVector([0.5], [x], process(0.5, x), "0.5 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     vectors.append(TestVector([0.7], [x], process(0.7, x), "0.7 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
 
-    # FIXME why does this need 1e-5 epsilon?
-    return BlockSpec("FrequencyTranslatorBlock", "tests/blocks/signal/frequencytranslator_spec.lua", vectors, 1e-5)
+    # FIXME why does this need 2e-5 epsilon?
+    return BlockSpec("FrequencyTranslatorBlock", "tests/blocks/signal/frequencytranslator_spec.lua", vectors, 2e-5)

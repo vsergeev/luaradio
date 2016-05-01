@@ -34,6 +34,40 @@ if platform.features.volk then
         return out
     end
 
+elseif platform.features.liquid then
+
+    ffi.cdef[[
+    typedef enum { LIQUID_NCO=0, LIQUID_VCO } liquid_ncotype;
+
+    typedef struct nco_crcf_s * nco_crcf;
+    nco_crcf nco_crcf_create(liquid_ncotype _type);
+    void nco_crcf_destroy(nco_crcf _q);
+
+    void nco_crcf_set_frequency(nco_crcf _q, float _f);
+    void nco_crcf_set_phase(nco_crcf _q, float _phi);
+
+    void nco_crcf_mix_block_up(nco_crcf _q, const complex_float32_t *_x, complex_float32_t *_y, unsigned int _N);
+    ]]
+    local libliquid = platform.libs.liquid
+
+    function FrequencyTranslatorBlock:initialize()
+        self.nco = ffi.gc(libliquid.nco_crcf_create(ffi.C.LIQUID_VCO), libliquid.nco_crcf_destroy)
+        if self.nco == nil then
+            error("Creating liquid nco object.")
+        end
+
+        libliquid.nco_crcf_set_frequency(self.nco, 2*math.pi*(self.offset/self:get_rate()))
+        libliquid.nco_crcf_set_phase(self.nco, 0.0)
+    end
+
+    function FrequencyTranslatorBlock:process(x)
+        local out = types.ComplexFloat32.vector(x.length)
+
+        libliquid.nco_crcf_mix_block_up(self.nco, x.data, out.data, x.length)
+
+        return out
+    end
+
 else
 
     function FrequencyTranslatorBlock:initialize()

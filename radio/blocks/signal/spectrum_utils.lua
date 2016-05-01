@@ -104,14 +104,11 @@ if platform.features.fftw3f then
     local libfftw3f = platform.libs.fftw3f
 
     function DFT:initialize_dft()
-        -- Create FFTW plan
-        local plan = libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.FFTW_FORWARD, ffi.C.FFTW_MEASURE)
-        if plan == nil then
+        -- Create plan
+        self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.FFTW_FORWARD, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+        if self.plan == nil then
             error("Creating FFTW plan.")
         end
-
-        -- Create garbage collect wrapper for FFTW plan
-        self.plan = ffi.gc(plan, libfftw3f.fftwf_destroy_plan)
     end
 
     function DFT:dft_complex(samples)

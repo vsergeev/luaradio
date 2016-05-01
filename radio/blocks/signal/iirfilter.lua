@@ -23,7 +23,7 @@ function IIRFilterBlock:instantiate(b_taps, a_taps)
     end
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, IIRFilterBlock.process_complex)
-    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, IIRFilterBlock.process_scalar)
+    self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, IIRFilterBlock.process_real)
 end
 
 ffi.cdef[[
@@ -65,7 +65,7 @@ function IIRFilterBlock:process_complex(x)
     return out
 end
 
-function IIRFilterBlock:process_scalar(x)
+function IIRFilterBlock:process_real(x)
     local out = types.Float32.vector(x.length)
 
     for i = 0, x.length-1 do

@@ -453,6 +453,17 @@ local BenchmarkSuite = {
         end
     },
     {
+        "Multiply (Real-valued)",
+        "MultiplyBlock",
+        function (results_fd)
+            local src = radio.NullSource(radio.types.Float32, 1.0)
+            local multiplier = radio.MultiplyBlock()
+            local top = radio.CompositeBlock()
+            top:connect(src, 'out', multiplier, 'in1')
+            top:connect(src, 'out', multiplier, 'in2')
+            return top:connect(multiplier, radio.BenchmarkSink(results_fd))
+        end
+    },
     {
         "Multiply Conjugate",
         "MultiplyConjugateBlock",

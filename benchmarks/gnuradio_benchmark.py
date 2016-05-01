@@ -307,6 +307,18 @@ def test_multiply_cc():
 
     return top, probe
 
+@benchmark("Multiply (Real-valued)", "blocks.multiply_ff")
+def test_multiply_ff():
+    top = gr.top_block()
+    src = blocks.null_source(gr.sizeof_float)
+    mul = blocks.multiply_ff()
+    probe = blocks.probe_rate(gr.sizeof_float)
+    top.connect((src, 0), (mul, 0))
+    top.connect((src, 0), (mul, 1))
+    top.connect(mul, probe)
+
+    return top, probe
+
 @benchmark("Multiply Conjugate", "blocks.multiply_conjugate_cc")
 def test_multiply_conjugate_cc():
     top = gr.top_block()

@@ -1,5 +1,5 @@
 local radio = require('radio')
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local block = require('radio.core.block')
 local pipe = require('radio.core.pipe')
 
@@ -40,9 +40,9 @@ describe("block", function ()
         assert.is.equal(2, #blk.signatures)
         assert.is.equal(2, #blk.inputs)
         assert.is.equal(1, #blk.outputs)
-        assert.is_true(object.isinstanceof(blk.inputs[1], pipe.PipeInput))
-        assert.is_true(object.isinstanceof(blk.inputs[2], pipe.PipeInput))
-        assert.is_true(object.isinstanceof(blk.outputs[1], pipe.PipeOutput))
+        assert.is_true(class.isinstanceof(blk.inputs[1], pipe.PipeInput))
+        assert.is_true(class.isinstanceof(blk.inputs[2], pipe.PipeInput))
+        assert.is_true(class.isinstanceof(blk.outputs[1], pipe.PipeOutput))
 
         -- Test invalid input descriptor
         function TestBlock:instantiate()
@@ -244,7 +244,7 @@ describe("block", function ()
 
         -- Mock pipe class
 
-        local MockPipe = object.class_factory()
+        local MockPipe = class.factory()
 
         function MockPipe.new(src, dst)
             return setmetatable({src = src, dst = dst}, MockPipe)
@@ -369,7 +369,7 @@ describe("block", function ()
 
         -- Mock pipe for writing
 
-        local MockPipe = object.class_factory()
+        local MockPipe = class.factory()
 
         function MockPipe.new()
             local self = setmetatable({}, MockPipe)
@@ -424,7 +424,7 @@ describe("block", function ()
 
         -- Mock pipe with read and write capabilities
 
-        local MockPipe = object.class_factory()
+        local MockPipe = class.factory()
 
         function MockPipe.new()
             local self = setmetatable({}, MockPipe)
@@ -503,7 +503,7 @@ describe("block", function ()
 
         -- Mock pipe with read and write capabilities
 
-        local MockPipe = object.class_factory()
+        local MockPipe = class.factory()
 
         function MockPipe.new(n_read)
             local self = setmetatable({}, MockPipe)

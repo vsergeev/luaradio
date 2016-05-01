@@ -2,11 +2,11 @@ local ffi = require('ffi')
 local math = require('math')
 
 local platform = require('radio.core.platform')
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local types = require('radio.types')
 local window_utils = require('radio.blocks.signal.window_utils')
 
-local DFT = object.class_factory()
+local DFT = class.factory()
 
 function DFT.new(num_samples, data_type, window_type, sample_rate)
     local self = setmetatable({}, DFT)

@@ -1,22 +1,22 @@
 local block = require('radio.core.block')
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local types = require('radio.types')
 
 local MultiplyConstantBlock = block.factory("MultiplyConstantBlock")
 
 function MultiplyConstantBlock:instantiate(constant)
     -- Convert constant to Float32 or ComplexFloat32
-    if object.isinstanceof(constant, "number") then
+    if class.isinstanceof(constant, "number") then
         self.constant = types.Float32(constant)
-    elseif object.isinstanceof(constant, types.Float32) then
+    elseif class.isinstanceof(constant, types.Float32) then
         self.constant = constant
-    elseif object.isinstanceof(constant, types.ComplexFloat32) then
+    elseif class.isinstanceof(constant, types.ComplexFloat32) then
         self.constant = constant
     else
         error("Unsupported constant type.")
     end
 
-    if object.isinstanceof(constant, types.ComplexFloat32) then
+    if class.isinstanceof(constant, types.ComplexFloat32) then
         -- Only allow complex inputs for a complex constant
         self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, self.process_complex_by_complex)
     else

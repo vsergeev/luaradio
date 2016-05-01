@@ -2,7 +2,7 @@ local ffi = require('ffi')
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local ObjectVector = require('radio.core.vector').ObjectVector
 local ObjectType = radio.types.ObjectType
 
@@ -67,19 +67,19 @@ describe("ObjectType factory", function ()
 
     it("constructors", function ()
         local x = TestType(0xdeadbeef, {0xaa, 0xbb, 0xcc, 0xdd})
-        assert.is_true(object.isinstanceof(x, TestType))
-        assert.is_true(object.isinstanceof(x, ObjectType))
+        assert.is_true(class.isinstanceof(x, TestType))
+        assert.is_true(class.isinstanceof(x, ObjectType))
 
         local v = TestType.vector()
         -- Check vector properties
-        assert.is_true(object.isinstanceof(v, ObjectVector))
+        assert.is_true(class.isinstanceof(v, ObjectVector))
         assert.is.equal(0, v.length)
         assert.is.equal(0, v.size)
 
         v:append(x)
 
         -- Check vector properties
-        assert.is_true(object.isinstanceof(v.data[0], TestType))
+        assert.is_true(class.isinstanceof(v.data[0], TestType))
         assert.is.equal(1, v.length)
         assert.is.equal(0, v.size)
     end)
@@ -100,7 +100,7 @@ describe("ObjectType factory", function ()
 
         -- Deserialize from msgpack
         local y = TestType.from_msgpack(s)
-        assert.is_true(object.isinstanceof(x, TestType))
+        assert.is_true(class.isinstanceof(x, TestType))
         assert.are.same(x, y)
 
         -- Serialize to json
@@ -110,7 +110,7 @@ describe("ObjectType factory", function ()
 
         -- Deserialize from json
         local y = TestType.from_json(s)
-        assert.is_true(object.isinstanceof(x, TestType))
+        assert.is_true(class.isinstanceof(x, TestType))
         assert.are.same(x, y)
     end)
 
@@ -128,10 +128,10 @@ describe("ObjectType factory", function ()
         local vv = TestType.deserialize(s, #s)
 
         -- Check vector properties
-        assert.is_true(object.isinstanceof(vv, ObjectVector))
+        assert.is_true(class.isinstanceof(vv, ObjectVector))
         assert.is.equal(3, vv.length)
         assert.is.equal(0, vv.size)
-        assert.is_true(object.isinstanceof(vv.data[0], TestType))
+        assert.is_true(class.isinstanceof(vv.data[0], TestType))
 
         -- Check vector equality with elements
         assert.are.same(v.data[0], vv.data[0])
@@ -146,10 +146,10 @@ describe("ObjectType factory", function ()
         assert.is.equal(42, size)
 
         -- Check vector properties
-        assert.is_true(object.isinstanceof(vv, ObjectVector))
+        assert.is_true(class.isinstanceof(vv, ObjectVector))
         assert.is.equal(2, vv.length)
         assert.is.equal(0, vv.size)
-        assert.is_true(object.isinstanceof(vv.data[0], TestType))
+        assert.is_true(class.isinstanceof(vv.data[0], TestType))
 
         -- Check vector equality with elements
         assert.are.same(v.data[0], vv.data[0])

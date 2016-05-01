@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-local function class_factory(cls)
+local function factory(cls)
     cls = cls or {__call = function(self, ...) return self.new(...) end, _types = {}}
 
     local dcls = setmetatable({}, cls)
@@ -34,4 +34,4 @@ local function isinstanceof(o, cls)
     return false
 end
 
-return {class_factory = class_factory, isinstanceof = isinstanceof}
+return {factory = factory, isinstanceof = isinstanceof}

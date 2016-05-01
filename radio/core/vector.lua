@@ -1,6 +1,6 @@
 local ffi = require('ffi')
 
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local platform = require('radio.core.platform')
 
 ffi.cdef[[
@@ -9,8 +9,7 @@ ffi.cdef[[
 ]]
 
 -- Vector class
-
-local Vector = object.class_factory()
+local Vector = class.factory()
 
 function Vector:__eq(other)
     if self.length ~= other.length then
@@ -88,11 +87,10 @@ function Vector.cast(ctype, buf, size)
 end
 
 -- ObjectVector class
+ObjectVector = class.factory()
 
 -- This is a simple wrapper to a Lua array that implements a Vector compatible
 -- interface.
-
-ObjectVector = object.class_factory()
 
 function ObjectVector.new(type, num)
     return setmetatable({data = {}, length = num or 0, size = 0, type = type}, ObjectVector)

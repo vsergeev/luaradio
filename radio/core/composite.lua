@@ -2,7 +2,7 @@ local ffi = require('ffi')
 local string = require('string')
 local io = require('io')
 
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local block = require('radio.core.block')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
@@ -22,21 +22,21 @@ function CompositeBlock:add_type_signature(inputs, outputs)
 
     -- Replace PipeInput's with AliasedPipeInput's
     for i = 1, #self.inputs do
-        if object.isinstanceof(self.inputs[i], pipe.PipeInput) then
+        if class.isinstanceof(self.inputs[i], pipe.PipeInput) then
             self.inputs[i] = pipe.AliasedPipeInput(self, self.inputs[i].name)
         end
     end
 
     -- Replace PipeOutput's with AliasedPipeOutput's
     for i = 1, #self.outputs do
-        if object.isinstanceof(self.outputs[i], pipe.PipeOutput) then
+        if class.isinstanceof(self.outputs[i], pipe.PipeOutput) then
             self.outputs[i] = pipe.AliasedPipeOutput(self, self.outputs[i].name)
         end
     end
 end
 
 function CompositeBlock:connect(...)
-    if util.array_all({...}, function (b) return object.isinstanceof(b, block.Block) end) then
+    if util.array_all({...}, function (b) return class.isinstanceof(b, block.Block) end) then
         local blocks = {...}
         local first, second = blocks[1], nil
 
@@ -64,8 +64,8 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
     -- If this is a block to block connection in a top composite block
     if src ~= self and dst ~= self then
         -- Map aliased outputs and inputs to their real pipes
-        src_pipe = object.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and src_pipe.real_output or src_pipe
-        dst_pipes = object.isinstanceof(dst_pipe, pipe.AliasedPipeInput) and dst_pipe.real_inputs or {dst_pipe}
+        src_pipe = class.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and src_pipe.real_output or src_pipe
+        dst_pipes = class.isinstanceof(dst_pipe, pipe.AliasedPipeInput) and dst_pipe.real_inputs or {dst_pipe}
 
         for i = 1, #dst_pipes do
             -- Assert input is not already connected
@@ -89,18 +89,18 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
         local alias_pipe = (src == self) and src_pipe or dst_pipe
         local target_pipe = (src == self) and dst_pipe or src_pipe
 
-        if object.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and object.isinstanceof(target_pipe, pipe.PipeInput) then
+        if class.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and class.isinstanceof(target_pipe, pipe.PipeInput) then
             -- If we are aliasing a composite block input to a concrete block input
 
             alias_pipe.real_inputs[#alias_pipe.real_inputs + 1] = target_pipe
             debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
-        elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(target_pipe, pipe.PipeOutput) then
+        elseif class.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and class.isinstanceof(target_pipe, pipe.PipeOutput) then
             -- If we are aliasing a composite block output to a concrete block output
 
             assert(not alias_pipe.real_output, "Aliased output already connected.")
             alias_pipe.real_output = target_pipe
             debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
-        elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and object.isinstanceof(target_pipe, pipe.AliasedPipeInput) then
+        elseif class.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and class.isinstanceof(target_pipe, pipe.AliasedPipeInput) then
             -- If we are aliasing a composite block input to a composite block input
 
             -- Absorb destination alias real inputs
@@ -108,7 +108,7 @@ function CompositeBlock:connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
                 alias_pipe.real_inputs[#alias_pipe.real_inputs + 1] = target_pipe.real_inputs[i]
             end
             debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
-        elseif object.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and object.isinstanceof(target_pipe, pipe.AliasedPipeOutput) then
+        elseif class.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and class.isinstanceof(target_pipe, pipe.AliasedPipeOutput) then
             -- If we are aliasing a composite block output to a composite block output
 
             assert(not alias_pipe.real_output, "Aliased output already connected.")

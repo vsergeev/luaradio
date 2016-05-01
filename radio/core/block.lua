@@ -1,9 +1,9 @@
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
 
 -- Input class
-local Input = object.class_factory()
+local Input = class.factory()
 
 function Input.new(name, data_type)
     self = setmetatable({}, Input)
@@ -13,7 +13,7 @@ function Input.new(name, data_type)
 end
 
 -- Output class
-local Output = object.class_factory()
+local Output = class.factory()
 
 function Output.new(name, data_type)
     self = setmetatable({}, Output)
@@ -23,12 +23,12 @@ function Output.new(name, data_type)
 end
 
 -- Block base class
-local Block = object.class_factory()
+local Block = class.factory()
 
 function Block:add_type_signature(inputs, outputs, process_func, initialize_func)
     -- Assert inputs are Inputs
     for i = 1, #inputs do
-        assert(object.isinstanceof(inputs[i], Input), string.format("Invalid input %d.", i))
+        assert(class.isinstanceof(inputs[i], Input), string.format("Invalid input %d.", i))
     end
 
     -- Create a PipeInput for each input
@@ -41,7 +41,7 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
 
     -- Assert outputs are Outputs
     for i = 1, #outputs do
-        assert(object.isinstanceof(outputs[i], Output), string.format("Invalid output %d.", i))
+        assert(class.isinstanceof(outputs[i], Output), string.format("Invalid output %d.", i))
     end
 
     -- Create a PipeOutput for each output
@@ -246,7 +246,7 @@ end
 
 -- Block factory derived class generator
 local function factory(name, parent_class)
-    local class = object.class_factory(parent_class or Block)
+    local class = class.factory(parent_class or Block)
 
     class.name = name
 

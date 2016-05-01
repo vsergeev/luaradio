@@ -1,9 +1,9 @@
 local ffi = require('ffi')
 
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local Vector = require('radio.core.vector').Vector
 
-local CStructType = object.class_factory()
+local CStructType = class.factory()
 
 ffi.cdef[[
     int memcmp(const void *s1, const void *s2, size_t n);
@@ -11,7 +11,8 @@ ffi.cdef[[
 
 function CStructType.factory(ct, custom_mt)
     local CustomType
-    local mt = object.class_factory(CStructType)
+
+    local mt = class.factory(CStructType)
 
     -- Constructors
     function mt.new(...)

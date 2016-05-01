@@ -1,6 +1,5 @@
 local bit = require('bit')
 
-local object = require('radio.core.object')
 local block = require('radio.core.block')
 local types = require('radio.types')
 

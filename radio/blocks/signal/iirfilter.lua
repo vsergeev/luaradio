@@ -1,20 +1,20 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local types = require('radio.types')
 local vector = require('radio.core.vector')
 
 local IIRFilterBlock = block.factory("IIRFilterBlock")
 
 function IIRFilterBlock:instantiate(b_taps, a_taps)
-    if object.isinstanceof(b_taps, vector.Vector) and b_taps.type == types.Float32 then
+    if class.isinstanceof(b_taps, vector.Vector) and b_taps.type == types.Float32 then
         self.b_taps = b_taps
     else
         self.b_taps = types.Float32.vector_from_array(b_taps)
     end
 
-    if object.isinstanceof(a_taps, vector.Vector) and a_taps.type == types.Float32 then
+    if class.isinstanceof(a_taps, vector.Vector) and a_taps.type == types.Float32 then
         assert(a_taps.length >= 1, "Feedback taps must be at least length 1.")
         self.a_taps = a_taps
     else

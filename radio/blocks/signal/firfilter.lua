@@ -2,16 +2,16 @@ local ffi = require('ffi')
 
 local platform = require('radio.core.platform')
 local block = require('radio.core.block')
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local vector = require('radio.core.vector')
 local types = require('radio.types')
 
 local FIRFilterBlock = block.factory("FIRFilterBlock")
 
 function FIRFilterBlock:instantiate(taps)
-    if object.isinstanceof(taps, vector.Vector) and taps.type == types.Float32 then
+    if class.isinstanceof(taps, vector.Vector) and taps.type == types.Float32 then
         self.taps = taps
-    elseif object.isinstanceof(taps, vector.Vector) and taps.type == types.ComplexFloat32 then
+    elseif class.isinstanceof(taps, vector.Vector) and taps.type == types.ComplexFloat32 then
         self.taps = taps
     else
         self.taps = types.Float32.vector_from_array(taps)

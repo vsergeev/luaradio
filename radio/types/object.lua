@@ -2,14 +2,14 @@ local ffi = require('ffi')
 local msgpack = require('radio.thirdparty.MessagePack')
 local json = require('radio.thirdparty.json')
 
-local object = require('radio.core.object')
+local class= require('radio.core.class')
 
 local ObjectVector = require('radio.core.vector').ObjectVector
 
-local ObjectType = object.class_factory()
+local ObjectType = class.factory()
 
 function ObjectType.factory(custom_mt)
-    local CustomType = object.class_factory(ObjectType)
+    local CustomType = class.factory(ObjectType)
 
     -- Constructors
     function CustomType.vector(num)

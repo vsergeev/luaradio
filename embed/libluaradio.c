@@ -41,10 +41,10 @@ static int lua_iscompositeblock(lua_State *L) {
         return 0;
 
     /* Check instance of top element is CompositeBlock, i.e.,
-     * call radio.object.isinstanceof(top, radio.CompositeBlock) */
+     * call radio.class.isinstanceof(top, radio.CompositeBlock) */
     lua_getglobal(L, "radio");
     lua_getfield(L, -1, "CompositeBlock");
-    lua_getfield(L, -2, "object");
+    lua_getfield(L, -2, "class");
     lua_getfield(L, -1, "isinstanceof");
     lua_pushvalue(L, 1);
     lua_pushvalue(L, 3);

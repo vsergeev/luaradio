@@ -1,11 +1,11 @@
 local ffi = require('ffi')
 local math = require('math')
 
-local object = require('radio.core.object')
+local class = require('radio.core.class')
 local platform = require('radio.core.platform')
 
 -- PipeInput class
-local PipeInput = object.class_factory()
+local PipeInput = class.factory()
 
 function PipeInput.new(owner, name)
     local self = setmetatable({}, PipeInput)
@@ -21,7 +21,7 @@ function PipeInput:close()
 end
 
 -- PipeOutput class
-local PipeOutput = object.class_factory()
+local PipeOutput = class.factory()
 
 function PipeOutput.new(owner, name)
     local self = setmetatable({}, PipeOutput)
@@ -39,7 +39,7 @@ function PipeOutput:close()
 end
 
 -- AliasedPipeInput class
-local AliasedPipeInput = object.class_factory()
+local AliasedPipeInput = class.factory()
 
 function AliasedPipeInput.new(owner, name)
     local self = setmetatable({}, AliasedPipeInput)
@@ -50,7 +50,7 @@ function AliasedPipeInput.new(owner, name)
 end
 
 -- AliasedPipeOutput class
-local AliasedPipeOutput = object.class_factory()
+local AliasedPipeOutput = class.factory()
 
 function AliasedPipeOutput.new(owner, name)
     local self = setmetatable({}, AliasedPipeOutput)
@@ -61,7 +61,7 @@ function AliasedPipeOutput.new(owner, name)
 end
 
 -- Pipe class
-local Pipe = object.class_factory()
+local Pipe = class.factory()
 
 function Pipe.new(pipe_output, pipe_input)
     local self = setmetatable({}, Pipe)

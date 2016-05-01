@@ -5,6 +5,7 @@ local radio = {
     _VERSION = "0.0.15",
     version = "0.0.15",
     version_number = 000015,
+    version_info = {major = 0, minor = 0, patch = 15},
 
     -- Core modules
     platform = require('radio.core.platform'),

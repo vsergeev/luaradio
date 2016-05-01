@@ -199,6 +199,18 @@ else
 
 end
 
+-- Wrapper for real samples
+
+function DFT:dft_real(samples)
+    -- Convert real samples to complex samples
+    local complex_samples = types.ComplexFloat32.vector(self.num_samples)
+    for i = 0, self.num_samples-1 do
+        complex_samples.data[i].real = samples.data[i].value
+    end
+
+    return self:dft_complex(complex_samples)
+end
+
 --------------------------------------------------------------------------------
 -- PSD implementations
 --------------------------------------------------------------------------------
@@ -255,20 +267,6 @@ else
         return self.psd_samples
     end
 
-end
-
---------------------------------------------------------------------------------
--- Wrapper for real samples
---------------------------------------------------------------------------------
-
-function DFT:dft_real(samples)
-    -- Convert real samples to complex samples
-    local complex_samples = types.ComplexFloat32.vector(self.num_samples)
-    for i = 0, self.num_samples-1 do
-        complex_samples.data[i].real = samples.data[i].value
-    end
-
-    return self:dft_complex(complex_samples)
 end
 
 return {DFT = DFT}

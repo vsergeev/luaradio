@@ -18,10 +18,10 @@ function FIRFilterBlock:instantiate(taps)
     end
 
     if self.taps.type == types.ComplexFloat32 then
-        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_complex)
+        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_input_complex_taps)
     else
-        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_real)
-        self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, FIRFilterBlock.process_real_real)
+        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_input_real_taps)
+        self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, FIRFilterBlock.process_real_input_real_taps)
     end
 end
 
@@ -51,7 +51,7 @@ if platform.features.volk then
     ]]
     local libvolk = platform.libs.volk
 
-    function FIRFilterBlock:process_complex_complex(x)
+    function FIRFilterBlock:process_complex_input_complex_taps(x)
         local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
@@ -69,7 +69,7 @@ if platform.features.volk then
         return out
     end
 
-    function FIRFilterBlock:process_complex_real(x)
+    function FIRFilterBlock:process_complex_input_real_taps(x)
         local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
@@ -87,7 +87,7 @@ if platform.features.volk then
         return out
     end
 
-    function FIRFilterBlock:process_real_real(x)
+    function FIRFilterBlock:process_real_input_real_taps(x)
         local out = types.Float32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
@@ -107,7 +107,7 @@ if platform.features.volk then
 
 else
 
-    function FIRFilterBlock:process_complex_complex(x)
+    function FIRFilterBlock:process_complex_input_complex_taps(x)
         local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
@@ -127,7 +127,7 @@ else
         return out
     end
 
-    function FIRFilterBlock:process_complex_real(x)
+    function FIRFilterBlock:process_complex_input_real_taps(x)
         local out = types.ComplexFloat32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
@@ -147,7 +147,7 @@ else
         return out
     end
 
-    function FIRFilterBlock:process_real_real(x)
+    function FIRFilterBlock:process_real_input_real_taps(x)
         local out = types.Float32.vector(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state

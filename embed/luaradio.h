@@ -40,7 +40,7 @@ int luaradio_start(radio_t *radio);
  * @brief Wait for a LuaRadio flowgraph to finish.
  * @return 0 on success, -1 on failure
  *
- * Wait for a LuaRadio flwograph to finish. On failure, use luaradio_strerror()
+ * Wait for a LuaRadio flowgraph to finish. On failure, use luaradio_strerror()
  * to get a human readable error string.
  */
 int luaradio_wait(radio_t *radio);

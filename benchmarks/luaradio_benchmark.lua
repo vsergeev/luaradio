@@ -453,6 +453,19 @@ local BenchmarkSuite = {
         end
     },
     {
+    {
+        "Multiply Conjugate",
+        "MultiplyConjugateBlock",
+        function (results_fd)
+            local src = radio.NullSource(radio.types.ComplexFloat32, 1.0)
+            local multiplier = radio.MultiplyConjugateBlock()
+            local top = radio.CompositeBlock()
+            top:connect(src, 'out', multiplier, 'in1')
+            top:connect(src, 'out', multiplier, 'in2')
+            return top:connect(multiplier, radio.BenchmarkSink(results_fd))
+        end
+    },
+    {
         "Multiply Constant (Real-valued constant, Complex-valued input)",
         "MultiplyConstantBlock",
         function (results_fd)
@@ -483,18 +496,6 @@ local BenchmarkSuite = {
                 radio.MultiplyConstantBlock(5.0),
                 radio.BenchmarkSink(results_fd)
             )
-        end
-    },
-    {
-        "Multiply Conjugate",
-        "MultiplyConjugateBlock",
-        function (results_fd)
-            local src = radio.NullSource(radio.types.ComplexFloat32, 1.0)
-            local multiplier = radio.MultiplyConjugateBlock()
-            local top = radio.CompositeBlock()
-            top:connect(src, 'out', multiplier, 'in1')
-            top:connect(src, 'out', multiplier, 'in2')
-            return top:connect(multiplier, radio.BenchmarkSink(results_fd))
         end
     },
     {

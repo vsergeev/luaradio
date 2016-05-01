@@ -307,6 +307,18 @@ def test_multiply_cc():
 
     return top, probe
 
+@benchmark("Multiply Conjugate", "blocks.multiply_conjugate_cc")
+def test_multiply_conjugate_cc():
+    top = gr.top_block()
+    src = blocks.null_source(gr.sizeof_gr_complex)
+    mul = blocks.multiply_conjugate_cc()
+    probe = blocks.probe_rate(gr.sizeof_gr_complex)
+    top.connect((src, 0), (mul, 0))
+    top.connect((src, 0), (mul, 1))
+    top.connect(mul, probe)
+
+    return top, probe
+
 @benchmark("Multiply Constant (Complex-valued constant, Complex-valued input)", "blocks.multiply_const_cc")
 def test_multiply_const_cc():
     top = gr.top_block()
@@ -324,18 +336,6 @@ def test_multiply_const_ff():
     mul = blocks.multiply_const_ff(random.random())
     probe = blocks.probe_rate(gr.sizeof_float)
     top.connect(src, mul, probe)
-
-    return top, probe
-
-@benchmark("Multiply Conjugate", "blocks.multiply_conjugate_cc")
-def test_multiply_conjugate_cc():
-    top = gr.top_block()
-    src = blocks.null_source(gr.sizeof_gr_complex)
-    mul = blocks.multiply_conjugate_cc()
-    probe = blocks.probe_rate(gr.sizeof_gr_complex)
-    top.connect((src, 0), (mul, 0))
-    top.connect((src, 0), (mul, 1))
-    top.connect(mul, probe)
 
     return top, probe
 

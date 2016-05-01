@@ -127,6 +127,41 @@ if platform.features.fftw3f then
         return self.dft_samples
     end
 
+elseif platform.features.liquid then
+
+    ffi.cdef[[
+    typedef struct fftplan_s * fftplan;
+    fftplan fft_create_plan(unsigned int _n, complex_float32_t *_x, complex_float32_t *_y, int _dir, int _flags);
+    void fft_destroy_plan(fftplan _p);
+
+    void fft_execute(fftplan _p);
+    void fft_shift(complex_float32_t *_x, unsigned int _n);
+
+    enum { LIQUID_FFT_FORWARD = +1, LIQUID_FFT_BACKWARD = -1 };
+    ]]
+    local libliquid = platform.libs.liquid
+
+    function DFT:initialize_dft()
+        -- Create plan
+        self.plan = ffi.gc(libliquid.fft_create_plan(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.LIQUID_FFT_FORWARD, 0), libliquid.fft_destroy_plan)
+        if self.plan == nil then
+            error("Creating liquid fftplan object.")
+        end
+    end
+
+    function DFT:dft_complex(samples)
+        -- Window samples
+        self:_window(samples)
+
+        -- Execute FFTW plan
+        libliquid.fft_execute(self.plan)
+
+        -- Swap indices
+        libliquid.fft_shift(self.dft_samples.data, self.dft_samples.length)
+
+        return self.dft_samples
+    end
+
 elseif platform.features.volk then
 
     ffi.cdef[[

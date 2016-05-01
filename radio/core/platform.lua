@@ -114,7 +114,7 @@ end
 -- Disable features with env vars
 platform.features.liquid = platform.features.liquid and not getenv_flag("LUARADIO_DISABLE_LIQUID")
 platform.features.volk = platform.features.volk and not getenv_flag("LUARADIO_DISABLE_VOLK")
-platform.features.fftw3f = platform.features.fftw3f and not getenv_flag("LUARADIO_DISABLE_FFTW3")
+platform.features.fftw3f = platform.features.fftw3f and not getenv_flag("LUARADIO_DISABLE_FFTW3F")
 platform.features.vmsplice = platform.features.vmsplice and not getenv_flag("LUARADIO_DISABLE_VMSPLICE")
 
 return platform

@@ -79,7 +79,9 @@ function Pipe:get_data_type()
 end
 
 ffi.cdef[[
-    int pipe(int pipefd[2]);
+    enum { AF_UNIX = 1 };
+    enum { SOCK_STREAM = 1 };
+    int socketpair(int domain, int type, int protocol, int socket_vector[2]);
     int close(int fildes);
 ]]
 
@@ -87,16 +89,16 @@ function Pipe:initialize()
     -- Look up our data type
     self.data_type = self:get_data_type()
 
-    -- Create UNIX pipe
-    local pipe_fds = ffi.new("int[2]")
-    if ffi.C.pipe(pipe_fds) ~= 0 then
-        error("pipe(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    -- Create UNIX socket pair
+    local socket_fds = ffi.new("int[2]")
+    if ffi.C.socketpair(ffi.C.AF_UNIX, ffi.C.SOCK_STREAM, 0, socket_fds) ~= 0 then
+        error("socketpair(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
-    self._rfd = pipe_fds[0]
-    self._wfd = pipe_fds[1]
+    self._rfd = socket_fds[0]
+    self._wfd = socket_fds[1]
 
     -- Pre-allocate read buffer
-    self._buf_capacity = 65536
+    self._buf_capacity = 1048576
     self._buf = platform.alloc(self._buf_capacity)
     self._buf_size = 0
     self._buf_read_offset = 0

@@ -11,10 +11,10 @@ function SSBDemodulator:instantiate(sideband, bandwidth, gain)
     bandwidth = bandwidth or 3e3
     gain = gain or 1.0
 
-    local sb_filter = blocks.ComplexBandpassFilterBlock(257, (sideband == "lsb") and {0, -bandwidth} or {0, bandwidth})
+    local sb_filter = blocks.ComplexBandpassFilterBlock(129, (sideband == "lsb") and {0, -bandwidth} or {0, bandwidth})
     local am_demod = blocks.ComplexToRealBlock()
     local af_gain = blocks.MultiplyConstantBlock(gain)
-    local af_filter = blocks.LowpassFilterBlock(256, bandwidth)
+    local af_filter = blocks.LowpassFilterBlock(128, bandwidth)
     self:connect(sb_filter, am_demod, af_gain, af_filter)
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.Float32)})

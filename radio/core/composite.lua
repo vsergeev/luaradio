@@ -296,8 +296,6 @@ ffi.cdef[[
 
     /* sigpending() */
     int sigpending(sigset_t *set);
-
-    unsigned int sleep(unsigned int seconds);
 ]]
 
 function CompositeBlock:_prepare_to_run()
@@ -510,28 +508,36 @@ end
 
 function CompositeBlock:wait()
     if self._running and self._pids then
+        -- Build signal set with SIGINT and SIGCHLD
         local sigset = ffi.new("sigset_t[1]")
+        ffi.C.sigemptyset(sigset)
+        ffi.C.sigaddset(sigset, ffi.C.SIGINT)
+        ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
 
         -- Wait for SIGINT or SIGCHLD
-        while true do
-            -- FIXME cleaner check that is still portable?
-            ffi.C.sleep(1)
-
-            if ffi.C.sigpending(sigset) ~= 0 then
-                error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-            end
-
-            if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
-                debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
-                break
-            elseif ffi.C.sigismember(sigset, ffi.C.SIGCHLD) == 1 then
-                debug.print("[CompositeBlock] Child exited. Shutting down...")
-                break
-            end
+        local sig = ffi.new("int[1]")
+        if ffi.C.sigwait(sigset, sig) ~= 0 then
+            error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
 
-        -- Kill remaining children
-        self:stop()
+        if sig[0] == ffi.C.SIGINT then
+            debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
+
+            -- Forcibly stop
+            self:stop()
+        elseif sig[0] == ffi.C.SIGCHLD then
+            debug.print("[CompositeBlock] Child exited. Shutting down...")
+
+            -- Wait for all children to exit
+            for _, pid in pairs(self._pids) do
+                if ffi.C.waitpid(pid, nil, 0) == -1 then
+                    error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                end
+            end
+
+            -- Mark ourselves as not running
+            self._running = false
+        end
     end
 end
 

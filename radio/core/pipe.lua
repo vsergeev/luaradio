@@ -102,28 +102,6 @@ function Pipe:initialize()
     self._buf_read_offset = 0
 end
 
-function Pipe:read_max()
-    -- Update our read buffer and read the maximum amount available
-    local num = self:read_update()
-
-    -- Return nil on EOF
-    if num == nil then
-        return nil
-    end
-
-    return self:read_n(num)
-end
-
-function Pipe:read_n(num)
-    -- Create a vector from the buffer
-    local vec, bytes_consumed = self.data_type.deserialize_partial(ffi.cast("char *", self._buf) + self._buf_read_offset, num)
-
-    -- Update the read offset
-    self._buf_read_offset = self._buf_read_offset + bytes_consumed
-
-    return vec
-end
-
 local platform_read
 local platform_write
 
@@ -205,6 +183,28 @@ function Pipe:read_update()
 
     -- Return number of elements in our read buffer
     return self.data_type.deserialize_count(self._buf, self._buf_size)
+end
+
+function Pipe:read_n(num)
+    -- Create a vector from the buffer
+    local vec, bytes_consumed = self.data_type.deserialize_partial(ffi.cast("char *", self._buf) + self._buf_read_offset, num)
+
+    -- Update the read offset
+    self._buf_read_offset = self._buf_read_offset + bytes_consumed
+
+    return vec
+end
+
+function Pipe:read_max()
+    -- Update our read buffer and read the maximum amount available
+    local num = self:read_update()
+
+    -- Return nil on EOF
+    if num == nil then
+        return nil
+    end
+
+    return self:read_n(num)
 end
 
 function Pipe:write(vec)

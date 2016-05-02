@@ -195,7 +195,7 @@ function Pipe:read_n(num)
     return vec
 end
 
-function Pipe:read_max()
+function Pipe:read()
     -- Update our read buffer and read the maximum amount available
     local num = self:read_update()
 

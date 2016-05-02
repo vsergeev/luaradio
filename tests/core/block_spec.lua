@@ -438,7 +438,7 @@ describe("block", function ()
             end
         end
 
-        function MockPipe:read_max()
+        function MockPipe:read()
             if self.vec.length == 0 then
                 return nil
             end
@@ -518,7 +518,7 @@ describe("block", function ()
             end
         end
 
-        function MockPipe:read_max()
+        function MockPipe:read()
             return self:read_n(self:read_update())
         end
 

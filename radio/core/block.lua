@@ -159,7 +159,7 @@ function Block:run_once()
         end
     elseif #self.inputs == 1 then
         -- One input
-        local data_in = self.inputs[1].pipe:read_max()
+        local data_in = self.inputs[1].pipe:read()
         -- Check for EOF
         if data_in == nil then
             return nil

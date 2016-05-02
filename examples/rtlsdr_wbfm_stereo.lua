@@ -27,11 +27,11 @@ local lmr_am_demod = radio.ComplexToRealBlock()
 -- L
 local l_summer = radio.SumBlock()
 local l_af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)
-local l_decimator = radio.DecimatorBlock(5)
+local l_decimator = radio.DownsamplerBlock(5)
 -- R
 local r_subtractor = radio.SubtractBlock()
 local r_af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)
-local r_decimator = radio.DecimatorBlock(5)
+local r_decimator = radio.DownsamplerBlock(5)
 -- Sink
 local sink = radio.PulseAudioSink(2)
 

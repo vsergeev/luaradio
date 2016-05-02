@@ -164,6 +164,10 @@ function POCSAGFrameBlock:process(x)
                     self.frame = nil
                 end
 
+                -- Shift out codeword bits out of our frame buffer
+                ffi.C.memmove(self.buffer.data, self.buffer.data[POCSAG_CODEWORD_LENGTH], self.buffer_length - POCSAG_CODEWORD_LENGTH)
+                self.buffer_length = self.buffer_length - POCSAG_CODEWORD_LENGTH
+
                 -- Switch back to frame sync state
                 debug.printf('[POCSAGFrameBlock] End of frame (invalid frame sync codeword %s)\n', bit.tohex(codeword))
                 self.state = POCSAGFramerState.FRAME_SYNC

@@ -7,15 +7,15 @@ local buffer = require('tests.buffer')
 local test_vectors = require('tests.top_vectors')
 
 describe("top level test", function ()
-    --[[
-            [ Source ] -- [ Mul. Conj. ] -- [ LPF ] -- [ Freq. Discrim. ] -- [ Decimator ] -- [ Sink ]
-                                |
-                                |
-                            [ Source ]
-    --]]
-
     for _, multiprocess in pairs({true, false}) do
-        it("run " .. (multiprocess and "multiprocess" or "singleprocess"), function ()
+        it("example " .. (multiprocess and "multiprocess" or "singleprocess"), function ()
+            --[[
+                    [ Source ] -- [ Mul. Conj. ] -- [ LPF ] -- [ Freq. Discrim. ] -- [ Decimator ] -- [ Sink ]
+                                        |
+                                        |
+                                    [ Source ]
+            --]]
+
             -- Prepare our source and sink file descriptors
             local src1_fd = buffer.open(test_vectors.SRC1_TEST_VECTOR)
             local src2_fd = buffer.open(test_vectors.SRC2_TEST_VECTOR)
@@ -49,4 +49,35 @@ describe("top level test", function ()
             jigs.assert_vector_equal(expected, actual, 1e-6)
         end)
     end
+
+    it("data integrity", function ()
+        local SRC_SIZE = 4*1048576
+
+        -- Create source and sink buffers
+        local src_fd = buffer.open()
+        local snk_fd = buffer.open()
+
+        -- Write random bytes to source
+        local f_random = io.open("/dev/urandom", "rb")
+        buffer.write(src_fd, f_random:read(SRC_SIZE))
+        f_random:close()
+        buffer.rewind(src_fd)
+
+        -- Create and run the pipeline
+        local top = radio.CompositeBlock():connect(
+            radio.RawFileSource(src_fd, radio.types.Byte, 1),
+            radio.RawFileSink(snk_fd)
+        ):run()
+
+        -- Rewind buffers
+        buffer.rewind(src_fd)
+        buffer.rewind(snk_fd)
+
+        -- Compare buffers
+        local a = buffer.read(src_fd, SRC_SIZE*2)
+        local b = buffer.read(snk_fd, SRC_SIZE*2)
+        assert.is.equal(SRC_SIZE, #a)
+        assert.is.equal(#a, #b)
+        assert.is_true(a == b)
+    end)
 end)

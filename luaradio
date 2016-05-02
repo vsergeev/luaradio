@@ -94,5 +94,9 @@ while #arg >= 1 do
     table.remove(arg, 1)
 end
 
+-- Shift args down so script filename is arg[0]
+arg[-2] = arg[-1]
+arg[-1] = arg[0]
+arg[0] = table.remove(arg, 1)
 -- Run script
-dofile(table.remove(arg, 1))
+dofile(arg[0])

@@ -15,7 +15,7 @@ local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
 local tuner = radio.TunerBlock(tune_offset, 2*bandwidth, 50)
 local am_demod = radio.ComplexMagnitudeBlock()
 local af_gain = radio.MultiplyConstantBlock(gain)
-local af_filter = radio.LowpassFilterBlock(256, bandwidth)
+local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local sink = radio.PulseAudioSink()
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {yrange = {-120, -40}})

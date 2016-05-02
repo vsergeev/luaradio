@@ -32,8 +32,8 @@ function GnuplotPlotSink:initialize_gnuplot()
     self.gnuplot_f:write(string.format("set ylabel '%s'\n", self.options.ylabel or "Value"))
     self.gnuplot_f:write(string.format("set title '%s'\n", self.title))
 
-    -- Autoscale x
-    self.gnuplot_f:write("set autoscale x\n")
+    -- Set xrange to number of samples
+    self.gnuplot_f:write(string.format("set xrange [%d:%d]\n", 0, self.num_samples))
 
     -- Use yrange if it was specified, otherwise default to autoscale
     if self.options.yrange then

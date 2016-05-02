@@ -7,7 +7,7 @@ local radio = require('radio')
 -- Benchmark parameters
 
 -- Duration of each benchmark trial
-local BENCH_TRIAL_DURATION  = 5.0
+local BENCH_TRIAL_DURATION  = 5
 
 -- Number of benchmark trials to average
 local BENCH_NUM_TRIALS      = 3
@@ -662,12 +662,26 @@ local benchmark_results = {
     benchmarks = {}
 }
 
+ffi.cdef[[
+unsigned alarm(unsigned seconds);
+]]
+
+-- Block SIGINT and SIGALRM so we can catch them with sigwait()
+local sigset = ffi.new("sigset_t[1]")
+ffi.C.sigemptyset(sigset)
+ffi.C.sigaddset(sigset, ffi.C.SIGINT)
+ffi.C.sigaddset(sigset, ffi.C.SIGALRM)
+if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
+    error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+end
+
 for index, benchmark in ipairs(BenchmarkSuite) do
     local test_name, block_name, test_factory = unpack(benchmark)
 
     io.stderr:write(string.format("Running benchmark %d/%d \"%s\"\n", index, #BenchmarkSuite, test_name))
 
     local samples_per_second, bytes_per_second = 0.0, 0.0
+    local sig = ffi.new("int[1]")
 
     -- Run each trial
     for trial = 1, BENCH_NUM_TRIALS do
@@ -679,8 +693,17 @@ for index, benchmark in ipairs(BenchmarkSuite) do
 
         -- Run the trial
         top:start()
-        ffi.C.sleep(BENCH_TRIAL_DURATION)
+        ffi.C.alarm(BENCH_TRIAL_DURATION)
+        if ffi.C.sigwait(sigset, sig) ~= 0 then
+            error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
         top:stop()
+
+        -- Check for user abort
+        if sig[0] == ffi.C.SIGINT then
+            io.stderr:write("Caught SIGINT, aborting...\n")
+            os.exit(0)
+        end
 
         -- Read and deserialize results buffer
         buffer.rewind(results_fd)

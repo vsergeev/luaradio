@@ -15,7 +15,7 @@ local tuner = radio.TunerBlock(tune_offset, 200e3, 5)
 local fm_demod = radio.FrequencyDiscriminatorBlock(6.0)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)
-local af_decimator = radio.DecimatorBlock(5)
+local af_decimator = radio.DownsamplerBlock(5)
 local sink = radio.PulseAudioSink()
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})

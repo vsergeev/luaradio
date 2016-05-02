@@ -18,7 +18,6 @@ local platform = {
         liquid = false,
         volk = false,
         fftw3f = false,
-        vmsplice = false,
     },
     libs = {},
 }
@@ -40,8 +39,6 @@ if platform.os == "Linux" then
         platform.cpu_model = f:read("*all"):match("model name%s*:%s*([^\n]*)")
         f:close()
     end
-    -- vmsplice() system call available
-    platform.features.vmsplice = true
     -- Signal definitions
     ffi.cdef("enum { SIGINT = 2, SIGTERM = 15, SIGCHLD = 17 };")
     -- sigprocmask() definitions
@@ -115,6 +112,5 @@ end
 platform.features.liquid = platform.features.liquid and not getenv_flag("LUARADIO_DISABLE_LIQUID")
 platform.features.volk = platform.features.volk and not getenv_flag("LUARADIO_DISABLE_VOLK")
 platform.features.fftw3f = platform.features.fftw3f and not getenv_flag("LUARADIO_DISABLE_FFTW3F")
-platform.features.vmsplice = platform.features.vmsplice and not getenv_flag("LUARADIO_DISABLE_VMSPLICE")
 
 return platform

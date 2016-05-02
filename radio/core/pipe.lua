@@ -102,64 +102,25 @@ function Pipe:initialize()
     self._buf_read_offset = 0
 end
 
-local platform_read
-local platform_write
+ffi.cdef[[
+    ssize_t read(int fd, void *buf, size_t count);
+    ssize_t write(int fd, const void *buf, size_t count);
+]]
 
-if platform.features.vmsplice then
-
-    ffi.cdef[[
-        struct iovec {
-            void *iov_base;
-            size_t iov_len;
-        };
-        ssize_t vmsplice(int fd, const struct iovec *iov, unsigned long nr_segs, unsigned int flags);
-    ]]
-
-    local iov = ffi.new("struct iovec")
-
-    function platform_read(fd, buf, size)
-        iov.iov_base = buf
-        iov.iov_len = size
-        local bytes_read = tonumber(ffi.C.vmsplice(fd, iov, 1, 0))
-        if bytes_read < 0 then
-            error("vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-        return bytes_read
+local function platform_read(fd, buf, size)
+    local bytes_read = tonumber(ffi.C.read(fd, buf, size))
+    if bytes_read < 0 then
+        error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
+    return bytes_read
+end
 
-    function platform_write(fd, buf, size)
-        iov.iov_base = buf
-        iov.iov_len = size
-        local bytes_written = tonumber(ffi.C.vmsplice(fd, iov, 1, 0))
-        if bytes_written <= 0 then
-            error("vmsplice(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-        return bytes_written
+local function platform_write(fd, buf, size)
+    local bytes_written = tonumber(ffi.C.write(fd, buf, size))
+    if bytes_written <= 0 then
+        error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
-
-else
-
-    ffi.cdef[[
-        ssize_t read(int fd, void *buf, size_t count);
-        ssize_t write(int fd, const void *buf, size_t count);
-    ]]
-
-    function platform_read(fd, buf, size)
-        local bytes_read = tonumber(ffi.C.read(fd, buf, size))
-        if bytes_read < 0 then
-            error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-        return bytes_read
-    end
-
-    function platform_write(fd, buf, size)
-        local bytes_written = tonumber(ffi.C.write(fd, buf, size))
-        if bytes_written <= 0 then
-            error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-        return bytes_written
-    end
-
+    return bytes_written
 end
 
 function Pipe:read_update()

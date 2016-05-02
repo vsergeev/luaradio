@@ -11,9 +11,9 @@ function POCSAGReceiver:instantiate(baudrate)
 
     assert(baudrate == 512 or baudrate == 1200, "Only 512 and 1200 baudrates supported.")
 
-    local space_filter = blocks.ComplexBandpassFilterBlock(257, {3500, 5500})
+    local space_filter = blocks.ComplexBandpassFilterBlock(129, {3500, 5500})
     local space_magnitude = blocks.ComplexMagnitudeBlock()
-    local mark_filter = blocks.ComplexBandpassFilterBlock(257, {-5500, -3500})
+    local mark_filter = blocks.ComplexBandpassFilterBlock(129, {-5500, -3500})
     local mark_magnitude = blocks.ComplexMagnitudeBlock()
     local subtractor = blocks.SubtractBlock()
     local data_filter = blocks.LowpassFilterBlock(128, baudrate)

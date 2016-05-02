@@ -10,12 +10,12 @@ function AMSynchronousDemodulator:instantiate(ifreq, bandwidth, gain)
     bandwidth = bandwidth or 5e3
     gain = gain or 1.0
 
-    local rf_filter = blocks.ComplexBandpassFilterBlock(257, {ifreq - bandwidth, ifreq + bandwidth})
+    local rf_filter = blocks.ComplexBandpassFilterBlock(129, {ifreq - bandwidth, ifreq + bandwidth})
     local pll = blocks.PLLBlock(1000, ifreq - 100, ifreq + 100)
     local mixer = blocks.MultiplyConjugateBlock()
     local am_demod = blocks.ComplexToRealBlock()
     local af_gain = blocks.MultiplyConstantBlock(gain)
-    local af_filter = blocks.LowpassFilterBlock(256, bandwidth)
+    local af_filter = blocks.LowpassFilterBlock(128, bandwidth)
     self:connect(rf_filter, pll)
     self:connect(rf_filter, 'out', mixer, 'in1')
     self:connect(pll, 'out', mixer, 'in2')

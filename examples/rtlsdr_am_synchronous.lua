@@ -19,7 +19,7 @@ local mixer = radio.MultiplyConjugateBlock()
 local am_demod = radio.ComplexToRealBlock()
 local af_gain = radio.MultiplyConstantBlock(gain)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
-local af_decimator = radio.DecimatorBlock(10)
+local af_decimator = radio.DownsamplerBlock(10)
 local sink = radio.PulseAudioSink()
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {ifreq - 3*bandwidth, ifreq + 3*bandwidth}, yrange = {-120, -40}})

@@ -12,7 +12,7 @@ function SSBModulator:instantiate(sideband, bandwidth)
 
     local af_filter = blocks.LowpassFilterBlock(128, bandwidth)
     local hilbert = blocks.HilbertTransformBlock(129)
-    local sb_filter = blocks.ComplexBandpassFilterBlock(257, (sideband == "lsb") and {-bandwidth, 0} or {0, bandwidth})
+    local sb_filter = blocks.ComplexBandpassFilterBlock(129, (sideband == "lsb") and {-bandwidth, 0} or {0, bandwidth})
 
     if sideband == "lsb" then
         local conjugate = blocks.ComplexConjugateBlock()

@@ -35,6 +35,11 @@ function CStructType.factory(ctype, methods)
         return vec
     end
 
+    -- Comparison
+    function mt:__eq(other)
+        return ffi.C.memcmp(self, other, ffi.sizeof(CustomType)) == 0
+    end
+
     -- Buffer serialization interface
     function mt.serialize(vec)
         return vec.data, vec.size
@@ -51,11 +56,6 @@ function CStructType.factory(ctype, methods)
 
     function mt.deserialize_count(buf, size)
         return math.floor(size/ffi.sizeof(CustomType))
-    end
-
-    -- Comparison
-    function mt:__eq(other)
-        return ffi.C.memcmp(self, other, ffi.sizeof(CustomType)) == 0
     end
 
     -- Absorb the user-defined metatable

@@ -1,3 +1,37 @@
+* (Prototype) v0.0.16 - 05/03/2016
+    * Simplify class module namespacing, including blocks and basic types.
+    * Improve basic type names.
+    * Remove unused Integer32 basic type.
+    * Remove Pipe `vmsplice()` feature, which was problematic with blocks that
+      use persistent sample buffers.
+    * Change Pipe backend from UNIX pipes to UNIX sockets.
+    * Eliminate sleeping in CompositeBlock `wait()`.
+    * Add `version_info` table to radio package.
+    * Add liquid-dsp library loading to platform module.
+    * Add liquid-dsp implementation to the following blocks and classes:
+        * FIRFilterBlock
+        * IIRFilterBlock
+        * HilbertTransformBlock
+        * FrequencyTranslatorBlock
+        * DFT in spectrum_utils
+    * Add file object support to the following sources and sinks:
+        * IQFileSource
+        * RawFileSource
+        * RealFileSource
+        * WAVFileSource
+        * IQFileSink
+        * RawFileSink
+        * WAVFileSink
+        * RealFileSink
+    * Fix infinite loop bug on invalid frame sync codeword in POCSAGFrameBlock.
+    * Add "Multiply (Real-valued)" benchmark to benchmark suites.
+    * Add SIGINT handling to LuaRadio benchmark suite.
+    * Reduce number of filter taps in most modulation, demodulation, and
+      receiver composite blocks.
+    * Reduce number of filter taps in most examples.
+    * Change decimators to downsamplers in several examples, where additional
+      filtering before downsampling wasn't needed.
+
 * (Prototype) v0.0.15 - 04/18/2016
     * Add BenchmarkSink block.
     * Remove old LuaRadio and GNURadio benchmark scripts.

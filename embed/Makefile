@@ -7,7 +7,7 @@ GEN_DIR = $(BUILD_DIR)/gen
 ################################################################################
 
 LIBNAME = luaradio
-LIB_SRCS = libluaradio.c
+LIB_SRCS = luaradio.c
 LUA_SRCS = $(shell find $(SRC_DIR)/radio -type f -name "*.lua")
 
 EXAMPLE_SRCS = $(EXAMPLE_DIR)/fmradio.c $(EXAMPLE_DIR)/rds-timesync.c

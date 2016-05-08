@@ -58,8 +58,8 @@ function CompositeBlock:_connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
                         util.array_search(src.inputs, function (p) return p.name == src_pipe_name end)
     local dst_pipe = util.array_search(dst.outputs, function (p) return p.name == dst_pipe_name end) or
                         util.array_search(dst.inputs, function (p) return p.name == dst_pipe_name end)
-    assert(src_pipe, string.format("Source pipe \"%s\" of block \"%s\" not found.", src_pipe_name, src.name))
-    assert(dst_pipe, string.format("Destination pipe \"%s\" of block \"%s\" not found.", dst_pipe_name, dst.name))
+    assert(src_pipe, string.format("Output port \"%s\" of block \"%s\" not found.", src_pipe_name, src.name))
+    assert(dst_pipe, string.format("Input port \"%s\" of block \"%s\" not found.", dst_pipe_name, dst.name))
 
     -- If this is a block to block connection in a top composite block
     if src ~= self and dst ~= self then
@@ -80,7 +80,7 @@ function CompositeBlock:_connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
             -- Update our connections table
             self._connections[dst_pipes[i]] = src_pipe
 
-            debug.printf("[CompositeBlock] Connected source %s.%s to destination %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name)
+            debug.printf("[CompositeBlock] Connected output %s.%s to input %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name)
         end
     else
         -- Otherwise, we are aliasing an input or output of a composite block
@@ -119,6 +119,8 @@ function CompositeBlock:_connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
         end
     end
 end
+
+-- Helper functions to manipulate internal data structures
 
 local function crawl_connections(connections)
     local blocks = {}
@@ -269,13 +271,12 @@ end
 -- Execution
 
 ffi.cdef[[
+    /* Process handling */
     typedef int pid_t;
-    pid_t fork(void);
-
     enum { WNOHANG = 1 };
+    pid_t fork(void);
+    pid_t getpid(void);
     pid_t waitpid(pid_t pid, int *status, int options);
-
-    /* kill() */
     int kill(pid_t pid, int sig);
 
     /* sigset handling */
@@ -286,17 +287,11 @@ ffi.cdef[[
     int sigdelset(sigset_t *set, int signum);
     int sigismember(const sigset_t *set, int signum);
 
-    /* signal() */
+    /* Signal handling */
     typedef void (*sighandler_t)(int);
     sighandler_t signal(int signum, sighandler_t handler);
-
-    /* sigwait() */
     int sigwait(const sigset_t *set, int *sig);
-
-    /* sigprocmask() */
     int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
-
-    /* sigpending() */
     int sigpending(sigset_t *set);
 ]]
 
@@ -348,7 +343,7 @@ function CompositeBlock:_prepare_to_run()
         pipe_input.pipe:initialize()
     end
 
-    debug.print("[CompositeBlock] Execution order:")
+    debug.print("[CompositeBlock] Dependency order:")
     for _, k in ipairs(execution_order) do
         local s = string.gsub(tostring(k), "\n", "\n[CompositeBlock]\t")
         debug.print("[CompositeBlock]\t" .. s)
@@ -372,8 +367,8 @@ function CompositeBlock:start(multiprocess)
         error("CompositeBlock already running!")
     end
 
-    -- Install dummy signal handler for SIGCHLD as BSD platforms
-    -- discard this signal by default.
+    -- Install dummy signal handler for SIGCHLD, as
+    -- BSD platforms discard this signal by default
     ffi.C.signal(ffi.C.SIGCHLD, function (sig) end)
 
     -- Block handling of SIGINT and SIGCHLD
@@ -449,6 +444,8 @@ function CompositeBlock:start(multiprocess)
     else
         self._pids = {}
 
+        debug.printf("[CompositeBlock] Parent pid %d\n", ffi.C.getpid())
+
         -- Fork and run blocks
         for _, block in ipairs(execution_order) do
             local pid = ffi.C.fork()
@@ -475,6 +472,8 @@ function CompositeBlock:start(multiprocess)
                         pipe_output:close()
                     end
                 end
+
+                debug.printf("[CompositeBlock] Block %s pid %d\n", block.name, ffi.C.getpid())
 
                 -- Run the block
                 local status, err = xpcall(function () block:run() end, _G.debug.traceback)

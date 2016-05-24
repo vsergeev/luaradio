@@ -4,7 +4,7 @@ from generate import *
 
 def generate():
     def test_vector_wrapper(frames):
-        template = "require('radio.blocks.protocol.rdsframe').RDSFrameType.vector_from_array({%s})"
+        template = "require('radio.blocks.protocol.rdsframer').RDSFrameType.vector_from_array({%s})"
         return [template % (','.join(frames))]
 
     frame1_bits = numpy.array([0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0], dtype=numpy.bool_)
@@ -38,4 +38,4 @@ def generate():
     x = numpy.hstack([frame1_bits, frame2_bits, frame3_bits])
     vectors.append(TestVector([], [x], test_vector_wrapper([frame1_object, frame2_object, frame3_object]), "Three contiguous frames"))
 
-    return BlockSpec("RDSFrameBlock", "tests/blocks/protocol/rdsframe_spec.lua", vectors, 1e-6)
+    return BlockSpec("RDSFramerBlock", "tests/blocks/protocol/rdsframer_spec.lua", vectors, 1e-6)

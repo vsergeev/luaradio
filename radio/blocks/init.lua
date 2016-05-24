@@ -77,7 +77,7 @@ return {
 
     -- Protocol Blocks
     --- RDS
-    RDSFrameBlock = require('radio.blocks.protocol.rdsframe'),
+    RDSFramerBlock = require('radio.blocks.protocol.rdsframer'),
     RDSDecodeBlock = require('radio.blocks.protocol.rdsdecode'),
     --- AX25
     AX25FrameBlock = require('radio.blocks.protocol.ax25frame'),

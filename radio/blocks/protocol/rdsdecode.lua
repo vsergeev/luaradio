@@ -3,7 +3,7 @@ local bit = require('bit')
 local block = require('radio.core.block')
 local types = require('radio.types')
 
-local RDSFrameType = require('radio.blocks.protocol.rdsframe').RDSFrameType
+local RDSFrameType = require('radio.blocks.protocol.rdsframer').RDSFrameType
 
 -- RDS Packet Type
 

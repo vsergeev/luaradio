@@ -27,7 +27,7 @@ local sampler = radio.SamplerBlock()
 local bit_demod = radio.ComplexToRealBlock()
 local bit_slicer = radio.SlicerBlock()
 local bit_decoder = radio.DifferentialDecoderBlock()
-local framer = radio.RDSFrameBlock()
+local framer = radio.RDSFramerBlock()
 local decoder = radio.RDSDecodeBlock()
 local sink = radio.JSONSink()
 

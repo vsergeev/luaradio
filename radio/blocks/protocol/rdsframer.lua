@@ -60,9 +60,9 @@ local RDSFrameType = types.CStructType.factory("rds_frame_t", rds_frame_type_mt)
 
 -- RDS Frame Block
 
-local RDSFrameBlock = block.factory("RDSFrameBlock")
+local RDSFramerBlock = block.factory("RDSFramerBlock")
 
-function RDSFrameBlock:instantiate()
+function RDSFramerBlock:instantiate()
     self.rds_frame = types.Bit.vector(RDS_FRAME_LEN)
     self.rds_frame_length = 0
     self.synchronized = false
@@ -70,7 +70,7 @@ function RDSFrameBlock:instantiate()
     self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", RDSFrameType)})
 end
 
-RDSFrameBlock.RDSFrameType = RDSFrameType
+RDSFramerBlock.RDSFrameType = RDSFrameType
 
 -- RDS Block Correction
 
@@ -108,7 +108,7 @@ local function rds_correct_block(block_bits, offset_word)
     return false
 end
 
-function RDSFrameBlock:process(x)
+function RDSFramerBlock:process(x)
     local out = RDSFrameType.vector()
     local i = 0
 
@@ -161,8 +161,8 @@ function RDSFrameBlock:process(x)
             else
                 -- If we lost synchronization
                 if self.synchronized then
-                    debug.printf("[RDSFrameBlock] Lost sync!     [ 0x%07x ] [ 0x%07x ] [ 0x%07x ] [ 0x%07x ]\n", block_a, block_b, block_c, block_d)
-                    debug.printf("[RDSFrameBlock]                [ %-9s ] [ %-9s ] [ %-9s ] [ %-9s ]\n", correct_block_a ~= false, correct_block_b ~= false, correct_block_c ~= false, correct_block_d ~= false)
+                    debug.printf("[RDSFramerBlock] Lost sync!     [ 0x%07x ] [ 0x%07x ] [ 0x%07x ] [ 0x%07x ]\n", block_a, block_b, block_c, block_d)
+                    debug.printf("[RDSFramerBlock]                [ %-9s ] [ %-9s ] [ %-9s ] [ %-9s ]\n", correct_block_a ~= false, correct_block_b ~= false, correct_block_c ~= false, correct_block_d ~= false)
                     self.synchronized = false
                 end
             end
@@ -172,4 +172,4 @@ function RDSFrameBlock:process(x)
     return out
 end
 
-return RDSFrameBlock
+return RDSFramerBlock

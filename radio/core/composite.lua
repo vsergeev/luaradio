@@ -69,7 +69,7 @@ function CompositeBlock:_connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
 
         for i = 1, #dst_pipes do
             -- Assert input is not already connected
-            assert(not self._connections[dst_pipes[i]], "Input already connected.")
+            assert(not self._connections[dst_pipes[i]], string.format("Input port \"%s\" of block \"%s\" already connected.", dst_pipes[i].name, dst_pipes[i].owner.name))
 
             -- Create a pipe from output to input
             local p = pipe.Pipe(src_pipe, dst_pipes[i])

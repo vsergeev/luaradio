@@ -80,7 +80,7 @@ return {
     RDSFramerBlock = require('radio.blocks.protocol.rdsframer'),
     RDSDecoderBlock = require('radio.blocks.protocol.rdsdecoder'),
     --- AX25
-    AX25FrameBlock = require('radio.blocks.protocol.ax25frame'),
+    AX25FramerBlock = require('radio.blocks.protocol.ax25framer'),
     --- POCSAG
     POCSAGFrameBlock = require('radio.blocks.protocol.pocsagframe'),
     POCSAGDecodeBlock = require('radio.blocks.protocol.pocsagdecode'),

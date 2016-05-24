@@ -23,14 +23,14 @@ function AX25Receiver:instantiate()
     local sampler = blocks.SamplerBlock()
     local bit_slicer = blocks.SlicerBlock()
     local bit_decoder = blocks.DifferentialDecoderBlock(true)
-    local framer = blocks.AX25FrameBlock()
+    local framer = blocks.AX25FramerBlock()
 
     self:connect(nbfm_demod, hilbert, translator, afsk_filter, afsk_demod, data_filter, clock_recoverer)
     self:connect(data_filter, 'out', sampler, 'data')
     self:connect(clock_recoverer, 'out', sampler, 'clock')
     self:connect(sampler, bit_slicer, bit_decoder, framer)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", blocks.AX25FrameBlock.AX25FrameType)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", blocks.AX25FramerBlock.AX25FrameType)})
     self:connect(self, "in", nbfm_demod, "in")
     self:connect(self, "out", framer, "out")
 end

@@ -26,11 +26,11 @@ function AX25FrameType.new(addresses, control, pid, payload)
     return self
 end
 
--- AX25 Frame Block
+-- AX25 Framer Block
 
-local AX25FrameBlock = block.factory("AX25FrameBlock")
+local AX25FramerBlock = block.factory("AX25FramerBlock")
 
-function AX25FrameBlock:instantiate()
+function AX25FramerBlock:instantiate()
     self.state = AX25FramerState.IDLE
     self.byte_buffer = types.Bit.vector(8)
     self.byte_buffer_length = 0
@@ -38,7 +38,7 @@ function AX25FrameBlock:instantiate()
     self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", AX25FrameType)})
 end
 
-AX25FrameBlock.AX25FrameType = AX25FrameType
+AX25FramerBlock.AX25FrameType = AX25FrameType
 
 -- AX25 Frame Validation
 
@@ -163,7 +163,7 @@ local function ax25_extract_frame(frame)
     return AX25FrameType(addresses, control, pid, payload)
 end
 
-function AX25FrameBlock:process(x)
+function AX25FramerBlock:process(x)
     local out = AX25FrameType.vector()
     local i = 0
 
@@ -200,7 +200,7 @@ function AX25FrameBlock:process(x)
                 local frame = ax25_validate_frame(unstuffed_frame) and ax25_extract_frame(unstuffed_frame)
 
                 if frame then
-                    debug.printf('[AX25FrameBlock] Valid frame detected, length %d bytes\n', unstuffed_frame.length/8 - 4)
+                    debug.printf('[AX25FramerBlock] Valid frame detected, length %d bytes\n', unstuffed_frame.length/8 - 4)
 
                     -- Emit the frame
                     out:append(frame)
@@ -232,4 +232,4 @@ function AX25FrameBlock:process(x)
     return out
 end
 
-return AX25FrameBlock
+return AX25FramerBlock

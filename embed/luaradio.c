@@ -169,10 +169,9 @@ const char *luaradio_strerror(luaradio_t *radio) {
     return radio->errmsg;
 }
 
-#define _STRINGIFY(s) #s
-#define STRINGIFY(s) _STRINGIFY(s)
-
 const char *luaradio_version(void) {
+    #define _STRINGIFY(s) #s
+    #define STRINGIFY(s) _STRINGIFY(s)
     return "v" STRINGIFY(VERSION_MAJOR) "." STRINGIFY(VERSION_MINOR) "." STRINGIFY(VERSION_PATCH);
 }
 

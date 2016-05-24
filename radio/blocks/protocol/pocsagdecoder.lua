@@ -29,9 +29,9 @@ end
 
 -- POCSAG Decode Block
 
-local POCSAGDecodeBlock = block.factory("POCSAGDecodeBlock")
+local POCSAGDecoderBlock = block.factory("POCSAGDecoderBlock")
 
-function POCSAGDecodeBlock:instantiate(mode)
+function POCSAGDecoderBlock:instantiate(mode)
     -- Default decode mode to alphanumeric
     self.mode = mode or "alphanumeric"
 
@@ -40,7 +40,7 @@ function POCSAGDecodeBlock:instantiate(mode)
     self:add_type_signature({block.Input("in", POCSAGFrameType)}, {block.Output("out", POCSAGMessageType)})
 end
 
-POCSAGDecodeBlock.POCSAGMessageType = POCSAGMessageType
+POCSAGDecoderBlock.POCSAGMessageType = POCSAGMessageType
 
 local function pocsag_decode_alphanumeric(data)
     local text = ""
@@ -94,7 +94,7 @@ local function pocsag_decode_numeric(data)
     return text
 end
 
-function POCSAGDecodeBlock:process(x)
+function POCSAGDecoderBlock:process(x)
     local out = POCSAGMessageType.vector()
 
     for i = 0, x.length-1 do
@@ -113,4 +113,4 @@ function POCSAGDecodeBlock:process(x)
     return out
 end
 
-return POCSAGDecodeBlock
+return POCSAGDecoderBlock

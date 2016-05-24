@@ -22,7 +22,7 @@ local clock_recovery = radio.ZeroCrossingClockRecoveryBlock(baudrate)
 local sampler = radio.SamplerBlock()
 local bit_slicer = radio.SlicerBlock()
 local framer = radio.POCSAGFramerBlock()
-local decoder = radio.POCSAGDecodeBlock()
+local decoder = radio.POCSAGDecoderBlock()
 local sink = radio.JSONSink()
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {yrange = {-120, -40}})

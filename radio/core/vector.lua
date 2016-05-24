@@ -25,6 +25,16 @@ function Vector:__eq(other)
     return true
 end
 
+function Vector:__tostring()
+    local strs = {}
+
+    for i = 0, self.length-1 do
+        strs[i+1] = tostring(self.data[i])
+    end
+
+    return "[" .. table.concat(strs, ", ") .. "]"
+end
+
 function Vector:resize(num)
     -- If we're within capacity, adjust length and size
     if num <= self._capacity then
@@ -94,6 +104,16 @@ ObjectVector = class.factory()
 
 function ObjectVector.new(type, num)
     return setmetatable({data = {}, length = num or 0, size = 0, type = type}, ObjectVector)
+end
+
+function ObjectVector:__tostring()
+    local strs = {}
+
+    for i = 0, self.length-1 do
+        strs[i+1] = tostring(self.data[i])
+    end
+
+    return "[" .. table.concat(strs, ", ") .. "]"
 end
 
 function ObjectVector:resize(num)

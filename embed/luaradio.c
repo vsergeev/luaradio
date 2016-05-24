@@ -9,16 +9,16 @@
 #include "luaradio.h"
 
 /* Radio context */
-typedef struct radio {
+typedef struct luaradio {
     lua_State *L;
     char errmsg[256];
-} radio_t;
+} luaradio_t;
 
-radio_t *luaradio_new(void) {
-    radio_t *radio;
+luaradio_t *luaradio_new(void) {
+    luaradio_t *radio;
 
     /* Allocate radio context */
-    radio = calloc(1, sizeof(radio_t));
+    radio = calloc(1, sizeof(luaradio_t));
     if (radio == NULL)
         return NULL;
 
@@ -61,7 +61,7 @@ static int lua_iscompositeblock(lua_State *L) {
     return 1;
 }
 
-int luaradio_load(radio_t *radio, const char *script) {
+int luaradio_load(luaradio_t *radio, const char *script) {
     /* Clear stack */
     lua_settop(radio->L, 0);
 
@@ -94,7 +94,7 @@ int luaradio_load(radio_t *radio, const char *script) {
     return -1;
 }
 
-int luaradio_start(radio_t *radio) {
+int luaradio_start(luaradio_t *radio) {
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
         strncpy(radio->errmsg, "No LuaRadio flowgraph found to run.", sizeof(radio->errmsg));
@@ -115,7 +115,7 @@ int luaradio_start(radio_t *radio) {
     return 0;
 }
 
-int luaradio_wait(radio_t *radio) {
+int luaradio_wait(luaradio_t *radio) {
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
         strncpy(radio->errmsg, "No LuaRadio flowgraph found to run.", sizeof(radio->errmsg));
@@ -136,7 +136,7 @@ int luaradio_wait(radio_t *radio) {
     return 0;
 }
 
-int luaradio_stop(radio_t *radio) {
+int luaradio_stop(luaradio_t *radio) {
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
         strncpy(radio->errmsg, "No LuaRadio flowgraph found to stop.", sizeof(radio->errmsg));
@@ -157,7 +157,7 @@ int luaradio_stop(radio_t *radio) {
     return 0;
 }
 
-void luaradio_free(radio_t *radio) {
+void luaradio_free(luaradio_t *radio) {
     /* Close Lua state */
     lua_close(radio->L);
 
@@ -165,7 +165,7 @@ void luaradio_free(radio_t *radio) {
     free(radio);
 }
 
-const char *luaradio_strerror(radio_t *radio) {
+const char *luaradio_strerror(luaradio_t *radio) {
     return radio->errmsg;
 }
 

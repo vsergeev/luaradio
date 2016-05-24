@@ -47,7 +47,7 @@ time_t rds_decode_time(const rds_frame_t *time_frame) {
 }
 
 int main(int argc, char *argv[]) {
-    radio_t *radio;
+    luaradio_t *radio;
     char script[2048];
     int pipe_fds[2];
 

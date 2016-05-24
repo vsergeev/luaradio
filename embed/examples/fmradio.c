@@ -16,7 +16,7 @@ const char *script_template =
     ")";
 
 int main(int argc, char *argv[]) {
-    radio_t *radio;
+    luaradio_t *radio;
     char script[2048];
 
     if (argc < 2) {

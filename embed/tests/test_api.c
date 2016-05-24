@@ -7,7 +7,7 @@
 #define abs(x) ((x > 0) ? x : -x)
 
 int main(void) {
-    radio_t *radio;
+    luaradio_t *radio;
 
     /* Test context creation */
     assert((radio = luaradio_new()) != NULL);

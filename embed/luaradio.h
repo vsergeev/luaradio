@@ -6,7 +6,7 @@
 /**
  * @brief Opaque radio context.
  */
-typedef struct radio radio_t;
+typedef struct luaradio luaradio_t;
 
 /**
  * @brief Create a new LuaRadio context.
@@ -15,7 +15,7 @@ typedef struct radio radio_t;
  * Create a new LuaRadio context. Returns a LuaRadio context on success, or
  * NULL on memory allocation error.
  */
-radio_t *luaradio_new(void);
+luaradio_t *luaradio_new(void);
 
 /**
  * @brief Load a script that returns a LuaRadio flowgraph.
@@ -25,7 +25,7 @@ radio_t *luaradio_new(void);
  * instance of radio.CompositeBlock. On failure, use luaradio_strerror() to get
  * a human readable error string.
  */
-int luaradio_load(radio_t *radio, const char *script);
+int luaradio_load(luaradio_t *radio, const char *script);
 
 /**
  * @brief Start a LuaRadio flowgraph.
@@ -34,7 +34,7 @@ int luaradio_load(radio_t *radio, const char *script);
  * Start a LuaRadio flowgraph. On failure, use luaradio_strerror() to get a
  * human readable error string.
  */
-int luaradio_start(radio_t *radio);
+int luaradio_start(luaradio_t *radio);
 
 /**
  * @brief Wait for a LuaRadio flowgraph to finish.
@@ -43,7 +43,7 @@ int luaradio_start(radio_t *radio);
  * Wait for a LuaRadio flowgraph to finish. On failure, use luaradio_strerror()
  * to get a human readable error string.
  */
-int luaradio_wait(radio_t *radio);
+int luaradio_wait(luaradio_t *radio);
 
 /**
  * @brief Stop a LuaRadio flowgraph.
@@ -52,20 +52,20 @@ int luaradio_wait(radio_t *radio);
  * Stop a running LuaRadio flowgraph. On failure, use luaradio_strerror() to
  * get a human readable error string.
  */
-int luaradio_stop(radio_t *radio);
+int luaradio_stop(luaradio_t *radio);
 
 /**
  * @brief Free a LuaRadio context.
  *
  * Free a LuaRadio context created with luaradio_new().
  */
-void luaradio_free(radio_t *radio);
+void luaradio_free(luaradio_t *radio);
 
 /**
  * @brief Get a human readable error message for the last error that occurred.
  * @return error string
  */
-const char *luaradio_strerror(radio_t *radio);
+const char *luaradio_strerror(luaradio_t *radio);
 
 /**
  * @brief Get the LuaRadio version as a string, e.g. "0.0.12".

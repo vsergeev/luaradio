@@ -78,7 +78,7 @@ return {
     -- Protocol Blocks
     --- RDS
     RDSFramerBlock = require('radio.blocks.protocol.rdsframer'),
-    RDSDecodeBlock = require('radio.blocks.protocol.rdsdecode'),
+    RDSDecoderBlock = require('radio.blocks.protocol.rdsdecoder'),
     --- AX25
     AX25FrameBlock = require('radio.blocks.protocol.ax25frame'),
     --- POCSAG

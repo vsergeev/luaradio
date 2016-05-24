@@ -134,15 +134,15 @@ end
 
 -- RDS Decode Block
 
-local RDSDecodeBlock = block.factory("RDSDecodeBlock")
+local RDSDecoderBlock = block.factory("RDSDecoderBlock")
 
-function RDSDecodeBlock:instantiate()
+function RDSDecoderBlock:instantiate()
     self:add_type_signature({block.Input("in", RDSFrameType)}, {block.Output("out", RDSPacketType)})
 end
 
-RDSDecodeBlock.RDSPacketType = RDSPacketType
+RDSDecoderBlock.RDSPacketType = RDSPacketType
 
-function RDSDecodeBlock:process(x)
+function RDSDecoderBlock:process(x)
     local out = RDSPacketType.vector()
 
     for i = 0, x.length-1 do
@@ -168,4 +168,4 @@ function RDSDecodeBlock:process(x)
     return out
 end
 
-return RDSDecodeBlock
+return RDSDecoderBlock

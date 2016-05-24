@@ -28,7 +28,7 @@ local bit_demod = radio.ComplexToRealBlock()
 local bit_slicer = radio.SlicerBlock()
 local bit_decoder = radio.DifferentialDecoderBlock()
 local framer = radio.RDSFramerBlock()
-local decoder = radio.RDSDecodeBlock()
+local decoder = radio.RDSDecoderBlock()
 local sink = radio.JSONSink()
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})

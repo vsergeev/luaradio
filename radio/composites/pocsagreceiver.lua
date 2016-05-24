@@ -20,7 +20,7 @@ function POCSAGReceiver:instantiate(baudrate)
     local clock_recovery = blocks.ZeroCrossingClockRecoveryBlock(baudrate)
     local sampler = blocks.SamplerBlock()
     local bit_slicer = blocks.SlicerBlock()
-    local framer = blocks.POCSAGFrameBlock()
+    local framer = blocks.POCSAGFramerBlock()
     local decoder = blocks.POCSAGDecodeBlock()
 
     self:connect(space_filter, space_magnitude)

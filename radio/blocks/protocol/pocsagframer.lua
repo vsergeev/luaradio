@@ -70,9 +70,9 @@ end
 
 -- POCSAG Frame Block
 
-local POCSAGFrameBlock = block.factory("POCSAGFrameBlock")
+local POCSAGFramerBlock = block.factory("POCSAGFramerBlock")
 
-function POCSAGFrameBlock:instantiate()
+function POCSAGFramerBlock:instantiate()
     -- Raw frame buffer
     self.buffer = types.Bit.vector(POCSAG_BATCH_LENGTH)
     self.buffer_length = 0
@@ -84,7 +84,7 @@ function POCSAGFrameBlock:instantiate()
     self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", POCSAGFrameType)})
 end
 
-POCSAGFrameBlock.POCSAGFrameType = POCSAGFrameType
+POCSAGFramerBlock.POCSAGFrameType = POCSAGFrameType
 
 -- POCSAG Codeword Correction
 
@@ -119,7 +119,7 @@ local function pocsag_correct_codeword(codeword)
     return false
 end
 
-function POCSAGFrameBlock:process(x)
+function POCSAGFramerBlock:process(x)
     local out = POCSAGFrameType.vector()
     local i = 0
 
@@ -143,7 +143,7 @@ function POCSAGFrameBlock:process(x)
             -- If correlation is over 28 / 32, frame sync codeword is detected
             -- This allows for up to 2 bit errors.
             if corr >= 28 then
-                debug.printf('[POCSAGFrameBlock] Frame sync codeword detected with correlation %d/32\n', corr)
+                debug.printf('[POCSAGFramerBlock] Frame sync codeword detected with correlation %d/32\n', corr)
                 -- Switch to batch state
                 self.state = POCSAGFramerState.BATCH
             else
@@ -169,12 +169,12 @@ function POCSAGFrameBlock:process(x)
                 self.buffer_length = self.buffer_length - POCSAG_CODEWORD_LENGTH
 
                 -- Switch back to frame sync state
-                debug.printf('[POCSAGFrameBlock] End of frame (invalid frame sync codeword %s)\n', bit.tohex(codeword))
+                debug.printf('[POCSAGFramerBlock] End of frame (invalid frame sync codeword %s)\n', bit.tohex(codeword))
                 self.state = POCSAGFramerState.FRAME_SYNC
                 goto continue
             end
 
-            debug.print('[POCSAGFrameBlock] Frame sync codeword found!')
+            debug.print('[POCSAGFramerBlock] Frame sync codeword found!')
 
             -- Extract and correct the 16 codewords of the batch
             local invalid_codeword_count = 0
@@ -201,7 +201,7 @@ function POCSAGFrameBlock:process(x)
                         self.buffer_length = self.buffer_length - (j+1)*32
 
                         -- Switch back to frame sync state
-                        debug.print('[POCSAGFrameBlock] Two invalid codewords detected, going to frame sync')
+                        debug.print('[POCSAGFramerBlock] Two invalid codewords detected, going to frame sync')
                         self.state = POCSAGFramerState.FRAME_SYNC
                         goto continue
                     end
@@ -247,4 +247,4 @@ function POCSAGFrameBlock:process(x)
     return out
 end
 
-return POCSAGFrameBlock
+return POCSAGFramerBlock

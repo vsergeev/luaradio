@@ -21,7 +21,7 @@ local data_filter = radio.LowpassFilterBlock(128, baudrate)
 local clock_recovery = radio.ZeroCrossingClockRecoveryBlock(baudrate)
 local sampler = radio.SamplerBlock()
 local bit_slicer = radio.SlicerBlock()
-local framer = radio.POCSAGFrameBlock()
+local framer = radio.POCSAGFramerBlock()
 local decoder = radio.POCSAGDecodeBlock()
 local sink = radio.JSONSink()
 

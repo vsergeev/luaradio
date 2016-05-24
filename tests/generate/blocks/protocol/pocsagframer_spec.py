@@ -4,7 +4,7 @@ from generate import *
 
 def generate():
     def test_vector_wrapper(frames):
-        template = "require('radio.blocks.protocol.pocsagframe').POCSAGFrameType.vector_from_array({%s})"
+        template = "require('radio.blocks.protocol.pocsagframer').POCSAGFrameType.vector_from_array({%s})"
         return [template % (','.join(frames))]
 
     def words_to_bits(words):
@@ -51,4 +51,4 @@ def generate():
     frame1_objects_cutoff = ["{0x1f92e2, 0, {0xa87e6, 0x7af04}}", "{0x121b14, 1, {0xd79d6, 0xb348e, 0xfbc8c, 0x2bd98}}", "{0xfcea9, 2, {0xa7ff9}}", "{0x15e21a, 3, {0xf19f9}}", "{0xdd68b, 0, {}}", "{0xb78be, 3, {0x461b5, 0xeae54, 0xe3d3f}}"]
     vectors.append(TestVector([], [x], test_vector_wrapper(frame1_objects_cutoff), "Frame with an uncorrectable bit error"))
 
-    return BlockSpec("POCSAGFrameBlock", "tests/blocks/protocol/pocsagframe_spec.lua", vectors, 1e-6)
+    return BlockSpec("POCSAGFramerBlock", "tests/blocks/protocol/pocsagframer_spec.lua", vectors, 1e-6)

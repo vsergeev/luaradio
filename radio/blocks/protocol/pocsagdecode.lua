@@ -3,7 +3,7 @@ local bit = require('bit')
 local block = require('radio.core.block')
 local types = require('radio.types')
 
-local POCSAGFrameType = require('radio.blocks.protocol.pocsagframe').POCSAGFrameType
+local POCSAGFrameType = require('radio.blocks.protocol.pocsagframer').POCSAGFrameType
 
 -- POCSAG Related Constants
 

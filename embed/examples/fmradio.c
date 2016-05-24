@@ -1,30 +1,30 @@
 #include <stdio.h>
-#include <assert.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <luaradio.h>
 
 const char *script_template =
-    "local frequency = %s\n"
-    "local tune_offset = -200e3\n"
+    "local frequency = %f\n"
     "return radio.CompositeBlock():connect("
-    "    radio.RtlSdrSource(frequency + tune_offset, 1102500),"
-    "    radio.TunerBlock(tune_offset, 200e3, 5),"
+    "    radio.RtlSdrSource(frequency - 250e3, 1102500),"
+    "    radio.TunerBlock(-250e3, 200e3, 5),"
     "    radio.WBFMMonoDemodulator(),"
-    "    radio.DecimatorBlock(5),"
-    "    radio.PulseAudioSink()"
+    "    radio.DownsamplerBlock(5),"
+    "    radio.PulseAudioSink(1)"
     ")";
 
 int main(int argc, char *argv[]) {
     luaradio_t *radio;
-    char script[2048];
+    char script[512];
 
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <FM radio frequency>\n", argv[0]);
         return -1;
     }
 
-    snprintf(script, sizeof(script), script_template, argv[1]);
+    /* Substitute station frequency in script template */
+    snprintf(script, sizeof(script), script_template, atof(argv[1]));
 
     if ((radio = luaradio_new()) == NULL) {
         perror("Allocating memory");

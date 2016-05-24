@@ -8,13 +8,12 @@
 -- (e.g. when running directly from the repository)
 package.path = "./?/init.lua;" .. package.path
 
+-- Preload the radio package
 -- Possible package paths:
 --  Local package:      e.g. ./radio/init.lua
 --  Lua package:        e.g. /usr/share/lua/5.1/radio/init.lua
 --  Local C package:    e.g. ./radio.so
 --  C package:          e.g. /usr/lib/lua/5.1/radio.so
-
--- Preload the radio package
 package.preload['radio'] = require('radio')
 
 local radio = require('radio')

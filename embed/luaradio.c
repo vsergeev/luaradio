@@ -166,6 +166,9 @@ void luaradio_free(luaradio_t *radio) {
 }
 
 const char *luaradio_strerror(luaradio_t *radio) {
+    if (radio == NULL)
+        return "Memory allocation error.";
+
     return radio->errmsg;
 }
 

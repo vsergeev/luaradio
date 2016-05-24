@@ -1,16 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
-#include <time.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <luaradio.h>
 
 const char *script_template =
-    "local frequency = %s\n"
-    "local offset = -200e3\n"
+    "local frequency = %f\n"
     "return radio.CompositeBlock():connect("
-    "    radio.RtlSdrSource(frequency + offset, 1102500),"
-    "    radio.TunerBlock(offset, 200e3, 5),"
+    "    radio.RtlSdrSource(frequency - 250e3, 1102500),"
+    "    radio.TunerBlock(-250e3, 200e3, 5),"
     "    radio.RDSReceiver(),"
     "    radio.RawFileSink(%d)"
     ")";
@@ -48,7 +48,7 @@ time_t rds_decode_time(const rds_frame_t *time_frame) {
 
 int main(int argc, char *argv[]) {
     luaradio_t *radio;
-    char script[2048];
+    char script[512];
     int pipe_fds[2];
 
     if (argc < 2) {
@@ -61,7 +61,8 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    snprintf(script, sizeof(script), script_template, argv[1], pipe_fds[1]);
+    /* Substitute station frequency and write fd of pipe() in script template */
+    snprintf(script, sizeof(script), script_template, atof(argv[1]), pipe_fds[1]);
 
     if ((radio = luaradio_new()) == NULL) {
         perror("Allocating memory");

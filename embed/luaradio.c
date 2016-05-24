@@ -97,11 +97,11 @@ int luaradio_load(luaradio_t *radio, const char *script) {
 int luaradio_start(luaradio_t *radio) {
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
-        strncpy(radio->errmsg, "No LuaRadio flowgraph found to run.", sizeof(radio->errmsg));
+        strncpy(radio->errmsg, "No LuaRadio flow graph found to run.", sizeof(radio->errmsg));
         return -1;
     }
 
-    /* Call block:run() */
+    /* Call top:start() */
     lua_getfield(radio->L, -1, "start");
     lua_pushvalue(radio->L, -2);
     if (lua_pcall(radio->L, 1, 0, 0) != 0) {
@@ -118,11 +118,11 @@ int luaradio_start(luaradio_t *radio) {
 int luaradio_wait(luaradio_t *radio) {
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
-        strncpy(radio->errmsg, "No LuaRadio flowgraph found to run.", sizeof(radio->errmsg));
+        strncpy(radio->errmsg, "No LuaRadio flow graph found to wait on.", sizeof(radio->errmsg));
         return -1;
     }
 
-    /* Call block:wait() */
+    /* Call top:wait() */
     lua_getfield(radio->L, -1, "wait");
     lua_pushvalue(radio->L, -2);
     if (lua_pcall(radio->L, 1, 0, 0) != 0) {
@@ -139,11 +139,11 @@ int luaradio_wait(luaradio_t *radio) {
 int luaradio_stop(luaradio_t *radio) {
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
-        strncpy(radio->errmsg, "No LuaRadio flowgraph found to stop.", sizeof(radio->errmsg));
+        strncpy(radio->errmsg, "No LuaRadio flow graph found to stop.", sizeof(radio->errmsg));
         return -1;
     }
 
-    /* Call block:stop() */
+    /* Call top:stop() */
     lua_getfield(radio->L, -1, "stop");
     lua_pushvalue(radio->L, -2);
     if (lua_pcall(radio->L, 1, 0, 0) != 0) {

@@ -18,38 +18,38 @@ typedef struct luaradio luaradio_t;
 luaradio_t *luaradio_new(void);
 
 /**
- * @brief Load a script that returns a LuaRadio flowgraph.
+ * @brief Load a script that returns a LuaRadio flow graph.
  * @return 0 on success, -1 on failure
  *
- * Load a script that returns a LuaRadio flowgraph. The script must return an
+ * Load a script that returns a LuaRadio flow graph. The script must return an
  * instance of radio.CompositeBlock. On failure, use luaradio_strerror() to get
  * a human readable error string.
  */
 int luaradio_load(luaradio_t *radio, const char *script);
 
 /**
- * @brief Start a LuaRadio flowgraph.
+ * @brief Start a LuaRadio flow graph.
  * @return 0 on success, -1 on failure
  *
- * Start a LuaRadio flowgraph. On failure, use luaradio_strerror() to get a
+ * Start a LuaRadio flow graph. On failure, use luaradio_strerror() to get a
  * human readable error string.
  */
 int luaradio_start(luaradio_t *radio);
 
 /**
- * @brief Wait for a LuaRadio flowgraph to finish.
+ * @brief Wait for a LuaRadio flow graph to finish.
  * @return 0 on success, -1 on failure
  *
- * Wait for a LuaRadio flowgraph to finish. On failure, use luaradio_strerror()
- * to get a human readable error string.
+ * Wait for a LuaRadio flow graph to finish. On failure, use
+ * luaradio_strerror() to get a human readable error string.
  */
 int luaradio_wait(luaradio_t *radio);
 
 /**
- * @brief Stop a LuaRadio flowgraph.
+ * @brief Stop a LuaRadio flow graph.
  * @return 0 on success, -1 on failure
  *
- * Stop a running LuaRadio flowgraph. On failure, use luaradio_strerror() to
+ * Stop a running LuaRadio flow graph. On failure, use luaradio_strerror() to
  * get a human readable error string.
  */
 int luaradio_stop(luaradio_t *radio);

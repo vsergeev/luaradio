@@ -31,15 +31,21 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
         assert(class.isinstanceof(inputs[i], Input), string.format("Invalid input port descriptor (index %d).", i))
     end
 
-    -- Create a PipeInput for each input
     if not self.inputs then
         -- Create inputs with a PipeInput for each input
         self.inputs = {}
         for i = 1, #inputs do
             self.inputs[i] = pipe.PipeInput(self, inputs[i].name)
         end
+    else
+        -- Check input count
+        assert(#self.inputs == #inputs, string.format("Invalid type signature, input count mismatch (got %d, expected %d).", #inputs, #self.inputs))
+
+        -- Check input names match
+        for i = 1, #inputs do
+            assert(self.inputs[i].name == inputs[i].name, string.format("Invalid type signature, input name mismatch (index %d).", i))
+        end
     end
-    assert(#self.inputs == #inputs, string.format("Invalid type signature, mismatch in input count (got %d, expected %d).", #inputs, #self.inputs))
 
     -- Assert outputs are Outputs
     for i = 1, #outputs do
@@ -52,8 +58,15 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
         for i = 1, #outputs do
             self.outputs[i] = pipe.PipeOutput(self, outputs[i].name)
         end
+    else
+        -- Check output count
+        assert(#self.outputs == #outputs, string.format("Invalid type signature, output count mismatch (got %d, expected %d).", #outputs, #self.outputs))
+
+        -- Check output names match
+        for i = 1, #outputs do
+            assert(self.outputs[i].name == outputs[i].name, string.format("Invalid type signature, output name mismatch (index %d).", i))
+        end
     end
-    assert(#self.outputs == #outputs, string.format("Invalid type signature, mismatch in output count (got %d, expected %d).", #outputs, #self.outputs))
 
     -- Add the type signature to our signatures list
     self.signatures[#self.signatures+1] = {

@@ -69,6 +69,20 @@ describe("block", function ()
             self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out1", radio.types.Float32), block.Output("out2", radio.types.Float32)})
         end
         assert.has_error(function () TestBlock() end)
+
+        -- Test mismatched inputs name error
+        function TestBlock:instantiate()
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Float32)})
+            self:add_type_signature({block.Input("foo", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Float32)})
+        end
+        assert.has_error(function () TestBlock() end)
+
+        -- Test mismatched outputs name error
+        function TestBlock:instantiate()
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.Float32)})
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("foo", radio.types.Float32)})
+        end
+        assert.has_error(function () TestBlock() end)
     end)
 
     it("type differentiation", function ()

@@ -23,8 +23,8 @@ describe("block", function ()
 
         -- No type signatures registered
         assert.is_true(#blk.signatures == 0)
-        assert.is_true(#blk.inputs == 0)
-        assert.is_true(#blk.outputs == 0)
+        assert.is_true(blk.inputs == nil)
+        assert.is_true(blk.outputs == nil)
     end)
 
     it("type signatures", function ()

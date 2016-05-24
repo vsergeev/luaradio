@@ -32,9 +32,11 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
     end
 
     -- Create a PipeInput for each input
-    if #self.inputs == 0 then
-        for _, v in ipairs(inputs) do
-            self.inputs[#self.inputs+1] = pipe.PipeInput(self, v.name)
+    if not self.inputs then
+        -- Create inputs with a PipeInput for each input
+        self.inputs = {}
+        for i = 1, #inputs do
+            self.inputs[i] = pipe.PipeInput(self, inputs[i].name)
         end
     end
     assert(#self.inputs == #inputs, string.format("Invalid type signature, mismatch in input count (got %d, expected %d).", #inputs, #self.inputs))
@@ -44,10 +46,11 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
         assert(class.isinstanceof(outputs[i], Output), string.format("Invalid output port descriptor (index %d).", i))
     end
 
-    -- Create a PipeOutput for each output
-    if #self.outputs == 0 then
-        for _, v in ipairs(outputs) do
-            self.outputs[#self.outputs+1] = pipe.PipeOutput(self, v.name)
+    if not self.outputs then
+        -- Create outputs with a PipeOutput for each output
+        self.outputs = {}
+        for i = 1, #outputs do
+            self.outputs[i] = pipe.PipeOutput(self, outputs[i].name)
         end
     end
     assert(#self.outputs == #outputs, string.format("Invalid type signature, mismatch in output count (got %d, expected %d).", #outputs, #self.outputs))
@@ -258,8 +261,8 @@ local function factory(name, parent_class)
         local self = setmetatable({}, class)
 
         -- Pipe inputs and outputs
-        self.inputs = {}
-        self.outputs = {}
+        self.inputs = nil
+        self.outputs = nil
 
         -- Type signatures and differentiated signature
         self.signatures = {}

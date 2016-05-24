@@ -271,6 +271,8 @@ end
 ffi.cdef[[
     typedef int pid_t;
     pid_t fork(void);
+
+    enum { WNOHANG = 1 };
     pid_t waitpid(pid_t pid, int *status, int options);
 
     /* kill() */
@@ -485,6 +487,22 @@ function CompositeBlock:start(multiprocess)
     return self
 end
 
+function CompositeBlock:status()
+    if self._running and self._pids then
+        -- Check if any children are still running
+        for _, pid in pairs(self._pids) do
+            if ffi.C.waitpid(pid, nil, ffi.C.WNOHANG) == 0 then
+                return {running = true}
+            end
+        end
+
+        -- Mark ourselves as not running
+        self._running = false
+    end
+
+    return {running = false}
+end
+
 function CompositeBlock:stop()
     if self._running and self._pids then
         -- Kill source blocks
@@ -494,10 +512,14 @@ function CompositeBlock:stop()
             end
         end
 
-        -- Wait for all children
+        -- Wait for all children to exit
         for _, pid in pairs(self._pids) do
-            if ffi.C.waitpid(pid, nil, 0) == -1 then
-                error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            -- If the process exists
+            if ffi.C.kill(pid, 0) == 0 then
+                -- Reap the process
+                if ffi.C.waitpid(pid, nil, 0) == -1 then
+                    error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                end
             end
         end
 
@@ -530,8 +552,12 @@ function CompositeBlock:wait()
 
             -- Wait for all children to exit
             for _, pid in pairs(self._pids) do
-                if ffi.C.waitpid(pid, nil, 0) == -1 then
-                    error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                -- If the process exists
+                if ffi.C.kill(pid, 0) == 0 then
+                    -- Reap the process
+                    if ffi.C.waitpid(pid, nil, 0) == -1 then
+                        error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                    end
                 end
             end
 

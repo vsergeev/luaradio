@@ -19,33 +19,38 @@ int main(int argc, char *argv[]) {
     char script[512];
 
     if (argc < 2) {
-        fprintf(stderr, "Usage: %s <FM radio frequency>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <FM station frequency>\n", argv[0]);
         return -1;
     }
 
     /* Substitute station frequency in script template */
     snprintf(script, sizeof(script), script_template, atof(argv[1]));
 
+    /* Create context */
     if ((radio = luaradio_new()) == NULL) {
         perror("Allocating memory");
         return -1;
     }
 
+    /* Load flow graph */
     if (luaradio_load(radio, script) < 0) {
-        fprintf(stderr, "Error loading script: %s\n", luaradio_strerror(radio));
+        fprintf(stderr, "Error loading flow graph: %s\n", luaradio_strerror(radio));
         return -1;
     }
 
+    /* Start flow graph */
     if (luaradio_start(radio) < 0) {
-        fprintf(stderr, "Error starting script: %s\n", luaradio_strerror(radio));
+        fprintf(stderr, "Error starting flow graph: %s\n", luaradio_strerror(radio));
         return -1;
     }
 
+    /* Wait until completion */
     if (luaradio_wait(radio) < 0) {
-        fprintf(stderr, "Error waiting for script: %s\n", luaradio_strerror(radio));
+        fprintf(stderr, "Error waiting for flow graph: %s\n", luaradio_strerror(radio));
         return -1;
     }
 
+    /* Free context */
     luaradio_free(radio);
 
     return 0;

@@ -10,8 +10,9 @@ function AMEnvelopeDemodulator:instantiate(bandwidth)
     bandwidth = bandwidth or 5e3
 
     local am_demod = blocks.ComplexMagnitudeBlock()
+    local dcr_filter = blocks.SinglepoleHighpassFilterBlock(100)
     local af_filter = blocks.LowpassFilterBlock(128, bandwidth)
-    self:connect(am_demod, af_filter)
+    self:connect(am_demod, dcr_filter, af_filter)
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.Float32)})
     self:connect(self, "in", am_demod, "in")

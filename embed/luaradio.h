@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <lua.h>
 
 /**
  * @brief Opaque radio context.
@@ -70,6 +71,12 @@ int luaradio_stop(luaradio_t *radio);
  * Free a LuaRadio context created with luaradio_new().
  */
 void luaradio_free(luaradio_t *radio);
+
+/**
+ * @brief Get the Lua state of a LuaRadio context.
+ * @return Lua state
+ */
+lua_State *luaradio_get_state(luaradio_t *radio);
 
 /**
  * @brief Get a human readable error message for the last error that occurred.

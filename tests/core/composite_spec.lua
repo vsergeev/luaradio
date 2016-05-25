@@ -518,6 +518,7 @@ describe("composite", function ()
         end
 
         -- Unconnected inputs
+
         local top = radio.CompositeBlock()
         local b0 = TestBlock()
         local b1 = TestSink()
@@ -531,6 +532,19 @@ describe("composite", function ()
         local b2 = TestSink()
         top:connect(b0, "out", b1, "in1")
         top:connect(b1, "out", b2, "in")
+
+        assert.has_error(function () top:_prepare_to_run() end)
+
+        -- Input rate mismatch
+
+        local top = radio.CompositeBlock()
+        local b0 = TestSource()
+        local b1 = TestSource()
+        local b2 = TestAddBlock()
+        b0.get_rate = function (self) return 1 end
+        b1.get_rate = function (self) return 2 end
+        top:connect(b0, "out", b2, "in1")
+        top:connect(b1, "out", b2, "in2")
 
         assert.has_error(function () top:_prepare_to_run() end)
 

@@ -304,7 +304,7 @@ function CompositeBlock:_prepare_to_run()
     -- Crawl our connections to get the full list of blocks and connections
     local blocks, all_connections = crawl_connections(self._connections)
 
-    -- Check all inputs are connected
+    -- Check all block inputs are connected
     for block, _ in pairs(blocks) do
         for i=1, #block.inputs do
             assert(block.inputs[i].pipe ~= nil, string.format("Block \"%s\" input \"%s\" is unconnected.", block.name, block.inputs[i].name))
@@ -324,6 +324,18 @@ function CompositeBlock:_prepare_to_run()
 
         -- Differentiate the block
         block:differentiate(input_data_types)
+    end
+
+    -- Check all block input rates match
+    for _, block in pairs(execution_order) do
+        local rate = nil
+        for i=1, #block.inputs do
+            if not rate then
+                rate = block.inputs[i].pipe:get_rate()
+            else
+                assert(block.inputs[i].pipe:get_rate() == rate, string.format("Block \"%s\" input \"%s\" sample rate mismatch.", block.name, block.inputs[i].name))
+            end
+        end
     end
 
     -- Initialize all blocks

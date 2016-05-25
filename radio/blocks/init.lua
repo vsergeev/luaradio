@@ -71,6 +71,7 @@ return {
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal'),
     ComplexToImagBlock = require('radio.blocks.signal.complextoimag'),
     ComplexToFloatBlock = require('radio.blocks.signal.complextofloat'),
+    RealToComplexBlock = require('radio.blocks.signal.realtocomplex'),
     FloatToComplexBlock = require('radio.blocks.signal.floattocomplex'),
     --- Miscellaneous
     ThrottleBlock = require('radio.blocks.signal.throttle'),

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -111,6 +112,32 @@ int luaradio_start(luaradio_t *radio) {
         lua_pop(radio->L, 1);
         return -1;
     }
+
+    return 0;
+}
+
+int luaradio_status(luaradio_t *radio, bool *running) {
+    /* Check instance of top element is CompositeBlock */
+    if (!lua_iscompositeblock(radio->L)) {
+        strncpy(radio->errmsg, "No LuaRadio flow graph found to check status of.", sizeof(radio->errmsg));
+        return -1;
+    }
+
+    /* Call top:status() */
+    lua_getfield(radio->L, -1, "status");
+    lua_pushvalue(radio->L, -2);
+    if (lua_pcall(radio->L, 1, 1, 0) != 0) {
+        /* Copy error message into context */
+        strncpy(radio->errmsg, lua_tostring(radio->L, -1), sizeof(radio->errmsg));
+        /* Pop error off of stack */
+        lua_pop(radio->L, 1);
+        return -1;
+    }
+
+    /* Extract boolean value under "running" key */
+    lua_getfield(radio->L, -1, "running");
+    *running = lua_toboolean(radio->L, -1);
+    lua_pop(radio->L, 2);
 
     return 0;
 }

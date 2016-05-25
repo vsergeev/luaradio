@@ -2,6 +2,7 @@
 #define _LUARADIO_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /**
  * @brief Opaque radio context.
@@ -35,6 +36,15 @@ int luaradio_load(luaradio_t *radio, const char *script);
  * human readable error string.
  */
 int luaradio_start(luaradio_t *radio);
+
+/**
+ * @brief Get the running status of a LuaRadio flow graph.
+ * @return 0 on success, -1 on failure
+ *
+ * Get the running status of a LuaRadio flow graph. On failure, use
+ * luaradio_strerror() to get a human readable error string.
+ */
+int luaradio_status(luaradio_t *radio, bool *running);
 
 /**
  * @brief Wait for a LuaRadio flow graph to finish.

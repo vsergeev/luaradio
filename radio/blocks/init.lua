@@ -41,6 +41,7 @@ return {
     SinglepoleLowpassFilterBlock = require('radio.blocks.signal.singlepolelowpassfilter'),
     SinglepoleHighpassFilterBlock = require('radio.blocks.signal.singlepolehighpassfilter'),
     FMDeemphasisFilterBlock = require('radio.blocks.signal.fmdeemphasisfilter'),
+    FMPreemphasisFilterBlock = require('radio.blocks.signal.fmpreemphasisfilter'),
     --- Sample Rate Conversion
     DownsamplerBlock = require('radio.blocks.signal.downsampler'),
     UpsamplerBlock = require('radio.blocks.signal.upsampler'),

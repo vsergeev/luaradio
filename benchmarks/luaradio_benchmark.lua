@@ -31,7 +31,7 @@ local BenchmarkSuite = {
                 radio.FIRFilterBlock(taps),
                 radio.FIRFilterBlock(taps),
                 radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -41,7 +41,7 @@ local BenchmarkSuite = {
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -51,7 +51,7 @@ local BenchmarkSuite = {
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -68,7 +68,7 @@ local BenchmarkSuite = {
 
             return radio.CompositeBlock():connect(
                 radio.IQFileSource(src_fd, 'f32le', 1.0, true),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -84,7 +84,7 @@ local BenchmarkSuite = {
 
             return radio.CompositeBlock():connect(
                 radio.RealFileSource(src_fd, 'f32le', 1.0, true),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -100,7 +100,7 @@ local BenchmarkSuite = {
 
             return radio.CompositeBlock():connect(
                 radio.RawFileSource(src_fd, radio.types.Float32, 1.0, true),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -110,7 +110,7 @@ local BenchmarkSuite = {
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.UniformRandomSource(radio.types.ComplexFloat32, 1.0),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -120,7 +120,7 @@ local BenchmarkSuite = {
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.UniformRandomSource(radio.types.Float32, 1.0),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -130,7 +130,7 @@ local BenchmarkSuite = {
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.SignalSource('exponential', 200e3, 1e6),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -140,7 +140,7 @@ local BenchmarkSuite = {
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.SignalSource('cosine', 200e3, 1e6),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -150,7 +150,7 @@ local BenchmarkSuite = {
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.SignalSource('square', 200e3, 1e6),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -167,7 +167,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -184,7 +184,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -201,7 +201,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -218,7 +218,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -235,7 +235,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -252,7 +252,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -266,7 +266,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.IIRFilterBlock(b_taps, a_taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -280,7 +280,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.IIRFilterBlock(b_taps, a_taps),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -291,7 +291,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 30e3),
                 radio.FMDeemphasisFilterBlock(75e-6),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -302,7 +302,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.DownsamplerBlock(5),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -313,7 +313,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.DownsamplerBlock(5),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -324,7 +324,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.UpsamplerBlock(3),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -335,7 +335,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.UpsamplerBlock(3),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -346,7 +346,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1e6),
                 radio.FrequencyTranslatorBlock(200e3),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -357,7 +357,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.HilbertTransformBlock(65),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -368,7 +368,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.HilbertTransformBlock(257),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -379,7 +379,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.FrequencyDiscriminatorBlock(5.0),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -390,7 +390,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.UniformRandomSource(radio.types.ComplexFloat32, 1e6),
                 radio.PLLBlock(1e3, 200e3, 220e3),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -401,7 +401,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.UniformRandomSource(radio.types.Float32, 1e6),
                 radio.ZeroCrossingClockRecoveryBlock(1200),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -412,7 +412,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.UniformRandomSource(radio.types.ComplexFloat32, 1.0),
                 radio.BinaryPhaseCorrectorBlock(3000),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -425,7 +425,7 @@ local BenchmarkSuite = {
             local top = radio.CompositeBlock()
             top:connect(src, 'out', adder, 'in1')
             top:connect(src, 'out', adder, 'in2')
-            return top:connect(adder, radio.BenchmarkSink(results_fd))
+            return top:connect(adder, radio.BenchmarkSink(results_fd, true))
         end
     },
     {
@@ -437,7 +437,7 @@ local BenchmarkSuite = {
             local top = radio.CompositeBlock()
             top:connect(src, 'out', subtractor, 'in1')
             top:connect(src, 'out', subtractor, 'in2')
-            return top:connect(subtractor, radio.BenchmarkSink(results_fd))
+            return top:connect(subtractor, radio.BenchmarkSink(results_fd, true))
         end
     },
     {
@@ -449,7 +449,7 @@ local BenchmarkSuite = {
             local top = radio.CompositeBlock()
             top:connect(src, 'out', multiplier, 'in1')
             top:connect(src, 'out', multiplier, 'in2')
-            return top:connect(multiplier, radio.BenchmarkSink(results_fd))
+            return top:connect(multiplier, radio.BenchmarkSink(results_fd, true))
         end
     },
     {
@@ -461,7 +461,7 @@ local BenchmarkSuite = {
             local top = radio.CompositeBlock()
             top:connect(src, 'out', multiplier, 'in1')
             top:connect(src, 'out', multiplier, 'in2')
-            return top:connect(multiplier, radio.BenchmarkSink(results_fd))
+            return top:connect(multiplier, radio.BenchmarkSink(results_fd, true))
         end
     },
     {
@@ -473,7 +473,7 @@ local BenchmarkSuite = {
             local top = radio.CompositeBlock()
             top:connect(src, 'out', multiplier, 'in1')
             top:connect(src, 'out', multiplier, 'in2')
-            return top:connect(multiplier, radio.BenchmarkSink(results_fd))
+            return top:connect(multiplier, radio.BenchmarkSink(results_fd, true))
         end
     },
     {
@@ -483,7 +483,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.MultiplyConstantBlock(5.0),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -494,7 +494,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.MultiplyConstantBlock(radio.types.ComplexFloat32(math.random(), math.random())),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -505,7 +505,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.MultiplyConstantBlock(5.0),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -516,7 +516,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
                 radio.AbsoluteValueBlock(),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -527,7 +527,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.ComplexConjugateBlock(),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -538,7 +538,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.ComplexMagnitudeBlock(),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -549,7 +549,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.ComplexPhaseBlock(),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -560,7 +560,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.DelayBlock(3000),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -571,7 +571,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.UniformRandomSource(radio.types.Float32, 1.0),
                 radio.SlicerBlock(),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -582,7 +582,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.UniformRandomSource(radio.types.Bit, 1.0),
                 radio.DifferentialDecoderBlock(),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -593,7 +593,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.ComplexToRealBlock(),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -604,7 +604,7 @@ local BenchmarkSuite = {
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.ComplexToImagBlock(),
-                radio.BenchmarkSink(results_fd)
+                radio.BenchmarkSink(results_fd, true)
             )
         end
     },
@@ -617,7 +617,7 @@ local BenchmarkSuite = {
             local top = radio.CompositeBlock()
             top:connect(src, 'out', floattocomplex, 'real')
             top:connect(src, 'out', floattocomplex, 'imag')
-            return top:connect(floattocomplex, radio.BenchmarkSink(results_fd))
+            return top:connect(floattocomplex, radio.BenchmarkSink(results_fd, true))
         end
     },
 }

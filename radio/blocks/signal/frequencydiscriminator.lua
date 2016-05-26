@@ -54,7 +54,7 @@ else
 
         -- Compute element-wise atan2 of multiplied samples
         for i = 0, tmp.length-1 do
-            out.data[i].value = tmp.data[i]:arg()/self.gain
+            out.data[i].value = tmp.data[i]:arg()*(1/self.gain)
         end
 
         -- Save last sample of x to be the next previous sample

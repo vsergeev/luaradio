@@ -190,7 +190,7 @@ function WAVFileSink:process(...)
     -- Convert float32 samples to raw samples
     for i = 0, num_samples_per_channel-1 do
         for j = 1, self.num_channels do
-            raw_samples[i*self.num_channels + (j-1)].value = bit.tobit((samples[j].data[i].value/self.format.scale) + self.format.offset)
+            raw_samples[i*self.num_channels + (j-1)].value = (samples[j].data[i].value/self.format.scale) + self.format.offset
         end
     end
 

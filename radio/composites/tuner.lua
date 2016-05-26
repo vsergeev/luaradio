@@ -10,7 +10,7 @@ function TunerBlock:instantiate(offset, bandwidth, decimation, options)
     options = options or {}
 
     local translator = blocks.FrequencyTranslatorBlock(offset)
-    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, bandwidth/2, nil, options.window)
+    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, bandwidth/2, nil, options.window_type)
     local downsampler = blocks.DownsamplerBlock(decimation)
     self:connect(translator, filter, downsampler)
 

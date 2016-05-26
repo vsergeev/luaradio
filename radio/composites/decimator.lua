@@ -9,7 +9,7 @@ function DecimatorBlock:instantiate(decimation, options)
 
     options = options or {}
 
-    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, 1/decimation, options.window, 1.0)
+    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, 1/decimation, 1.0, options.window)
     local downsampler = blocks.DownsamplerBlock(decimation)
     self:connect(filter, downsampler)
 

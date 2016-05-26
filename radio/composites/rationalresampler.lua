@@ -13,7 +13,7 @@ function RationalResamplerBlock:instantiate(interpolation, decimation, options)
 
     local scaler = blocks.MultiplyConstantBlock(interpolation)
     local upsampler = blocks.UpsamplerBlock(interpolation)
-    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, cutoff, options.window, 1.0)
+    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, cutoff, 1.0, options.window)
     local downsampler = blocks.DownsamplerBlock(decimation)
     self:connect(scaler, upsampler, filter, downsampler)
 

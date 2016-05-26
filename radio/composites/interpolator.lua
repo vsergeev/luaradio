@@ -11,7 +11,7 @@ function InterpolatorBlock:instantiate(interpolation, options)
 
     local scaler = blocks.MultiplyConstantBlock(interpolation)
     local upsampler = blocks.UpsamplerBlock(interpolation)
-    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, 1/interpolation, options.window, 1.0)
+    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, 1/interpolation, 1.0, options.window)
     self:connect(scaler, upsampler, filter)
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})

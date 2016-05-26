@@ -8,7 +8,7 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 
 local LowpassFilterBlock = block.factory("LowpassFilterBlock", FIRFilterBlock)
 
-function LowpassFilterBlock:instantiate(num_taps, cutoff_frequency, window_type, nyquist_frequency)
+function LowpassFilterBlock:instantiate(num_taps, cutoff_frequency, nyquist_frequency, window_type)
     FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
 
     self.cutoff_frequency = cutoff_frequency

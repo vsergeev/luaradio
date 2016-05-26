@@ -1,7 +1,7 @@
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-jigs.TestBlock(radio.SumBlock, {
+jigs.TestBlock(radio.AddBlock, {
     {
         desc = "2 256 ComplexFloat32 inputs, 256 ComplexFloat32 output",
         args = {},

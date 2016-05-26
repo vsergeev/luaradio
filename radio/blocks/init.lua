@@ -52,7 +52,7 @@ return {
     --- Clock Recovery
     ZeroCrossingClockRecoveryBlock = require('radio.blocks.signal.zerocrossingclockrecovery'),
     --- Basic Operators
-    SumBlock = require('radio.blocks.signal.sum'),
+    AddBlock = require('radio.blocks.signal.add'),
     SubtractBlock = require('radio.blocks.signal.subtract'),
     MultiplyBlock = require('radio.blocks.signal.multiply'),
     MultiplyConstantBlock = require('radio.blocks.signal.multiplyconstant'),

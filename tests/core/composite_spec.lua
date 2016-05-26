@@ -17,8 +17,8 @@ describe("composite", function ()
             self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
-        local TestSumBlock = block.factory("TestSumBlock")
-        function TestSumBlock:instantiate()
+        local TestAddBlock = block.factory("TestAddBlock")
+        function TestAddBlock:instantiate()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
@@ -41,10 +41,10 @@ describe("composite", function ()
         local top = radio.CompositeBlock()
         local b1 = TestSource()
         local b2 = TestSource()
-        local b3 = TestSumBlock()
+        local b3 = TestAddBlock()
         local b4 = TestBlock()
         local b5 = TestSource()
-        local b6 = TestSumBlock()
+        local b6 = TestAddBlock()
         local b7 = TestSink()
         local b8 = TestBlock()
         local b9 = TestSink()
@@ -71,10 +71,10 @@ describe("composite", function ()
 
         local b1 = TestSource()
         local b2 = TestSource()
-        local b3 = TestSumBlock()
+        local b3 = TestAddBlock()
         local b4 = TestBlock()
         local b5 = TestSource()
-        local b6 = TestSumBlock()
+        local b6 = TestAddBlock()
         local b7 = TestSink()
         local b8 = TestBlock()
         local b9 = TestSink()
@@ -307,15 +307,15 @@ describe("composite", function ()
             self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
-        local TestSumBlock = block.factory("TestSumBlock")
-        function TestSumBlock:instantiate()
+        local TestAddBlock = block.factory("TestAddBlock")
+        function TestAddBlock:instantiate()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
         local b1 = TestBlock()
         local b2 = TestBlock()
-        local b3 = TestSumBlock()
+        local b3 = TestAddBlock()
         local b4 = TestBlock()
         local b5 = TestBlock()
         local b6 = TestBlock()
@@ -357,15 +357,15 @@ describe("composite", function ()
             self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
-        local TestSumBlock = block.factory("TestSumBlock")
-        function TestSumBlock:instantiate()
+        local TestAddBlock = block.factory("TestAddBlock")
+        function TestAddBlock:instantiate()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
         local b1 = TestBlock()
         local b2 = TestBlock()
-        local b3 = TestSumBlock()
+        local b3 = TestAddBlock()
         local b4 = TestBlock()
         local b5 = TestBlock()
         local b6 = TestBlock()
@@ -407,15 +407,15 @@ describe("composite", function ()
             self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
-        local TestSumBlock = block.factory("TestSumBlock")
-        function TestSumBlock:instantiate()
+        local TestAddBlock = block.factory("TestAddBlock")
+        function TestAddBlock:instantiate()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
         local b1 = TestBlock()
         local b2 = TestBlock()
-        local b3 = TestSumBlock()
+        local b3 = TestAddBlock()
         local b4 = TestBlock()
         local b5 = TestBlock()
         local b6 = TestBlock()
@@ -458,15 +458,15 @@ describe("composite", function ()
             self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
-        local TestSumBlock = block.factory("TestSumBlock")
-        function TestSumBlock:instantiate()
+        local TestAddBlock = block.factory("TestAddBlock")
+        function TestAddBlock:instantiate()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
         local b1 = TestBlock()
         local b2 = TestBlock()
-        local b3 = TestSumBlock()
+        local b3 = TestAddBlock()
         local b4 = TestBlock()
         local b5 = TestBlock()
         local b6 = TestBlock()
@@ -506,8 +506,8 @@ describe("composite", function ()
             self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
-        local TestSumBlock = block.factory("TestSumBlock")
-        function TestSumBlock:instantiate()
+        local TestAddBlock = block.factory("TestAddBlock")
+        function TestAddBlock:instantiate()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
@@ -527,7 +527,7 @@ describe("composite", function ()
 
         local top = radio.CompositeBlock()
         local b0 = TestSource()
-        local b1 = TestSumBlock()
+        local b1 = TestAddBlock()
         local b2 = TestSink()
         top:connect(b0, "out", b1, "in1")
         top:connect(b1, "out", b2, "in")
@@ -549,15 +549,15 @@ describe("composite", function ()
 
         -- No compatible signatures
 
-        local TestSumBlock = block.factory("TestSumBlock")
-        function TestSumBlock:instantiate()
+        local TestAddBlock = block.factory("TestAddBlock")
+        function TestAddBlock:instantiate()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.Float32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
         local top = radio.CompositeBlock()
         local b0 = TestSource()
         local b1 = TestSource()
-        local b2 = TestSumBlock()
+        local b2 = TestAddBlock()
         local b3 = TestSink()
         top:connect(b0, "out", b2, "in1")
         top:connect(b1, "out", b2, "in2")

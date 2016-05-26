@@ -23,7 +23,7 @@ function WBFMStereoDemodulator:instantiate(tau)
     local lmr_filter = blocks.LowpassFilterBlock(128, bandwidth)
     local lmr_am_demod = blocks.ComplexToRealBlock()
     -- L
-    local l_sum = blocks.SumBlock()
+    local l_sum = blocks.AddBlock()
     local left_af_deemphasis = blocks.FMDeemphasisFilterBlock(tau)
     -- R
     local r_sub = blocks.SubtractBlock()

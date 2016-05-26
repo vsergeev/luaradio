@@ -271,7 +271,7 @@ def test_pll_refout_cc():
 
     return top, probe
 
-@benchmark("Sum (Complex-valued)", "blocks.add_cc")
+@benchmark("Add (Complex-valued)", "blocks.add_cc")
 def test_add_cc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)

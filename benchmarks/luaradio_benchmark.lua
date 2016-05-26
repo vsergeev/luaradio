@@ -417,15 +417,15 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Sum (Complex-valued)",
-        "SumBlock",
+        "Add (Complex-valued)",
+        "AddBlock",
         function (results_fd)
             local src = radio.NullSource(radio.types.ComplexFloat32, 1.0)
-            local summer = radio.SumBlock()
+            local adder = radio.AddBlock()
             local top = radio.CompositeBlock()
-            top:connect(src, 'out', summer, 'in1')
-            top:connect(src, 'out', summer, 'in2')
-            return top:connect(summer, radio.BenchmarkSink(results_fd))
+            top:connect(src, 'out', adder, 'in1')
+            top:connect(src, 'out', adder, 'in2')
+            return top:connect(adder, radio.BenchmarkSink(results_fd))
         end
     },
     {

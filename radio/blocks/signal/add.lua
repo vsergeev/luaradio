@@ -1,18 +1,18 @@
 local block = require('radio.core.block')
 local types = require('radio.types')
 
-local SumBlock = block.factory("SumBlock")
+local AddBlock = block.factory("AddBlock")
 
-function SumBlock:instantiate()
+function AddBlock:instantiate()
     self:add_type_signature({block.Input("in1", types.ComplexFloat32), block.Input("in2", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
     self:add_type_signature({block.Input("in1", types.Float32), block.Input("in2", types.Float32)}, {block.Output("out", types.Float32)})
 end
 
-function SumBlock:initialize()
+function AddBlock:initialize()
     self.data_type = self:get_input_type()
 end
 
-function SumBlock:process(x, y)
+function AddBlock:process(x, y)
     local out = self.data_type.vector(x.length)
     for i = 0, x.length-1 do
         out.data[i] = x.data[i] + y.data[i]
@@ -20,4 +20,4 @@ function SumBlock:process(x, y)
     return out
 end
 
-return SumBlock
+return AddBlock

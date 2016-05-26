@@ -25,7 +25,7 @@ local lpr_am_demod = radio.ComplexToRealBlock()
 local lmr_filter = radio.LowpassFilterBlock(128, bandwidth)
 local lmr_am_demod = radio.ComplexToRealBlock()
 -- L
-local l_summer = radio.SumBlock()
+local l_summer = radio.AddBlock()
 local l_af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)
 local l_decimator = radio.DownsamplerBlock(5)
 -- R

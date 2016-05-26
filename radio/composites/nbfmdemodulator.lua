@@ -11,7 +11,7 @@ function NBFMDemodulator:instantiate(deviation, bandwidth)
     bandwidth = bandwidth or 4e3
 
     local rf_filter = blocks.LowpassFilterBlock(128, 2*(deviation + bandwidth)/2)
-    local fm_demod = blocks.FrequencyDiscriminatorBlock(5.0)
+    local fm_demod = blocks.FrequencyDiscriminatorBlock(deviation/bandwidth)
     local af_filter = blocks.LowpassFilterBlock(128, bandwidth)
     self:connect(rf_filter, fm_demod, af_filter)
 

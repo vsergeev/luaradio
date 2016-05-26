@@ -7,7 +7,7 @@ local RDSReceiver = block.factory("RDSReceiver", blocks.CompositeBlock)
 function RDSReceiver:instantiate()
     blocks.CompositeBlock.instantiate(self)
 
-    local fm_demod = blocks.FrequencyDiscriminatorBlock(5.0)
+    local fm_demod = blocks.FrequencyDiscriminatorBlock(1.25)
     local hilbert = blocks.HilbertTransformBlock(129)
     local mixer_delay = blocks.DelayBlock(129)
     local pilot_filter = blocks.ComplexBandpassFilterBlock(129, {18e3, 20e3})

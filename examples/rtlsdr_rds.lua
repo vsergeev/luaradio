@@ -11,7 +11,7 @@ local offset = -200e3
 local top = radio.CompositeBlock()
 local source = radio.RtlSdrSource(frequency + offset, 1102500, {autogain = true})
 local tuner = radio.TunerBlock(offset, 200e6, 5)
-local fm_demod = radio.FrequencyDiscriminatorBlock(5.0)
+local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
 local hilbert = radio.HilbertTransformBlock(129)
 local mixer_delay = radio.DelayBlock(129)
 local mixer = radio.MultiplyConjugateBlock()

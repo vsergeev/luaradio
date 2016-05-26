@@ -10,7 +10,7 @@ function WBFMStereoDemodulator:instantiate(tau)
     local tau = tau or 75e-6
     local bandwidth = 15e3
 
-    local fm_demod = blocks.FrequencyDiscriminatorBlock(6.0)
+    local fm_demod = blocks.FrequencyDiscriminatorBlock(1.25)
     local hilbert = blocks.HilbertTransformBlock(129)
     local delay = blocks.DelayBlock(129)
     local pilot_filter = blocks.ComplexBandpassFilterBlock(129, {18e3, 20e3})

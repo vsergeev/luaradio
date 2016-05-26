@@ -12,7 +12,7 @@ local bandwidth = 15e3
 local top = radio.CompositeBlock()
 local source = radio.RtlSdrSource(frequency + offset, 1102500, {autogain = true})
 local tuner = radio.TunerBlock(offset, 200e3, 5)
-local fm_demod = radio.FrequencyDiscriminatorBlock(6.0)
+local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
 local hilbert = radio.HilbertTransformBlock(129)
 local delay = radio.DelayBlock(129)
 local pilot_filter = radio.ComplexBandpassFilterBlock(129, {18e3, 20e3})

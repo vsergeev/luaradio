@@ -10,7 +10,7 @@ function WBFMMonoDemodulator:instantiate(tau)
     local tau = tau or 75e-6
     local bandwidth = 15e3
 
-    local fm_demod = blocks.FrequencyDiscriminatorBlock(6.0)
+    local fm_demod = blocks.FrequencyDiscriminatorBlock(1.25)
     local af_filter = blocks.LowpassFilterBlock(128, bandwidth)
     local af_deemphasis = blocks.FMDeemphasisFilterBlock(tau)
     self:connect(fm_demod, af_filter, af_deemphasis)

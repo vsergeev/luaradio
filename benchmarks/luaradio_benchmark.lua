@@ -378,7 +378,7 @@ local BenchmarkSuite = {
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.FrequencyDiscriminatorBlock(5.0),
+                radio.FrequencyDiscriminatorBlock(1.25),
                 radio.BenchmarkSink(results_fd, true)
             )
         end

@@ -12,7 +12,7 @@ local bandwidth = 15e3
 local top = radio.CompositeBlock()
 local source = radio.RtlSdrSource(frequency + tune_offset, 1102500, {autogain = true})
 local tuner = radio.TunerBlock(tune_offset, 200e3, 5)
-local fm_demod = radio.FrequencyDiscriminatorBlock(6.0)
+local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)
 local af_decimator = radio.DownsamplerBlock(5)

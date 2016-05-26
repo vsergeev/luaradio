@@ -15,10 +15,10 @@ def generate():
     b = scipy.signal.firwin(16, 100e3, nyq=1e6 / 2)
     out = scipy.signal.lfilter(b, 1, out).astype(type(out[0]))
 
-    # Frequency discriminator with gain 5
+    # Frequency discriminator with modulation index of 5
     out_shifted = numpy.insert(out, 0, numpy.complex64())[:len(out)]
     tmp = out * numpy.conj(out_shifted)
-    out = (numpy.arctan2(numpy.imag(tmp), numpy.real(tmp)) / 5.0).astype(numpy.float32)
+    out = (numpy.arctan2(numpy.imag(tmp), numpy.real(tmp)) / (2*numpy.pi*5.0)).astype(numpy.float32)
 
     # Decimate by 25
     out = scipy.signal.decimate(out, 25, n=16 - 1, ftype='fir').astype(numpy.float32)

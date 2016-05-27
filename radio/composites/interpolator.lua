@@ -7,6 +7,7 @@ local InterpolatorBlock = block.factory("InterpolatorBlock", blocks.CompositeBlo
 function InterpolatorBlock:instantiate(interpolation, options)
     blocks.CompositeBlock.instantiate(self)
 
+    assert(interpolation, "Missing argument #1 (interpolation)")
     options = options or {}
 
     local scaler = blocks.MultiplyConstantBlock(interpolation)

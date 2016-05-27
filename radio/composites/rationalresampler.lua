@@ -7,6 +7,8 @@ local RationalResamplerBlock = block.factory("RationalResamplerBlock", blocks.Co
 function RationalResamplerBlock:instantiate(interpolation, decimation, options)
     blocks.CompositeBlock.instantiate(self)
 
+    assert(interpolation, "Missing argument #1 (interpolation)")
+    assert(decimation, "Missing argument #2 (decimation)")
     options = options or {}
 
     local cutoff = (1/interpolation < 1/decimation) and 1/interpolation or 1/decimation

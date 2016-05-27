@@ -7,6 +7,7 @@ local AMSynchronousDemodulator = block.factory("AMSynchronousDemodulator", block
 function AMSynchronousDemodulator:instantiate(ifreq, bandwidth)
     blocks.CompositeBlock.instantiate(self)
 
+    assert(ifreq, "Missing argument #1 (ifreq)")
     bandwidth = bandwidth or 5e3
 
     local rf_filter = blocks.ComplexBandpassFilterBlock(129, {ifreq - bandwidth, ifreq + bandwidth})

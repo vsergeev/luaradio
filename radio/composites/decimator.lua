@@ -7,6 +7,7 @@ local DecimatorBlock = block.factory("DecimatorBlock", blocks.CompositeBlock)
 function DecimatorBlock:instantiate(decimation, options)
     blocks.CompositeBlock.instantiate(self)
 
+    assert(decimation, "Missing argument #1 (decimation)")
     options = options or {}
 
     local filter = blocks.LowpassFilterBlock(options.num_taps or 128, 1/decimation, 1.0, options.window_type)

@@ -7,6 +7,9 @@ local TunerBlock = block.factory("TunerBlock", blocks.CompositeBlock)
 function TunerBlock:instantiate(offset, bandwidth, decimation, options)
     blocks.CompositeBlock.instantiate(self)
 
+    assert(offset, "Missing argument #1 (offset)")
+    assert(bandwidth, "Missing argument #2 (bandwidth)")
+    assert(decimation, "Missing argument #3 (decimation)")
     options = options or {}
 
     local translator = blocks.FrequencyTranslatorBlock(offset)

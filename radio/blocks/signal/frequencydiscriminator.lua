@@ -7,8 +7,9 @@ local types = require('radio.types')
 local FrequencyDiscriminatorBlock = block.factory("FrequencyDiscriminatorBlock")
 
 function FrequencyDiscriminatorBlock:instantiate(modulation_index)
-    self.gain = 2*math.pi*modulation_index
+    assert(modulation_index, "Missing argument #1 (modulation_index)")
 
+    self.gain = 2*math.pi*modulation_index
     self.prev_sample = types.ComplexFloat32()
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.Float32)})

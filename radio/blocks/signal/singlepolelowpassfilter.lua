@@ -6,9 +6,9 @@ local IIRFilterBlock = require('radio.blocks.signal.iirfilter')
 local SinglepoleLowpassFilterBlock = block.factory("SinglepoleLowpassFilterBlock", IIRFilterBlock)
 
 function SinglepoleLowpassFilterBlock:instantiate(cutoff)
-    IIRFilterBlock.instantiate(self, types.Float32.vector(2), types.Float32.vector(2))
+    self.cutoff = assert(cutoff, "Missing argument #1 (cutoff)")
 
-    self.cutoff = cutoff
+    IIRFilterBlock.instantiate(self, types.Float32.vector(2), types.Float32.vector(2))
 end
 
 --

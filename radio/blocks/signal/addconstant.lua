@@ -5,6 +5,7 @@ local types = require('radio.types')
 local AddConstantBlock = block.factory("AddConstantBlock")
 
 function AddConstantBlock:instantiate(constant)
+    assert(constant, "Missing argument #1 (constant)")
     -- Convert constant to Float32 or ComplexFloat32
     if class.isinstanceof(constant, "number") then
         self.constant = types.Float32(constant)
@@ -13,7 +14,7 @@ function AddConstantBlock:instantiate(constant)
     elseif class.isinstanceof(constant, types.ComplexFloat32) then
         self.constant = constant
     else
-        error("Unsupported constant type.")
+        error("Unsupported constant type")
     end
 
     if class.isinstanceof(constant, types.ComplexFloat32) then

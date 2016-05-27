@@ -8,7 +8,7 @@ local types = require('radio.types')
 local FrequencyTranslatorBlock = block.factory("FrequencyTranslatorBlock")
 
 function FrequencyTranslatorBlock:instantiate(offset)
-    self.offset = offset
+    self.offset = assert(offset, "Missing argument #1 (offset)")
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
 end

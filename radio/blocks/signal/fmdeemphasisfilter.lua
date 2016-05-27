@@ -7,6 +7,7 @@ local SinglepoleLowpassFilterBlock = require('radio.blocks.signal.singlepolelowp
 local FMDeemphasisFilterBlock = block.factory("FMDeemphasisFilterBlock", SinglepoleLowpassFilterBlock)
 
 function FMDeemphasisFilterBlock:instantiate(tau)
+    assert(tau, "Missing argument #1 (tau)")
     SinglepoleLowpassFilterBlock.instantiate(self, 1/(2*math.pi*tau))
 end
 

@@ -9,10 +9,11 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 local RootRaisedCosineFilterBlock = block.factory("RootRaisedCosineFilterBlock", FIRFilterBlock)
 
 function RootRaisedCosineFilterBlock:instantiate(num_taps, beta, symbol_rate)
-    FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
+    assert(num_taps, "Missing argument #1 (num_taps)")
+    self.beta = assert(beta, "Missing argument #2 (beta)")
+    self.symbol_rate = assert(symbol_rate, "Missing argument #3 (symbol_rate)")
 
-    self.beta = beta
-    self.symbol_rate = symbol_rate
+    FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
 end
 
 function RootRaisedCosineFilterBlock:initialize()

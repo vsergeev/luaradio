@@ -9,19 +9,24 @@ local vector = require('radio.core.vector')
 local IIRFilterBlock = block.factory("IIRFilterBlock")
 
 function IIRFilterBlock:instantiate(b_taps, a_taps)
+    assert(b_taps, "Missing argument #1 (b_taps)")
     if class.isinstanceof(b_taps, vector.Vector) and b_taps.data_type == types.Float32 then
         self.b_taps = b_taps
-    else
+    elseif class.isinstanceof(b_taps, "table") then
         self.b_taps = types.Float32.vector_from_array(b_taps)
+    else
+        error("Unsupported b_taps type")
     end
 
+    assert(a_taps, "Missing argument #2 (a_taps)")
     if class.isinstanceof(a_taps, vector.Vector) and a_taps.data_type == types.Float32 then
-        assert(a_taps.length >= 1, "Feedback taps must be at least length 1.")
         self.a_taps = a_taps
-    else
-        assert(#a_taps >= 1, "Feedback taps must be at least length 1.")
+    elseif class.isinstanceof(a_taps, "table") then
         self.a_taps = types.Float32.vector_from_array(a_taps)
+    else
+        error("Unsupported a_taps type")
     end
+    assert(self.a_taps.length >= 1, "Feedback taps must be at least length 1")
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, IIRFilterBlock.process_complex)
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, IIRFilterBlock.process_real)

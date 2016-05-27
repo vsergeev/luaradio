@@ -4,7 +4,7 @@ local types = require('radio.types')
 local ZeroCrossingClockRecoveryBlock = block.factory("ZeroCrossingClockRecoveryBlock")
 
 function ZeroCrossingClockRecoveryBlock:instantiate(baudrate, threshold)
-    self.baudrate = baudrate
+    self.baudrate = assert(baudrate, "Missing argument #1 (baudrate)")
     self.threshold = threshold or 0.0
 
     self.hysteresis = false

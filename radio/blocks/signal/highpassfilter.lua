@@ -9,11 +9,12 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 local HighpassFilterBlock = block.factory("HighpassFilterBlock", FIRFilterBlock)
 
 function HighpassFilterBlock:instantiate(num_taps, cutoff, nyquist, window_type)
-    FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
-
-    self.cutoff = cutoff
-    self.window_type = (window_type == nil) and "hamming" or window_type
+    assert(num_taps, "Missing argument #1 (num_taps)")
+    self.cutoff = assert(cutoff, "Missing argument #2 (cutoff)")
+    self.window_type = window_type or "hamming"
     self.nyquist = nyquist
+
+    FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
 end
 
 function HighpassFilterBlock:initialize()

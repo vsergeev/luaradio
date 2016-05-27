@@ -4,7 +4,7 @@ local types = require('radio.types')
 local UpsamplerBlock = block.factory("UpsamplerBlock")
 
 function UpsamplerBlock:instantiate(factor)
-    self.factor = factor
+    self.factor = assert(factor, "Missing argument #1 (factor)")
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})

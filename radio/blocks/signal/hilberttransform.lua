@@ -8,10 +8,9 @@ local filter_utils = require('radio.blocks.signal.filter_utils')
 local HilbertTransformBlock = block.factory("HilbertTransformBlock")
 
 function HilbertTransformBlock:instantiate(num_taps, window_type)
-    assert((num_taps % 2) == 1, "Hilbert taps must be odd.")
-
-    -- Default to hamming window
-    window_type = (window_type == nil) and "hamming" or window_type
+    assert(num_taps, "Missing argument #1 (num_taps)")
+    assert((num_taps % 2) == 1, "Number of taps must be odd")
+    window_type = window_type or "hamming"
 
     -- Generate Hilbert transform taps
     local taps = filter_utils.fir_hilbert_transform(num_taps, window_type)

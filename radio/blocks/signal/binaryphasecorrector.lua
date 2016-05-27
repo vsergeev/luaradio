@@ -8,7 +8,7 @@ local types = require('radio.types')
 local BinaryPhaseCorrectorBlock = block.factory("BinaryPhaseCorrectorBlock")
 
 function BinaryPhaseCorrectorBlock:instantiate(num_samples, sample_interval)
-    self.num_samples = num_samples
+    self.num_samples = assert(num_samples, "Missing argument #1 (num_samples)")
     self.sample_interval = sample_interval or 32
 
     self.sample_index = 0

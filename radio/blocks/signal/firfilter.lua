@@ -9,12 +9,15 @@ local types = require('radio.types')
 local FIRFilterBlock = block.factory("FIRFilterBlock")
 
 function FIRFilterBlock:instantiate(taps)
+    assert(taps, "Missing argument #1 (taps)")
     if class.isinstanceof(taps, vector.Vector) and taps.data_type == types.Float32 then
         self.taps = taps
     elseif class.isinstanceof(taps, vector.Vector) and taps.data_type == types.ComplexFloat32 then
         self.taps = taps
-    else
+    elseif class.isinstanceof(taps, "table") then
         self.taps = types.Float32.vector_from_array(taps)
+    else
+        error("Unsupported taps type")
     end
 
     if self.taps.data_type == types.ComplexFloat32 then

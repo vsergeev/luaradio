@@ -6,8 +6,8 @@ local types = require('radio.types')
 local DelayBlock = block.factory("DelayBlock")
 
 function DelayBlock:instantiate(num_samples)
-    assert(num_samples > 0, "Number of delay samples must be greater than 0.")
-    self.num_samples = num_samples
+    self.num_samples = assert(num_samples, "Missing argument #1 (num_samples)")
+    assert(num_samples > 0, "Number of samples must be greater than 0")
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})

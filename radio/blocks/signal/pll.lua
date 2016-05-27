@@ -4,10 +4,9 @@ local types = require('radio.types')
 local PLLBlock = block.factory("PLLBlock")
 
 function PLLBlock:instantiate(loop_bandwidth, frequency_min, frequency_max, multiplier)
-    -- Store parameters for loop filter
-    self.loop_bw = loop_bandwidth
-    self.freq_min = frequency_min
-    self.freq_max = frequency_max
+    self.loop_bw = assert(loop_bandwidth, "Missing argument #1 (loop_bandwidth)")
+    self.freq_min = assert(frequency_min, "Missing argument #2 (frequency_min)")
+    self.freq_max = assert(frequency_max, "Missing argument #3 (frequency_max)")
     self.multiplier = multiplier or 1.0
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32), block.Output("error", types.Float32)})

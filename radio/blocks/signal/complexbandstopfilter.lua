@@ -9,11 +9,12 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 local ComplexBandstopFilterBlock = block.factory("ComplexBandstopFilterBlock", FIRFilterBlock)
 
 function ComplexBandstopFilterBlock:instantiate(num_taps, cutoffs, nyquist, window_type)
-    FIRFilterBlock.instantiate(self, types.ComplexFloat32.vector(num_taps))
-
-    self.cutoffs = cutoffs
-    self.window_type = (window_type == nil) and "hamming" or window_type
+    assert(num_taps, "Missing argument #1 (num_taps)")
+    self.cutoffs = assert(cutoffs, "Missing argument #2 (cutoffs)")
+    self.window_type = window_type or "hamming"
     self.nyquist = nyquist
+
+    FIRFilterBlock.instantiate(self, types.ComplexFloat32.vector(num_taps))
 end
 
 function ComplexBandstopFilterBlock:initialize()

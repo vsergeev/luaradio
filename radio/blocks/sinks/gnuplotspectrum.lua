@@ -70,7 +70,7 @@ function GnuplotSpectrumSink:initialize_gnuplot()
     end
 
     -- Build plot string
-    self.plot_str = string.format("plot '-' binary format='%%float32' array=%d origin=(%.3f,0) dx=%.3f using 1\n", self.num_samples, -sample_rate/2, sample_rate/self.num_samples)
+    self.plot_str = string.format("plot '-' binary format='%%float32' array=%d origin=(%.3f,0) dx=%.3f using 1 linestyle 1\n", self.num_samples, -sample_rate/2, sample_rate/self.num_samples)
 
     -- Build DFT context
     local window_type = self.options.window or "hamming"

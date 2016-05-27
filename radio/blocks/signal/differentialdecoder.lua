@@ -4,7 +4,7 @@ local types = require('radio.types')
 local DifferentialDecoderBlock = block.factory("DifferentialDecoderBlock")
 
 function DifferentialDecoderBlock:instantiate(invert)
-    self.invert = (invert == nil) and false or invert
+    self.invert = invert or false
 
     self.prev_bit = types.Bit(0)
     self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", types.Bit)})

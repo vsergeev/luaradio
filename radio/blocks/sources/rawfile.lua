@@ -12,12 +12,12 @@ function RawFileSource:instantiate(file, data_type, rate, repeat_on_eof)
     elseif type(file) == "number" then
         self.fd = file
     else
-        self.file = file
+        self.file = assert(file, "Missing argument #1 (file)")
     end
 
-    self.type = data_type
-    self.rate = rate
-    self.repeat_on_eof = (repeat_on_eof == nil) and false or repeat_on_eof
+    self.data_type = assert(data_type, "Missing argument #2 (data_type)")
+    self.rate = assert(rate, "Missing argument #3 (rate)")
+    self.repeat_on_eof = repeat_on_eof or false
 
     self:add_type_signature({}, {block.Output("out", data_type)})
 end
@@ -92,8 +92,8 @@ function RawFileSource:process()
     self.buf_offset = 0
 
     -- Deserialize as many elements as possible
-    local count = self.type.deserialize_count(self.buf, self.buf_size)
-    local samples, size = self.type.deserialize_partial(self.buf, count)
+    local count = self.data_type.deserialize_count(self.buf, self.buf_size)
+    local samples, size = self.data_type.deserialize_partial(self.buf, count)
     self.buf_offset = size
 
     return samples

@@ -16,10 +16,11 @@ function SignalSource:instantiate(signal, frequency, rate, options)
         sawtooth = {process = SignalSource.process_sawtooth, initialize = SignalSource.initialize_square_triangle_sawtooth, type = types.Float32},
         constant = {process = SignalSource.process_constant, initialize = SignalSource.initialize_constant, type = types.Float32},
     }
-    assert(supported_signals[signal], "Unsupported signal \"" .. signal .. "\".")
+    assert(signal, "Missing argument #1 (signal)")
+    assert(supported_signals[signal], "Unsupported signal (\"" .. signal .. "\")")
 
-    self.frequency = frequency
-    self.rate = rate
+    self.frequency = assert(frequency, "Missing argument #2 (frequency)")
+    self.rate = assert(rate, "Missing argument #3 (rate)")
     self.options = options or {}
     self.chunk_size = 8192
 

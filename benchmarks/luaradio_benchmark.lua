@@ -40,7 +40,7 @@ local BenchmarkSuite = {
         "NullSource",
         function (results_fd)
             return radio.CompositeBlock():connect(
-                radio.NullSource(radio.types.ComplexFloat32),
+                radio.NullSource(radio.types.ComplexFloat32, 1.0),
                 radio.BenchmarkSink(results_fd, true)
             )
         end
@@ -50,7 +50,7 @@ local BenchmarkSuite = {
         "NullSource",
         function (results_fd)
             return radio.CompositeBlock():connect(
-                radio.NullSource(radio.types.Float32),
+                radio.NullSource(radio.types.Float32, 1.0),
                 radio.BenchmarkSink(results_fd, true)
             )
         end

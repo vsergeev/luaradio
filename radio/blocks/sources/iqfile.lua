@@ -77,19 +77,19 @@ function IQFileSource:instantiate(file, format, rate, repeat_on_eof)
         f64le = {ctype = "iq_format_f64_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0},
         f64be = {ctype = "iq_format_f64_t", swap = ffi.abi("le"), offset = 0,             scale = 1.0},
     }
-    assert(supported_formats[format], "Unsupported format \"" .. format .. "\".")
 
     if type(file) == "string" then
         self.filename = file
     elseif type(file) == "number" then
         self.fd = file
     else
-        self.file = file
+        self.file = assert(file, "Missing argument #1 (file)")
     end
 
-    self.format = supported_formats[format]
-    self.rate = rate
-    self.repeat_on_eof = (repeat_on_eof == nil) and false or repeat_on_eof
+    assert(format, "Missing argument #2 (format)")
+    self.format = assert(supported_formats[format], "Unsupported format (\"" .. format .. "\")")
+    self.rate = assert(rate, "Missing argument #3 (rate)")
+    self.repeat_on_eof = repeat_on_eof or false
 
     self.chunk_size = 8192
 

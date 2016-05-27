@@ -36,16 +36,14 @@ local random_generator_table = {
 }
 
 function UniformRandomSource:instantiate(data_type, rate, range, options)
-    if not random_generator_table[data_type] then
-        error("Unsupported data type.")
-    end
+    self.data_type = assert(data_type, "Missing argument #1 (data_type)")
+    self.rate = assert(rate, "Missing argument #2 (rate)")
+
+    assert(random_generator_table[data_type], "Unsupported data type")
+    self.generator = random_generator_table[data_type](unpack(range or {}))
 
     options = options or {}
-
-    self.rate = rate or 1
     self.chunk_size = 8192
-    self.data_type = data_type
-    self.generator = random_generator_table[data_type](unpack(range or {}))
     self.seed = options.seed or nil
 
     self:add_type_signature({}, {block.Output("out", data_type)})

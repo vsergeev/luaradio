@@ -60,13 +60,14 @@ function WAVFileSource:instantiate(file, num_channels, repeat_on_eof)
     elseif type(file) == "number" then
         self.fd = file
     else
-        self.file = file
+        self.file = assert(file, "Missing argument #1 (file)")
     end
 
-    self.num_channels = num_channels
+    self.num_channels = assert(num_channels, "Missing argument #2 (num_channels)")
+    self.repeat_on_eof = repeat_on_eof or false
+
     self.rate = nil
     self.chunk_size = 8192
-    self.repeat_on_eof = (repeat_on_eof == nil) and false or repeat_on_eof
 
     -- Build type signature
     if num_channels == 1 then

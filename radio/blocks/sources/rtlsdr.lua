@@ -7,11 +7,11 @@ local types = require('radio.types')
 local RtlSdrSource = block.factory("RtlSdrSource")
 
 function RtlSdrSource:instantiate(frequency, rate, options)
-    self.frequency = frequency
-    self.rate = rate
-    self.options = options or {}
+    self.frequency = assert(frequency, "Missing argument #1 (frequency)")
+    self.rate = assert(rate, "Missing argument #2 (rate)")
 
-    self.autogain = (self.options.autogain == nil) and false or self.options.autogain
+    self.options = options or {}
+    self.autogain = self.options.autogain or false
     self.rf_gain = self.options.rf_gain or 10.0
     self.freq_correction = self.options.freq_correction or 0.0
 

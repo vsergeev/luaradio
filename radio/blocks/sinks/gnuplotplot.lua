@@ -6,7 +6,7 @@ local types = require('radio.types')
 local GnuplotPlotSink = block.factory("GnuplotPlotSink")
 
 function GnuplotPlotSink:instantiate(num_samples, title, options)
-    self.num_samples = num_samples
+    self.num_samples = assert(num_samples, "Missing argument #1 (num_samples)")
     self.title = title or ""
     self.options = options or {}
 

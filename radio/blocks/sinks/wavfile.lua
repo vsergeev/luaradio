@@ -72,18 +72,15 @@ function WAVFileSink:instantiate(file, num_channels, bits_per_sample)
     elseif type(file) == "number" then
         self.fd = file
     else
-        self.file = file
+        self.file = assert(file, "Missing argument #1 (file)")
     end
 
-    self.num_channels = num_channels
+    self.num_channels = assert(num_channels, "Missing argument #2 (num_channels)")
     self.bits_per_sample = bits_per_sample or 16
-    self.format = supported_formats[self.bits_per_sample]
+    self.format = assert(supported_formats[self.bits_per_sample], string.format("Unsupported bits per sample (%s)", tostring(bits_per_sample)))
+
     self.num_samples = 0
     self.count = 0
-
-    if self.format == nil then
-        error(string.format("Unsupported WAV file: unsupported bits per sample %d.", bits_per_sample))
-    end
 
     -- Build type signature
     if num_channels == 1 then

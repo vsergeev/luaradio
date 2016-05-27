@@ -49,7 +49,7 @@ describe("RealFileSink", function ()
 
             -- Write buf to source
             local src_fd = buffer.open(buf)
-            local src = radio.RealFileSource(src_fd, fmt)
+            local src = radio.RealFileSource(src_fd, fmt, 1)
             src:differentiate({})
             src:initialize()
             local vec = src:process()

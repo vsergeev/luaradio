@@ -10,7 +10,7 @@ function RawFileSink:instantiate(file)
     elseif type(file) == "number" then
         self.fd = file
     else
-        self.file = file
+        self.file = assert(file, "Missing argument #1 (file)")
     end
 
     -- Accept all input types

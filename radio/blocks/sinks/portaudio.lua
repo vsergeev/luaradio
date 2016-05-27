@@ -6,7 +6,7 @@ local types = require('radio.types')
 local PortAudioSink = block.factory("PortAudioSink")
 
 function PortAudioSink:instantiate(num_channels)
-    self.num_channels = num_channels or 1
+    self.num_channels = assert(num_channels, "Missing argument #1 (num_channels)")
 
     if self.num_channels == 1 then
         self:add_type_signature({block.Input("in", types.Float32)}, {})

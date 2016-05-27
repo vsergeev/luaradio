@@ -50,7 +50,7 @@ function GnuplotPlotSink:initialize_gnuplot()
     end
 
     -- Build plot string
-    self.plot_str = string.format("plot '-' binary format='%%float32' array=%d using 1\n", self.num_samples)
+    self.plot_str = string.format("plot '-' binary format='%%float32' array=%d using 1 linestyle 1\n", self.num_samples)
     self.gnuplot_f:write(self.plot_str)
 end
 

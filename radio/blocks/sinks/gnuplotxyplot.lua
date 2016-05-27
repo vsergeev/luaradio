@@ -58,7 +58,7 @@ function GnuplotXYPlotSink:initialize_gnuplot()
     end
 
     -- Build plot string
-    self.plot_str = string.format("plot '-' binary format='%%float32%%float32' record=%d using 1:2\n", self.num_samples)
+    self.plot_str = string.format("plot '-' binary format='%%float32%%float32' record=%d using 1:2 linestyle 1\n", self.num_samples)
     self.gnuplot_f:write(self.plot_str)
 end
 

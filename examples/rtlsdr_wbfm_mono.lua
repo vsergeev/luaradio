@@ -6,7 +6,7 @@ if #arg < 1 then
 end
 
 local frequency = tonumber(arg[1])
-local tune_offset = -200e3
+local tune_offset = -250e3
 local bandwidth = 15e3
 
 local top = radio.CompositeBlock()

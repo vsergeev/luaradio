@@ -6,11 +6,11 @@ if #arg < 1 then
 end
 
 local frequency = tonumber(arg[1])
-local offset = -200e3
+local tune_offset = -250e3
 
 local top = radio.CompositeBlock()
-local source = radio.RtlSdrSource(frequency + offset, 1102500)
-local tuner = radio.TunerBlock(offset, 200e6, 5)
+local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
+local tuner = radio.TunerBlock(tune_offset, 200e6, 5)
 local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
 local hilbert = radio.HilbertTransformBlock(129)
 local mixer_delay = radio.DelayBlock(129)

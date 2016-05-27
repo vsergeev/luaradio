@@ -1,3 +1,19 @@
+* (Prototype) v0.0.19 - 06/04/2016
+    * Documentation changes
+        * Add packaged third-party modules licenses to LICENSE file.
+        * Add docstrings throughout codebase and blocks.
+        * Add reference manual generator.
+        * Add documents:
+            * Reference Manual
+            * Installation
+            * Creating Blocks
+            * Embedding LuaRadio
+            * Architecture
+            * Comparison to GNU Radio
+        * Add tests README.
+        * Add examples README.
+        * Add project README.
+
 * (Prototype) v0.0.18 - 06/04/2016
     * Block additions
         * RealToComplexBlock

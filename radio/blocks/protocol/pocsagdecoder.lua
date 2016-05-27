@@ -35,7 +35,7 @@ function POCSAGDecoderBlock:instantiate(mode)
     -- Default decode mode to alphanumeric
     self.mode = mode or "alphanumeric"
 
-    assert(self.mode == "alphanumeric" or self.mode == "numeric" or self.mode == "both", "Decode mode should be \"alphanumeric\", \"numeric\", or \"both\".")
+    assert(self.mode == "alphanumeric" or self.mode == "numeric" or self.mode == "both", "Decode mode should be \"alphanumeric\", \"numeric\", or \"both\"")
 
     self:add_type_signature({block.Input("in", POCSAGFrameType)}, {block.Output("out", POCSAGMessageType)})
 end

@@ -477,7 +477,11 @@ function CompositeBlock:start(multiprocess)
                 end
 
                 -- Run the block
-                block:run()
+                local status, err = xpcall(function () block:run() end, _G.debug.traceback)
+                if not status then
+                    io.stderr:write(string.format("[%s] Block runtime error: %s\n", block.name, tostring(err)))
+                    os.exit(1)
+                end
 
                 -- Exit
                 os.exit(0)

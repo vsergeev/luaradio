@@ -11,11 +11,12 @@ function GnuplotSpectrumSink:instantiate(num_samples, title, options)
     self.num_samples = num_samples or 1024
     self.title = title or ""
     self.options = options or {}
+
     self.update_time = self.options.update_time or 0.10
     self.overlap = self.options.overlap or 0.00
     self.reference_level = self.options.reference_level or 0.00
 
-    assert(self.overlap < 1, "Overlap should be a fraction in [0.00, 1.00).")
+    assert(self.overlap < 1, "Overlap should be a fraction in [0.00, 1.00)")
 
     self:add_type_signature({block.Input("in", types.Float32)}, {})
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {})

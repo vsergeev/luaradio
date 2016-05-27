@@ -1,3 +1,41 @@
+* (Prototype) v0.0.17 - 06/03/2016
+    * Core changes
+        * Fix deadlock in synchronous read of multiple pipes, when a slower
+          input pipe has an indirect dependency on a faster input pipe because
+          it shares a common upstream writer.
+        * Enforce all block input rates match before running in CompositeBlock.
+        * Enforce inputs/outputs names match previous type signatures in Block.
+        * Close unneeded file descriptors in block process after forking in
+          CompositeBlock.
+        * Add protected call wrapper to block running in CompositeBlock.
+        * Add `status()` method to CompositeBlock.
+        * Add `__tostring()` metamethod to Vector and ObjectVector.
+        * Rename `type` property to `data_type` in Vector and ObjectVector.
+        * Return self in `resize()`, `append()` methods of Vector and
+          ObjectVector.
+        * Refactor `run()` method in Block.
+        * Rename `get_input_types()`, `get_output_types()` methods to
+          `get_input_type()`, `get_output_type()` in Block.
+        * Improve error messages in Block.
+        * Improve debug and error messages in CompositeBlock.
+        * Add CompositeBlock control (status, wait, stop) unit tests.
+    * C API changes
+        * Rename context type from `radio_t` to `luaradio_t`.
+        * Add `luaradio_status()` function to wrap CompositeBlock `status()`.
+        * Add `luaradio_get_state()` function to get Lua state.
+        * Refactor and improve C API unit test.
+        * Clean up fmradio and rds-timesync examples.
+    * Block changes
+        * Rename RDSFrameBlock to RDSFramerBlock.
+        * Rename RDSDecodeBlock to RDSDecoderBlock.
+        * Rename AX25FrameBlock to AX25FramerBlock.
+        * Rename POCSAGFrameBlock to POCSAGFramerBlock.
+        * Rename POCSAGDecodeBlock to POCSAGDecoderBlock.
+        * Rename SumBlock to AddBlock.
+    * Benchmark changes
+        * Reduce factors in downsampler and upsampler benchmarks.
+        * Increase buffer sizes in several file source benchmarks.
+
 * (Prototype) v0.0.16 - 05/03/2016
     * Simplify class module namespacing, including blocks and basic types.
     * Improve basic type names.

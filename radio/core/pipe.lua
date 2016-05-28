@@ -20,6 +20,10 @@ function PipeInput:close()
     self.pipe:close_input()
 end
 
+function PipeInput:filenos()
+    return {self.pipe:fileno_input()}
+end
+
 -- PipeOutput class
 local PipeOutput = class.factory()
 
@@ -36,6 +40,14 @@ function PipeOutput:close()
     for i=1, #self.pipes do
         self.pipes[i]:close_output()
     end
+end
+
+function PipeOutput:filenos()
+    local fds = {}
+    for i = 1, #self.pipes do
+        fds[i] = self.pipes[i]:fileno_output()
+    end
+    return fds
 end
 
 -- AliasedPipeInput class
@@ -199,6 +211,14 @@ function Pipe:close_output()
         end
         self._wfd = nil
     end
+end
+
+function Pipe:fileno_input()
+    return self._rfd
+end
+
+function Pipe:fileno_output()
+    return self._wfd
 end
 
 -- Helper function to read synchronously from a set of pipes

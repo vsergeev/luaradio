@@ -293,6 +293,8 @@ ffi.cdef[[
     int sigwait(const sigset_t *set, int *sig);
     int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
     int sigpending(sigset_t *set);
+
+    int getdtablesize(void);
 ]]
 
 function CompositeBlock:_prepare_to_run()
@@ -454,22 +456,34 @@ function CompositeBlock:start(multiprocess)
             end
 
             if pid == 0 then
-                -- Create a set of pipe inputs and outputs to save
-                local pipes_save = {}
+                -- Create a set of file descriptors to save
+                local save_fds = {}
+
+                -- Save input pipe fds
                 for i = 1, #block.inputs do
-                    pipes_save[block.inputs[i]] = true
-                end
-                for i = 1, #block.outputs do
-                    pipes_save[block.outputs[i]] = true
+                    for _, fd in pairs(block.inputs[i]:filenos()) do
+                        save_fds[fd] = true
+                    end
                 end
 
-                -- Close all other pipe inputs and outputs
-                for pipe_input, pipe_output in pairs(all_connections) do
-                    if not pipes_save[pipe_input] then
-                        pipe_input:close()
+                -- Save output pipe fds
+                for i = 1, #block.outputs do
+                    for _, fd in pairs(block.outputs[i]:filenos()) do
+                        save_fds[fd] = true
                     end
-                    if not pipes_save[pipe_output] then
-                        pipe_output:close()
+                end
+
+                -- Save open file fds
+                for file, _ in pairs(block.files) do
+                    local fd = (type(file) == "number") and file or ffi.C.fileno(file)
+                    save_fds[fd] = true
+                end
+
+                -- Close all other file descriptors
+                -- FIXME this is nuclear
+                for fd = 0, ffi.C.getdtablesize()-1 do
+                    if not save_fds[fd] then
+                        ffi.C.close(fd)
                     end
                 end
 

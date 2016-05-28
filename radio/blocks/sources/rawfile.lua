@@ -58,6 +58,9 @@ function RawFileSource:initialize()
             error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
     end
+
+    -- Register open file
+    self.files[self.file] = true
 end
 
 function RawFileSource:process()

@@ -185,6 +185,9 @@ function WAVFileSource:initialize()
     -- Pull out sample rate and format
     self.rate = self.wave_subchunk1_header.sample_rate
     self.format = supported_formats[self.wave_subchunk1_header.bits_per_sample]
+
+    -- Register open file
+    self.files[self.file] = true
 end
 
 local function swap_bytes(x)

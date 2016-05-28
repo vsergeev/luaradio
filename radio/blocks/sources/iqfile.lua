@@ -112,6 +112,9 @@ function IQFileSource:initialize()
             error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
     end
+
+    -- Register open file
+    self.files[self.file] = true
 end
 
 local function swap_bytes(x)

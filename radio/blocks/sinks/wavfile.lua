@@ -165,6 +165,9 @@ function WAVFileSink:initialize()
     if ffi.C.fseek(self.file, ffi.sizeof(self.riff_header) + ffi.sizeof(self.wave_subchunk1_header) + ffi.sizeof(self.wave_subchunk2_header), ffi.C.SEEK_SET) ~= 0 then
         error("fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
+
+    -- Register open file
+    self.files[self.file] = true
 end
 
 local function swap_bytes(x)

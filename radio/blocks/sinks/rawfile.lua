@@ -40,6 +40,9 @@ function RawFileSink:initialize()
             error("fileno(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
     end
+
+    -- Register open file
+    self.files[self.fd] = true
 end
 
 function RawFileSink:process(x)

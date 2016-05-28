@@ -39,9 +39,10 @@ function JSONSink:initialize()
         if self.file == nil then
             error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
-    elseif self.file then
-        -- Noop
     end
+
+    -- Register open file
+    self.files[self.file] = true
 end
 
 function JSONSink:process(x)

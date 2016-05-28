@@ -345,6 +345,9 @@ local function factory(name, parent_class)
         self.inputs = nil
         self.outputs = nil
 
+        -- Open files
+        self.files = {[io.stdout] = true, [io.stderr] = true}
+
         -- Type signatures and differentiated signature
         self.signatures = {}
         self.signature = nil

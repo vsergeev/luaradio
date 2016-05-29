@@ -1,7 +1,7 @@
 local radio = require('radio')
 
 if #arg < 4 then
-    io.stderr:write("Usage: " .. arg[0] .. " <wav mono file in> <iq f32le file out> <bandwidth> <sideband>\n")
+    io.stderr:write("Usage: " .. arg[0] .. " <WAV file in> <IQ f32le file out> <bandwidth> <sideband>\n")
     os.exit(1)
 end
 

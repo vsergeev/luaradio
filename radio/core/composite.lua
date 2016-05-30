@@ -389,12 +389,12 @@ function CompositeBlock:run(multiprocess)
 end
 
 function CompositeBlock:start(multiprocess)
-    -- Default to multiprocess
-    multiprocess = (multiprocess == nil) and true or multiprocess
-
     if self._running then
         error("CompositeBlock already running!")
     end
+
+    -- Default to multiprocess
+    multiprocess = (multiprocess == nil) and true or multiprocess
 
     -- Install dummy signal handler for SIGCHLD, as
     -- BSD platforms discard this signal by default
@@ -434,48 +434,7 @@ function CompositeBlock:start(multiprocess)
         return self
     end
 
-    if not multiprocess then
-        -- Build a skip set, containing the set of blocks to skip for each
-        -- block, if it produces no new samples.
-        local skip_set = build_skip_set(all_connections)
-
-        -- Run blocks in round-robin order
-        local running = true
-        while running do
-            local skip = {}
-
-            for _, block in ipairs(execution_order) do
-                if not skip[block] then
-                    local ret = block:run_once()
-                    if ret == false then
-                        -- No new samples produced, mark downstream blocks in
-                        -- our skip set
-                        for b , _ in pairs(skip_set[block]) do
-                            skip[b] = true
-                        end
-                    elseif ret == nil then
-                        -- EOF reached, stop running
-                        running = false
-                        break
-                    end
-                end
-            end
-
-            -- Check for SIGINT
-            if ffi.C.sigpending(sigset) ~= 0 then
-                error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-            end
-            if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
-                debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
-                running = false
-            end
-        end
-
-        -- Clean up all blocks
-        for _, block in ipairs(execution_order) do
-            block:cleanup()
-        end
-    else
+    if multiprocess then
         self._pids = {}
 
         debug.printf("[CompositeBlock] Parent pid %d\n", ffi.C.getpid())
@@ -553,6 +512,47 @@ function CompositeBlock:start(multiprocess)
 
         -- Mark ourselves as running
         self._running = true
+    else
+        -- Build a skip set, containing the set of blocks to skip for each
+        -- block, if it produces no new samples.
+        local skip_set = build_skip_set(all_connections)
+
+        -- Run blocks in round-robin order
+        local running = true
+        while running do
+            local skip = {}
+
+            for _, block in ipairs(execution_order) do
+                if not skip[block] then
+                    local ret = block:run_once()
+                    if ret == false then
+                        -- No new samples produced, mark downstream blocks in
+                        -- our skip set
+                        for b , _ in pairs(skip_set[block]) do
+                            skip[b] = true
+                        end
+                    elseif ret == nil then
+                        -- EOF reached, stop running
+                        running = false
+                        break
+                    end
+                end
+            end
+
+            -- Check for SIGINT
+            if ffi.C.sigpending(sigset) ~= 0 then
+                error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
+            if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 then
+                debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
+                running = false
+            end
+        end
+
+        -- Clean up all blocks
+        for _, block in ipairs(execution_order) do
+            block:cleanup()
+        end
     end
 
     return self

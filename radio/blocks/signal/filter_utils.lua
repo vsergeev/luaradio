@@ -74,7 +74,7 @@ end
 
 local function firwin(h, window_type, scale_freq)
     -- Default to hamming window
-    window_type = (window_type == nil) and "hamming" or window_type
+    window_type = window_type or "hamming"
 
     -- Generate and apply window
     local w = window_utils.window(#h, window_type)
@@ -126,7 +126,7 @@ end
 
 local function complex_firwin(h, center_freq, window_type, scale_freq)
     -- Default to hamming window
-    window_type = (window_type == nil) and "hamming" or window_type
+    window_type = window_type or "hamming"
 
     -- Translate real filter to center frequency, making it complex
     for n = 0, #h-1 do
@@ -217,7 +217,7 @@ end
 
 local function fir_hilbert_transform(num_taps, window_type)
     -- Default to hamming window
-    window_type = (window_type == nil) and "hamming" or window_type
+    window_type = window_type or "hamming"
 
     if (num_taps % 2) == 0 then
         error("Number of taps must be odd.")

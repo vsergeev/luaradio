@@ -51,57 +51,68 @@ end
 function RtlSdrSource:initialize_rtlsdr()
     self.dev = ffi.new("rtlsdr_dev_t *[1]")
 
+    local ret
+
     -- Open device
-    if librtlsdr.rtlsdr_open(self.dev, 0) ~= 0 then
-        error("rtlsdr_open() failed.")
+    ret = librtlsdr.rtlsdr_open(self.dev, 0)
+    if ret ~= 0 then
+        error("rtlsdr_open(): " .. tostring(ret))
     end
 
     -- Set sample rate
-    if librtlsdr.rtlsdr_set_sample_rate(self.dev[0], self.rate) ~= 0 then
-        error("rtlsdr_set_sample_rate() failed.")
+    ret = librtlsdr.rtlsdr_set_sample_rate(self.dev[0], self.rate)
+    if ret ~= 0 then
+        error("rtlsdr_set_sample_rate(): " .. tostring(ret))
     end
 
     -- Set frequency
-    if librtlsdr.rtlsdr_set_center_freq(self.dev[0], self.frequency) ~= 0 then
-        error("rtlsdr_set_center_freq() failed.")
+    ret = librtlsdr.rtlsdr_set_center_freq(self.dev[0], self.frequency)
+    if ret ~= 0 then
+        error("rtlsdr_set_center_freq(): " .. tostring(ret))
     end
 
     if self.autogain then
         -- Set autogain
-        if librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 0) ~= 0 then
-            error("rtlsdr_set_tuner_gain_mode() failed.")
+        ret = librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 0)
+        if ret ~= 0 then
+            error("rtlsdr_set_tuner_gain_mode(): " .. tostring(ret))
         end
 
         -- Enable AGC
-        if librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 1) ~= 0 then
-            error("rtlsdr_set_agc_mode() failed.")
+        ret = librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 1)
+        if ret ~= 0 then
+            error("rtlsdr_set_agc_mode(): " .. tostring(ret))
         end
     else
         -- Disable autogain
-        if librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 1) ~= 0 then
-            error("rtlsdr_set_tuner_gain_mode() failed.")
+        ret = librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 1)
+        if ret ~= 0 then
+            error("rtlsdr_set_tuner_gain_mode(): " .. tostring(ret))
         end
 
         -- Disable AGC
-        if librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 0) ~= 0 then
-            error("rtlsdr_set_agc_mode() failed.")
+        ret = librtlsdr.rtlsdr_set_agc_mode(self.dev[0], 0)
+        if ret ~= 0 then
+            error("rtlsdr_set_agc_mode(): " .. tostring(ret))
         end
 
         -- Set RF gain
-        if librtlsdr.rtlsdr_set_tuner_gain(self.dev[0], math.floor(self.rf_gain*10)) ~= 0 then
-            error("rtlsdr_set_tuner_gain() failed.")
+        ret = librtlsdr.rtlsdr_set_tuner_gain(self.dev[0], math.floor(self.rf_gain*10))
+        if ret ~= 0 then
+            error("rtlsdr_set_tuner_gain(): " .. tostring(ret))
         end
     end
 
     -- Set frequency correction
     local ret = librtlsdr.rtlsdr_set_freq_correction(self.dev[0], math.floor(self.freq_correction))
     if ret ~= 0 and ret ~= -2 then
-        error("rtlsdr_set_freq_correction() failed.")
+        error("rtlsdr_set_freq_correction(): " .. tostring(ret))
     end
 
     -- Reset endpoint buffer
-    if librtlsdr.rtlsdr_reset_buffer(self.dev[0]) ~= 0 then
-        error("rtlsdr_reset_buffer() failed.")
+    ret = librtlsdr.rtlsdr_reset_buffer(self.dev[0])
+    if ret ~= 0 then
+        error("rtlsdr_reset_buffer(): " .. tostring(ret))
     end
 
     -- Allocate read buffer
@@ -118,10 +129,10 @@ function RtlSdrSource:process()
     end
 
     -- Read buffer
-    if librtlsdr.rtlsdr_read_sync(self.dev[0], self.buf, self.buf_size, self.n_read) ~= 0 then
-        error("rtlsdr_read_sync() failed.")
-    end
-    if self.n_read[0] ~= self.buf_size then
+    local ret = librtlsdr.rtlsdr_read_sync(self.dev[0], self.buf, self.buf_size, self.n_read)
+    if ret ~= 0 then
+        error("rtlsdr_read_sync(): " .. tostring(ret))
+    elseif self.n_read[0] ~= self.buf_size then
         error("Short read. Aborting...")
     end
 

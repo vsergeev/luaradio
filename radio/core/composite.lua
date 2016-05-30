@@ -558,83 +558,106 @@ function CompositeBlock:start(multiprocess)
     return self
 end
 
-function CompositeBlock:status()
-    if self._running and self._pids then
-        -- Check if any children are still running
-        for _, pid in pairs(self._pids) do
-            if ffi.C.waitpid(pid, nil, ffi.C.WNOHANG) == 0 then
-                return {running = true}
+-- Reap child processes and consume SIGCHLD signals
+function CompositeBlock:_reap()
+    -- Wait for all children to exit
+    for _, pid in pairs(self._pids) do
+        -- If the process exists
+        if ffi.C.kill(pid, 0) == 0 then
+            -- Reap the process
+            if ffi.C.waitpid(pid, nil, 0) == -1 then
+                error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
             end
         end
-
-        -- Mark ourselves as not running
-        self._running = false
     end
+
+    -- Check pending signals
+    local sigset = ffi.new("sigset_t[1]")
+    if ffi.C.sigpending(sigset) ~= 0 then
+        error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    -- Consume pending SIGCHLD signal
+    if ffi.C.sigismember(sigset, ffi.C.SIGCHLD) == 1 then
+        local sig = ffi.new("int[1]")
+        ffi.C.sigemptyset(sigset)
+        ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
+        if ffi.C.sigwait(sigset, sig) ~= 0 then
+            error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+    end
+end
+
+function CompositeBlock:status()
+    if not self._running then
+        return {running = false}
+    end
+
+    -- Check if any children are still running
+    for _, pid in pairs(self._pids) do
+        if ffi.C.waitpid(pid, nil, ffi.C.WNOHANG) == 0 then
+            return {running = true}
+        end
+    end
+
+    -- Reap child processes
+    self:_reap()
+
+    -- Mark ourselves as not running
+    self._running = false
 
     return {running = false}
 end
 
 function CompositeBlock:stop()
-    if self._running and self._pids then
-        -- Kill source blocks
-        for block, pid in pairs(self._pids) do
-            if #block.inputs == 0 then
-                ffi.C.kill(pid, ffi.C.SIGTERM)
-            end
-        end
-
-        -- Wait for all children to exit
-        for _, pid in pairs(self._pids) do
-            -- If the process exists
-            if ffi.C.kill(pid, 0) == 0 then
-                -- Reap the process
-                if ffi.C.waitpid(pid, nil, 0) == -1 then
-                    error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-                end
-            end
-        end
-
-        -- Mark ourselves as not running
-        self._running = false
+    if not self._running then
+        return
     end
+
+    -- Kill source blocks
+    for block, pid in pairs(self._pids) do
+        if #block.inputs == 0 then
+            ffi.C.kill(pid, ffi.C.SIGTERM)
+        end
+    end
+
+    -- Reap child processes
+    self:_reap()
+
+    -- Mark ourselves as not running
+    self._running = false
 end
 
 function CompositeBlock:wait()
-    if self._running and self._pids then
-        -- Build signal set with SIGINT and SIGCHLD
-        local sigset = ffi.new("sigset_t[1]")
-        ffi.C.sigemptyset(sigset)
-        ffi.C.sigaddset(sigset, ffi.C.SIGINT)
-        ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
+    if not self._running then
+        return
+    end
 
-        -- Wait for SIGINT or SIGCHLD
-        local sig = ffi.new("int[1]")
-        if ffi.C.sigwait(sigset, sig) ~= 0 then
-            error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
+    -- Build signal set with SIGINT and SIGCHLD
+    local sigset = ffi.new("sigset_t[1]")
+    ffi.C.sigemptyset(sigset)
+    ffi.C.sigaddset(sigset, ffi.C.SIGINT)
+    ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
 
-        if sig[0] == ffi.C.SIGINT then
-            debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
+    -- Wait for SIGINT or SIGCHLD
+    local sig = ffi.new("int[1]")
+    if ffi.C.sigwait(sigset, sig) ~= 0 then
+        error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 
-            -- Forcibly stop
-            self:stop()
-        elseif sig[0] == ffi.C.SIGCHLD then
-            debug.print("[CompositeBlock] Child exited. Shutting down...")
+    if sig[0] == ffi.C.SIGINT then
+        debug.print("[CompositeBlock] Received SIGINT. Shutting down...")
 
-            -- Wait for all children to exit
-            for _, pid in pairs(self._pids) do
-                -- If the process exists
-                if ffi.C.kill(pid, 0) == 0 then
-                    -- Reap the process
-                    if ffi.C.waitpid(pid, nil, 0) == -1 then
-                        error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-                    end
-                end
-            end
+        -- Forcibly stop
+        self:stop()
+    elseif sig[0] == ffi.C.SIGCHLD then
+        debug.print("[CompositeBlock] Child exited. Shutting down...")
 
-            -- Mark ourselves as not running
-            self._running = false
-        end
+        -- Reap child processes
+        self:_reap()
+
+        -- Mark ourselves as not running
+        self._running = false
     end
 end
 

@@ -6,6 +6,7 @@ local class = require('radio.core.class')
 local block = require('radio.core.block')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
+local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 
 local CompositeBlock = block.factory("CompositeBlock")
@@ -294,8 +295,34 @@ ffi.cdef[[
     int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
     int sigpending(sigset_t *set);
 
+    /* File descriptor table size */
     int getdtablesize(void);
+
+    /* File tree walk */
+    int ftw(const char *dirpath, int (*fn) (const char *fpath, const struct stat *sb, int typeflag), int nopenfd);
 ]]
+
+local function listdir(path)
+    local entries = {}
+
+    -- Normalize directory path with trailing /
+    path = (string.sub(path, -1) == "/") and path or (path .. "/")
+
+    -- Store each file entry in entries
+    local function store_entry_fn(fpath, sb, typeflag)
+        if typeflag == 0 then
+            entries[#entries + 1] = string.sub(ffi.string(fpath), #path+1)
+        end
+        return 0
+    end
+
+    -- File tree walk on directory path
+    if ffi.C.ftw(path, store_entry_fn, 1) ~= 0 then
+        error("ftw(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    return entries
+end
 
 function CompositeBlock:_prepare_to_run()
     -- Crawl our connections to get the full list of blocks and connections
@@ -480,10 +507,20 @@ function CompositeBlock:start(multiprocess)
                 end
 
                 -- Close all other file descriptors
-                -- FIXME this is nuclear
-                for fd = 0, ffi.C.getdtablesize()-1 do
-                    if not save_fds[fd] then
-                        ffi.C.close(fd)
+                if platform.os == "Linux" then
+                    for _, entry in pairs(listdir("/proc/self/fd")) do
+                        local fd = tonumber(entry)
+                        if fd and not save_fds[fd] then
+                            ffi.C.close(fd)
+                        end
+                    end
+                else
+                    -- Fall back to the nuclear approach, as FreeBSD and
+                    -- Mac OS X may not have fdescfs or procfs mounted
+                    for fd = 0, ffi.C.getdtablesize()-1 do
+                        if not save_fds[fd] then
+                            ffi.C.close(fd)
+                        end
                     end
                 end
 

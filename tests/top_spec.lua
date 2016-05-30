@@ -6,6 +6,10 @@ local buffer = require('tests.buffer')
 
 local test_vectors = require('tests.top_vectors')
 
+ffi.cdef[[
+int pipe(int fildes[2]);
+]]
+
 describe("top level test", function ()
     for _, multiprocess in pairs({true, false}) do
         it("example " .. (multiprocess and "multiprocess" or "singleprocess"), function ()
@@ -50,7 +54,82 @@ describe("top level test", function ()
         end)
     end
 
-    it("data integrity", function ()
+    it("flow graph wait()", function ()
+        -- Create a pipe
+        local pipe_fds = ffi.new("int[2]")
+        assert(ffi.C.pipe(pipe_fds) == 0)
+
+        -- Build and start flow graph
+        local top = radio.CompositeBlock():connect(
+            radio.RawFileSource(pipe_fds[0], radio.types.Byte, 1),
+            radio.DelayBlock(10),
+            radio.PrintSink()
+        ):start()
+
+        -- Close write end of pipe
+        assert(ffi.C.close(pipe_fds[1]) == 0)
+
+        -- Wait for flow graph to finish
+        top:wait()
+
+        -- Close read end of pipe
+        assert(ffi.C.close(pipe_fds[0]) == 0)
+    end)
+
+    it("flow graph stop()", function ()
+        -- Create a pipe
+        local pipe_fds = ffi.new("int[2]")
+        assert(ffi.C.pipe(pipe_fds) == 0)
+
+        -- Build and start flow graph
+        local top = radio.CompositeBlock():connect(
+            radio.RawFileSource(pipe_fds[0], radio.types.Byte, 1),
+            radio.DelayBlock(10),
+            radio.PrintSink()
+        ):start()
+
+        -- Stop flow graph
+        top:stop()
+
+        -- Close pipe
+        assert(ffi.C.close(pipe_fds[1]) == 0)
+        assert(ffi.C.close(pipe_fds[0]) == 0)
+    end)
+
+    it("flow graph status()", function ()
+        -- Create a pipe
+        local pipe_fds = ffi.new("int[2]")
+        assert(ffi.C.pipe(pipe_fds) == 0)
+
+        -- Build and start flow graph
+        local top = radio.CompositeBlock():connect(
+            radio.RawFileSource(pipe_fds[0], radio.types.Byte, 1),
+            radio.DelayBlock(10),
+            radio.PrintSink()
+        ):start()
+
+        -- Check running status
+        assert.is.equal(top:status().running, true)
+
+        -- Close write end of pipe
+        assert(ffi.C.close(pipe_fds[1]) == 0)
+
+        -- Wait for running status to trip
+        local tic = os.time()
+        while true do
+            if not top:status().running then
+                break
+            end
+
+            -- Timeout after 5 seconds
+            assert.is_true((os.time() - tic) < 5)
+        end
+
+        -- Close read end of pipe
+        assert(ffi.C.close(pipe_fds[0]) == 0)
+    end)
+
+    it("flow graph data integrity", function ()
         local SRC_SIZE = 4*1048576
 
         -- Create source and sink buffers

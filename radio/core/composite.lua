@@ -429,6 +429,11 @@ function CompositeBlock:start(multiprocess)
         end
     end
 
+    -- If there's no blocks to run, return
+    if #execution_order == 0 then
+        return self
+    end
+
     if not multiprocess then
         -- Build a skip set, containing the set of blocks to skip for each
         -- block, if it produces no new samples.

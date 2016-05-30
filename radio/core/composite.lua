@@ -396,38 +396,8 @@ function CompositeBlock:start(multiprocess)
     -- Default to multiprocess
     multiprocess = (multiprocess == nil) and true or multiprocess
 
-    -- Install dummy signal handler for SIGCHLD, as
-    -- BSD platforms discard this signal by default
-    ffi.C.signal(ffi.C.SIGCHLD, function (sig) end)
-
-    -- Block handling of SIGINT and SIGCHLD
-    local sigset = ffi.new("sigset_t[1]")
-    ffi.C.sigemptyset(sigset)
-    ffi.C.sigaddset(sigset, ffi.C.SIGINT)
-    ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
-    if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
-        error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
-
     -- Prepare to run
     local all_connections, execution_order = self:_prepare_to_run()
-
-    -- Clear any pending SIGINT or SIGCHLD signals
-    while true do
-        if ffi.C.sigpending(sigset) ~= 0 then
-            error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-
-        if ffi.C.sigismember(sigset, ffi.C.SIGINT) == 1 or ffi.C.sigismember(sigset, ffi.C.SIGCHLD) == 1 then
-            -- Consume this signal
-            local sig = ffi.new("int[1]")
-            if ffi.C.sigwait(sigset, sig) ~= 0 then
-                error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-            end
-        else
-            break
-        end
-    end
 
     -- If there's no blocks to run, return
     if #execution_order == 0 then
@@ -438,6 +408,18 @@ function CompositeBlock:start(multiprocess)
         self._pids = {}
 
         debug.printf("[CompositeBlock] Parent pid %d\n", ffi.C.getpid())
+
+        -- Block handling of SIGINT and SIGCHLD
+        local sigset = ffi.new("sigset_t[1]")
+        ffi.C.sigemptyset(sigset)
+        ffi.C.sigaddset(sigset, ffi.C.SIGINT)
+        ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
+        if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
+            error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+
+        -- Install dummy signal handler for SIGCHLD
+        self._saved_sigchld_handler = ffi.C.signal(ffi.C.SIGCHLD, function (sig) end)
 
         -- Fork and run blocks
         for _, block in ipairs(execution_order) do
@@ -517,6 +499,14 @@ function CompositeBlock:start(multiprocess)
         -- block, if it produces no new samples.
         local skip_set = build_skip_set(all_connections)
 
+        -- Block handling of SIGINT
+        local sigset = ffi.new("sigset_t[1]")
+        ffi.C.sigemptyset(sigset)
+        ffi.C.sigaddset(sigset, ffi.C.SIGINT)
+        if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
+            error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+
         -- Run blocks in round-robin order
         local running = true
         while running do
@@ -553,12 +543,20 @@ function CompositeBlock:start(multiprocess)
         for _, block in ipairs(execution_order) do
             block:cleanup()
         end
+
+        -- Unblock handling of SIGINT
+        local sigset = ffi.new("sigset_t[1]")
+        ffi.C.sigemptyset(sigset)
+        ffi.C.sigaddset(sigset, ffi.C.SIGINT)
+        if ffi.C.sigprocmask(ffi.C.SIG_UNBLOCK, sigset, nil) ~= 0 then
+            error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
     end
 
     return self
 end
 
--- Reap child processes and consume SIGCHLD signals
+-- Reap child processes, consume SIGCHLD, and unblock signals
 function CompositeBlock:_reap()
     -- Wait for all children to exit
     for _, pid in pairs(self._pids) do
@@ -585,6 +583,18 @@ function CompositeBlock:_reap()
         if ffi.C.sigwait(sigset, sig) ~= 0 then
             error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
+    end
+
+    -- Restore SIGCHLD handler
+    ffi.C.signal(ffi.C.SIGCHLD, self._saved_sigchld_handler)
+
+    -- Unblock handling of SIGINT and SIGCHLD
+    local sigset = ffi.new("sigset_t[1]")
+    ffi.C.sigemptyset(sigset)
+    ffi.C.sigaddset(sigset, ffi.C.SIGINT)
+    ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
+    if ffi.C.sigprocmask(ffi.C.SIG_UNBLOCK, sigset, nil) ~= 0 then
+        error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 end
 

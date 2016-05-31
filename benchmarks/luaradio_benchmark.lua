@@ -296,45 +296,45 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Downsampler (M = 7), Complex-valued",
+        "Downsampler (M = 5), Complex-valued",
         "DownsamplerBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.DownsamplerBlock(7),
+                radio.DownsamplerBlock(5),
                 radio.BenchmarkSink(results_fd)
             )
         end
     },
     {
-        "Downsampler (M = 7), Real-valued",
+        "Downsampler (M = 5), Real-valued",
         "DownsamplerBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
-                radio.DownsamplerBlock(7),
+                radio.DownsamplerBlock(5),
                 radio.BenchmarkSink(results_fd)
             )
         end
     },
     {
-        "Upsampler (L = 7), Complex-valued",
+        "Upsampler (L = 3), Complex-valued",
         "UpsamplerBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.UpsamplerBlock(7),
+                radio.UpsamplerBlock(3),
                 radio.BenchmarkSink(results_fd)
             )
         end
     },
     {
-        "Upsampler (L = 7), Real-valued",
+        "Upsampler (L = 3), Real-valued",
         "UpsamplerBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
-                radio.UpsamplerBlock(7),
+                radio.UpsamplerBlock(3),
                 radio.BenchmarkSink(results_fd)
             )
         end

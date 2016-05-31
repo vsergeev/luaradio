@@ -25,8 +25,8 @@ local bit_decoder = radio.DifferentialDecoderBlock(true)
 local framer = radio.AX25FramerBlock()
 local sink = radio.JSONSink()
 
-local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {yrange = {-120, -40}})
-local plot2 = radio.GnuplotPlotSink(2048, 'Demodulated Bitstream', {yrange = {-0.2, 0.2}})
+local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {yrange = {-120, -60}})
+local plot2 = radio.GnuplotPlotSink(2048, 'Demodulated Bitstream', {yrange = {-0.15, 0.15}})
 
 top:connect(source, tuner, nbfm_demod)
 top:connect(nbfm_demod, hilbert, translator, afsk_filter, afsk_demod, data_filter, clock_recoverer)

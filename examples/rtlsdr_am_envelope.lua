@@ -20,9 +20,9 @@ local af_gain = radio.MultiplyConstantBlock(gain)
 local sink = radio.PulseAudioSink(1)
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {yrange = {-120, -40}})
-local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -20}, xrange = {0, bandwidth}, update_time = 0.05})
+local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
 
 top:connect(source, tuner, am_demod, dcr_filter, af_filter, af_gain, sink)
 top:connect(tuner, plot1)
-top:connect(af_filter, plot2)
+top:connect(af_gain, plot2)
 top:run()

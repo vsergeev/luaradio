@@ -36,8 +36,8 @@ local r_decimator = radio.DownsamplerBlock(5)
 local sink = radio.PulseAudioSink(2)
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
-local plot2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-160, -40}, xrange = {0, bandwidth}, update_time = 0.05})
-local plot3 = radio.GnuplotSpectrumSink(2048, 'L-R AF Spectrum', {yrange = {-160, -40}, xrange = {0, bandwidth}, update_time = 0.05})
+local plot2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
+local plot3 = radio.GnuplotSpectrumSink(2048, 'L-R AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
 
 top:connect(source, tuner, fm_demod, hilbert, delay)
 top:connect(hilbert, pilot_filter, pilot_pll)

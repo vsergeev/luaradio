@@ -230,7 +230,7 @@ local function build_skip_set(connections)
     return graph
 end
 
-local function build_execution_order(dependency_graph)
+local function build_evaluation_order(dependency_graph)
     local order = {}
 
     -- Copy dependency graph and count the number of blocks
@@ -256,7 +256,7 @@ local function build_execution_order(dependency_graph)
 
             -- If dependencies are met
             if deps_met then
-                -- Add block next to the execution order
+                -- Add block next to the evaluation order
                 order[#order + 1] = block
                 -- Remove the block from the dependency graph
                 graph_copy[block] = nil
@@ -335,11 +335,11 @@ function CompositeBlock:_prepare_to_run()
         end
     end
 
-    -- Build dependency graph and execution order
-    local execution_order = build_execution_order(build_dependency_graph(all_connections))
+    -- Build dependency graph and evaluation order
+    local evaluation_order = build_evaluation_order(build_dependency_graph(all_connections))
 
     -- Differentiate all blocks
-    for _, block in ipairs(execution_order) do
+    for _, block in ipairs(evaluation_order) do
         -- Gather input data types to this block
         local input_data_types = {}
         for _, input in ipairs(block.inputs) do
@@ -351,7 +351,7 @@ function CompositeBlock:_prepare_to_run()
     end
 
     -- Check all block input rates match
-    for _, block in pairs(execution_order) do
+    for _, block in pairs(evaluation_order) do
         local rate = nil
         for i=1, #block.inputs do
             if not rate then
@@ -363,7 +363,7 @@ function CompositeBlock:_prepare_to_run()
     end
 
     -- Initialize all blocks
-    for _, block in ipairs(execution_order) do
+    for _, block in ipairs(evaluation_order) do
         block:initialize()
     end
 
@@ -373,12 +373,12 @@ function CompositeBlock:_prepare_to_run()
     end
 
     debug.print("[CompositeBlock] Dependency order:")
-    for _, k in ipairs(execution_order) do
+    for _, k in ipairs(evaluation_order) do
         local s = string.gsub(tostring(k), "\n", "\n[CompositeBlock]\t")
         debug.print("[CompositeBlock]\t" .. s)
     end
 
-    return all_connections, execution_order
+    return all_connections, evaluation_order
 end
 
 function CompositeBlock:run(multiprocess)
@@ -397,10 +397,10 @@ function CompositeBlock:start(multiprocess)
     multiprocess = (multiprocess == nil) and true or multiprocess
 
     -- Prepare to run
-    local all_connections, execution_order = self:_prepare_to_run()
+    local all_connections, evaluation_order = self:_prepare_to_run()
 
     -- If there's no blocks to run, return
-    if #execution_order == 0 then
+    if #evaluation_order == 0 then
         return self
     end
 
@@ -422,7 +422,7 @@ function CompositeBlock:start(multiprocess)
         self._saved_sigchld_handler = ffi.C.signal(ffi.C.SIGCHLD, function (sig) end)
 
         -- Fork and run blocks
-        for _, block in ipairs(execution_order) do
+        for _, block in ipairs(evaluation_order) do
             local pid = ffi.C.fork()
             if pid < 0 then
                 error("fork(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
@@ -512,7 +512,7 @@ function CompositeBlock:start(multiprocess)
         while running do
             local skip = {}
 
-            for _, block in ipairs(execution_order) do
+            for _, block in ipairs(evaluation_order) do
                 if not skip[block] then
                     local ret = block:run_once()
                     if ret == false then
@@ -540,7 +540,7 @@ function CompositeBlock:start(multiprocess)
         end
 
         -- Clean up all blocks
-        for _, block in ipairs(execution_order) do
+        for _, block in ipairs(evaluation_order) do
             block:cleanup()
         end
 
@@ -671,4 +671,4 @@ function CompositeBlock:wait()
     end
 end
 
-return {CompositeBlock = CompositeBlock, _crawl_connections = crawl_connections, _build_dependency_graph = build_dependency_graph, _build_reverse_dependency_graph = build_reverse_dependency_graph, _build_execution_order = build_execution_order, _build_skip_set = build_skip_set}
+return {CompositeBlock = CompositeBlock, _crawl_connections = crawl_connections, _build_dependency_graph = build_dependency_graph, _build_reverse_dependency_graph = build_reverse_dependency_graph, _build_evaluation_order = build_evaluation_order, _build_skip_set = build_skip_set}

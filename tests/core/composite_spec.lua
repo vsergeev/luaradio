@@ -446,7 +446,7 @@ describe("composite", function ()
         assert.are.same({}, dependency_graph[b9])
     end)
 
-    it("build execution order", function ()
+    it("build evaluation order", function ()
         --[[
             -- [1] -- [2] -- [3] -- [4] -- [5] --
                               | \
@@ -482,18 +482,18 @@ describe("composite", function ()
         top:connect(b3, b4, b5)
         top:connect(b3, b8, b9)
 
-        -- Check execution order
+        -- Check evaluation order
         local dependency_graph = composite._build_dependency_graph(top._connections)
-        local execution_order = composite._build_execution_order(dependency_graph)
+        local evaluation_order = composite._build_evaluation_order(dependency_graph)
 
-        assert.is_true(util.array_find(execution_order, b1) < util.array_find(execution_order, b2))
-        assert.is_true(util.array_find(execution_order, b2) < util.array_find(execution_order, b3))
-        assert.is_true(util.array_find(execution_order, b3) < util.array_find(execution_order, b4))
-        assert.is_true(util.array_find(execution_order, b4) < util.array_find(execution_order, b5))
-        assert.is_true(util.array_find(execution_order, b6) < util.array_find(execution_order, b7))
-        assert.is_true(util.array_find(execution_order, b7) < util.array_find(execution_order, b3))
-        assert.is_true(util.array_find(execution_order, b3) < util.array_find(execution_order, b8))
-        assert.is_true(util.array_find(execution_order, b8) < util.array_find(execution_order, b9))
+        assert.is_true(util.array_find(evaluation_order, b1) < util.array_find(evaluation_order, b2))
+        assert.is_true(util.array_find(evaluation_order, b2) < util.array_find(evaluation_order, b3))
+        assert.is_true(util.array_find(evaluation_order, b3) < util.array_find(evaluation_order, b4))
+        assert.is_true(util.array_find(evaluation_order, b4) < util.array_find(evaluation_order, b5))
+        assert.is_true(util.array_find(evaluation_order, b6) < util.array_find(evaluation_order, b7))
+        assert.is_true(util.array_find(evaluation_order, b7) < util.array_find(evaluation_order, b3))
+        assert.is_true(util.array_find(evaluation_order, b3) < util.array_find(evaluation_order, b8))
+        assert.is_true(util.array_find(evaluation_order, b8) < util.array_find(evaluation_order, b9))
     end)
 
     it("running errors", function ()

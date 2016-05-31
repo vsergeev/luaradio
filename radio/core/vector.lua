@@ -101,7 +101,7 @@ function Vector.cast(ctype, buf, size)
 end
 
 -- ObjectVector class
-ObjectVector = class.factory()
+local ObjectVector = class.factory()
 
 -- This is a simple wrapper to a Lua array that implements a Vector compatible
 -- interface.

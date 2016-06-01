@@ -40,7 +40,7 @@ function Vector:resize(num)
     if num <= self._capacity then
         self.length = num
         self.size = num*ffi.sizeof(self.type)
-        return
+        return self
     end
 
     -- Calculate new capacity (grow exponentially)
@@ -61,11 +61,15 @@ function Vector:resize(num)
     self.size = num*ffi.sizeof(self.type)
     self._capacity = capacity
     self._buffer = buf
+
+    return self
 end
 
 function Vector:append(elem)
     self:resize(self.length + 1)
     self.data[self.length - 1] = elem
+
+    return self
 end
 
 -- Constructors
@@ -123,11 +127,15 @@ function ObjectVector:resize(num)
         end
     end
     self.length = num
+
+    return self
 end
 
 function ObjectVector:append(elem)
     self.data[self.length] = elem
     self.length = self.length + 1
+
+    return self
 end
 
 return {Vector = Vector, ObjectVector = ObjectVector}

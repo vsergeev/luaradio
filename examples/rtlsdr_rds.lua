@@ -9,7 +9,7 @@ local frequency = tonumber(arg[1])
 local offset = -200e3
 
 local top = radio.CompositeBlock()
-local source = radio.RtlSdrSource(frequency + offset, 1102500, {autogain = true})
+local source = radio.RtlSdrSource(frequency + offset, 1102500)
 local tuner = radio.TunerBlock(offset, 200e6, 5)
 local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
 local hilbert = radio.HilbertTransformBlock(129)

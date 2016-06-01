@@ -37,7 +37,10 @@ ffi.cdef[[
     int rtlsdr_set_freq_correction(rtlsdr_dev_t *dev, int ppm);
 
     int rtlsdr_reset_buffer(rtlsdr_dev_t *dev);
-    int rtlsdr_read_sync(rtlsdr_dev_t *dev, void *buf, int len, int *n_read);
+
+    typedef void(*rtlsdr_read_async_cb_t)(unsigned char *buf, uint32_t len, void *ctx);
+    int rtlsdr_read_async(rtlsdr_dev_t *dev, rtlsdr_read_async_cb_t cb, void *ctx, uint32_t buf_num, uint32_t buf_len);
+    int rtlsdr_cancel_async(rtlsdr_dev_t *dev);
 ]]
 local librtlsdr_available, librtlsdr = pcall(ffi.load, "rtlsdr")
 
@@ -114,36 +117,39 @@ function RtlSdrSource:initialize_rtlsdr()
     if ret ~= 0 then
         error("rtlsdr_reset_buffer(): " .. tostring(ret))
     end
-
-    -- Allocate read buffer
-    self.buf_size = 65536
-    self.rawbuf = platform.alloc(self.buf_size)
-    self.buf = ffi.cast("uint8_t *", self.rawbuf)
-    self.n_read = ffi.new("int [1]")
 end
 
-function RtlSdrSource:process()
+local function read_async_callback_factory(pipes)
+    local out = types.ComplexFloat32.vector()
+
+    local function read_async_callback(buf, len, ctx)
+        -- Size output vector
+        out:resize(len/2)
+
+        -- Convert to complex u8 in buf to complex floats in output vector
+        for i = 0, out.length-1 do
+            out.data[i].real = (buf[2*i]   - 127.5) * (1/127.5)
+            out.data[i].imag = (buf[2*i+1] - 127.5) * (1/127.5)
+        end
+
+        -- Write output vector to output pipes
+        for i=1, #pipes do
+            pipes[i]:write(out)
+        end
+    end
+
+    return read_async_callback
+end
+
+function RtlSdrSource:run()
     -- Initialize the rtlsdr in our own running process
-    if not self.dev then
-        self:initialize_rtlsdr()
-    end
+    self:initialize_rtlsdr()
 
-    -- Read buffer
-    local ret = librtlsdr.rtlsdr_read_sync(self.dev[0], self.buf, self.buf_size, self.n_read)
+    -- Start asynchronous read
+    local ret = librtlsdr.rtlsdr_read_async(self.dev[0], read_async_callback_factory(self.outputs[1].pipes), nil, 0, 32768)
     if ret ~= 0 then
-        error("rtlsdr_read_sync(): " .. tostring(ret))
-    elseif self.n_read[0] ~= self.buf_size then
-        error("Short read. Aborting...")
+        error("rtlsdr_read_async(): " .. tostring(ret))
     end
-
-    -- Convert to complex u8 to complex floats
-    local out = types.ComplexFloat32.vector(self.buf_size/2)
-    for i = 0, out.length-1 do
-        out.data[i].real = (self.buf[2*i]   - 127.5) * (1/127.5)
-        out.data[i].imag = (self.buf[2*i+1] - 127.5) * (1/127.5)
-    end
-
-    return out
 end
 
 return RtlSdrSource

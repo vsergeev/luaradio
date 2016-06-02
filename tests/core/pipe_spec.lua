@@ -5,37 +5,37 @@ local block = require('radio.core.block')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
 
-function random_byte_vector(n)
-    local vec = radio.types.Byte.vector(n)
-    for i = 0, vec.length - 1 do
-        vec.data[i].value = math.random(0, 255)
-    end
-    return vec
-end
-
-function random_float32_vector(n)
-    local vec = radio.types.Float32.vector(n)
-    for i = 0, vec.length - 1 do
-        vec.data[i].value = 2*math.random() - 1.0
-    end
-    return vec
-end
-
-function random_complexfloat32_vector(n)
-    local vec = radio.types.ComplexFloat32.vector(n)
-    for i = 0, vec.length - 1 do
-        vec.data[i].real = 2*math.random() - 1.0
-        vec.data[i].imag = 2*math.random() - 1.0
-    end
-    return vec
-end
-
-ffi.cdef[[
-    int memcmp(const void *s1, const void *s2, size_t n);
-    void memcpy(void *dest, const void *src, size_t n);
-]]
-
 describe("pipe", function ()
+    local function random_byte_vector(n)
+        local vec = radio.types.Byte.vector(n)
+        for i = 0, vec.length - 1 do
+            vec.data[i].value = math.random(0, 255)
+        end
+        return vec
+    end
+
+    local function random_float32_vector(n)
+        local vec = radio.types.Float32.vector(n)
+        for i = 0, vec.length - 1 do
+            vec.data[i].value = 2*math.random() - 1.0
+        end
+        return vec
+    end
+
+    local function random_complexfloat32_vector(n)
+        local vec = radio.types.ComplexFloat32.vector(n)
+        for i = 0, vec.length - 1 do
+            vec.data[i].real = 2*math.random() - 1.0
+            vec.data[i].imag = 2*math.random() - 1.0
+        end
+        return vec
+    end
+
+    ffi.cdef[[
+        int memcmp(const void *s1, const void *s2, size_t n);
+        void memcpy(void *dest, const void *src, size_t n);
+    ]]
+
     local cstruct_types = {
         ["Byte"] = {data_type = radio.types.Byte, random_vector_fn = random_byte_vector},
         ["Float32"] = {data_type = radio.types.Float32, random_vector_fn = random_float32_vector},

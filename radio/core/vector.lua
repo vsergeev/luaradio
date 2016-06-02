@@ -11,6 +11,45 @@ ffi.cdef[[
 -- Vector class
 local Vector = class.factory()
 
+function Vector.new(ctype, num)
+    local self = setmetatable({}, Vector)
+
+    -- Data type
+    self.type = ctype
+    -- Length
+    self.length = num or 0
+    -- Capacity
+    self._capacity = self.length
+    -- Size in bytes
+    self.size = self.length*ffi.sizeof(ctype)
+    -- Allocate and zero buffer
+    self._buffer = platform.alloc(self.size)
+    ffi.C.memset(self._buffer, 0, self.size)
+    -- Cast buffer to data type pointer
+    self.data = ffi.cast(ffi.typeof("$ *", ctype), self._buffer)
+
+    return self
+end
+
+function Vector.cast(ctype, buf, size)
+    local self = setmetatable({}, Vector)
+
+    -- Data type
+    self.type = ctype
+    -- Length
+    self.length = size/ffi.sizeof(ctype)
+    -- Capacity
+    self._capacity = self.length
+    -- Size in bytes
+    self.size = size
+    -- Buffer
+    self._buffer = buf
+    -- Cast buffer to data type pointer
+    self.data = ffi.cast(ffi.typeof("const $ *", ctype), buf)
+
+    return self
+end
+
 function Vector:__eq(other)
     if self.length ~= other.length then
         return false
@@ -50,8 +89,8 @@ function Vector:resize(num)
     -- Allocate and zero buffer
     local buf = platform.alloc(bufsize)
     ffi.C.memset(buf, 0, bufsize)
-    -- Cast to specified pointer type
-    local ptr = ffi.cast(ffi.typeof("$ *", self.type), buf)
+    -- Cast buffer to data type pointer
+    local ptr = ffi.cast(ffi.typeof("$ *", self.data_type), buf)
     -- Copy old data
     ffi.C.memcpy(buf, self._buffer, math.min(self.size, num*ffi.sizeof(self.type)))
 
@@ -72,42 +111,23 @@ function Vector:append(elem)
     return self
 end
 
--- Constructors
-
-function Vector.new(ctype, num)
-    num = num or 0
-
-    -- Calculate size
-    local size = num*ffi.sizeof(ctype)
-    -- Allocate buffer
-    local buf = platform.alloc(size)
-    -- Zero buffer
-    ffi.C.memset(buf, 0, size)
-    -- Cast to specified pointer type
-    local ptr = ffi.cast(ffi.typeof("$ *", ctype), buf)
-
-    -- Return vector container
-    return setmetatable({data = ptr, length = num, _capacity = num, size = size, type = ctype, _buffer = buf}, Vector)
-end
-
-function Vector.cast(ctype, buf, size)
-    -- Calculate number of elements
-    local num = size/ffi.sizeof(ctype)
-    -- Cast to specified pointer type
-    local ptr = ffi.cast(ffi.typeof("const $ *", ctype), buf)
-
-    -- Return vector container
-    return setmetatable({data = ptr, length = num, _capacity = num, size = size, type = ctype, _buffer = buf}, Vector)
-end
-
 -- ObjectVector class
+
 local ObjectVector = class.factory()
 
--- This is a simple wrapper to a Lua array that implements a Vector compatible
--- interface.
-
 function ObjectVector.new(type, num)
-    return setmetatable({data = {}, length = num or 0, size = 0, type = type}, ObjectVector)
+    local self = setmetatable({}, ObjectVector)
+
+    -- Class type
+    self.type = type
+    -- Length
+    self.length = num or 0
+    -- Size in bytes
+    self.size = 0
+    -- Data array
+    self.data = {}
+
+    return self
 end
 
 function ObjectVector:__tostring()

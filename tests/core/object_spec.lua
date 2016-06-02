@@ -1,62 +1,62 @@
 local class = require('radio.core.class')
 local types = require('radio.types')
 
-local Foo = class.factory()
-
-function Foo.new(a)
-    local self = setmetatable({}, Foo)
-    self.a = a
-    return self
-end
-
-function Foo:get_a()
-    return self.a
-end
-
-function Foo:bark()
-    return "woof"
-end
-
-local Bar = class.factory(Foo)
-
-function Bar.new(a, b)
-    local self = setmetatable({}, Bar)
-    self.a = a
-    self.b = b
-    return self
-end
-
-function Bar:get_b()
-    return self.b
-end
-
-function Bar:bark()
-    return "lol"
-end
-
-function Bar:purr()
-    return "meow"
-end
-
-local Baz = class.factory()
-
-function Baz.new()
-    return setmetatable({}, Baz)
-end
-
-local Qux = class.factory(Baz)
-
-function Qux.new()
-    return setmetatable({}, Qux)
-end
-
-local Norf = class.factory(Qux)
-
-function Norf.new()
-    return setmetatable({}, Norf)
-end
-
 describe("oo helpers", function ()
+    local Foo = class.factory()
+
+    function Foo.new(a)
+        local self = setmetatable({}, Foo)
+        self.a = a
+        return self
+    end
+
+    function Foo:get_a()
+        return self.a
+    end
+
+    function Foo:bark()
+        return "woof"
+    end
+
+    local Bar = class.factory(Foo)
+
+    function Bar.new(a, b)
+        local self = setmetatable({}, Bar)
+        self.a = a
+        self.b = b
+        return self
+    end
+
+    function Bar:get_b()
+        return self.b
+    end
+
+    function Bar:bark()
+        return "lol"
+    end
+
+    function Bar:purr()
+        return "meow"
+    end
+
+    local Baz = class.factory()
+
+    function Baz.new()
+        return setmetatable({}, Baz)
+    end
+
+    local Qux = class.factory(Baz)
+
+    function Qux.new()
+        return setmetatable({}, Qux)
+    end
+
+    local Norf = class.factory(Qux)
+
+    function Norf.new()
+        return setmetatable({}, Norf)
+    end
+
     it("inheritance", function ()
         local a = Foo(5)
         local b = Bar(1, 2)

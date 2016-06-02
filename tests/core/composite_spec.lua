@@ -1,5 +1,4 @@
 local radio = require('radio')
-
 local util = require('radio.core.util')
 local class = require('radio.core.class')
 local block = require('radio.core.block')

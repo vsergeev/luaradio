@@ -208,34 +208,44 @@ function Block:run_once()
     -- Process inputs into outputs
     if #self.inputs == 0 then
         -- No inputs (source)
+
+        -- Process
         data_out = {self:process()}
+
         -- Check for EOF
         if #data_out == 0 then
             return nil
         end
     elseif #self.inputs == 1 then
         -- One input
+
+        -- Read input
         local data_in = self.inputs[1].pipe:read()
+
         -- Check for EOF
         if data_in == nil then
             return nil
         end
 
+        -- Process
         data_out = {self:process(data_in)}
     else
         -- Multiple inputs
-        -- Do a synchronous read across all pipes
+
+        -- Gather input pipes
         local pipes = {}
         for i=1, #self.inputs do
             pipes[i] = self.inputs[i].pipe
         end
 
+        -- Synchronous read across all inputs
         local data_in = pipe.read_synchronous(pipes)
         -- Check for EOF
         if data_in == nil then
             return nil
         end
 
+        -- Process
         data_out = {self:process(unpack(data_in))}
     end
 
@@ -253,10 +263,74 @@ function Block:run_once()
 end
 
 function Block:run()
-    -- Run forever
-    while true do
-        if self:run_once() == nil then
-            break
+    if #self.inputs == 0 then
+        -- No inputs (source)
+
+        while true do
+            -- Process
+            data_out = {self:process()}
+
+            -- Check for EOF
+            if #data_out == 0 then
+                break
+            end
+
+            -- Write outputs to pipes
+            for i=1, #self.outputs do
+                for j=1, #self.outputs[i].pipes do
+                    self.outputs[i].pipes[j]:write(data_out[i])
+                end
+            end
+        end
+    elseif #self.inputs == 1 then
+        -- One input
+
+        while true do
+            -- Read input
+            local data_in = self.inputs[1].pipe:read()
+
+            -- Check for EOF
+            if data_in == nil then
+                break
+            end
+
+            -- Process
+            data_out = {self:process(data_in)}
+
+            -- Write outputs to pipes
+            for i=1, #self.outputs do
+                for j=1, #self.outputs[i].pipes do
+                    self.outputs[i].pipes[j]:write(data_out[i])
+                end
+            end
+        end
+    else
+        -- Multiple inputs
+
+        -- Gather input pipes
+        local input_pipes = {}
+        for i=1, #self.inputs do
+            input_pipes[i] = self.inputs[i].pipe
+        end
+
+        while true do
+            -- Synchronous read across all inputs
+            local data_in = pipe.read_synchronous(input_pipes)
+
+            -- Check for EOF
+            if data_in == nil then
+                break
+            end
+
+            -- Process
+            data_out = {self:process(unpack(data_in))}
+
+            -- Write outputs to pipes
+            for i=1, #self.outputs do
+                for j=1, #self.outputs[i].pipes do
+                    self.outputs[i].pipes[j]:write(data_out[i])
+                end
+            end
         end
     end
 

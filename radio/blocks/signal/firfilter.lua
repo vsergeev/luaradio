@@ -9,15 +9,15 @@ local types = require('radio.types')
 local FIRFilterBlock = block.factory("FIRFilterBlock")
 
 function FIRFilterBlock:instantiate(taps)
-    if class.isinstanceof(taps, vector.Vector) and taps.type == types.Float32 then
+    if class.isinstanceof(taps, vector.Vector) and taps.data_type == types.Float32 then
         self.taps = taps
-    elseif class.isinstanceof(taps, vector.Vector) and taps.type == types.ComplexFloat32 then
+    elseif class.isinstanceof(taps, vector.Vector) and taps.data_type == types.ComplexFloat32 then
         self.taps = taps
     else
         self.taps = types.Float32.vector_from_array(taps)
     end
 
-    if self.taps.type == types.ComplexFloat32 then
+    if self.taps.data_type == types.ComplexFloat32 then
         self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_input_complex_taps)
     else
         self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, FIRFilterBlock.process_complex_input_real_taps)
@@ -37,7 +37,7 @@ if platform.features.volk then
         self.state = self.data_type.vector(self.taps.length)
 
         -- Reverse taps
-        local reversed_taps = self.taps.type.vector(self.taps.length)
+        local reversed_taps = self.taps.data_type.vector(self.taps.length)
         for i = 0, self.taps.length-1 do
             reversed_taps.data[i] = self.taps.data[self.taps.length-1-i]
         end
@@ -129,11 +129,11 @@ elseif platform.features.liquid then
     function FIRFilterBlock:initialize()
         local data_type = self:get_input_type()
 
-        if data_type == types.ComplexFloat32 and self.taps.type == types.Float32 then
+        if data_type == types.ComplexFloat32 and self.taps.data_type == types.Float32 then
             self.filter = ffi.gc(libliquid.firfilt_crcf_create(self.taps.data, self.taps.length), libliquid.firfilt_crcf_destroy)
-        elseif data_type == types.Float32 and self.taps.type == types.Float32 then
+        elseif data_type == types.Float32 and self.taps.data_type == types.Float32 then
             self.filter = ffi.gc(libliquid.firfilt_rrrf_create(self.taps.data, self.taps.length), libliquid.firfilt_rrrf_destroy)
-        elseif data_type == types.ComplexFloat32 and self.taps.type == types.ComplexFloat32 then
+        elseif data_type == types.ComplexFloat32 and self.taps.data_type == types.ComplexFloat32 then
             self.filter = ffi.gc(libliquid.firfilt_cccf_create(self.taps.data, self.taps.length), libliquid.firfilt_cccf_destroy)
         end
 
@@ -173,7 +173,7 @@ else
         self.state = self.data_type.vector(self.taps.length)
 
         -- Reverse taps
-        local reversed_taps = self.taps.type.vector(self.taps.length)
+        local reversed_taps = self.taps.data_type.vector(self.taps.length)
         for i = 0, self.taps.length-1 do
             reversed_taps.data[i] = self.taps.data[self.taps.length-1-i]
         end

@@ -43,7 +43,7 @@ if platform.features.liquid then
         self.state = types.Float32.vector(self.hilbert_taps.length)
 
         -- Reverse taps
-        local reversed_taps = self.hilbert_taps.type.vector(self.hilbert_taps.length)
+        local reversed_taps = self.hilbert_taps.data_type.vector(self.hilbert_taps.length)
         for i = 0, self.hilbert_taps.length-1 do
             reversed_taps.data[i] = self.hilbert_taps.data[self.hilbert_taps.length-1-i]
         end
@@ -83,7 +83,7 @@ elseif platform.features.volk then
         self.state = types.Float32.vector(self.hilbert_taps.length)
 
         -- Reverse taps
-        local reversed_taps = self.hilbert_taps.type.vector(self.hilbert_taps.length)
+        local reversed_taps = self.hilbert_taps.data_type.vector(self.hilbert_taps.length)
         for i = 0, self.hilbert_taps.length-1 do
             reversed_taps.data[i] = self.hilbert_taps.data[self.hilbert_taps.length-1-i]
         end
@@ -123,7 +123,7 @@ else
         self.state = types.Float32.vector(self.hilbert_taps.length)
 
         -- Reverse taps
-        local reversed_taps = self.hilbert_taps.type.vector(self.hilbert_taps.length)
+        local reversed_taps = self.hilbert_taps.data_type.vector(self.hilbert_taps.length)
         for i = 0, self.hilbert_taps.length-1 do
             reversed_taps.data[i] = self.hilbert_taps.data[self.hilbert_taps.length-1-i]
         end

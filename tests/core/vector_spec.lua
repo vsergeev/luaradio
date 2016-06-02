@@ -18,14 +18,14 @@ describe("vector", function ()
         assert.is_true(v.data ~= nil)
         assert.is.equal(0, v.length)
         assert.is.equal(0, v.size)
-        assert.is.equal(ffi.typeof("elem_t"), v.type)
+        assert.is.equal(ffi.typeof("elem_t"), v.data_type)
 
         -- Vector of 5
         local v = Vector(ffi.typeof("elem_t"), 5)
         assert.is_true(v.data ~= nil)
         assert.is.equal(5, v.length)
         assert.is.equal(5*ffi.sizeof("elem_t"), v.size)
-        assert.is.equal(ffi.typeof("elem_t"), v.type)
+        assert.is.equal(ffi.typeof("elem_t"), v.data_type)
         assert.is_true(ffi.C.memcmp(v.data, string.rep("\x00", 5*ffi.sizeof("elem_t")), 5*ffi.sizeof("elem_t")) == 0)
 
         -- Modify third element
@@ -41,7 +41,7 @@ describe("vector", function ()
         assert.is_true(v.data ~= nil)
         assert.is.equal(3, v.length)
         assert.is.equal(3*ffi.sizeof("elem_t"), v.size)
-        assert.is.equal(ffi.typeof("elem_t"), v.type)
+        assert.is.equal(ffi.typeof("elem_t"), v.data_type)
 
         -- Check elements
         assert.is.equal(0xffffffff, v.data[0].x)

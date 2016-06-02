@@ -84,7 +84,7 @@ describe("pipe", function ()
                         local n = math.min(read_num, num_elems)
                         local read_vec = p:read_n(n)
                         assert.is.equal(n, read_vec.length)
-                        assert.is.equal(data_type, read_vec.type)
+                        assert.is.equal(data_type, read_vec.data_type)
 
                         -- Compare read vector with test vector
                         assert.is_true(ffi.C.memcmp(ffi.cast("char *", test_vector.data) + read_offset, read_vec.data, read_vec.size) == 0)
@@ -161,7 +161,7 @@ describe("pipe", function ()
                     local n = math.min(read_num, num_elems)
                     local read_vec = p:read_n(n)
                     assert.is.equal(n, read_vec.length)
-                    assert.is.equal(FooType, read_vec.type)
+                    assert.is.equal(FooType, read_vec.data_type)
 
                     -- Compare read vector with test vector
                     for i = 0, read_vec.length-1 do
@@ -199,7 +199,7 @@ describe("pipe", function ()
 
         -- Initialize pipes
         for i = 1, #pipes do
-            pipes[i].get_data_type = function () return test_vectors[i].type end
+            pipes[i].get_data_type = function () return test_vectors[i].data_type end
             pipes[i]:initialize(true)
         end
 
@@ -239,7 +239,7 @@ describe("pipe", function ()
             -- Check length, types, data and update offsets
             for i = 1, #pipes do
                 assert.is.equal(n, read_vectors[i].length)
-                assert.is.equal(pipes[i].data_type, read_vectors[i].type)
+                assert.is.equal(pipes[i].data_type, read_vectors[i].data_type)
                 assert.is_true(ffi.C.memcmp(ffi.cast("char *", test_vectors[i].data) + read_offsets[i], read_vectors[i].data, read_vectors[i].size) == 0)
 
                 read_offsets[i] = read_offsets[i] + read_vectors[i].size

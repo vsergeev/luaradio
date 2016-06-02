@@ -13,7 +13,7 @@ end
 
 local function assert_vector_equal(x, y, epsilon)
     assert.is.equal(x.length, y.length)
-    assert.is.equal(x.type, y.type)
+    assert.is.equal(x.data_type, y.data_type)
     for i=0, x.length-1 do
         assert_approx_equal(x.data[i], y.data[i], epsilon)
     end
@@ -34,7 +34,7 @@ local function TestBlock(block_class, vectors, options)
         -- Assemble input types
         local input_types = {}
         for i=1, #test_vector.inputs do
-            input_types[i] = test_vector.inputs[i].type
+            input_types[i] = test_vector.inputs[i].data_type
         end
 
         -- Differentiate the block
@@ -61,7 +61,7 @@ local function TestBlock(block_class, vectors, options)
                 -- Compare type signature with expected output count and types
                 assert.is.equal(#block.signature.outputs, #test_vector.outputs)
                 for i=1, #test_vector.outputs do
-                    assert.is.equal(block.signature.outputs[i].data_type, test_vector.outputs[i].type)
+                    assert.is.equal(block.signature.outputs[i].data_type, test_vector.outputs[i].data_type)
                 end
 
                 -- Run process
@@ -83,7 +83,7 @@ local function TestBlock(block_class, vectors, options)
                 -- Create an empty vector for each output
                 local outputs = {}
                 for i = 1, #test_vector.outputs do
-                    outputs[i] = test_vector.outputs[i].type.vector()
+                    outputs[i] = test_vector.outputs[i].data_type.vector()
                 end
 
                 -- For every sample in the input vectors
@@ -91,7 +91,7 @@ local function TestBlock(block_class, vectors, options)
                     -- Assemble single sample input vectors
                     local single_sample_inputs = {}
                     for i=1, #test_vector.inputs do
-                        single_sample_inputs[i] = test_vector.inputs[i].type.vector()
+                        single_sample_inputs[i] = test_vector.inputs[i].data_type.vector()
                         single_sample_inputs[i]:append(test_vector.inputs[i].data[sample_index])
                     end
 
@@ -148,13 +148,13 @@ local function TestSourceBlock(block_class, vectors, options)
                 -- Compare type signature with expected output count and types
                 assert.is.equal(#block.signature.outputs, #test_vector.outputs)
                 for i=1, #test_vector.outputs do
-                    assert.is.equal(block.signature.outputs[i].data_type, test_vector.outputs[i].type)
+                    assert.is.equal(block.signature.outputs[i].data_type, test_vector.outputs[i].data_type)
                 end
 
                 -- Create array for collected outputs
                 local collected_outputs = {}
                 for i=1, #test_vector.outputs do
-                    collected_outputs[i] = test_vector.outputs[i].type.vector(0)
+                    collected_outputs[i] = test_vector.outputs[i].data_type.vector(0)
                 end
 
                 -- Run process
@@ -193,8 +193,8 @@ local function TestCompositeBlock(block_class, vectors, options)
                 local sources = {}
                 local src_fds = {}
                 for i = 1, #test_vector.inputs do
-                    src_fds[i] = buffer.open(ffi.string(test_vector.inputs[i].type.serialize(test_vector.inputs[i])))
-                    sources[i] = radio.RawFileSource(src_fds[i], test_vector.inputs[i].type, 2.0)
+                    src_fds[i] = buffer.open(ffi.string(test_vector.inputs[i].data_type.serialize(test_vector.inputs[i])))
+                    sources[i] = radio.RawFileSource(src_fds[i], test_vector.inputs[i].data_type, 2.0)
                 end
 
                 -- Build raw file sinks for inputs
@@ -227,7 +227,7 @@ local function TestCompositeBlock(block_class, vectors, options)
                 for i = 1, #test_vector.outputs do
                     buffer.rewind(snk_fds[i])
                     local buf = buffer.read(snk_fds[i], test_vector.outputs[i].size)
-                    outputs[i] = test_vector.outputs[i].type.deserialize(buf, #buf)
+                    outputs[i] = test_vector.outputs[i].data_type.deserialize(buf, #buf)
                 end
 
                 -- Compare outputs with expected outputs

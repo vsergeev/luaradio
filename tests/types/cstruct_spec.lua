@@ -50,7 +50,7 @@ describe("CStructType factory", function ()
         local v1 = TestType.vector(3)
 
         -- Check vector properties
-        assert.is.equal(TestType, v1.type)
+        assert.is.equal(TestType, v1.data_type)
         assert.is.equal(3, v1.length)
         assert.is.equal(3*ffi.sizeof(TestType), v1.size)
         assert.is_true(ffi.istype(TestType, v1.data[0]))
@@ -68,7 +68,7 @@ describe("CStructType factory", function ()
                                                {0xbeefbeef, {{0x05, 0x06, 0x07, 0x08}}}})
 
         -- Check vector properties
-        assert.is.equal(TestType, v2.type)
+        assert.is.equal(TestType, v2.data_type)
         assert.is.equal(2, v2.length)
         assert.is.equal(2*ffi.sizeof(TestType), v2.size)
         assert.is_true(ffi.istype(TestType, v2.data[0]))
@@ -115,7 +115,7 @@ describe("CStructType factory", function ()
         local vv = TestType.deserialize(s, #s)
 
         -- Check vector properties
-        assert.is.equal(TestType, vv.type)
+        assert.is.equal(TestType, vv.data_type)
         assert.is.equal(3, vv.length)
         assert.is.equal(3*ffi.sizeof(TestType), vv.size)
         assert.is_true(ffi.istype(TestType, vv.data[0]))
@@ -136,7 +136,7 @@ describe("CStructType factory", function ()
         assert.is.equal(2*ffi.sizeof(TestType), size)
 
         -- Check vector properties
-        assert.is.equal(TestType, vv.type)
+        assert.is.equal(TestType, vv.data_type)
         assert.is.equal(2, vv.length)
         assert.is.equal(2*ffi.sizeof(TestType), vv.size)
         assert.is_true(ffi.istype(TestType, vv.data[0]))

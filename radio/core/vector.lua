@@ -15,7 +15,7 @@ function Vector.new(ctype, num)
     local self = setmetatable({}, Vector)
 
     -- Data type
-    self.type = ctype
+    self.data_type = ctype
     -- Length
     self.length = num or 0
     -- Capacity
@@ -35,7 +35,7 @@ function Vector.cast(ctype, buf, size)
     local self = setmetatable({}, Vector)
 
     -- Data type
-    self.type = ctype
+    self.data_type = ctype
     -- Length
     self.length = size/ffi.sizeof(ctype)
     -- Capacity
@@ -78,26 +78,26 @@ function Vector:resize(num)
     -- If we're within capacity, adjust length and size
     if num <= self._capacity then
         self.length = num
-        self.size = num*ffi.sizeof(self.type)
+        self.size = num*ffi.sizeof(self.data_type)
         return self
     end
 
     -- Calculate new capacity (grow exponentially)
     local capacity = math.max(num, 2*self._capacity)
     -- Calculate new buffer size
-    local bufsize = capacity*ffi.sizeof(self.type)
+    local bufsize = capacity*ffi.sizeof(self.data_type)
     -- Allocate and zero buffer
     local buf = platform.alloc(bufsize)
     ffi.C.memset(buf, 0, bufsize)
     -- Cast buffer to data type pointer
     local ptr = ffi.cast(ffi.typeof("$ *", self.data_type), buf)
     -- Copy old data
-    ffi.C.memcpy(buf, self._buffer, math.min(self.size, num*ffi.sizeof(self.type)))
+    ffi.C.memcpy(buf, self._buffer, math.min(self.size, num*ffi.sizeof(self.data_type)))
 
     -- Update state
     self.data = ptr
     self.length = num
-    self.size = num*ffi.sizeof(self.type)
+    self.size = num*ffi.sizeof(self.data_type)
     self._capacity = capacity
     self._buffer = buf
 
@@ -119,7 +119,7 @@ function ObjectVector.new(type, num)
     local self = setmetatable({}, ObjectVector)
 
     -- Class type
-    self.type = type
+    self.data_type = type
     -- Length
     self.length = num or 0
     -- Size in bytes

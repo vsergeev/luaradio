@@ -46,7 +46,7 @@ function RawFileSink:initialize()
 end
 
 function RawFileSink:process(x)
-    local data, size = x.type.serialize(x)
+    local data, size = x.data_type.serialize(x)
 
     -- Write to file
     if ffi.C.write(self.fd, data, size) ~= size then

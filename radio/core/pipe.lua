@@ -91,10 +91,13 @@ function Pipe:get_data_type()
 end
 
 ffi.cdef[[
-    enum { AF_UNIX = 1 };
-    enum { SOCK_STREAM = 1 };
-    int socketpair(int domain, int type, int protocol, int socket_vector[2]);
-    int close(int fildes);
+enum { AF_UNIX = 1 };
+enum { SOCK_STREAM = 1 };
+int socketpair(int domain, int type, int protocol, int socket_vector[2]);
+int close(int fildes);
+
+ssize_t read(int fd, void *buf, size_t count);
+ssize_t write(int fd, const void *buf, size_t count);
 ]]
 
 function Pipe:initialize()
@@ -108,6 +111,7 @@ function Pipe:initialize()
     end
     self._rfd = socket_fds[0]
     self._wfd = socket_fds[1]
+    self._eof = false
 
     -- Pre-allocate read buffer
     self._buf_capacity = 1048576
@@ -115,11 +119,6 @@ function Pipe:initialize()
     self._buf_size = 0
     self._buf_read_offset = 0
 end
-
-ffi.cdef[[
-    ssize_t read(int fd, void *buf, size_t count);
-    ssize_t write(int fd, const void *buf, size_t count);
-]]
 
 local function platform_read(fd, buf, size)
     local bytes_read = tonumber(ffi.C.read(fd, buf, size))
@@ -137,7 +136,7 @@ local function platform_write(fd, buf, size)
     return bytes_written
 end
 
-function Pipe:read_update()
+function Pipe:_read_buffer_update()
     -- Shift unread samples down to beginning of buffer
     local unread_length = self._buf_size - self._buf_read_offset
     if unread_length > 0 then
@@ -146,49 +145,68 @@ function Pipe:read_update()
 
     -- Read new samples in
     local bytes_read = platform_read(self._rfd, ffi.cast("char *", self._buf) + unread_length, self._buf_capacity - unread_length)
-
-    -- Return nil on EOF
     if unread_length == 0 and bytes_read == 0 then
-        return nil
+        self._eof = true
     end
 
     -- Update size and reset unread offset
     self._buf_size = unread_length + bytes_read
     self._buf_read_offset = 0
-
-    -- Return number of elements in our read buffer
-    return self.data_type.deserialize_count(self._buf, self._buf_size)
 end
 
-function Pipe:read_n(num)
-    -- Create a vector from the buffer
-    local vec, bytes_consumed = self.data_type.deserialize_partial(ffi.cast("char *", self._buf) + self._buf_read_offset, num)
+function Pipe:_read_buffer_count()
+    -- Return nil on EOF
+    if self._eof then
+        return nil
+    end
 
-    -- Update the read offset
-    self._buf_read_offset = self._buf_read_offset + bytes_consumed
+    -- Return item count in read buffer
+    return self.data_type.deserialize_count(ffi.cast("char *", self._buf) + self._buf_read_offset, self._buf_size - self._buf_read_offset)
+end
+
+function Pipe:_read_buffer_full()
+    -- Return full status of read buffer
+    return (self._buf_size - self._buf_read_offset) == self._buf_capacity
+end
+
+function Pipe:_read_buffer_deserialize(num)
+    -- Shift samples down to beginning of buffer
+    if self._buf_read_offset > 0 then
+        ffi.C.memmove(self._buf, ffi.cast("char *", self._buf) + self._buf_read_offset, self._buf_size - self._buf_read_offset)
+        self._buf_size = self._buf_size - self._buf_read_offset
+        self._buf_read_offset = 0
+    end
+
+    -- Deserialize a vector from the read buffer
+    local vec, size = self.data_type.deserialize_partial(ffi.cast("char *", self._buf), num)
+
+    -- Update read offset
+    self._buf_read_offset = self._buf_read_offset + size
 
     return vec
 end
 
 function Pipe:read()
-    -- Update our read buffer and read the maximum amount available
-    local num = self:read_update()
+    -- Update our read buffer
+    self:_read_buffer_update()
+
+    -- Get available item count
+    local num = self:_read_buffer_count()
 
     -- Return nil on EOF
     if num == nil then
         return nil
     end
 
-    return self:read_n(num)
+    return self:_read_buffer_deserialize(num)
 end
 
 function Pipe:write(vec)
-    local len = 0
-
-    -- Get buffer and size
+    -- Get vector serialized buffer and size
     local data, size = self.data_type.serialize(vec)
 
     -- Write entire buffer
+    local len = 0
     while len < size do
         local bytes_written = platform_write(self._wfd, ffi.cast("char *", data) + len, size - len)
         len = len + bytes_written
@@ -223,25 +241,64 @@ end
 
 -- Helper function to read synchronously from a set of pipes
 
-local function read_synchronous(pipes)
-    -- Update read buffer of all pipes and gather amount available
-    local num_elems_avail = {}
-    for i=1, #pipes do
-        num_elems_avail[i] = pipes[i]:read_update()
+ffi.cdef[[
+struct pollfd {
+    int fd;
+    short events;
+    short revents;
+};
+typedef unsigned long int nfds_t;
 
-        -- If we've reached EOF, return nil
-        if num_elems_avail[i] == nil then
-            return nil
-        end
+enum { POLLIN = 0x1, POLLOUT = 0x4, POLLHUP = 0x10 };
+
+int poll(struct pollfd fds[], nfds_t nfds, int timeout);
+]]
+
+local POLL_READ_EVENTS = bit.bor(ffi.C.POLLIN, ffi.C.POLLHUP)
+
+local function read_synchronous(pipes)
+    -- Set up pollfd structures for all not-full pipes
+    local pollfds = ffi.new("struct pollfd[?]", #pipes)
+    for i=1, #pipes do
+        pollfds[i-1].fd = pipes[i]:fileno_input()
+        pollfds[i-1].events = not pipes[i]:_read_buffer_full() and POLL_READ_EVENTS or 0
     end
 
-    -- Compute minimum available across all pipes
-    local num_elems = math.min(unpack(num_elems_avail))
+    -- Poll (non-blocking)
+    local ret = ffi.C.poll(pollfds, #pipes, 0)
+    if ret < 0 then
+        error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
 
-    -- Read that amount from all pipes
+    -- Compute maximum available item count across all pipes
+    local num_elems = math.huge
+    for i=1, #pipes do
+        -- Update read buffer if pipe is ready
+        if pollfds[i-1].revents ~= 0 then
+            pipes[i]:_read_buffer_update()
+        end
+
+        local count = pipes[i]:_read_buffer_count()
+
+        -- Block updating read buffer if we've ran out of items
+        if count == 0 then
+            pipes[i]:_read_buffer_update()
+            count = pipes[i]:_read_buffer_count()
+        end
+
+        -- If we've reached EOF, return nil
+        if count == nil then
+            return nil
+        end
+
+        -- Update maximum available item count
+        num_elems = (count < num_elems) and count or num_elems
+    end
+
+    -- Read maximum available item count from all pipes
     local data_in = {}
     for i=1, #pipes do
-        data_in[i] = pipes[i]:read_n(num_elems)
+        data_in[i] = pipes[i]:_read_buffer_deserialize(num_elems)
     end
 
     return data_in

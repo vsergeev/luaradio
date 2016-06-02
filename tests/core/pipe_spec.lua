@@ -77,12 +77,14 @@ describe("pipe", function ()
                         end
 
                         -- Update pipe read buffer
-                        local num_elems = p:read_update()
+                        p:_read_buffer_update()
+                        -- Get buffer item count
+                        local num_elems = p:_read_buffer_count()
                         assert.is.equal(write_offset - read_offset, num_elems*ffi.sizeof(data_type))
 
                         -- Read up to read_num elements from pipe
                         local n = math.min(read_num, num_elems)
-                        local read_vec = p:read_n(n)
+                        local read_vec = p:_read_buffer_deserialize(n)
                         assert.is.equal(n, read_vec.length)
                         assert.is.equal(data_type, read_vec.data_type)
 
@@ -98,8 +100,10 @@ describe("pipe", function ()
                         end
                     end
 
-                    -- Check that read_update() returns EOF / nil
-                    assert.is_true(p:read_update() == nil)
+                    -- Update pipe read buffer
+                    p:_read_buffer_update()
+                    -- Get buffer item is EOF / nil
+                    assert.is_true(p:_read_buffer_count() == nil)
                 end
             end
         end)
@@ -155,11 +159,13 @@ describe("pipe", function ()
                     end
 
                     -- Update pipe read buffer
-                    local num_elems = p:read_update()
+                    p:_read_buffer_update()
+                    -- Get buffer item count
+                    local num_elems = p:_read_buffer_count()
 
                     -- Read up to read_num elements from pipe
                     local n = math.min(read_num, num_elems)
-                    local read_vec = p:read_n(n)
+                    local read_vec = p:_read_buffer_deserialize(n)
                     assert.is.equal(n, read_vec.length)
                     assert.is.equal(FooType, read_vec.data_type)
 
@@ -177,8 +183,10 @@ describe("pipe", function ()
                     end
                 end
 
-                -- Check that read_update() returns EOF / nil
-                assert.is_true(p:read_update() == nil)
+                -- Update pipe read buffer
+                p:_read_buffer_update()
+                -- Get buffer item is EOF / nil
+                assert.is_true(p:_read_buffer_count() == nil)
             end
         end
     end)
@@ -200,7 +208,7 @@ describe("pipe", function ()
         -- Initialize pipes
         for i = 1, #pipes do
             pipes[i].get_data_type = function () return test_vectors[i].data_type end
-            pipes[i]:initialize(true)
+            pipes[i]:initialize()
         end
 
         -- Write and read offsets into test_vectors for each pipe
@@ -247,7 +255,7 @@ describe("pipe", function ()
 
             -- Stop when we've read the entire test vector
             local eof = true
-            for i = 1, # pipes do
+            for i = 1, #pipes do
                 if write_offsets[i] ~= test_vectors[i].size or read_offsets[i] ~= test_vectors[i].size then
                     eof = false
                     break

@@ -235,6 +235,7 @@ describe("block", function ()
             return 5
         end
 
+        -- Test valid get_rate()
         assert.is.equal(5, blk:get_rate())
 
         -- A few more blocks
@@ -275,7 +276,7 @@ describe("block", function ()
         -- Build pipeline
         --  TestSource -> TestRateTripler -> TestBlock -> TestRateHalver -> TestBlock
 
-        -- Create blocks
+        -- Instantiate blocks
         local b0 = TestSource()
         local b1 = TestRateTripler()
         local b2 = TestBlock()
@@ -308,7 +309,6 @@ describe("block", function ()
     it("basic usage", function ()
         local TestBlock = block.factory('TestBlock')
 
-        -- Implement some basic methods
         function TestBlock:instantiate(a)
             self.a = a
             self:add_type_signature({block.Input("in", radio.types.Float32)}, {block.Output("out", radio.types.Float32)})
@@ -322,10 +322,16 @@ describe("block", function ()
             return 2*x
         end
 
-        -- Use the block
+        -- Instantiate TestBlock
         local blk = TestBlock(5)
+
+        -- Differentiate block
         blk:differentiate({radio.types.Float32})
+
+        -- Initialize block
         blk:initialize()
+
+        -- Process
         local out = blk:process(10)
 
         assert.is.equal(5, blk.a)
@@ -353,9 +359,16 @@ describe("block", function ()
             TestBlock.instantiate(self, 5)
         end
 
+        -- Instantiate TestBlock
         local blk = TestDerivedBlock()
+
+        -- Differentiate block
         blk:differentiate({radio.types.Float32})
+
+        -- Initialize block
         blk:initialize()
+
+        -- Process
         local out = blk:process(2)
 
         assert.is.equal(5, blk.a)
@@ -367,46 +380,41 @@ describe("block", function ()
     it("running source block", function ()
         local TestSource = block.factory("TestSource")
 
-        function TestSource:instantiate(vec)
-            self.vec = vec
-            self.index = 0
+        function TestSource:instantiate(vector)
+            self.vector = vector
+            self.vector_index = 0
 
             self:add_type_signature({}, {block.Output("out", radio.types.Float32)})
         end
 
         function TestSource:process()
-            if self.index == self.vec.length then
+            if self.vector_index == self.vector.length then
                 return nil
             end
 
-            local out = radio.types.Float32.vector_from_array({self.vec.data[self.index]})
-            self.index = self.index + 1
+            local out = radio.types.Float32.vector_from_array({self.vector.data[self.vector_index]})
+
+            self.vector_index = self.vector_index + 1
 
             return out
         end
 
-        -- Mock pipe for writing
-
-        local MockPipe = class.factory()
-
-        function MockPipe.new()
-            local self = setmetatable({}, MockPipe)
-            self.vec = radio.types.Float32.vector()
-            return self
-        end
-
-        function MockPipe:write(x)
-            for i = 0, x.length-1 do
-                self.vec:append(x.data[i])
-            end
-        end
-
-        -- Create a TestSource with two output pipes
+        -- Instantiate TestSource with expected vector
         local expected_vec = radio.types.Float32.vector_from_array({42, 22, 10, 123, 15})
         local blk = TestSource(expected_vec)
-        local p1, p2 = MockPipe(), MockPipe()
+
+        -- Differentiate the block
         blk:differentiate({})
-        blk.outputs[1].pipes = {p1, p2}
+
+        -- Build pipes
+        blk.outputs[1].pipes[1] = pipe.Pipe(blk.outputs[1], {data_type = radio.types.Float32})
+        blk.outputs[1].pipes[2] = pipe.Pipe(blk.outputs[1], {data_type = radio.types.Float32})
+
+        -- Initialize pipes
+        blk.outputs[1].pipes[1]:initialize()
+        blk.outputs[1].pipes[2]:initialize()
+
+        -- Initialize block
         blk:initialize()
 
         -- Hook spy onto block cleanup()
@@ -418,9 +426,13 @@ describe("block", function ()
         -- Check cleanup() was called
         assert.spy(cleanup_spy).was.called()
 
-        -- Check contents of output pipes
-        assert.is.equal(expected_vec, p1.vec)
-        assert.is.equal(expected_vec, p2.vec)
+        -- Check output pipe 1
+        local actual_vec = blk.outputs[1].pipes[1]:read()
+        assert.is.equal(expected_vec, actual_vec)
+
+        -- Check output pipe 2
+        local actual_vec = blk.outputs[1].pipes[2]:read()
+        assert.is.equal(expected_vec, actual_vec)
     end)
 
     it("running single input block", function ()
@@ -440,50 +452,28 @@ describe("block", function ()
             return out
         end
 
-        -- Mock pipe with read and write capabilities
-
-        local MockPipe = class.factory()
-
-        function MockPipe.new()
-            local self = setmetatable({}, MockPipe)
-            self.vec = radio.types.Float32.vector()
-            return self
-        end
-
-        function MockPipe:write(x)
-            for i = 0, x.length-1 do
-                self.vec:append(x.data[i])
-            end
-        end
-
-        function MockPipe:read()
-            if self.vec.length == 0 then
-                return nil
-            end
-
-            local out = self.vec
-            self.vec = radio.types.Float32.vector()
-            return out
-        end
-
-        function MockPipe:read_n(n)
-            error("not implemented")
-        end
-
-        function MockPipe:read_update()
-            error("not implemented")
-        end
-
-        -- Create a TestBlock with an input pipe and 2 output pipes
+        -- Instantiate TestBlock
         local blk = TestBlock()
-        local p_in, p_out1, p_out2 = MockPipe(), MockPipe(), MockPipe()
+
+        -- Differentiate block
         blk:differentiate({radio.types.Float32})
-        blk.inputs[1].pipe = p_in
-        blk.outputs[1].pipes = {p_out1, p_out2}
+
+        -- Build pipes
+        blk.inputs[1].pipe = pipe.Pipe({data_type = radio.types.Float32}, blk.inputs[1])
+        blk.outputs[1].pipes[1] = pipe.Pipe(blk.outputs[1], {data_type = radio.types.Float32})
+        blk.outputs[1].pipes[2] = pipe.Pipe(blk.outputs[1], {data_type = radio.types.Float32})
+
+        -- Initialize pipes
+        blk.inputs[1].pipe:initialize()
+        blk.outputs[1].pipes[1]:initialize()
+        blk.outputs[1].pipes[2]:initialize()
+
+        -- Initialize block
         blk:initialize()
 
-        -- Load the input pipe
-        p_in.vec = radio.types.Float32.vector_from_array({1, 2, 3, 4, 5})
+        -- Load the input pipe and close output
+        blk.inputs[1].pipe:write(radio.types.Float32.vector_from_array({1, 2, 3, 4, 5}))
+        blk.inputs[1].pipe:close_output()
 
         -- Hook spy onto block cleanup()
         local cleanup_spy = spy.on(blk, "cleanup")
@@ -494,10 +484,13 @@ describe("block", function ()
         -- Check cleanup() was called
         assert.spy(cleanup_spy).was.called()
 
-        -- Check the output pipe
         local expected_vec = radio.types.Float32.vector_from_array({2, 4, 6, 8, 10})
-        assert.is.equal(expected_vec, p_out1.vec)
-        assert.is.equal(expected_vec, p_out2.vec)
+
+        -- Check the output pipe 1
+        assert.is.equal(expected_vec, blk.outputs[1].pipes[1]:read())
+
+        -- Check the output pipe 1
+        assert.is.equal(expected_vec, blk.outputs[1].pipes[2]:read())
     end)
 
     it("running multiple input block", function ()
@@ -519,72 +512,42 @@ describe("block", function ()
             return out_sum, out_mul
         end
 
-        -- Mock pipe with read and write capabilities
-
-        local MockPipe = class.factory()
-
-        function MockPipe.new(n_read)
-            local self = setmetatable({}, MockPipe)
-            self.vec = radio.types.Float32.vector()
-            self.n_read = n_read
-            return self
-        end
-
-        function MockPipe:write(x)
-            for i = 0, x.length-1 do
-                self.vec:append(x.data[i])
-            end
-        end
-
-        function MockPipe:read()
-            return self:read_n(self:read_update())
-        end
-
-        function MockPipe:read_update()
-            if self.vec.length == 0 then
-                return nil
-            end
-            return math.min(self.vec.length, self.n_read)
-        end
-
-        function MockPipe:read_n(n)
-            local out = radio.types.Float32.vector(n)
-
-            -- Copy elements to out
-            for i = 0, n-1 do
-                out.data[i] = self.vec.data[i]
-            end
-
-            -- Shift down our vector
-            for i = n, self.vec.length - 1 do
-                self.vec.data[i-n] = self.vec.data[i]
-            end
-
-            self.vec:resize(self.vec.length - n)
-
-            return out
-        end
-
-        -- Create a test block with 2 input pipes and 2 output pipes
-        --  Pipe input 1 will read up to 3 at a time,
-        --  pipe input 2 will read up to 7 at a time.
+        -- Instantiate TestBlock
         local blk = TestBlock()
-        local p_in1, p_in2, p_out1, p_out2 = MockPipe(3), MockPipe(7)
-        local p_out1, p_out2 = MockPipe(), MockPipe()
+
+        -- Differentiate block
         blk:differentiate({radio.types.Float32, radio.types.Float32})
-        blk.inputs[1].pipe = p_in1
-        blk.inputs[2].pipe = p_in2
-        blk.outputs[1].pipes = {p_out1}
-        blk.outputs[2].pipes = {p_out2}
+
+        -- Build pipes
+        blk.inputs[1].pipe = pipe.Pipe({data_type = radio.types.Float32}, blk.inputs[1])
+        blk.inputs[2].pipe = pipe.Pipe({data_type = radio.types.Float32}, blk.inputs[2])
+        blk.outputs[1].pipes[1] = pipe.Pipe(blk.outputs[1], {data_type = radio.types.Float32})
+        blk.outputs[2].pipes[1] = pipe.Pipe(blk.outputs[2], {data_type = radio.types.Float32})
+
+        -- Initialize pipes
+        blk.inputs[1].pipe:initialize()
+        blk.inputs[2].pipe:initialize()
+        blk.outputs[1].pipes[1]:initialize()
+        blk.outputs[2].pipes[1]:initialize()
+
+        -- Initialize block
         blk:initialize()
 
-        -- Load the input pipes
-        for i = 1, 1024 do
-            p_in1.vec:append(radio.types.Float32(i))
+        -- Load input pipe 1 and close output
+        local vec = radio.types.Float32.vector(1024)
+        for i = 0, vec.length-1 do
+            vec.data[i].value = i
         end
-        for i = 1, 956 do
-            p_in2.vec:append(radio.types.Float32(i))
+        blk.inputs[1].pipe:write(vec)
+        blk.inputs[1].pipe:close_output()
+
+        -- Load input pipe 2 and close output
+        local vec = radio.types.Float32.vector(956)
+        for i = 0, vec.length-1 do
+            vec.data[i].value = i
         end
+        blk.inputs[2].pipe:write(vec)
+        blk.inputs[2].pipe:close_output()
 
         -- Hook spy onto block cleanup()
         local cleanup_spy = spy.on(blk, "cleanup")
@@ -595,18 +558,20 @@ describe("block", function ()
         -- Check cleanup() was called
         assert.spy(cleanup_spy).was.called()
 
-        -- Check output pipes
-        local expected_vec1 = radio.types.Float32.vector()
-        local expected_vec2 = radio.types.Float32.vector()
-        for i = 1, 956 do
-            expected_vec1:append(radio.types.Float32(i + i))
+        -- Check output 1 pipe
+        local expected_vec = radio.types.Float32.vector(956)
+        for i = 0, expected_vec.length-1 do
+            expected_vec.data[i].value = i + i
         end
-        for i = 1, 956 do
-            expected_vec2:append(radio.types.Float32(i * i))
+        local actual_vec = blk.outputs[1].pipes[1]:read()
+        assert.is.equal(expected_vec, actual_vec)
+
+        -- Check output 2 pipe
+        local expected_vec = radio.types.Float32.vector(956)
+        for i = 0, expected_vec.length-1 do
+            expected_vec.data[i].value = i * i
         end
-        assert.is.equal(956, p_out1.vec.length)
-        assert.is.equal(956, p_out2.vec.length)
-        assert.is.equal(expected_vec1, p_out1.vec)
-        assert.is.equal(expected_vec2, p_out2.vec)
+        local actual_vec = blk.outputs[2].pipes[1]:read()
+        assert.is.equal(expected_vec, actual_vec)
     end)
 end)

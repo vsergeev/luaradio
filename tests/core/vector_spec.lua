@@ -2,16 +2,18 @@ local ffi = require('ffi')
 
 local Vector = require('radio.core.vector').Vector
 
-ffi.cdef[[
+describe("vector", function ()
+    ffi.cdef[[
     typedef struct {
         uint32_t x;
         uint32_t y;
     } elem_t;
+    ]]
 
+    ffi.cdef[[
     int memcmp(const void *s1, const void *s2, size_t n);
-]]
+    ]]
 
-describe("vector", function ()
     it("constructor", function ()
         -- Vector of 0
         local v = Vector(ffi.typeof("elem_t"), 0)

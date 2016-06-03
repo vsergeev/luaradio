@@ -48,6 +48,18 @@ ffi.cdef[[
     } iq_format_f64_t;
 ]]
 
+-- File I/O
+ffi.cdef[[
+    typedef struct FILE FILE;
+    FILE *fopen(const char *path, const char *mode);
+    FILE *fdopen(int fd, const char *mode);
+    size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+    void rewind(FILE *stream);
+    int feof(FILE *stream);
+    int ferror(FILE *stream);
+    int fclose(FILE *stream);
+]]
+
 function IQFileSource:instantiate(file, format, rate, repeat_on_eof)
     local supported_formats = {
         u8    = {ctype = "iq_format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
@@ -87,18 +99,6 @@ end
 function IQFileSource:get_rate()
     return self.rate
 end
-
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
-    void rewind(FILE *stream);
-    int feof(FILE *stream);
-    int ferror(FILE *stream);
-    int fclose(FILE *stream);
-]]
 
 function IQFileSource:initialize()
     if self.filename then

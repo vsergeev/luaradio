@@ -42,6 +42,19 @@ ffi.cdef[[
     } wave_sample_s32_t;
 ]]
 
+-- File I/O
+ffi.cdef[[
+    typedef struct FILE FILE;
+    FILE *fopen(const char *path, const char *mode);
+    FILE *fdopen(int fd, const char *mode);
+    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+    void rewind(FILE *stream);
+    int fseek(FILE *stream, long offset, int whence);
+    enum {SEEK_SET = 0, SEEK_CUR = 1, SEEK_END = 2};
+    int fclose(FILE *stream);
+    int fflush(FILE *stream);
+]]
+
 function WAVFileSink:instantiate(file, num_channels, bits_per_sample)
     local supported_formats = {
         [8]     = {ctype = "wave_sample_u8_t",  swap = false,           offset = 127.5, scale = 1.0/127.5},
@@ -83,19 +96,6 @@ function WAVFileSink:instantiate(file, num_channels, bits_per_sample)
         self:add_type_signature(block_inputs, {})
     end
 end
-
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
-    void rewind(FILE *stream);
-    int fseek(FILE *stream, long offset, int whence);
-    enum {SEEK_SET = 0, SEEK_CUR = 1, SEEK_END = 2};
-    int fclose(FILE *stream);
-    int fflush(FILE *stream);
-]]
 
 -- Header endianness conversion
 

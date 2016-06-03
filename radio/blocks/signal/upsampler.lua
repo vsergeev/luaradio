@@ -15,7 +15,7 @@ function UpsamplerBlock:get_rate()
 end
 
 function UpsamplerBlock:initialize()
-    self.data_type = self:get_input_types()[1]
+    self.data_type = self:get_input_type()
 end
 
 function UpsamplerBlock:process(x)

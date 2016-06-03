@@ -33,7 +33,7 @@ void *memcpy(void *dest, const void *src, size_t n);
 if platform.features.volk then
 
     function FIRFilterBlock:initialize()
-        self.data_type = self:get_input_types()[1]
+        self.data_type = self:get_input_type()
         self.state = self.data_type.vector(self.taps.length)
 
         -- Reverse taps
@@ -127,7 +127,7 @@ elseif platform.features.liquid then
     local libliquid = platform.libs.liquid
 
     function FIRFilterBlock:initialize()
-        local data_type = self:get_input_types()[1]
+        local data_type = self:get_input_type()
 
         if data_type == types.ComplexFloat32 and self.taps.type == types.Float32 then
             self.filter = ffi.gc(libliquid.firfilt_crcf_create(self.taps.data, self.taps.length), libliquid.firfilt_crcf_destroy)
@@ -169,7 +169,7 @@ elseif platform.features.liquid then
 else
 
     function FIRFilterBlock:initialize()
-        self.data_type = self:get_input_types()[1]
+        self.data_type = self:get_input_type()
         self.state = self.data_type.vector(self.taps.length)
 
         -- Reverse taps

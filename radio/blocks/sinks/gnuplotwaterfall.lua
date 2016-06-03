@@ -31,7 +31,7 @@ end
 
 function GnuplotWaterfallSink:initialize_gnuplot()
     local sample_rate = self:get_rate()
-    local data_type = self:get_input_types()[1]
+    local data_type = self:get_input_type()
 
     -- Initialize gnuplot
     self.gnuplot_f = io.popen("gnuplot >/dev/null 2>&1", "w")

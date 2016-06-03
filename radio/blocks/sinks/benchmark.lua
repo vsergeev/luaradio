@@ -47,7 +47,7 @@ function BenchmarkSink:cleanup()
 
     -- Calculate throughput
     local samples_per_second = self.count / (self.toc - self.tic)
-    local bytes_per_second = ffi.sizeof(self:get_input_types()[1]) * samples_per_second
+    local bytes_per_second = ffi.sizeof(self:get_input_type()) * samples_per_second
 
     -- Serialize results to fd
     local results_json = json.encode({samples_per_second = samples_per_second, bytes_per_second = bytes_per_second})

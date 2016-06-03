@@ -44,7 +44,7 @@ if platform.features.liquid then
     local libliquid = platform.libs.liquid
 
     function IIRFilterBlock:initialize()
-        local data_type = self:get_input_types()[1]
+        local data_type = self:get_input_type()
 
         if data_type == types.ComplexFloat32 then
             self.filter = ffi.gc(libliquid.iirfilt_crcf_create(self.b_taps.data, self.b_taps.length, self.a_taps.data, self.a_taps.length), libliquid.iirfilt_crcf_destroy)
@@ -80,7 +80,7 @@ else
     ]]
 
     function IIRFilterBlock:initialize()
-        self.data_type = self:get_input_types()[1]
+        self.data_type = self:get_input_type()
         self.input_state = self.data_type.vector(self.b_taps.length)
         self.output_state = self.data_type.vector(self.a_taps.length-1)
     end

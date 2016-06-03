@@ -115,26 +115,20 @@ function Block:differentiate(input_data_types)
     end
 end
 
-function Block:get_input_types()
+function Block:get_input_type(index)
     assert(self.signature, "Block not yet differentiated.")
 
-    local types = {}
-    for i = 1, #self.inputs do
-        types[i] = self.inputs[i].data_type
-    end
+    index = index or 1
 
-    return types
+    return self.inputs[index] and self.inputs[index].data_type
 end
 
-function Block:get_output_types()
+function Block:get_output_type(index)
     assert(self.signature, "Block not yet differentiated.")
 
-    local types = {}
-    for i = 1, #self.outputs do
-        types[i] = self.outputs[i].data_type
-    end
+    index = index or 1
 
-    return types
+    return self.outputs[index] and self.outputs[index].data_type
 end
 
 function Block:get_rate()

@@ -16,7 +16,7 @@ function DelayBlock:instantiate(num_samples)
 end
 
 function DelayBlock:initialize()
-    self.data_type = self:get_input_types()[1]
+    self.data_type = self:get_input_type()
     self.state = self.data_type.vector(self.num_samples)
 end
 

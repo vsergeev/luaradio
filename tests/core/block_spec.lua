@@ -103,29 +103,33 @@ describe("block", function ()
         local blk = TestBlock()
 
         -- Test getting input/output types before differentiation
-        assert.has_error(function () blk:get_input_types() end)
-        assert.has_error(function () blk:get_output_types() end)
+        assert.has_error(function () blk:get_input_type() end)
+        assert.has_error(function () blk:get_output_type() end)
 
         -- Test valid differentiations
         blk:differentiate({radio.types.ComplexFloat32, radio.types.Float32})
         assert.is.equal(blk.signatures[1], blk.signature)
-        assert.is.same({radio.types.ComplexFloat32, radio.types.Float32}, blk:get_input_types())
-        assert.is.same({radio.types.Float32}, blk:get_output_types())
+        assert.is.same(radio.types.ComplexFloat32, blk:get_input_type(1))
+        assert.is.same(radio.types.Float32, blk:get_input_type(2))
+        assert.is.same(radio.types.Float32, blk:get_output_type(1))
 
         blk:differentiate({radio.types.Float32, radio.types.Byte})
         assert.is.equal(blk.signatures[2], blk.signature)
-        assert.is.same({radio.types.Float32, radio.types.Byte}, blk:get_input_types())
-        assert.is.same({radio.types.Byte}, blk:get_output_types())
+        assert.is.same(radio.types.Float32, blk:get_input_type(1))
+        assert.is.same(radio.types.Byte, blk:get_input_type(2))
+        assert.is.same(radio.types.Byte, blk:get_output_type(1))
 
         blk:differentiate({radio.types.Bit, radio.types.Byte})
         assert.is.equal(blk.signatures[3], blk.signature)
-        assert.is.same({radio.types.Bit, radio.types.Byte}, blk:get_input_types())
-        assert.is.same({radio.types.Byte}, blk:get_output_types())
+        assert.is.same(radio.types.Bit, blk:get_input_type(1))
+        assert.is.same(radio.types.Byte, blk:get_input_type(2))
+        assert.is.same(radio.types.Byte, blk:get_output_type(1))
 
         blk:differentiate({radio.types.Bit, radio.types.Bit})
         assert.is.equal(blk.signatures[4], blk.signature)
-        assert.is.same({radio.types.Bit, radio.types.Bit}, blk:get_input_types())
-        assert.is.same({radio.types.Bit}, blk:get_output_types())
+        assert.is.same(radio.types.Bit, blk:get_input_type(1))
+        assert.is.same(radio.types.Bit, blk:get_input_type(2))
+        assert.is.same(radio.types.Bit, blk:get_output_type(1))
 
         -- Test invalid differentiations
         assert.has_error(function () blk:differentiate({}) end)
@@ -155,20 +159,20 @@ describe("block", function ()
         blk:differentiate({radio.types.Float32})
         assert.is.equal(TestBlock.initialize_float, blk.initialize)
         assert.is.equal(TestBlock.process_float, blk.process)
-        assert.is.same({radio.types.Float32}, blk:get_input_types())
-        assert.is.same({}, blk:get_output_types())
+        assert.is.same(radio.types.Float32, blk:get_input_type())
+        assert.is.same(nil, blk:get_output_type())
 
         blk:differentiate({radio.types.Byte})
         assert.is.equal(TestBlock.initialize_integer, blk.initialize)
         assert.is.equal(TestBlock.process_integer, blk.process)
-        assert.is.same({radio.types.Byte}, blk:get_input_types())
-        assert.is.same({}, blk:get_output_types())
+        assert.is.same(radio.types.Byte, blk:get_input_type())
+        assert.is.same(nil, blk:get_output_type())
 
         blk:differentiate({radio.types.Bit})
         assert.is.equal(TestBlock.initialize, blk.initialize)
         assert.is.equal(TestBlock.process, blk.process)
-        assert.is.same({radio.types.Bit}, blk:get_input_types())
-        assert.is.same({}, blk:get_output_types())
+        assert.is.same(radio.types.Bit, blk:get_input_type())
+        assert.is.same(nil, blk:get_output_type())
 
         -- Test source differentiation
 
@@ -181,8 +185,8 @@ describe("block", function ()
         local blk = TestSource()
         blk:differentiate({})
         assert.is.equal(blk.signatures[1], blk.signature)
-        assert.is.same({}, blk:get_input_types())
-        assert.is.same({radio.types.Float32}, blk:get_output_types())
+        assert.is.same(nil, blk:get_input_type())
+        assert.is.same(radio.types.Float32, blk:get_output_type())
 
         -- Test function-based type differentiation
 

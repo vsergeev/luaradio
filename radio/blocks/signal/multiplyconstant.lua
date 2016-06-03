@@ -26,7 +26,7 @@ function MultiplyConstantBlock:instantiate(constant)
 end
 
 function MultiplyConstantBlock:initialize()
-    self.data_type = self:get_input_types()[1]
+    self.data_type = self:get_input_type()
 end
 
 function MultiplyConstantBlock:process_complex_by_complex(x)

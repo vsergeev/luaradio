@@ -20,7 +20,7 @@ local am_demod = radio.ComplexToRealBlock()
 local af_gain = radio.MultiplyConstantBlock(gain)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local af_decimator = radio.DownsamplerBlock(10)
-local sink = radio.PulseAudioSink()
+local sink = radio.PulseAudioSink(1)
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {ifreq - 3*bandwidth, ifreq + 3*bandwidth}, yrange = {-120, -40}})
 local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-160, -40}, xrange = {0, bandwidth}, update_time = 0.05})

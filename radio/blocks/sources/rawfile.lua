@@ -19,12 +19,6 @@ function RawFileSource:instantiate(file, data_type, rate, repeat_on_eof)
     self.rate = rate
     self.repeat_on_eof = (repeat_on_eof == nil) and false or repeat_on_eof
 
-    self.buf_capacity = 65536
-    self.rawbuf = platform.alloc(self.buf_capacity)
-    self.buf = ffi.cast("uint8_t *", self.rawbuf)
-    self.buf_offset = 0
-    self.buf_size = 0
-
     self:add_type_signature({}, {block.Output("out", data_type)})
 end
 
@@ -61,6 +55,13 @@ function RawFileSource:initialize()
 
     -- Register open file
     self.files[self.file] = true
+
+    -- Allocate buffer
+    self.buf_capacity = 262144
+    self.rawbuf = platform.alloc(self.buf_capacity)
+    self.buf = ffi.cast("uint8_t *", self.rawbuf)
+    self.buf_offset = 0
+    self.buf_size = 0
 end
 
 function RawFileSource:process()

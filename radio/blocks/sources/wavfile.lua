@@ -42,6 +42,18 @@ ffi.cdef[[
     } wave_sample_s32_t;
 ]]
 
+-- File I/O
+ffi.cdef[[
+    typedef struct FILE FILE;
+    FILE *fopen(const char *path, const char *mode);
+    FILE *fdopen(int fd, const char *mode);
+    size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+    int fseek(FILE *stream, long offset, int whence);
+    int feof(FILE *stream);
+    int ferror(FILE *stream);
+    int fclose(FILE *stream);
+]]
+
 function WAVFileSource:instantiate(file, num_channels, repeat_on_eof)
     if type(file) == "string" then
         self.filename = file
@@ -71,18 +83,6 @@ end
 function WAVFileSource:get_rate()
     return self.rate
 end
-
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
-    int fseek(FILE *stream, long offset, int whence);
-    int feof(FILE *stream);
-    int ferror(FILE *stream);
-    int fclose(FILE *stream);
-]]
 
 -- Header endianness conversion
 

@@ -59,7 +59,7 @@ local BenchmarkSuite = {
         "IQ File Source (f32le)",
         "IQFileSource",
         function (results_fd)
-            local random_vec = radio.types.ComplexFloat32.vector(2048)
+            local random_vec = radio.types.ComplexFloat32.vector(262144)
             for i = 0, random_vec.length-1 do
                 random_vec.data[i].real = 2*math.random(1.0)-1.0
                 random_vec.data[i].imag = 2*math.random(1.0)-1.0
@@ -76,7 +76,7 @@ local BenchmarkSuite = {
         "Real File Source (f32le)",
         "RealFileSource",
         function (results_fd)
-            local random_vec = radio.types.Float32.vector(2048)
+            local random_vec = radio.types.Float32.vector(262144)
             for i = 0, random_vec.length-1 do
                 random_vec.data[i].value = 2*math.random(1.0)-1.0
             end
@@ -92,7 +92,7 @@ local BenchmarkSuite = {
         "Raw File Source (float)",
         "RawFileSource",
         function (results_fd)
-            local random_vec = radio.types.Float32.vector(2048)
+            local random_vec = radio.types.Float32.vector(262144)
             for i = 0, random_vec.length-1 do
                 random_vec.data[i].value = 2*math.random(1.0)-1.0
             end

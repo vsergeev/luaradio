@@ -33,6 +33,8 @@ top:connect(nbfm_demod, hilbert, translator, afsk_filter, afsk_demod, data_filte
 top:connect(data_filter, 'out', sampler, 'data')
 top:connect(clock_recoverer, 'out', sampler, 'clock')
 top:connect(sampler, bit_slicer, bit_decoder, framer, sink)
-top:connect(tuner, plot1)
-top:connect(data_filter, plot2)
+if os.getenv('DISPLAY') then
+    top:connect(tuner, plot1)
+    top:connect(data_filter, plot2)
+end
 top:run()

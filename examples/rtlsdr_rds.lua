@@ -45,7 +45,9 @@ top:connect(pilot_filter, pll_bitclock, bitclock_complex_to_real, bitclock_delay
 top:connect(phase_corrector, 'out', sampler, 'data')
 top:connect(bitclock_delay, 'out', sampler, 'clock')
 top:connect(sampler, bit_demod, bit_slicer, bit_decoder, framer, decoder, sink)
-top:connect(fm_demod, plot1)
-top:connect(baseband_rrc, plot2)
-top:connect(sampler, plot3)
+if os.getenv('DISPLAY') then
+    top:connect(fm_demod, plot1)
+    top:connect(baseband_rrc, plot2)
+    top:connect(sampler, plot3)
+end
 top:run()

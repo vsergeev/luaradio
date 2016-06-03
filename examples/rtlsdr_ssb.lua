@@ -20,12 +20,14 @@ local sb_filter = radio.ComplexBandpassFilterBlock(129, (sideband == "lsb") and 
 local am_demod = radio.ComplexToRealBlock()
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local af_gain = radio.MultiplyConstantBlock(gain)
-local sink = radio.PulseAudioSink(1)
+local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(1) or radio.WAVFileSink('ssb.wav', 1)
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {-3*bandwidth, 3*bandwidth}, yrange = {-120, -40}})
 local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
 
 top:connect(source, tuner, sb_filter, am_demod, af_filter, af_gain, sink)
-top:connect(tuner, plot1)
-top:connect(af_gain, plot2)
+if os.getenv('DISPLAY') then
+    top:connect(tuner, plot1)
+    top:connect(af_gain, plot2)
+end
 top:run()

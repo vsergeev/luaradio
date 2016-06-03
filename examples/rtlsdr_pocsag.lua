@@ -37,6 +37,8 @@ top:connect(subtractor, data_filter, clock_recoverer)
 top:connect(data_filter, 'out', sampler, 'data')
 top:connect(clock_recoverer, 'out', sampler, 'clock')
 top:connect(sampler, bit_slicer, framer, decoder, sink)
-top:connect(tuner, plot1)
-top:connect(data_filter, plot2)
+if os.getenv('DISPLAY') then
+    top:connect(tuner, plot1)
+    top:connect(data_filter, plot2)
+end
 top:run()

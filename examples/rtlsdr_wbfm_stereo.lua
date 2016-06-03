@@ -33,7 +33,7 @@ local r_subtractor = radio.SubtractBlock()
 local r_af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)
 local r_decimator = radio.DownsamplerBlock(5)
 -- Sink
-local sink = radio.PulseAudioSink(2)
+local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(2) or radio.WAVFileSink('wbfm_stereo.wav', 2)
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
 local plot2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
@@ -53,7 +53,9 @@ top:connect(l_summer, l_af_deemphasis, l_decimator)
 top:connect(r_subtractor, r_af_deemphasis, r_decimator)
 top:connect(l_decimator, 'out', sink, 'in1')
 top:connect(r_decimator, 'out', sink, 'in2')
-top:connect(fm_demod, plot1)
-top:connect(lpr_am_demod, plot2)
-top:connect(lmr_am_demod, plot3)
+if os.getenv('DISPLAY') then
+    top:connect(fm_demod, plot1)
+    top:connect(lpr_am_demod, plot2)
+    top:connect(lmr_am_demod, plot3)
+end
 top:run()

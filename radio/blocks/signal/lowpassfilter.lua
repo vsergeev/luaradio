@@ -20,11 +20,9 @@ function LowpassFilterBlock:initialize()
     -- Compute Nyquist frequency
     local nyquist = self.nyquist or (self:get_rate()/2)
 
-    -- Generate and populate taps
-    local real_taps = filter_utils.firwin_lowpass(self.taps.length, self.cutoff/nyquist, self.window_type)
-    for i=0, self.taps.length-1 do
-        self.taps.data[i].value = real_taps[i+1]
-    end
+    -- Generate taps
+    local taps = filter_utils.firwin_lowpass(self.taps.length, self.cutoff/nyquist, self.window_type)
+    self.taps = types.Float32.vector_from_array(taps)
 
     FIRFilterBlock.initialize(self)
 end

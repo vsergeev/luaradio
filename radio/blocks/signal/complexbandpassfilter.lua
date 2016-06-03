@@ -20,7 +20,7 @@ function ComplexBandpassFilterBlock:initialize()
     -- Compute Nyquist frequency
     local nyquist = self.nyquist or (self:get_rate()/2)
 
-    -- Generate and populate taps
+    -- Generate taps
     local cutoffs = {self.cutoffs[1]/nyquist, self.cutoffs[2]/nyquist}
     local taps = filter_utils.firwin_complex_bandpass(self.taps.length, cutoffs, self.window_type)
     self.taps = types.ComplexFloat32.vector_from_array(taps)

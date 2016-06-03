@@ -16,11 +16,9 @@ function RootRaisedCosineFilterBlock:instantiate(num_taps, beta, symbol_rate)
 end
 
 function RootRaisedCosineFilterBlock:initialize()
-    -- Generate and populate taps
-    local real_taps = filter_utils.fir_root_raised_cosine(self.taps.length, self:get_rate(), self.beta, 1/self.symbol_rate)
-    for i=0, self.taps.length-1 do
-        self.taps.data[i].value = real_taps[i+1]
-    end
+    -- Generate taps
+    local taps = filter_utils.fir_root_raised_cosine(self.taps.length, self:get_rate(), self.beta, 1/self.symbol_rate)
+    self.taps = types.Float32.vector_from_array(taps)
 
     FIRFilterBlock.initialize(self)
 end

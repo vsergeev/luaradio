@@ -14,15 +14,11 @@ function HilbertTransformBlock:instantiate(num_taps, window_type)
     window_type = (window_type == nil) and "hamming" or window_type
 
     -- Generate Hilbert transform taps
-    local h = filter_utils.fir_hilbert_transform(num_taps, window_type)
-    self.hilbert_taps = types.Float32.vector(num_taps)
-    for i = 0, num_taps-1 do
-        self.hilbert_taps.data[i].value = h[i+1]
-    end
+    local taps = filter_utils.fir_hilbert_transform(num_taps, window_type)
+    self.hilbert_taps = types.Float32.vector_from_array(taps)
 
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.ComplexFloat32)})
 end
-
 
 ffi.cdef[[
 void *memmove(void *dest, const void *src, size_t n);

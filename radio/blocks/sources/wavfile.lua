@@ -1,6 +1,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local vector = require('radio.core.vector')
 local types = require('radio.types')
 
 local WAVFileSource = block.factory("WAVFileSource")
@@ -189,6 +190,13 @@ function WAVFileSource:initialize()
 
     -- Register open file
     self.files[self.file] = true
+
+    -- Create sample vectors
+    self.raw_samples = vector.Vector(ffi.typeof(self.format.ctype), self.chunk_size)
+    self.out = {}
+    for i = 1, self.num_channels do
+        self.out[i] = types.Float32.vector()
+    end
 end
 
 local function swap_bytes(x)
@@ -199,11 +207,8 @@ local function swap_bytes(x)
 end
 
 function WAVFileSource:process()
-    -- Allocate buffer for raw samples
-    local raw_samples = ffi.new(self.format.ctype .. "[?]", self.chunk_size)
-
     -- Read from file
-    local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self.format.ctype), self.chunk_size, self.file))
+    local num_samples = tonumber(ffi.C.fread(self.raw_samples.data, ffi.sizeof(self.raw_samples.data_type), self.raw_samples.length, self.file))
     if num_samples < self.chunk_size then
         if num_samples == 0 and ffi.C.feof(self.file) ~= 0 then
             if self.repeat_on_eof then
@@ -225,24 +230,23 @@ function WAVFileSource:process()
     -- Perform byte swap for endianness if needed
     if self.format.swap then
         for i = 0, num_samples-1 do
-            swap_bytes(raw_samples[i])
+            swap_bytes(self.raw_samples.data[i])
         end
     end
 
-    -- Build an samples vector for each channel
-    local samples = {}
+    -- Resize samples vector for each channel
     for i = 1, self.num_channels do
-        samples[i] = types.Float32.vector(num_samples/self.num_channels)
+        self.out[i]:resize(num_samples/self.num_channels)
     end
 
     -- Convert raw samples to float32 samples for each channel
     for i = 0, (num_samples/self.num_channels)-1 do
         for j = 1, self.num_channels do
-            samples[j].data[i].value = (raw_samples[i*self.num_channels + (j-1)].value - self.format.offset)*self.format.scale
+            self.out[j].data[i].value = (self.raw_samples.data[i*self.num_channels + (j-1)].value - self.format.offset)*self.format.scale
         end
     end
 
-    return unpack(samples)
+    return unpack(self.out)
 end
 
 function WAVFileSource:cleanup()

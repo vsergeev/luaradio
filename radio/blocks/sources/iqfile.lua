@@ -1,6 +1,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local vector = require('radio.core.vector')
 local types = require('radio.types')
 
 local IQFileSource = block.factory("IQFileSource")
@@ -115,6 +116,10 @@ function IQFileSource:initialize()
 
     -- Register open file
     self.files[self.file] = true
+
+    -- Create sample vectors
+    self.raw_samples = vector.Vector(ffi.typeof(self.format.ctype), self.chunk_size)
+    self.out = types.ComplexFloat32.vector()
 end
 
 local function swap_bytes(x)
@@ -125,11 +130,8 @@ local function swap_bytes(x)
 end
 
 function IQFileSource:process()
-    -- Allocate buffer for raw samples
-    local raw_samples = ffi.new(self.format.ctype .. "[?]", self.chunk_size)
-
     -- Read from file
-    local num_samples = tonumber(ffi.C.fread(raw_samples, ffi.sizeof(self.format.ctype), self.chunk_size, self.file))
+    local num_samples = tonumber(ffi.C.fread(self.raw_samples.data, ffi.sizeof(self.raw_samples.data_type), self.raw_samples.length, self.file))
     if num_samples < self.chunk_size then
         if num_samples == 0 and ffi.C.feof(self.file) ~= 0 then
             if self.repeat_on_eof then
@@ -147,19 +149,20 @@ function IQFileSource:process()
     -- Perform byte swap for endianness if needed
     if self.format.swap then
         for i = 0, num_samples-1 do
-            swap_bytes(raw_samples[i].real)
-            swap_bytes(raw_samples[i].imag)
+            swap_bytes(self.raw_samples.data[i].real)
+            swap_bytes(self.raw_samples.data[i].imag)
         end
     end
 
     -- Convert raw samples to complex float32 samples
-    local samples = types.ComplexFloat32.vector(num_samples)
+    local out = self.out:resize(num_samples)
+
     for i = 0, num_samples-1 do
-        samples.data[i].real = (raw_samples[i].real.value - self.format.offset)*self.format.scale
-        samples.data[i].imag = (raw_samples[i].imag.value - self.format.offset)*self.format.scale
+        out.data[i].real = (self.raw_samples.data[i].real.value - self.format.offset)*self.format.scale
+        out.data[i].imag = (self.raw_samples.data[i].imag.value - self.format.offset)*self.format.scale
     end
 
-    return samples
+    return out
 end
 
 function IQFileSource:cleanup()

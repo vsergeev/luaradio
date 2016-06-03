@@ -4,18 +4,20 @@ local types = require('radio.types')
 local NullSource = block.factory("NullSource")
 
 function NullSource:instantiate(data_type, rate)
-    assert(data_type, "Missing argument #1 (data_type)")
-
+    self.data_type = assert(data_type, "Missing argument #1 (data_type)")
     self.rate = assert(rate, "Missing argument #2 (rate)")
 
     self.chunk_size = 8192
-    self.out = data_type.vector(self.chunk_size)
 
     self:add_type_signature({}, {block.Output("out", data_type)})
 end
 
 function NullSource:get_rate()
     return self.rate
+end
+
+function NullSource:initialize()
+    self.out = self.data_type.vector(self.chunk_size)
 end
 
 function NullSource:process()

@@ -41,11 +41,14 @@ ffi.cdef[[
 function SignalSource:initialize_exponential()
     self.amplitude = self.options.amplitude or 1.0
     self.phase = self.options.phase or 0.0
+
     self.omega = 2*math.pi*(self.frequency/self.rate)
+
+    self.out = types.ComplexFloat32.vector(self.chunk_size)
 end
 
 function SignalSource:process_exponential()
-    local out = types.ComplexFloat32.vector(self.chunk_size)
+    local out = self.out
 
     for i = 0, out.length-1 do
         out.data[i].real = ffi.C.cosf(self.phase)*self.amplitude
@@ -66,11 +69,14 @@ function SignalSource:initialize_cosine_sine()
     self.amplitude = self.options.amplitude or 1.0
     self.phase = self.options.phase or 0.0
     self.offset = self.options.offset or 0.0
+
     self.omega = 2*math.pi*(self.frequency/self.rate)
+
+    self.out = types.Float32.vector(self.chunk_size)
 end
 
 function SignalSource:process_cosine()
-    local out = types.Float32.vector(self.chunk_size)
+    local out = self.out
 
     for i = 0, out.length-1 do
         out.data[i].value = ffi.C.cosf(self.phase) * self.amplitude + self.offset
@@ -85,7 +91,7 @@ function SignalSource:process_cosine()
 end
 
 function SignalSource:process_sine()
-    local out = types.Float32.vector(self.chunk_size)
+    local out = self.out
 
     for i = 0, out.length-1 do
         out.data[i].value = ffi.C.sinf(self.phase) * self.amplitude + self.offset
@@ -108,10 +114,12 @@ function SignalSource:initialize_square_triangle_sawtooth()
 
     self.omega = 2*math.pi*(self.frequency/self.rate)
     self.phi = self.phase
+
+    self.out = types.Float32.vector(self.chunk_size)
 end
 
 function SignalSource:process_square()
-    local out = types.Float32.vector(self.chunk_size)
+    local out = self.out
 
     for i = 0, out.length-1 do
         if self.phi < math.pi then
@@ -127,7 +135,7 @@ function SignalSource:process_square()
 end
 
 function SignalSource:process_triangle()
-    local out = types.Float32.vector(self.chunk_size)
+    local out = self.out
 
     for i = 0, out.length-1 do
         if self.phi < math.pi then
@@ -143,7 +151,7 @@ function SignalSource:process_triangle()
 end
 
 function SignalSource:process_sawtooth()
-    local out = types.Float32.vector(self.chunk_size)
+    local out = self.out
 
     for i = 0, out.length-1 do
         out.data[i].value = (-1 + (1 / math.pi)*self.phi)*self.amplitude + self.offset
@@ -158,10 +166,12 @@ end
 
 function SignalSource:initialize_constant()
     self.amplitude = self.options.amplitude or 1.0
+
+    self.out = types.Float32.vector(self.chunk_size)
 end
 
 function SignalSource:process_constant()
-    local out = types.Float32.vector(self.chunk_size)
+    local out = self.out
 
     for i = 0, out.length-1 do
         out.data[i].value = self.amplitude

@@ -57,16 +57,18 @@ function UniformRandomSource:initialize()
     if self.seed then
         math.randomseed(self.seed)
     end
+
+    self.out = self.data_type.vector(self.chunk_size)
 end
 
 function UniformRandomSource:process()
-    local samples = self.data_type.vector(self.chunk_size)
+    local out = self.out
 
-    for i=0, samples.length-1 do
-        samples.data[i] = self.generator()
+    for i=0, out.length-1 do
+        out.data[i] = self.generator()
     end
 
-    return samples
+    return out
 end
 
 return UniformRandomSource

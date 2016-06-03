@@ -7,19 +7,19 @@ function ZeroCrossingClockRecoveryBlock:instantiate(baudrate, threshold)
     self.baudrate = assert(baudrate, "Missing argument #1 (baudrate)")
     self.threshold = threshold or 0.0
 
-    self.hysteresis = false
-    self.sample_offset = 0
-
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
 end
 
 function ZeroCrossingClockRecoveryBlock:initialize()
+    self.hysteresis = false
     self.symbol_period = self:get_rate() / self.baudrate
     self.sample_offset = self.symbol_period
+
+    self.out = types.Float32.vector()
 end
 
 function ZeroCrossingClockRecoveryBlock:process(x)
-    local out = types.Float32.vector(x.length)
+    local out = self.out:resize(x.length)
 
     for i = 0, x.length-1 do
         -- If we detect a zero crossing, adjust our sample offset to half of a

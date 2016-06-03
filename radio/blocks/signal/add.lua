@@ -9,14 +9,16 @@ function AddBlock:instantiate()
 end
 
 function AddBlock:initialize()
-    self.data_type = self:get_input_type()
+    self.out = self:get_output_type().vector()
 end
 
 function AddBlock:process(x, y)
-    local out = self.data_type.vector(x.length)
+    local out = self.out:resize(x.length)
+
     for i = 0, x.length-1 do
         out.data[i] = x.data[i] + y.data[i]
     end
+
     return out
 end
 

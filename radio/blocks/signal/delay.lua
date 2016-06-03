@@ -16,8 +16,10 @@ function DelayBlock:instantiate(num_samples)
 end
 
 function DelayBlock:initialize()
-    self.data_type = self:get_input_type()
-    self.state = self.data_type.vector(self.num_samples)
+    local data_type = self:get_input_type()
+
+    self.state = data_type.vector(self.num_samples)
+    self.out = data_type.vector()
 end
 
 ffi.cdef[[
@@ -26,7 +28,7 @@ void *memmove(void *dest, const void *src, size_t n);
 ]]
 
 function DelayBlock:process(x)
-    local out = self.data_type.vector(x.length)
+    local out = self.out:resize(x.length)
 
     if x.length < self.state.length then
         -- Input is shorter than our state

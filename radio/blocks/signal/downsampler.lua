@@ -8,8 +8,6 @@ local DownsamplerBlock = block.factory("DownsamplerBlock")
 function DownsamplerBlock:instantiate(factor)
     self.factor = assert(factor, "Missing argument #1 (factor)")
 
-    self.index = 0
-
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
 end
@@ -19,12 +17,12 @@ function DownsamplerBlock:get_rate()
 end
 
 function DownsamplerBlock:initialize()
-    self.data_type = self:get_input_type()
+    self.index = 0
+    self.out = self:get_input_type().vector()
 end
 
 function DownsamplerBlock:process(x)
-    local out_len = math.ceil((x.length - self.index)/self.factor)
-    local out = self.data_type.vector(out_len)
+    local out = self.out:resize(math.ceil((x.length - self.index)/self.factor))
 
     for i = 0, out.length-1 do
         out.data[i] = x.data[self.index]
@@ -32,6 +30,7 @@ function DownsamplerBlock:process(x)
     end
 
     self.index = self.index - x.length
+
     return out
 end
 

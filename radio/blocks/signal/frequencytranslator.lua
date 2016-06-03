@@ -17,9 +17,10 @@ if platform.features.volk then
 
     function FrequencyTranslatorBlock:initialize()
         self.omega = 2*math.pi*(self.offset/self:get_rate())
-
         self.rotation = types.ComplexFloat32(math.cos(self.omega), math.sin(self.omega))
         self.phi = types.ComplexFloat32(1, 0)
+
+        self.out = types.ComplexFloat32.vector()
     end
 
     ffi.cdef[[
@@ -28,7 +29,8 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function FrequencyTranslatorBlock:process(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
+
         libvolk.volk_32fc_s32fc_x2_rotator_32fc(out.data, x.data, self.rotation, self.phi, x.length)
 
         return out
@@ -58,10 +60,12 @@ elseif platform.features.liquid then
 
         libliquid.nco_crcf_set_frequency(self.nco, 2*math.pi*(self.offset/self:get_rate()))
         libliquid.nco_crcf_set_phase(self.nco, 0.0)
+
+        self.out = types.ComplexFloat32.vector()
     end
 
     function FrequencyTranslatorBlock:process(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         libliquid.nco_crcf_mix_block_up(self.nco, x.data, out.data, x.length)
 
@@ -73,10 +77,12 @@ else
     function FrequencyTranslatorBlock:initialize()
         self.omega = 2*math.pi*(self.offset/self:get_rate())
         self.phase = 0
+
+        self.out = types.ComplexFloat32.vector()
     end
 
     function FrequencyTranslatorBlock:process(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         for i = 0, x.length-1 do
             out.data[i] = x.data[i] * types.ComplexFloat32(math.cos(self.phase), math.sin(self.phase))

@@ -49,6 +49,7 @@ function DFT:initialize()
     end
 
     -- Create sample buffers
+    self.samples = types.ComplexFloat32.vector(self.num_samples)
     self.windowed_samples = types.ComplexFloat32.vector(self.num_samples)
     self.dft_samples = types.ComplexFloat32.vector(self.num_samples)
     self.psd_samples = types.Float32.vector(self.num_samples)
@@ -238,12 +239,11 @@ end
 
 function DFT:dft_real(samples)
     -- Convert real samples to complex samples
-    local complex_samples = types.ComplexFloat32.vector(self.num_samples)
     for i = 0, self.num_samples-1 do
-        complex_samples.data[i].real = samples.data[i].value
+        self.samples.data[i].real = samples.data[i].value
     end
 
-    return self:dft_complex(complex_samples)
+    return self:dft_complex(self.samples)
 end
 
 --------------------------------------------------------------------------------

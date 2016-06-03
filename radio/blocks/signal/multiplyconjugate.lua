@@ -10,6 +10,10 @@ function MultiplyConjugateBlock:instantiate()
     self:add_type_signature({block.Input("in1", types.ComplexFloat32), block.Input("in2", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
 end
 
+function MultiplyConjugateBlock:initialize()
+    self.out = types.ComplexFloat32.vector()
+end
+
 if platform.features.volk then
 
     ffi.cdef[[
@@ -18,15 +22,17 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function MultiplyConjugateBlock:process(x, y)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
+
         libvolk.volk_32fc_x2_multiply_conjugate_32fc_a(out.data, x.data, y.data, x.length)
+
         return out
     end
 
 else
 
     function MultiplyConjugateBlock:process(x, y)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         for i = 0, x.length - 1 do
             out.data[i] = x.data[i] * y.data[i]:conj()

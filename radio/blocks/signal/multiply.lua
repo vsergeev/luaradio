@@ -11,6 +11,10 @@ function MultiplyBlock:instantiate()
     self:add_type_signature({block.Input("in1", types.Float32), block.Input("in2", types.Float32)}, {block.Output("out", types.Float32)}, MultiplyBlock.process_real)
 end
 
+function MultiplyBlock:initialize()
+    self.out = self:get_output_type().vector()
+end
+
 if platform.features.volk then
 
     ffi.cdef[[
@@ -20,21 +24,25 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function MultiplyBlock:process_complex(x, y)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
+
         libvolk.volk_32fc_x2_multiply_32fc_a(out.data, x.data, y.data, x.length)
+
         return out
     end
 
     function MultiplyBlock:process_real(x, y)
-        local out = types.Float32.vector(x.length)
+        local out = self.out:resize(x.length)
+
         libvolk.volk_32f_x2_multiply_32f_a(out.data, x.data, y.data, x.length)
+
         return out
     end
 
 else
 
     function MultiplyBlock:process_complex(x, y)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         for i = 0, x.length - 1 do
             out.data[i] = x.data[i] * y.data[i]
@@ -44,7 +52,7 @@ else
     end
 
     function MultiplyBlock:process_real(x, y)
-        local out = types.Float32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         for i = 0, x.length - 1 do
             out.data[i] = x.data[i] * y.data[i]

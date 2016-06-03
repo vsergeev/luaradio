@@ -11,11 +11,15 @@ function BinaryPhaseCorrectorBlock:instantiate(num_samples, sample_interval)
     self.num_samples = assert(num_samples, "Missing argument #1 (num_samples)")
     self.sample_interval = sample_interval or 32
 
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
+end
+
+function BinaryPhaseCorrectorBlock:initialize()
     self.sample_index = 0
     self.phi_state = types.Float32.vector(self.num_samples)
     self.phi_moving_average = 0.0
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
+    self.out = types.ComplexFloat32.vector()
 end
 
 ffi.cdef[[
@@ -23,7 +27,7 @@ void *memmove(void *dest, const void *src, size_t n);
 ]]
 
 function BinaryPhaseCorrectorBlock:process(x)
-    local out = types.ComplexFloat32.vector(x.length)
+    local out = self.out:resize(x.length)
 
     for i = 0, x.length-1 do
         if i == self.sample_index then

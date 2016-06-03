@@ -10,9 +10,15 @@ function FrequencyDiscriminatorBlock:instantiate(modulation_index)
     assert(modulation_index, "Missing argument #1 (modulation_index)")
 
     self.gain = 2*math.pi*modulation_index
-    self.prev_sample = types.ComplexFloat32()
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.Float32)})
+end
+
+function FrequencyDiscriminatorBlock:initialize()
+    self.prev_sample = types.ComplexFloat32()
+
+    self.tmp = types.ComplexFloat32.vector()
+    self.out = types.Float32.vector()
 end
 
 if platform.features.volk then
@@ -24,8 +30,8 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function FrequencyDiscriminatorBlock:process(x)
-        local tmp = types.ComplexFloat32.vector(x.length)
-        local out = types.Float32.vector(x.length)
+        local tmp = self.tmp:resize(x.length)
+        local out = self.out:resize(x.length)
 
         -- Multiply element-wise of samples by conjugate of previous samples
         --      [a b c d e f g h] * ~[p a b c d e f g]
@@ -44,8 +50,8 @@ if platform.features.volk then
 else
 
     function FrequencyDiscriminatorBlock:process(x)
-        local tmp = types.ComplexFloat32.vector(x.length)
-        local out = types.Float32.vector(x.length)
+        local tmp = self.tmp:resize(x.length)
+        local out = self.out:resize(x.length)
 
         -- Multiply element-wise of samples by conjugate of previous samples
         --      [a b c d e f g h] * ~[p a b c d e f g]

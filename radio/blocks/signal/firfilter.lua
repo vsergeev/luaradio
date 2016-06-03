@@ -36,8 +36,7 @@ void *memcpy(void *dest, const void *src, size_t n);
 if platform.features.volk then
 
     function FIRFilterBlock:initialize()
-        self.data_type = self:get_input_type()
-        self.state = self.data_type.vector(self.taps.length)
+        local data_type = self:get_input_type()
 
         -- Reverse taps
         local reversed_taps = self.taps.data_type.vector(self.taps.length)
@@ -45,6 +44,9 @@ if platform.features.volk then
             reversed_taps.data[i] = self.taps.data[self.taps.length-1-i]
         end
         self.taps = reversed_taps
+
+        self.state = data_type.vector(self.taps.length)
+        self.out = data_type.vector()
     end
 
     ffi.cdef[[
@@ -55,7 +57,7 @@ if platform.features.volk then
     local libvolk = platform.libs.volk
 
     function FIRFilterBlock:process_complex_input_complex_taps(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -73,7 +75,7 @@ if platform.features.volk then
     end
 
     function FIRFilterBlock:process_complex_input_real_taps(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -91,7 +93,7 @@ if platform.features.volk then
     end
 
     function FIRFilterBlock:process_real_input_real_taps(x)
-        local out = types.Float32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -143,10 +145,12 @@ elseif platform.features.liquid then
         if self.filter == nil then
             error("Creating liquid firfilt object.")
         end
+
+        self.out = data_type.vector()
     end
 
     function FIRFilterBlock:process_complex_input_real_taps(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         libliquid.firfilt_crcf_execute_block(self.filter, x.data, x.length, out.data)
 
@@ -154,7 +158,7 @@ elseif platform.features.liquid then
     end
 
     function FIRFilterBlock:process_real_input_real_taps(x)
-        local out = types.Float32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         libliquid.firfilt_rrrf_execute_block(self.filter, x.data, x.length, out.data)
 
@@ -162,7 +166,7 @@ elseif platform.features.liquid then
     end
 
     function FIRFilterBlock:process_complex_input_complex_taps(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         libliquid.firfilt_cccf_execute_block(self.filter, x.data, x.length, out.data)
 
@@ -172,8 +176,7 @@ elseif platform.features.liquid then
 else
 
     function FIRFilterBlock:initialize()
-        self.data_type = self:get_input_type()
-        self.state = self.data_type.vector(self.taps.length)
+        local data_type = self:get_input_type()
 
         -- Reverse taps
         local reversed_taps = self.taps.data_type.vector(self.taps.length)
@@ -181,10 +184,13 @@ else
             reversed_taps.data[i] = self.taps.data[self.taps.length-1-i]
         end
         self.taps = reversed_taps
+
+        self.state = data_type.vector(self.taps.length)
+        self.out = data_type.vector()
     end
 
     function FIRFilterBlock:process_complex_input_complex_taps(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -195,6 +201,7 @@ else
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
+            out.data[i] = types.ComplexFloat32()
             for j = 0, self.taps.length-1 do
                 out.data[i] = out.data[i] + self.state.data[i+j] * self.taps.data[j]
             end
@@ -204,7 +211,7 @@ else
     end
 
     function FIRFilterBlock:process_complex_input_real_taps(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -215,6 +222,7 @@ else
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
+            out.data[i] = types.ComplexFloat32()
             for j = 0, self.taps.length-1 do
                 out.data[i] = out.data[i] + self.state.data[i+j]:scalar_mul(self.taps.data[j].value)
             end
@@ -224,7 +232,7 @@ else
     end
 
     function FIRFilterBlock:process_real_input_real_taps(x)
-        local out = types.Float32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         -- Shift last taps_length-1 state samples to the beginning of state
         ffi.C.memmove(self.state.data, self.state.data[self.state.length - (self.taps.length - 1)], (self.taps.length-1)*ffi.sizeof(self.state.data[0]))
@@ -235,8 +243,9 @@ else
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
+            out.data[i] = types.Float32()
             for j = 0, self.taps.length-1 do
-                out.data[i].value = out.data[i].value + self.state.data[i+j].value * self.taps.data[j].value
+                out.data[i] = out.data[i] + self.state.data[i+j] * self.taps.data[j]
             end
         end
 

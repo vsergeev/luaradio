@@ -9,8 +9,12 @@ function SlicerBlock:instantiate(threshold)
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Bit)})
 end
 
+function SlicerBlock:initialize()
+    self.out = types.Bit.vector()
+end
+
 function SlicerBlock:process(x)
-    local out = types.Bit.vector(x.length)
+    local out = self.out:resize(x.length)
 
     for i = 0, x.length-1 do
         out.data[i].value = (x.data[i].value > self.threshold) and 1 or 0

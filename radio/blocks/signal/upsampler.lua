@@ -10,16 +10,16 @@ function UpsamplerBlock:instantiate(factor)
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
 end
 
+function UpsamplerBlock:initialize()
+    self.out = self:get_output_type().vector()
+end
+
 function UpsamplerBlock:get_rate()
     return block.Block.get_rate(self)*self.factor
 end
 
-function UpsamplerBlock:initialize()
-    self.data_type = self:get_input_type()
-end
-
 function UpsamplerBlock:process(x)
-    local out = self.data_type.vector(x.length*self.factor)
+    local out = self.out:resize(x.length*self.factor)
 
     for i = 0, x.length-1 do
         out.data[i*self.factor] = x.data[i]

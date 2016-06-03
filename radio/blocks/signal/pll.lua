@@ -107,11 +107,15 @@ function PLLBlock:initialize()
     self.phi_locked = 0.0
     self.phi_multiplied = 0.0
     self.freq_locked = (self.freq_min + self.freq_max)/2.0
+
+    -- Create output vectors
+    self.out = types.ComplexFloat32.vector()
+    self.err = types.Float32.vector()
 end
 
 function PLLBlock:process(x)
-    local out = types.ComplexFloat32.vector(x.length)
-    local err = types.Float32.vector(x.length)
+    local out = self.out:resize(x.length)
+    local err = self.err:resize(x.length)
 
     for i = 0, x.length-1 do
         -- VCO

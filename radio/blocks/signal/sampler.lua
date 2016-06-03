@@ -8,18 +8,18 @@ local SamplerBlock = block.factory("SamplerBlock")
 local ClockState = {LOW = 1, HIGH = 2}
 
 function SamplerBlock:instantiate()
-    self.clock_hysteresis = ClockState.LOW
-
     self:add_type_signature({block.Input("data", types.ComplexFloat32), block.Input("clock", types.Float32)}, {block.Output("out", types.ComplexFloat32)})
     self:add_type_signature({block.Input("data", types.Float32), block.Input("clock", types.Float32)}, {block.Output("out", types.Float32)})
 end
 
 function SamplerBlock:initialize()
-    self.data_type = self:get_input_type()
+    self.clock_hysteresis = ClockState.LOW
+
+    self.out = self:get_output_type().vector()
 end
 
 function SamplerBlock:process(data, clock)
-    local out = self.data_type.vector()
+    local out = self.out:resize(0)
 
     for i = 0, data.length-1 do
         if self.clock_hysteresis == ClockState.LOW and clock.data[i].value > 0 then

@@ -19,25 +19,19 @@ function AddConstantBlock:instantiate(constant)
 
     if class.isinstanceof(constant, types.ComplexFloat32) then
         -- Only allow complex inputs for a complex constant
-        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, self.process_complex_by_complex)
+        self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)})
     else
-        self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)}, self.process_real_by_real)
+        self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.Float32)})
         self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", types.ComplexFloat32)}, self.process_complex_by_real)
     end
 end
 
-function AddConstantBlock:process_complex_by_complex(x)
-    local out = types.ComplexFloat32.vector(x.length)
-
-    for i = 0, x.length - 1 do
-        out.data[i] = x.data[i] + self.constant
-    end
-
-    return out
+function AddConstantBlock:initialize()
+    self.out = self:get_output_type().vector()
 end
 
-function AddConstantBlock:process_real_by_real(x)
-    local out = types.Float32.vector(x.length)
+function AddConstantBlock:process(x)
+    local out = self.out:resize(x.length)
 
     for i = 0, x.length - 1 do
         out.data[i] = x.data[i] + self.constant
@@ -47,7 +41,7 @@ function AddConstantBlock:process_real_by_real(x)
 end
 
 function AddConstantBlock:process_complex_by_real(x)
-    local out = types.ComplexFloat32.vector(x.length)
+    local out = self.out:resize(x.length)
 
     for i = 0, x.length - 1 do
         out.data[i] = types.ComplexFloat32(x.data[i].real + self.constant.value, x.data[i].imag)

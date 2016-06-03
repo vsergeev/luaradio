@@ -60,10 +60,12 @@ if platform.features.liquid then
         if self.filter == nil then
             error("Creating liquid iirfilt object.")
         end
+
+        self.out = data_type.vector()
     end
 
     function IIRFilterBlock:process_complex(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         libliquid.iirfilt_crcf_execute_block(self.filter, x.data, x.length, out.data)
 
@@ -71,7 +73,7 @@ if platform.features.liquid then
     end
 
     function IIRFilterBlock:process_real(x)
-        local out = types.Float32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         libliquid.iirfilt_rrrf_execute_block(self.filter, x.data, x.length, out.data)
 
@@ -85,13 +87,15 @@ else
     ]]
 
     function IIRFilterBlock:initialize()
-        self.data_type = self:get_input_type()
-        self.input_state = self.data_type.vector(self.b_taps.length)
-        self.output_state = self.data_type.vector(self.a_taps.length-1)
+        local data_type = self:get_input_type()
+
+        self.input_state = data_type.vector(self.b_taps.length)
+        self.output_state = data_type.vector(self.a_taps.length-1)
+        self.out = data_type.vector()
     end
 
     function IIRFilterBlock:process_complex(x)
-        local out = types.ComplexFloat32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         for i = 0, x.length-1 do
             -- Shift the input state samples down
@@ -99,6 +103,7 @@ else
             -- Insert input sample into input state
             self.input_state.data[0] = x.data[i]
 
+            out.data[i] = types.ComplexFloat32()
             -- Inner product of input state and b taps
             for j = 0, self.input_state.length-1 do
                 out.data[i] = out.data[i] + self.input_state.data[j]:scalar_mul(self.b_taps.data[j].value)
@@ -120,7 +125,7 @@ else
     end
 
     function IIRFilterBlock:process_real(x)
-        local out = types.Float32.vector(x.length)
+        local out = self.out:resize(x.length)
 
         for i = 0, x.length-1 do
             -- Shift the input state samples down
@@ -128,6 +133,7 @@ else
             -- Insert input sample into input state
             self.input_state.data[0] = x.data[i]
 
+            out.data[i] = types.Float32()
             -- Inner product of input state and b taps
             for j = 0, self.input_state.length-1 do
                 out.data[i] = out.data[i] + self.input_state.data[j] * self.b_taps.data[j]

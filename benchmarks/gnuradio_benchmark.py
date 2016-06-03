@@ -66,7 +66,7 @@ def test_null_source_real():
 @benchmark("Raw File Source (float)", "blocks.file_descriptor_source")
 def test_file_descriptor_source():
     tmp_f = tempfile.TemporaryFile()
-    array.array('f', [random.random() for _ in range(2048)]).tofile(tmp_f)
+    array.array('f', [random.random() for _ in range(262144)]).tofile(tmp_f)
     tmp_f.seek(0)
 
     top = gr.top_block()

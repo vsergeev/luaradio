@@ -48,6 +48,16 @@ ffi.cdef[[
     } iq_format_f64_t;
 ]]
 
+-- File I/O
+ffi.cdef[[
+    typedef struct FILE FILE;
+    FILE *fopen(const char *path, const char *mode);
+    FILE *fdopen(int fd, const char *mode);
+    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+    int fclose(FILE *stream);
+    int fflush(FILE *stream);
+]]
+
 function IQFileSink:instantiate(file, format)
     local supported_formats = {
         u8    = {ctype = "iq_format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
@@ -79,16 +89,6 @@ function IQFileSink:instantiate(file, format)
 
     self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {})
 end
-
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
-    int fclose(FILE *stream);
-    int fflush(FILE *stream);
-]]
 
 function IQFileSink:initialize()
     if self.filename then

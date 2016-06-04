@@ -18,6 +18,12 @@ ffi.cdef[[
     char *strerror(int errnum);
 ]]
 
+---
+-- Create a buffer backed by a temporary file.
+--
+-- @local
+-- @tparam[opt=""] string str Initial data
+-- @treturn int File descriptor of file
 local function open(str)
     -- Default to empty buffer (e.g. writing only purposes)
     str = str or ""
@@ -53,6 +59,13 @@ local function open(str)
     return fd
 end
 
+---
+-- Read from buffer.
+--
+-- @local
+-- @tparam int fd File descriptor of buffer
+-- @tparam int count Number of bytes to read
+-- @treturn string Data read
 local function read(fd, count)
     -- Read up to to count bytes from the fd
     local buf = ffi.new("char[?]", count)
@@ -64,6 +77,12 @@ local function read(fd, count)
     return ffi.string(buf, num_read)
 end
 
+---
+-- Write to buffer.
+--
+-- @local
+-- @tparam int fd File descriptor of buffer
+-- @tparam string str Data to write
 local function write(fd, str)
     -- Write the string to the fd
     if ffi.C.write(fd, str, #str) ~= #str then
@@ -71,12 +90,22 @@ local function write(fd, str)
     end
 end
 
+---
+-- Rewind buffer.
+--
+-- @local
+-- @tparam int fd File descriptor of buffer
 local function rewind(fd)
     if ffi.C.lseek(fd, 0, ffi.C.SEEK_SET) ~= 0 then
         error("lseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 end
 
+---
+-- Close buffer.
+--
+-- @local
+-- @tparam int fd File descriptor of buffer
 local function close(fd)
     if ffi.C.close(fd) ~= 0 then
         error("close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))

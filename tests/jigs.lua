@@ -1,6 +1,14 @@
 local assert = require('luassert')
 local busted = require('busted')
 
+---
+-- Compare two objects for approximately equality.
+--
+-- @local
+-- @tparam object x Expected object
+-- @tparam object y Actual object
+-- @tparam number epsilon Epsilon for comparison
+-- @treturn bool Result
 local function assert_approx_equal(x, y, epsilon)
     if (type(x) == "table" or type(x) == "cdata") and x.__index.approx_equal then
         assert.is_true(x:approx_equal(y, epsilon or 0.0))
@@ -11,6 +19,14 @@ local function assert_approx_equal(x, y, epsilon)
     end
 end
 
+---
+-- Compare two vectors.
+--
+-- @local
+-- @tparam object x Expected vector
+-- @tparam object y Actual vector
+-- @tparam number epsilon Epsilon for comparison
+-- @treturn bool Result
 local function assert_vector_equal(x, y, epsilon)
     assert.is.equal(x.length, y.length)
     assert.is.equal(x.data_type, y.data_type)
@@ -19,6 +35,15 @@ local function assert_vector_equal(x, y, epsilon)
     end
 end
 
+---
+-- Test a block against a set of test vectors.
+--
+-- @local
+-- @tparam class block_class Block class to test
+-- @tparam array vectors Array of vectors, each vector is a table with
+--                       `desc`, `args`, `inputs`, `outputs` keys.
+-- @tparam table options Additional options, specifying:
+--                       * `epsilon` (number)
 local function TestBlock(block_class, vectors, options)
     options = options or {}
 
@@ -116,6 +141,15 @@ local function TestBlock(block_class, vectors, options)
     end)
 end
 
+---
+-- Test a source block against a set of test vectors.
+--
+-- @local
+-- @tparam class block_class Block class to test
+-- @tparam array vectors Array of vectors, each vector is a table with
+--                       `desc`, `args`, `outputs` keys.
+-- @tparam table options Additional options, specifying:
+--                       * `epsilon` (number)
 local function TestSourceBlock(block_class, vectors, options)
     options = options or {}
 
@@ -177,6 +211,15 @@ local function TestSourceBlock(block_class, vectors, options)
     end)
 end
 
+---
+-- Test a composite block against a set of test vectors.
+--
+-- @local
+-- @tparam class block_class Block class to test
+-- @tparam array vectors Array of vectors, each vector is a table with
+--                       `desc`, `args`, `inputs`, `outputs` keys.
+-- @tparam table options Additional options, specifying:
+--                       * `epsilon` (number)
 local function TestCompositeBlock(block_class, vectors, options)
     options = options or {}
 

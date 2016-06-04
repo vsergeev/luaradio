@@ -30,15 +30,18 @@ end
 
 local AX25FramerBlock = block.factory("AX25FramerBlock")
 
-function AX25FramerBlock:instantiate()
-    self.state = AX25FramerState.IDLE
-    self.byte_buffer = types.Bit.vector(8)
-    self.byte_buffer_length = 0
+AX25FramerBlock.AX25FrameType = AX25FrameType
 
+function AX25FramerBlock:instantiate()
     self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", AX25FrameType)})
 end
 
-AX25FramerBlock.AX25FrameType = AX25FrameType
+function AX25FramerBlock:initialize()
+    self.state = AX25FramerState.IDLE
+    self.byte_buffer = types.Bit.vector(8)
+    self.byte_buffer_length = 0
+    self.raw_frame = types.Bit.vector()
+end
 
 -- AX25 Frame Validation
 
@@ -62,22 +65,25 @@ local function ax25_compute_crc(bits, length)
 end
 
 local function ax25_unstuff_frame(raw_frame)
-    local frame = types.Bit.vector()
     local ones_count = 0
 
+    -- Unstuff frame in place
+    local j = 0
     for i = 0, raw_frame.length-1 do
         if ones_count == 5 and raw_frame.data[i].value == 0 then
             -- Skip this stuffed bit
         else
             -- Copy this bit
-            frame:append(raw_frame.data[i])
+            raw_frame.data[j] = raw_frame.data[i]
+            j = j + 1
         end
 
         -- Update our ones count
         ones_count = (raw_frame.data[i].value == 1) and (ones_count + 1) or 0
     end
 
-    return frame
+    -- Resize to unstuffed length
+    raw_frame:resize(j)
 end
 
 local function ax25_validate_frame(frame)
@@ -180,8 +186,8 @@ function AX25FramerBlock:process(x)
             if types.Bit.tonumber(self.byte_buffer, 0, 8, "lsb") == AX25_FLAG_FIELD then
                 -- If we encounter the start flag
 
-                -- Create a raw frame buffer and switch to FRAME
-                self.raw_frame = types.Bit.vector()
+                -- Reset the raw frame buffer and switch to FRAME
+                self.raw_frame:resize(0)
                 self.byte_buffer_length = 0
                 self.state = AX25FramerState.FRAME
             else
@@ -194,13 +200,13 @@ function AX25FramerBlock:process(x)
                 -- If we encounter the end flag
 
                 -- Unstuff the frame
-                local unstuffed_frame = ax25_unstuff_frame(self.raw_frame)
+                ax25_unstuff_frame(self.raw_frame)
 
                 -- Validate and extract the frame
-                local frame = ax25_validate_frame(unstuffed_frame) and ax25_extract_frame(unstuffed_frame)
+                local frame = ax25_validate_frame(self.raw_frame) and ax25_extract_frame(self.raw_frame)
 
                 if frame then
-                    debug.printf('[AX25FramerBlock] Valid frame detected, length %d bytes\n', unstuffed_frame.length/8 - 4)
+                    debug.printf('[AX25FramerBlock] Valid frame detected, length %d bytes\n', self.raw_frame.length/8 - 4)
 
                     -- Emit the frame
                     out:append(frame)
@@ -209,14 +215,13 @@ function AX25FramerBlock:process(x)
                     self.byte_buffer_length = 0
                     self.state = AX25FramerState.IDLE
                 else
-                    -- Reset the frame buffer and stay in FRAME,
+                    -- Reset the raw frame buffer and stay in FRAME,
                     -- since the flag sequence may be the start flag
+                    self.raw_frame:resize(0)
                     self.byte_buffer_length = 0
-                    self.raw_frame = types.Bit.vector()
                 end
             elseif self.raw_frame.length > AX25_RAW_FRAME_MAXLEN then
                 -- If our raw frame got too large, abandon it and switch to IDLE
-                self.raw_frame = nil
                 self.state = AX25FramerState.IDLE
             else
                 -- Copy next bit over to raw frame buffer

@@ -62,15 +62,19 @@ local RDSFrameType = types.CStructType.factory("rds_frame_t", rds_frame_type_mt)
 
 local RDSFramerBlock = block.factory("RDSFramerBlock")
 
-function RDSFramerBlock:instantiate()
-    self.rds_frame = types.Bit.vector(RDS_FRAME_LEN)
-    self.rds_frame_length = 0
-    self.synchronized = false
+RDSFramerBlock.RDSFrameType = RDSFrameType
 
+function RDSFramerBlock:instantiate()
     self:add_type_signature({block.Input("in", types.Bit)}, {block.Output("out", RDSFrameType)})
 end
 
-RDSFramerBlock.RDSFrameType = RDSFrameType
+function RDSFramerBlock:initialize()
+    self.synchronized = false
+    self.rds_frame = types.Bit.vector(RDS_FRAME_LEN)
+    self.rds_frame_length = 0
+
+    self.out = RDSFrameType.vector()
+end
 
 -- RDS Block Correction
 
@@ -109,7 +113,7 @@ local function rds_correct_block(block_bits, offset_word)
 end
 
 function RDSFramerBlock:process(x)
-    local out = RDSFrameType.vector()
+    local out = self.out:resize(0)
     local i = 0
 
     while i < x.length do

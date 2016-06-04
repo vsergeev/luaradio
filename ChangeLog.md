@@ -1,3 +1,42 @@
+* (Prototype) v0.0.18 - 06/04/2016
+    * Block additions
+        * RealToComplexBlock
+        * AddConstantBlock
+        * SinglepoleLowpassFilterBlock
+        * SinglepoleHighpassFilterBlock
+        * FMPreemphasisFilterBlock
+    * Block changes
+        * Add return codes to error messages in RtlSdrSource.
+        * Improve performance of RtlSdrSource by using `rtlsdr_read_async()`.
+        * Change gain argument to modulation index in
+          FrequencyDiscriminatorBlock.
+        * Add filename and file object support to BenchmarkSink.
+        * Add periodic human-readable reporting to BenchmarkSink.
+        * Refactor FMDeemphasisFilterBlock to use SinglepoleLowpassFilterBlock.
+        * Rearrange optional nyquist frequency argument order in filter blocks.
+        * Fix overflow for sample values of 1.0 in WAVFileSink.
+        * Add sampling interval to BinaryPhaseCorrectorBlock to reduce
+          computation.
+        * Use line style 1 for plotting in GnuplotPlotSink, GnuplotXYPlotSink,
+          GnuplotSpectrumSink.
+        * Add argument assertions to all blocks.
+        * Refactor all blocks to use persistent output sample vectors.
+    * Composite changes
+        * Remove constant audio gain block from AMEnvelopeDemodulator,
+          AMSynchronousDemodulator, and SSBDemodulator.
+        * Add DC rejection filter for carrier to AMEnvelopeDemodulator and
+          AMSynchronousDemodulator.
+        * Add argument assertions to all composites.
+    * Example changes
+        * Add iqfile_converter example.
+        * Add DC rejection filter for carrier to rtlsdr_am_envelope and
+          rtlsdr_am_synchronous.
+        * Remove autogain setting from RTL-SDR source in rtlsdr_wbfm_mono,
+          rtlsdr_wbfm_stereo, rtlsdr_rds examples.
+        * Make tune offsets consistent across examples.
+        * Make plot ranges consistent across examples.
+        * Add headless running support to all examples.
+
 * (Prototype) v0.0.17 - 06/03/2016
     * Core changes
         * Fix deadlock in synchronous read of multiple pipes, when a slower

@@ -5,10 +5,10 @@ local IIRFilterBlock = require('radio.blocks.signal.iirfilter')
 
 local SinglepoleLowpassFilterBlock = block.factory("SinglepoleLowpassFilterBlock", IIRFilterBlock)
 
-function SinglepoleLowpassFilterBlock:instantiate(cutoff_frequency)
+function SinglepoleLowpassFilterBlock:instantiate(cutoff)
     IIRFilterBlock.instantiate(self, types.Float32.vector(2), types.Float32.vector(2))
 
-    self.cutoff_frequency = cutoff_frequency
+    self.cutoff = cutoff
 end
 
 --
@@ -33,7 +33,7 @@ end
 --
 function SinglepoleLowpassFilterBlock:initialize()
     -- Warp tau
-    local tau = 1/(2*math.pi*self.cutoff_frequency)
+    local tau = 1/(2*math.pi*self.cutoff)
     tau = 1/(2*self:get_rate()*math.tan(1/(2*self:get_rate()*tau)))
 
     -- Populate taps

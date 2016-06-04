@@ -8,20 +8,20 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 
 local HighpassFilterBlock = block.factory("HighpassFilterBlock", FIRFilterBlock)
 
-function HighpassFilterBlock:instantiate(num_taps, cutoff_frequency, nyquist_frequency, window_type)
+function HighpassFilterBlock:instantiate(num_taps, cutoff, nyquist, window_type)
     FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
 
-    self.cutoff_frequency = cutoff_frequency
+    self.cutoff = cutoff
     self.window_type = (window_type == nil) and "hamming" or window_type
-    self.nyquist_frequency = nyquist_frequency
+    self.nyquist = nyquist
 end
 
 function HighpassFilterBlock:initialize()
     -- Compute Nyquist frequency
-    local nyquist_frequency = self.nyquist_frequency or (self:get_rate()/2)
+    local nyquist = self.nyquist or (self:get_rate()/2)
 
     -- Generate and populate taps
-    local real_taps = filter_utils.firwin_highpass(self.taps.length, self.cutoff_frequency/nyquist_frequency, self.window_type)
+    local real_taps = filter_utils.firwin_highpass(self.taps.length, self.cutoff/nyquist, self.window_type)
     for i=0, self.taps.length-1 do
         self.taps.data[i].value = real_taps[i+1]
     end

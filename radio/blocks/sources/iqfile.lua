@@ -1,3 +1,31 @@
+---
+-- Source a complex-valued signal from a binary "IQ" file. The file format may
+-- be 8/16/32-bit signed/unsigned integers or 32/64-bit floats, in little or
+-- big endianness, and interleaved as real component followed by imaginary
+-- component.
+--
+-- @category Sources
+-- @block IQFileSource
+-- @tparam string|file|int file Filename, file object, or file descriptor
+-- @tparam string format File format specifying signedness, bit width, and
+--                       endianness of samples. Choice of "s8", "u8", "u16le",
+--                       "u16be", "s16le", "s16be", "u32le", "u32be", "s32le",
+--                       "s32be", "f32le", "f32be", "f64le", "f64be".
+-- @tparam number rate Sample rate in Hz
+-- @tparam[opt=false] bool repeat_on_eof Repeat on end of file
+--
+-- @signature > out:ComplexFloat32
+--
+-- @usage
+-- -- Source signed 8-bit IQ samples from a file sampled at 1 MHz
+-- local src = radio.IQFileSource('samples.s8.iq', 's8', 1e6)
+--
+-- -- Source little-endian 32-bit IQ samples from a file sampled at 1 MHz, repeating on EOF
+-- local src = radio.IQFileSource('samples.f32le.iq', 'f32le', 1e6, true)
+--
+-- -- Source little-endian signed 16-bit IQ samples from stdin sampled at 500 KHz
+-- local src = radio.IQFileSource(io.stdin, 's16le', 500e3)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

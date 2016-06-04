@@ -1,3 +1,34 @@
+---
+-- Source a signal with values drawn from a uniform random distribution.
+--
+-- @category Sources
+-- @block UniformRandomSource
+-- @tparam type data_type LuaRadio data type, choice of
+--                        `radio.types.ComplexFloat32`, `radio.types.Float32`,
+--                        `radio.types.Byte`, or `radio.types.Bit` data types.
+-- @tparam number rate Sample rate in Hz
+-- @tparam[opt={}] array range Value range as an array, e.g `{10, 100}`.
+-- @tparam[opt={}] table options Additional options, specifying:
+--                               * `seed` (number)
+--
+-- @signature > out:ComplexFloat32
+-- @signature > out:Float32
+-- @signature > out:Byte
+-- @signature > out:Bit
+--
+-- @usage
+-- -- Source a random ComplexFloat32 signal sampled at 1 MHz
+-- local src = radio.UniformRandomSource(radio.types.ComplexFloat32, 1e6)
+--
+-- -- Source a random Float32 signal sampled at 1 MHz
+-- local src = radio.UniformRandomSource(radio.types.Float32, 1e6)
+--
+-- -- Source a random Byte signal sampled at 1 KHz, ranging from 65 to 90
+-- local src = radio.UniformRandomSource(radio.types.Byte, 1e3, {65, 90})
+--
+-- -- Source a random bit stream sampled at 1 KHz
+-- local src = radio.UniformRandomSource(radio.types.Bit, 1e3)
+
 local math = require('math')
 
 local block = require('radio.core.block')

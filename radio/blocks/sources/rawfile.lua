@@ -1,3 +1,25 @@
+---
+-- Source a signal of the specified data type from a binary file. The raw
+-- binary samples are cast to the specified data type with no signedness
+-- conversion, endian conversion, or interpretation. This is useful for
+-- serializing data types across a pipe or other file descriptor based IPC.
+--
+-- @category Sources
+-- @block RawFileSource
+-- @tparam string|file|int file Filename, file object, or file descriptor
+-- @tparam type data_type LuaRadio data type
+-- @tparam number rate Sample rate of file
+-- @tparam[opt=false] bool repeat_on_eof Repeat on end of file
+--
+-- @signature > out:data_type
+--
+-- @usage
+-- -- Source ComplexFloat32 samples sampled at 1 MHz from a file descriptor
+-- local src = radio.RawFileSource(3, radio.types.ComplexFloat32, 1e6)
+--
+-- -- Source Byte samples sampled at 100 KHz from a file, repeating on EOF
+-- local src = radio.RawFileSource('data.bin', radio.types.Byte, 100e3, true)
+
 local ffi = require('ffi')
 
 local platform = require('radio.core.platform')

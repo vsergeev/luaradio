@@ -1,3 +1,28 @@
+---
+-- Source one or more real-valued signals from a WAV file. The supported sample
+-- formats are 8-bit unsigned integer, 16-bit signed integer, and 32-bit signed
+-- integer.
+--
+-- @category Sources
+-- @block WAVFileSource
+-- @tparam string|file|int file Filename, file object, or file descriptor
+-- @tparam int num_channels Number of channels (e.g. 1 for mono, 2 for stereo, etc.)
+-- @tparam[opt=false] bool repeat_on_eof Repeat on end of file
+--
+-- @signature > out:Float32
+-- @signature > out1:Float32, out2:Float32, ...
+--
+-- @usage
+-- -- Source one channel WAV file
+-- local src = radio.WAVFileSource('test.wav', 1)
+--
+-- -- Source two channel WAV file
+-- local src = radio.WAVFileSource('test.wav', 2)
+-- -- Compose the two channels into a complex-valued signal
+-- top:connect(src, 'out1', floattocomplex, 'real')
+-- top:connect(src, 'out2', floattocomplex, 'imag')
+-- top:connect(floattocomplex, ..., snk)
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

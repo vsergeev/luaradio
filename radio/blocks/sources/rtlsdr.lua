@@ -1,3 +1,28 @@
+---
+-- Source a complex-valued signal from an RTL-SDR dongle. This source requires
+-- the librtlsdr library.
+--
+-- @category Sources
+-- @block RtlSdrSource
+-- @tparam number frequency Tuning frequency in Hz
+-- @tparam number rate Sample rate in Hz
+-- @tparam[opt={}] table options Additional options, specifying:
+--                         * `autogain` (bool, default false)
+--                         * `rf_gain` (number, default 10.0 dB)
+--                         * `freq_correction` PPM (number, default 0.0)
+--
+-- @signature > out:ComplexFloat32
+--
+-- @usage
+-- -- Source samples from 162.400 MHz sampled at 1 MHz, with autogain enabled
+-- local src = radio.RtlSdrSource(162.400e6, 1e6, {autogain = true})
+--
+-- -- Source samples from 91.1 MHz sampled at 1.102500 MHz, with -1 PPM correction
+-- local src = radio.RtlSdrSource(91.1e6, 1102500, {freq_correction = -1.0})
+--
+-- -- Source samples from 144.390 MHz sampled at 1 MHz, with RF gain of 15dB
+-- local src = radio.RtlSdrSource(144.390e6, 1e6, {rf_gain = 15.0})
+
 local ffi = require('ffi')
 
 local block = require('radio.core.block')

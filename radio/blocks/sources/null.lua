@@ -1,3 +1,23 @@
+---
+-- Source a zero-valued signal of the specified data type.
+--
+-- @category Sources
+-- @block NullSource
+-- @tparam type data_type LuaRadio data type
+-- @tparam number rate Sample rate in Hz
+--
+-- @signature > out:data_type
+--
+-- @usage
+-- -- Source a zero complex-valued signal sampled at 1 MHz
+-- local src = radio.NullSource(radio.types.ComplexFloat32, 1e6)
+--
+-- -- Source a zero real-valued stream sampled at 500 KHz
+-- local src = radio.NullSource(radio.types.Bit, 500e3)
+--
+-- -- Source a zero bit stream sampled at 2 KHz
+-- local src = radio.NullSource(radio.types.Bit, 2e3)
+
 local block = require('radio.core.block')
 local types = require('radio.types')
 

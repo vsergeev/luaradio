@@ -1,3 +1,33 @@
+---
+-- Source a complex or real valued signal from a signal generator.
+--
+-- Note: the "exponential" waveform generates a complex-valued signal, all
+-- other waveform types generate a real-valued signal.
+--
+-- @category Sources
+-- @block SignalSource
+-- @tparam string signal Waveform type, either "exponential", "cosine", "sine",
+--                       "square", "triangle", "sawtooth", "constant".
+-- @tparam number frequency Frequency in Hz
+-- @tparam number|nil rate Sample rate in Hz
+-- @tparam[opt={}] table options Additional options, specifying:
+--                               * `amplitude` (number, default 1.0)
+--                               * `offset` (number, default 0.0)
+--                               * `phase` (number, default 0.0)
+--
+-- @signature > out:ComplexFloat32
+-- @signature > out:Float32
+--
+-- @usage
+-- -- Source a 250 KHz complex exponential sampled at 2 MHz
+-- local src = radio.SignalSource('exponential', 250e3, 2e6)
+--
+-- -- Source a 100 KHz cosine sampled at 1 MHz, with amplitude 2.5
+-- local src = radio.SignalSource('cosine', 100e3, 1e6, {amplitude = 2.5})
+--
+-- -- Source a 1 KHz square wave sampled at 2 MHz, with offset 1.0
+-- local src = radio.SignalSource('square', 1e3, 2e6, {offset = 1.0})
+
 local ffi = require('ffi')
 local math = require('math')
 

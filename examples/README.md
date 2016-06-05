@@ -6,15 +6,27 @@
 <img src="../docs/figures/flowgraph_rtlsdr_wbfm_mono.png" />
 </p>
 
+This example is a mono Wideband FM broadcast radio receiver. It can be used to
+listen to [FM Broadcast](https://en.wikipedia.org/wiki/FM_broadcasting)
+stations. It uses the RTL-SDR as an SDR source, plays audio with PulseAudio,
+and shows two real-time plots: the demodulated FM spectrum and the L+R channel
+audio spectrum.
+
+This mono Wideband FM broadcast demodulator composition is available in
+LuaRadio as the
+[`WBFMMonoDemodulator`](../docs/0.reference-manual.md#wbfmmonodemodulator)
+block.
+
+##### Usage
+
 ```
 Usage: examples/rtlsdr_wbfm_mono.lua <FM radio frequency>
 ```
 
-This example is a mono Wideband FM radio receiver. It can be used to listen to
-[FM Broadcast](https://en.wikipedia.org/wiki/FM_broadcasting) stations. It uses
-the RTL-SDR as an SDR source, plays audio with PulseAudio, and shows two
-real-time plots: the demodulated FM spectrum and the L+R channel audio
-spectrum.
+Running this example in a headless environment will inhibit plotting and record
+audio to the WAV file `wbfm_mono.wav`.
+
+##### Usage Example
 
 Listen to 91.1 MHz:
 
@@ -28,16 +40,28 @@ $ ./luaradio examples/rtlsdr_wbfm_mono.lua 91.1e6
 <img src="../docs/figures/flowgraph_rtlsdr_wbfm_stereo.png" />
 </p>
 
+This example is a stereo Wideband FM broadcast radio receiver. It can be used
+to listen to [FM Broadcast](https://en.wikipedia.org/wiki/FM_broadcasting)
+stations, like the mono Wideband FM example, but it also supports stereo sound.
+It uses the RTL-SDR as an SDR source, plays audio with PulseAudio, and shows
+three real-time plots: the demodulated FM spectrum, the L+R channel audio
+spectrum, and the L-R channel audio spectrum.
+
+This stereo Wideband FM broadcast demodulator composition is available in
+LuaRadio as the
+[`WBFMStereoDemodulator`](../docs/0.reference-manual.md#wbfmstereodemodulator)
+block.
+
+##### Usage
+
 ```
 Usage: examples/rtlsdr_wbfm_stereo.lua <FM radio frequency>
 ```
 
-This example is a stereo Wideband FM radio receiver. It can be used to listen
-to [FM Broadcast](https://en.wikipedia.org/wiki/FM_broadcasting) stations, like
-the previous example, but supports stereo sound. It uses the RTL-SDR as a
-source, plays audio with PulseAudio, and shows three real-time plots: the
-demodulated FM spectrum, the L+R channel audio spectrum, and the L-R channel
-audio spectrum.
+Running this example in a headless environment will inhibit plotting and record
+audio to the WAV file `wbfm_stereo.wav`.
+
+##### Usage Example
 
 Listen to 91.1 MHz:
 
@@ -51,15 +75,26 @@ $ ./luaradio examples/rtlsdr_wbfm_stereo.lua 91.1e6
 <img src="../docs/figures/flowgraph_rtlsdr_nbfm.png" />
 </p>
 
+This example is a Narrowband FM radio receiver. It can be used to listen to
+[NOAA weather radio](https://en.wikipedia.org/wiki/NOAA_Weather_Radio) in the
+US, amateur radio operators, analog police and emergency services, and more, on
+the VHF and UHF bands. It uses the RTL-SDR as an SDR source, plays audio with
+PulseAudio, and shows two real-time plots: the RF spectrum and the demodulated
+audio spectrum.
+
+This NBFM demodulator composition is available in LuaRadio as the
+[`NBFMDemodulator`](../docs/0.reference-manual.md#nbfmdemodulator) block.
+
+##### Usage
+
 ```
 Usage: examples/rtlsdr_nbfm.lua <frequency>
 ```
 
-This example is a Narrowband FM radio receiver. It can be used to listen to
-NOAA weather radio, many amateur radio repeaters, analog police and emergency
-services, and more. It uses the RTL-SDR as an SDR source, plays audio with
-PulseAudio, and shows two real-time plots: the RF spectrum and the demodulated
-audio spectrum.
+Running this example in a headless environment will inhibit plotting and record
+audio to the WAV file `nbfm.wav`.
+
+##### Usage Example
 
 Listen to NOAA1, 162.400 MHz:
 
@@ -67,124 +102,9 @@ Listen to NOAA1, 162.400 MHz:
 $ ./luaradio examples/rtlsdr_nbfm.lua 162.400e6
 ```
 
-Additional [NOAA weather
-radio](http://www.nws.noaa.gov/nwr/coverage/station_listing.html) station
-frequencies: 162.400 MHz (NOAA1), 162.425 MHz (NOAA2), 162.450 MHz (NOAA3),
-162.475 MHz (NOAA4), 162.500 MHz (NOAA5), 162.525 MHz (NOAA6), 162.550 MHZ
-(NOAA7).
-
-### [`rtlsdr_am_envelope.lua`](rtlsdr_am_envelope.lua)
-
-<p align="center">
-<img src="../docs/figures/flowgraph_rtlsdr_am_envelope.png" />
-</p>
-
-```
-Usage: examples/rtlsdr_am_envelope.lua <frequency> [audio gain]
-```
-
-This example is an AM radio receiver, implemented with an envelope detector. It
-can be used to listen to broadcast stations in the MF ([AM
-Broadcast](https://en.wikipedia.org/wiki/AM_broadcasting)) and HF ([Shortwave
-Broadcast](https://en.wikipedia.org/wiki/Shortwave_radio#Shortwave_broadcasting))
-bands, as well as aviation communication in the
-[airband](https://en.wikipedia.org/wiki/Airband). It uses the RTL-SDR as an SDR
-source, plays audio with PulseAudio, and shows two real-time plots: the RF
-spectrum and the demodulated audio spectrum.
-
-This example requires a hardware upconverter to listen to stations in the HF
-and MF bands with the RTL-SDR.
-
-Listen to [WWV](https://en.wikipedia.org/wiki/WWV_(radio_station)) at 5 MHz
-(with a 125 MHz upconverter), with an audio gain of 40:
-
-```
-$ ./luaradio examples/rtlsdr_am_envelope.lua 130e6 40
-```
-
-Listen to an AM radio station at 560 KHz (with a 125 MHz upconverter), with an
-audio gain of 40:
-
-```
-$ ./luaradio examples/rtlsdr_am_envelope.lua 125.560e6 40
-```
-
-This example currently uses a constant audio gain block, which may need
-adjustment with the station signal strength. In the future, this will be
-replaced with an automatic gain control block.
-
-### [`rtlsdr_am_synchronous.lua`](rtlsdr_am_synchronous.lua)
-
-<p align="center">
-<img src="../docs/figures/flowgraph_rtlsdr_am_synchronous.png" />
-</p>
-
-```
-Usage: examples/rtlsdr_am_synchronous.lua <frequency> [audio gain]
-```
-
-This example is an AM radio receiver, implemented with a phase-locked loop for
-synchronous demodulation. It can be used to listen to broadcast stations in the
-MF ([AM Broadcast](https://en.wikipedia.org/wiki/AM_broadcasting)) and HF
-([Shortwave
-Broadcast](https://en.wikipedia.org/wiki/Shortwave_radio#Shortwave_broadcasting))
-bands, as well as aviation communication in the
-[airband](https://en.wikipedia.org/wiki/Airband). It uses the RTL-SDR as an SDR
-source, plays audio with PulseAudio, and shows two real-time plots: the RF
-spectrum and the demodulated audio spectrum.
-
-This example requires a hardware upconverter to listen to stations in the HF
-and MF bands with the RTL-SDR.
-
-Listen to [WWV](https://en.wikipedia.org/wiki/WWV_(radio_station)) at 5 MHz
-(with a 125 MHz upconverter), with an audio gain of 40:
-
-```
-$ ./luaradio examples/rtlsdr_am_synchronous.lua 130e6 40
-```
-
-Listen to an AM radio station at 560 KHz (with a 125 MHz upconverter), with an
-audio gain of 40:
-
-```
-$ ./luaradio examples/rtlsdr_am_synchronous.lua 125.560e6 40
-```
-
-This example currently uses a constant audio gain block, which may need
-adjustment with the station signal strength. In the future, this will be
-replaced with an automatic gain control block.
-
-### [`rtlsdr_ssb.lua`](rtlsdr_ssb.lua)
-
-<p align="center">
-<img src="../docs/figures/flowgraph_rtlsdr_ssb.png" />
-</p>
-
-```
-Usage: examples/rtlsdr_ssb.lua <frequency> <sideband> [audio gain]
-```
-
-This example is a Single-Sideband
-([SSB](https://en.wikipedia.org/wiki/Single-sideband_modulation)) AM radio
-receiver. SSB is commonly used by amateur radio operators on the HF band, and
-sometimes on the VHF and UHF bands, for voice and digital (modulated in the
-audio band) communication. This example uses the RTL-SDR as an SDR source,
-plays audio with PulseAudio, and shows two real-time plots: the RF spectrum and
-the demodulated audio spectrum.
-
-This example requires a hardware upconverter to listen to stations in the HF
-and MF bands with the RTL-SDR.
-
-Listen to 3.8 MHz (with a 125 MHz upconverter), lower sideband, with an audio
-gain of 40:
-
-```
-$ ./luaradio examples/rtlsdr_ssb.lua 128.8e6 lsb 40
-```
-
-This example currently uses a constant audio gain block, which may need
-adjustment with the station signal strength. In the future, this will be
-replaced with an automatic gain control block.
+Additional NOAA weather radio station frequencies: `162.400 MHz` (NOAA1),
+`162.425 MHz` (NOAA2), `162.450 MHz` (NOAA3), `162.475 MHz` (NOAA4),
+`162.500 MHz` (NOAA5), `162.525 MHz` (NOAA6), `162.550 MHz` (NOAA7).
 
 ### [`rtlsdr_ax25.lua`](rtlsdr_ax25.lua)
 
@@ -192,17 +112,26 @@ replaced with an automatic gain control block.
 <img src="../docs/figures/flowgraph_rtlsdr_ax25.png" />
 </p>
 
+This example is an [AX.25](https://en.wikipedia.org/wiki/AX.25) packet radio
+receiver for Narrowband FM, Bell 202 AFSK modulated transmissions on the VHF
+and UHF bands. It can be used to receive
+[APRS](https://en.wikipedia.org/wiki/Automatic_Packet_Reporting_System) and
+other AX.25-based data transmissions. It uses the RTL-SDR as an SDR source,
+writes decoded AX.25 frames in JSON to standard out, and shows two real-time
+plots: the RF spectrum and the demodulated bitstream.
+
+This AX.25 receiver composition is available in LuaRadio as the
+[`AX25Receiver`](../docs/0.reference-manual.md#ax25receiver) block.
+
+##### Usage
+
 ```
 Usage: examples/rtlsdr_ax25.lua <frequency>
 ```
 
-This example is an [AX.25](https://en.wikipedia.org/wiki/AX.25) packet radio
-receiver for Narrowband FM, Bell 202 AFSK modulated transmissions on VHF and
-UHF. It can be used to receive
-[APRS](https://en.wikipedia.org/wiki/Automatic_Packet_Reporting_System) and
-other amateur radio AX.25-based data transmissions. It uses the RTL-SDR as an
-SDR source, writes decoded AX.25 frames in JSON to standard out, and shows two
-real-time plots: the RF spectrum and the demodulated bitstream.
+Running this example in a headless environment will inhibit plotting.
+
+##### Usage Example
 
 Receive APRS on 144.390 MHz, the North American VHF APRS frequency:
 
@@ -227,19 +156,28 @@ $ ./luaradio examples/rtlsdr_ax25.lua 144.390e6
 <img src="../docs/figures/flowgraph_rtlsdr_pocsag.png" />
 </p>
 
+This example is a [POCSAG](https://en.wikipedia.org/wiki/POCSAG) receiver. It
+can be used to receive pager messages dispatched by hospital, fire, emergency,
+and police services, as well as some businesses. POCSAG messages are
+transmitted in plaintext. It uses the RTL-SDR as an SDR source, writes decoded
+POCSAG messages in JSON to standard out, and shows two real-time plots: the RF
+spectrum and the demodulated bitstream.
+
+This POCSAG receiver composition is available in LuaRadio as the
+[`POCSAGReceiver`](../docs/0.reference-manual.md#pocsagreceiver) block.
+
+##### Usage
+
 ```
 Usage: examples/rtlsdr_pocsag.lua <frequency>
 ```
 
-This example is a [POCSAG](https://en.wikipedia.org/wiki/POCSAG) receiver. It
-can be used to receive pager messages from hospital, fire, emergency, and
-police services, as well as some businesses. (POCSAG messages are transmitted
-in plaintext.) It uses the RTL-SDR as an SDR source, writes decoded POCSAG
-messages in JSON to standard out, and shows two real-time plots: the RF
-spectrum and the demodulated bitstream.
+Running this example in a headless environment will inhibit plotting.
 
 You may need to explore your local spectrum with a waterfall receiver to find a
 POCSAG transmitter.
+
+##### Usage Example
 
 Receive POCSAG on 152.240 MHz:
 
@@ -260,13 +198,9 @@ $ ./luaradio examples/rtlsdr_pocsag.lua 152.240e6
 <img src="../docs/figures/flowgraph_rtlsdr_rds.png" />
 </p>
 
-```
-Usage: examples/rtlsdr_rds.lua <FM radio frequency>
-```
-
-This example is a Radio Data System
-([RDS](https://en.wikipedia.org/wiki/Radio_Data_System)) receiver. RDS is a
-digital protocol used by [FM
+This example is a [Radio Data
+System](https://en.wikipedia.org/wiki/Radio_Data_System) (RDS) receiver. RDS is
+a digital protocol used by [FM
 Broadcast](https://en.wikipedia.org/wiki/FM_broadcasting) radio stations to
 transmit metadata about the station and its programming. This protocol is most
 commonly known for providing station and song text information with "RadioText"
@@ -277,6 +211,19 @@ demodulated FM spectrum, the BPSK spectrum, and the BPSK constellation.
 This example can be used with FM Broadcast radio stations, like the
 `rtlsdr_wbfm_mono.lua` and `rtlsdr_wbfm_stereo.lua` examples, but may require a
 decent antenna or a strong station.
+
+This RDS receiver composition is available in LuaRadio as the
+[`RDSReceiver`](../docs/0.reference-manual.md#rdsreceiver) block.
+
+##### Usage
+
+```
+Usage: examples/rtlsdr_rds.lua <FM radio frequency>
+```
+
+Running this example in a headless environment will inhibit plotting.
+
+##### Usage Example
 
 Receive RDS on 88.5 MHz:
 
@@ -313,25 +260,178 @@ $ ./luaradio examples/rtlsdr_rds.lua 88.5e6
 ...
 ```
 
+### [`rtlsdr_am_envelope.lua`](rtlsdr_am_envelope.lua)
+
+<p align="center">
+<img src="../docs/figures/flowgraph_rtlsdr_am_envelope.png" />
+</p>
+
+This example is an AM radio receiver, implemented with an envelope detector. It
+can be used to listen to broadcast stations on the MF ([AM
+Broadcast](https://en.wikipedia.org/wiki/AM_broadcasting)) and HF ([Shortwave
+Broadcast](https://en.wikipedia.org/wiki/Shortwave_radio#Shortwave_broadcasting))
+bands, as well as aviation communication on the VHF
+[airband](https://en.wikipedia.org/wiki/Airband). It uses the RTL-SDR as an SDR
+source, plays audio with PulseAudio, and shows two real-time plots: the RF
+spectrum and the demodulated audio spectrum.
+
+This example requires an RF upconverter to listen to stations on the HF and MF
+bands with the RTL-SDR.
+
+This AM envelope demodulator composition is available in LuaRadio as the
+[`AMEnvelopeDemodulator`](../docs/0.reference-manual.md#amenvelopedemodulator)
+block.
+
+##### Usage
+
+```
+Usage: examples/rtlsdr_am_envelope.lua <frequency> [audio gain]
+```
+
+Running this example in a headless environment will inhibit plotting and record
+audio to the WAV file `am_envelope.wav`.
+
+This example currently uses a constant audio gain block, which may need
+adjustment with the station signal strength. In the future, this will be
+replaced with an automatic gain control block.
+
+##### Usage Example
+
+Listen to [WWV](https://en.wikipedia.org/wiki/WWV_(radio_station)) at 5 MHz
+(with a 125 MHz upconverter), with an audio gain of 40:
+
+```
+$ ./luaradio examples/rtlsdr_am_envelope.lua 130e6 40
+```
+
+Listen to an AM radio station at 560 kHz (with a 125 MHz upconverter), with an
+audio gain of 40:
+
+```
+$ ./luaradio examples/rtlsdr_am_envelope.lua 125.560e6 40
+```
+
+### [`rtlsdr_am_synchronous.lua`](rtlsdr_am_synchronous.lua)
+
+<p align="center">
+<img src="../docs/figures/flowgraph_rtlsdr_am_synchronous.png" />
+</p>
+
+This example is an AM radio receiver, implemented with a phase-locked loop for
+synchronous demodulation. It can be used to listen to broadcast stations on the
+MF ([AM Broadcast](https://en.wikipedia.org/wiki/AM_broadcasting)) and HF
+([Shortwave
+Broadcast](https://en.wikipedia.org/wiki/Shortwave_radio#Shortwave_broadcasting))
+bands, as well as aviation communication on the VHF
+[airband](https://en.wikipedia.org/wiki/Airband). It uses the RTL-SDR as an SDR
+source, plays audio with PulseAudio, and shows two real-time plots: the RF
+spectrum and the demodulated audio spectrum.
+
+This example requires an RF upconverter to listen to stations on the HF and MF
+bands with the RTL-SDR.
+
+This AM synchronous demodulator composition is available in LuaRadio as the
+[`AMSynchronousDemodulator`](../docs/0.reference-manual.md#amsynchronousdemodulator)
+block.
+
+##### Usage
+
+```
+Usage: examples/rtlsdr_am_synchronous.lua <frequency> [audio gain]
+```
+
+Running this example in a headless environment will inhibit plotting and record
+audio to the WAV file `am_synchronous.wav`.
+
+This example currently uses a constant audio gain block, which may need
+adjustment with the station signal strength. In the future, this will be
+replaced with an automatic gain control block.
+
+##### Usage Example
+
+Listen to [WWV](https://en.wikipedia.org/wiki/WWV_(radio_station)) at 5 MHz
+(with a 125 MHz upconverter), with an audio gain of 40:
+
+```
+$ ./luaradio examples/rtlsdr_am_synchronous.lua 130e6 40
+```
+
+Listen to an AM radio station at 560 kHz (with a 125 MHz upconverter), with an
+audio gain of 40:
+
+```
+$ ./luaradio examples/rtlsdr_am_synchronous.lua 125.560e6 40
+```
+
+### [`rtlsdr_ssb.lua`](rtlsdr_ssb.lua)
+
+<p align="center">
+<img src="../docs/figures/flowgraph_rtlsdr_ssb.png" />
+</p>
+
+This example is a
+[Single-Sideband](https://en.wikipedia.org/wiki/Single-sideband_modulation)
+(SSB) AM radio receiver. SSB is commonly used by amateur radio operators on the
+HF band, and sometimes on the VHF and UHF bands, for voice and digital
+(modulated in the audio) communication. This example uses the RTL-SDR as an SDR
+source, plays audio with PulseAudio, and shows two real-time plots: the RF
+spectrum and the demodulated audio spectrum.
+
+This example requires an RF upconverter to listen to stations on the HF and MF
+bands with the RTL-SDR.
+
+This single-sideband demodulator composition is available in LuaRadio as the
+[`SSBDemodulator`](../docs/0.reference-manual.md#ssbdemodulator) block.
+
+##### Usage
+
+```
+Usage: examples/rtlsdr_ssb.lua <frequency> <sideband> [audio gain]
+```
+
+Running this example in a headless environment will inhibit plotting and record
+audio to the WAV file `ssb.wav`.
+
+This example currently uses a constant audio gain block, which may need
+adjustment with the station signal strength. In the future, this will be
+replaced with an automatic gain control block.
+
+##### Usage Example
+
+Listen to 3.745 MHz (with a 125 MHz upconverter), lower sideband, with an audio
+gain of 40:
+
+```
+$ ./luaradio examples/rtlsdr_ssb.lua 128.745e6 lsb 40
+```
+
 ### [`wavfile_ssb_modulator.lua`](wavfile_ssb_modulator.lua)
 
 <p align="center">
 <img src="../docs/figures/flowgraph_wavfile_ssb_modulator.png" />
 </p>
 
+This example is a file-based
+[Single-Sideband](https://en.wikipedia.org/wiki/Single-sideband_modulation)
+(SSB) modulator. It takes a single channel WAV file audio input, and produces a
+binary IQ file (`f32le` format) output with the single-sideband modulated
+audio. This example doesn't use the RTL-SDR at all, but instead demonstrates
+how you can build file-based command-line utilities with modulation,
+demodulation, decoding, file conversion, etc. flow graphs that run to
+completion.
+
+This single-sideband modulator composition is available in LuaRadio as the
+[`SSBModulator`](../docs/0.reference-manual.md#ssbmodulator) block.
+
+##### Usage
+
 ```
 Usage: examples/wavfile_ssb_modulator.lua <WAV file in> <IQ f32le file out> <bandwidth> <sideband>
 ```
 
-This example is a file-based Single-Sideband
-([SSB](https://en.wikipedia.org/wiki/Single-sideband_modulation)) modulator. It
-takes a single channel WAV file as the input, and produces a binary IQ file
-(`f32le` format) with the single-sideband modulated audio as the output. This
-example doesn't use the RTL-SDR at all, but instead demonstrates how you can
-build file-based command-line utilities with modulation/demodulation, decoding,
-conversion, etc.  flow graphs that run to completion.
+##### Usage Example
 
-Modulate `test.wav` into `test.iq`, with 3 KHz bandwidth and lower sideband:
+Modulate `test.wav` into `test.iq`, with 3 kHz bandwidth and lower sideband:
 
 ```
 $ ./luaradio examples/wavfile_ssb_modulator.lua test.wav test.iq 3e3 lsb
@@ -343,8 +443,17 @@ $ ./luaradio examples/wavfile_ssb_modulator.lua test.wav test.iq 3e3 lsb
 <img src="../docs/figures/flowgraph_iqfile_converter.png" />
 </p>
 
+This example is an IQ file format converter. It converts the binary encoding of
+IQ files from one format, e.g. signed 8-bit, to another, e.g. 32-bit float
+little endian. This example doesn't use the RTL-SDR at all, but instead
+demonstrates how you can build file-based command-line utilities with
+modulation, demodulation, decoding, file conversion, etc. flow graphs that run
+to completion.
+
+##### Usage
+
 ```
-Usage: examples/iqfile_convert.lua <input IQ file> <input format> <output IQ file> <output format>
+Usage: examples/iqfile_converter.lua <input IQ file> <input format> <output IQ file> <output format>
 
 Supported formats:
     s8, u8,
@@ -353,16 +462,16 @@ Supported formats:
     f32le, f32be, f64le, f64be
 ```
 
-This example is an IQ file format converter. It converts the binary encoding of
-IQ files from one format, e.g. signed 8-bit, to another, e.g. 32-bit float
-little endian. This example doesn't use the RTL-SDR at all, but instead
-demonstrates how you can build file-based command-line utilities with
-modulation/demodulation, decoding, conversion, etc. flow graphs that run to
-completion.
+##### Usage Example
 
 Convert `test.s8.iq`, with signed 8-bit samples, into `test.f32le.iq`, with
 32-bit float little endian samples:
 
 ```
 $ ./luaradio examples/iqfile_converter.lua test.s8.iq s8 test.f32le.iq f32le
+$ du -b test.s8.iq
+10236   test.s8.iq
+$ du -b test.f32le.iq
+40944   test.f32le.iq
+$
 ```

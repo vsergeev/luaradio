@@ -79,10 +79,6 @@ local options_table = {
 -- Process arguments
 --------------------------------------------------------------------------------
 
-if #arg < 1 then
-    print_usage()
-end
-
 -- Extract and handle options
 while #arg >= 1 do
     if options_table[arg[1]] then
@@ -91,6 +87,10 @@ while #arg >= 1 do
         break
     end
     table.remove(arg, 1)
+end
+
+if #arg < 1 then
+    print_usage()
 end
 
 -- Shift args down so script filename is arg[0]

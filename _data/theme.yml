@@ -1,0 +1,9 @@
+# Theme customization - please change from the defaults!
+
+# Color for top bar, links, etc
+highlight_color: '#3498db'
+
+# "Hi, I'm _______"
+name: LuaRadio
+description: LuaRadio
+author: Vanya A. Sergeev

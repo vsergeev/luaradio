@@ -1,0 +1,5 @@
+# General Jekyll Config
+highlighter: pygments
+url: http://luaradio.io
+lsi: false
+exclude: [CNAME, .gitignore, Gemfile, Gemfile.lock]

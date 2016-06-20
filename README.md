@@ -1,28 +1,30 @@
 # LuaRadio
 
-LuaRadio is a lightweight, embeddable flow graph signal processing framework
-for software defined radio, built on [LuaJIT](http://luajit.org/). It provides
-a suite of source, sink, and processing blocks, with a simple API for building
-flow graphs, running flow graphs, creating blocks, and creating data types. It
-has a small binary footprint of under 700 KB (including LuaJIT) and has no
-external hard dependencies.
+**LuaRadio** is a lightweight, embeddable flow graph signal processing
+framework for software-defined radio. It provides a suite of source, sink, and
+processing blocks, with a simple API for defining flow graphs, running flow
+graphs, creating blocks, and creating data types. LuaRadio is built on
+[LuaJIT](http://luajit.org/), has a small binary footprint of under 750 KB
+(including LuaJIT), has no external hard dependencies, and is MIT licensed.
 
-LuaRadio blocks can use [LuaJIT's FFI](http://luajit.org/ext_ffi.html) to wrap
-external libraries, like [liquid-dsp](https://github.com/jgaeddert/liquid-dsp),
-[libvolk](http://libvolk.org/), and others, for computational acceleration,
-more sophisticated processing, and interfacing with SDR hardware.
+LuaRadio can be used to rapidly prototype software radios,
+modulation/demodulation utilities, and signal processing experiments.  It can
+also be embedded into existing radio applications to serve as a user scriptable
+engine for processing samples.
 
-LuaRadio is easily embeddable with its C API, making it possible to integrate
-LuaRadio scripts into existing radio applications, or to build entirely
-standalone radio applications and utilities.
+LuaRadio blocks are written in pure Lua, but can use [LuaJIT's
+FFI](http://luajit.org/ext_ffi.html) to wrap external libraries, like
+[VOLK](http://libvolk.org/),
+[liquid-dsp](https://github.com/jgaeddert/liquid-dsp), and others, for
+computational acceleration, more sophisticated processing, and interfacing with
+SDR hardware.
 
-LuaRadio is free and permissively licensed (MIT license).
-
-Use GNU Radio? See [how LuaRadio compares to GNU Radio](docs/6.comparison-gnuradio.md).
+Use GNU Radio? See [how LuaRadio compares to GNU
+Radio](docs/6.comparison-gnuradio.md).
 
 ## Example
 
-##### Wideband FM Mono Receiver Example
+##### Mono Wideband FM Broadcast Radio Receiver
 
 <p align="center">
 <img src="docs/figures/flowgraph_rtlsdr_wbfm_mono_compact.png" />
@@ -46,7 +48,7 @@ Check out some more [examples](examples) of what you can build with LuaRadio.
 
 ## Quickstart
 
-LuaRadio can be run directly from the repository.
+With LuaJIT installed, LuaRadio can be run directly from the repository:
 
 ```
 git clone git://github.com/vsergeev/luaradio.git
@@ -70,8 +72,8 @@ $
 
 LuaRadio is accelerated by the optional libraries
 [liquid-dsp](https://github.com/jgaeddert/liquid-dsp),
-[libvolk](http://libvolk.org/), and [fftw](http://www.fftw.org/) for real-time
-applications. To run the real-time examples, install liquid-dsp or libvolk, and
+[VOLK](http://libvolk.org/), and [fftw](http://www.fftw.org/) for real-time
+applications. To run the real-time examples, install liquid-dsp or VOLK, and
 check that `liquid` or `volk` are marked `true` in the platform information.
 
 LuaRadio primarily supports Linux. It also strives to support FreeBSD and Mac
@@ -85,8 +87,8 @@ Try out one of the [examples](examples) with an
 $ ./luaradio examples/rtlsdr_wbfm_mono.lua 91.1e6
 ```
 
-LuaRadio runs great on the Raspberry Pi 3 with Arch Linux. All of the examples
-also run on the Raspberry Pi 3.
+LuaRadio and all of its examples run great on the Raspberry Pi 3 with Arch
+Linux.
 
 See the [Getting Started](docs/2.getting-started.md) guide for a tutorial on
 building your own flow graphs.

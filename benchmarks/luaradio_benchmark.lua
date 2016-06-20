@@ -680,7 +680,7 @@ for index, benchmark in ipairs(BenchmarkSuite) do
 
     io.stderr:write(string.format("Running benchmark %d/%d \"%s\"\n", index, #BenchmarkSuite, test_name))
 
-    local samples_per_second, bytes_per_second = 0.0, 0.0
+    local samples_per_second, bytes_per_second = {}, {}
     local sig = ffi.new("int[1]")
 
     -- Run each trial
@@ -712,18 +712,41 @@ for index, benchmark in ipairs(BenchmarkSuite) do
 
         io.stderr:write(string.format("\tTrial %d - %.1f MS/s, %.1f MiB/s\n", trial, results.samples_per_second/1e6, results.bytes_per_second/1048576))
 
-        samples_per_second = samples_per_second + results.samples_per_second
-        bytes_per_second = bytes_per_second + results.bytes_per_second
+        samples_per_second[#samples_per_second + 1] = results.samples_per_second
+        bytes_per_second[#bytes_per_second + 1] = results.bytes_per_second
     end
 
-    -- Average results
-    samples_per_second = samples_per_second / BENCH_NUM_TRIALS
-    bytes_per_second = bytes_per_second / BENCH_NUM_TRIALS
+    -- Compute means
+    local mean_samples_per_second, mean_bytes_per_second = 0.0, 0.0
+    for i = 1, BENCH_NUM_TRIALS do
+        mean_samples_per_second = mean_samples_per_second + samples_per_second[i]
+        mean_bytes_per_second = mean_bytes_per_second + bytes_per_second[i]
+    end
+    mean_samples_per_second = mean_samples_per_second / BENCH_NUM_TRIALS
+    mean_bytes_per_second = mean_bytes_per_second / BENCH_NUM_TRIALS
 
-    io.stderr:write(string.format("\tAverage - %.1f MS/s, %.1f MiB/s\n", samples_per_second/1e6, bytes_per_second/1048576))
+    -- Compute standard deviations
+    local stdev_samples_per_second, stdev_bytes_per_second = 0.0, 0.0
+    for i = 1, BENCH_NUM_TRIALS do
+        stdev_samples_per_second = stdev_samples_per_second + (samples_per_second[i] - mean_samples_per_second)^2
+        stdev_bytes_per_second = stdev_bytes_per_second + (bytes_per_second[i] - mean_bytes_per_second)^2
+    end
+    stdev_samples_per_second = math.sqrt(stdev_samples_per_second / BENCH_NUM_TRIALS)
+    stdev_bytes_per_second = math.sqrt(stdev_bytes_per_second / BENCH_NUM_TRIALS)
+
+    io.stderr:write(string.format("\tAverage - %.1f MS/s, %.1f MiB/s\n", mean_samples_per_second/1e6, mean_bytes_per_second/1048576))
+    io.stderr:write(string.format("\t  Stdev - %.1f MS/s, %.1f MiB/s\n", stdev_samples_per_second/1e6, stdev_bytes_per_second/1048576))
 
     -- Add it to our table
-    benchmark_results.benchmarks[index] = {name = test_name, block_name = block_name, results = {samples_per_second = samples_per_second, bytes_per_second = bytes_per_second}}
+    benchmark_results.benchmarks[index] = {
+        name = test_name,
+        block_name = block_name,
+        results = {
+            samples_per_second = mean_samples_per_second,
+            samples_per_second_stdev = stdev_samples_per_second,
+            bytes_per_second = mean_bytes_per_second
+        }
+    }
 end
 
 print(json.encode(benchmark_results))

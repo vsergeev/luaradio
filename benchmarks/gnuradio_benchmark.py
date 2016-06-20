@@ -495,7 +495,7 @@ if __name__ == '__main__':
 
         sys.stderr.write("Running benchmark {}/{} \"{}\"\n".format(index+1, len(BenchmarkSuite), test_name))
 
-        samples_per_second, bytes_per_second = 0.0, 0.0
+        samples_per_second, bytes_per_second = [], []
 
         # Run each trial
         for trial in range(BENCH_NUM_TRIALS):
@@ -512,16 +512,29 @@ if __name__ == '__main__':
 
             sys.stderr.write("\tTrial {} - {:.1f} MS/s, {:.1f} MiB/s\n".format(trial+1, trial_samples_per_second/1e6, trial_bytes_per_second/1048576))
 
-            samples_per_second += trial_samples_per_second
-            bytes_per_second += trial_bytes_per_second
+            samples_per_second.append(trial_samples_per_second)
+            bytes_per_second.append(trial_bytes_per_second)
 
-        # Average results
-        samples_per_second /= BENCH_NUM_TRIALS
-        bytes_per_second /= BENCH_NUM_TRIALS
+        # Compute means
+        mean_samples_per_second = sum(samples_per_second)/BENCH_NUM_TRIALS
+        mean_bytes_per_second = sum(bytes_per_second)/BENCH_NUM_TRIALS
 
-        sys.stderr.write("\tAverage - {:.1f} MS/s, {:.1f} MiB/s\n".format(samples_per_second/1e6, bytes_per_second/1048576))
+        # Compute standard deviations
+        stdev_samples_per_second = math.sqrt(sum([(e - mean_samples_per_second)**2 for e in samples_per_second])/BENCH_NUM_TRIALS)
+        stdev_bytes_per_second = math.sqrt(sum([(e - mean_bytes_per_second)**2 for e in bytes_per_second])/BENCH_NUM_TRIALS)
+
+        sys.stderr.write("\tAverage - {:.1f} MS/s, {:.1f} MiB/s\n".format(mean_samples_per_second/1e6, mean_bytes_per_second/1048576))
+        sys.stderr.write("\t  Stdev - {:.1f} MS/s, {:.1f} MiB/s\n".format(stdev_samples_per_second/1e6, stdev_bytes_per_second/1048576))
 
         # Add it to our table
-        benchmark_results['benchmarks'].append({'name': test_name, 'block_name': block_name, 'results': {'samples_per_second': samples_per_second, 'bytes_per_second': bytes_per_second}})
+        benchmark_results['benchmarks'].append({
+            'name': test_name,
+            'block_name': block_name,
+            'results': {
+                'samples_per_second': mean_samples_per_second,
+                'samples_per_second_stdev': stdev_samples_per_second,
+                'bytes_per_second': bytes_per_second
+            }
+        })
 
     print(json.dumps(benchmark_results))

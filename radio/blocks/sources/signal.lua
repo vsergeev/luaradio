@@ -19,13 +19,13 @@
 -- @signature > out:Float32
 --
 -- @usage
--- -- Source a 250 KHz complex exponential sampled at 2 MHz
+-- -- Source a 250 kHz complex exponential sampled at 2 MHz
 -- local src = radio.SignalSource('exponential', 250e3, 2e6)
 --
--- -- Source a 100 KHz cosine sampled at 1 MHz, with amplitude 2.5
+-- -- Source a 100 kHz cosine sampled at 1 MHz, with amplitude 2.5
 -- local src = radio.SignalSource('cosine', 100e3, 1e6, {amplitude = 2.5})
 --
--- -- Source a 1 KHz square wave sampled at 2 MHz, with offset 1.0
+-- -- Source a 1 kHz square wave sampled at 2 MHz, with offset 1.0
 -- local src = radio.SignalSource('square', 1e3, 2e6, {offset = 1.0})
 
 local ffi = require('ffi')

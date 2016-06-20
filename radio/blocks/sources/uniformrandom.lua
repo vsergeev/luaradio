@@ -23,10 +23,10 @@
 -- -- Source a random Float32 signal sampled at 1 MHz
 -- local src = radio.UniformRandomSource(radio.types.Float32, 1e6)
 --
--- -- Source a random Byte signal sampled at 1 KHz, ranging from 65 to 90
+-- -- Source a random Byte signal sampled at 1 kHz, ranging from 65 to 90
 -- local src = radio.UniformRandomSource(radio.types.Byte, 1e3, {65, 90})
 --
--- -- Source a random bit stream sampled at 1 KHz
+-- -- Source a random bit stream sampled at 1 kHz
 -- local src = radio.UniformRandomSource(radio.types.Bit, 1e3)
 
 local math = require('math')

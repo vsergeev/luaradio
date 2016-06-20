@@ -23,7 +23,7 @@
 -- -- Source little-endian 32-bit real samples from a file sampled at 1 MHz, repeating on EOF
 -- local src = radio.RealFileSource('samples.f32le.real', 'f32le', 1e6, true)
 --
--- -- Source little-endian signed 16-bit real samples from stdin sampled at 500 KHz
+-- -- Source little-endian signed 16-bit real samples from stdin sampled at 500 kHz
 -- local src = radio.RealFileSource(0, 's16le', 500e3)
 
 local ffi = require('ffi')

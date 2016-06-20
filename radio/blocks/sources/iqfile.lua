@@ -23,7 +23,7 @@
 -- -- Source little-endian 32-bit IQ samples from a file sampled at 1 MHz, repeating on EOF
 -- local src = radio.IQFileSource('samples.f32le.iq', 'f32le', 1e6, true)
 --
--- -- Source little-endian signed 16-bit IQ samples from stdin sampled at 500 KHz
+-- -- Source little-endian signed 16-bit IQ samples from stdin sampled at 500 kHz
 -- local src = radio.IQFileSource(io.stdin, 's16le', 500e3)
 
 local ffi = require('ffi')

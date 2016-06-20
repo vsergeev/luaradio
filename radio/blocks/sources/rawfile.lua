@@ -17,7 +17,7 @@
 -- -- Source ComplexFloat32 samples sampled at 1 MHz from a file descriptor
 -- local src = radio.RawFileSource(3, radio.types.ComplexFloat32, 1e6)
 --
--- -- Source Byte samples sampled at 100 KHz from a file, repeating on EOF
+-- -- Source Byte samples sampled at 100 kHz from a file, repeating on EOF
 -- local src = radio.RawFileSource('data.bin', radio.types.Byte, 100e3, true)
 
 local ffi = require('ffi')

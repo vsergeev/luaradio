@@ -18,7 +18,7 @@ standalone radio applications and utilities.
 
 LuaRadio is free and permissively licensed (MIT license).
 
-Use GNU Radio? See [how LuaRadio compares to GNU Radio](docs/6.comparison_gnuradio.md).
+Use GNU Radio? See [how LuaRadio compares to GNU Radio](docs/6.comparison-gnuradio.md).
 
 ## Example
 
@@ -88,7 +88,7 @@ $ ./luaradio examples/rtlsdr_wbfm_mono.lua 91.1e6
 LuaRadio runs great on the Raspberry Pi 3 with Arch Linux. All of the examples
 also run on the Raspberry Pi 3.
 
-See the [Getting Started](docs/2.getting_started.md) guide for a tutorial on
+See the [Getting Started](docs/2.getting-started.md) guide for a tutorial on
 building your own flow graphs.
 
 ## Installation
@@ -102,13 +102,13 @@ methods.
 
 LuaRadio documentation is contained in the [docs](docs) folder.
 
-* 0. [Reference Manual](docs/0.reference_manual.md)
+* 0. [Reference Manual](docs/0.reference-manual.md)
 * 1. [Installation](docs/1.installation.md)
-* 2. [Getting Started](docs/2.getting_started.md)
-* 3. [Creating Blocks](docs/3.creating_blocks.md)
-* 4. [Embedding LuaRadio](docs/4.embedding_luaradio.md)
+* 2. [Getting Started](docs/2.getting-started.md)
+* 3. [Creating Blocks](docs/3.creating-blocks.md)
+* 4. [Embedding LuaRadio](docs/4.embedding-luaradio.md)
 * 5. [Architecture](docs/5.architecture.md)
-* 6. [Comparison to GNU Radio](docs/6.comparison_gnuradio.md)
+* 6. [Comparison to GNU Radio](docs/6.comparison-gnuradio.md)
 
 ## Project Structure
 

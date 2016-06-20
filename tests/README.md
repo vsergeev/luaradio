@@ -8,7 +8,7 @@ busted --lua=luajit --lpath="./?/init.lua" --no-auto-insulate tests/
 
 The unit tests can be run with various combinations of external libraries
 disabled, controlled by several environment variables. See the [Reference
-Manual](../docs/0.reference_manual.md#environment-variables) for more
+Manual](../docs/0.reference-manual.md#environment-variables) for more
 information.
 
 For example, to run all unit tests with only pure Lua implementations and no

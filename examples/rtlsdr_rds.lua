@@ -32,8 +32,11 @@ local decoder = radio.RDSDecoderBlock()
 local sink = radio.JSONSink()
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
-local plot2 = radio.GnuplotSpectrumSink(2048, 'BPSK Spectrum', {yrange = {-130, -60}, xrange = {-8000, 8000}})
-local plot3 = radio.GnuplotXYPlotSink(1024, 'BPSK Constellation', {complex = true, yrange = {-0.02, 0.02}, xrange = {-0.02, 0.02}})
+local plot2 = radio.GnuplotSpectrumSink(2048, 'BPSK Spectrum', {yrange = {-130, -60},
+                                                                xrange = {-8000, 8000}})
+local plot3 = radio.GnuplotXYPlotSink(1024, 'BPSK Constellation', {complex = true,
+                                                                   yrange = {-0.02, 0.02},
+                                                                   xrange = {-0.02, 0.02}})
 
 top:connect(source, tuner, fm_demod, hilbert, mixer_delay)
 top:connect(hilbert, pilot_filter, pll_baseband)

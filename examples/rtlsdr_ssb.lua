@@ -16,14 +16,19 @@ local bandwidth = 3e3
 local top = radio.CompositeBlock()
 local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
 local tuner = radio.TunerBlock(tune_offset, 2*bandwidth, 50)
-local sb_filter = radio.ComplexBandpassFilterBlock(129, (sideband == "lsb") and {0, -bandwidth} or {0, bandwidth})
+local sb_filter = radio.ComplexBandpassFilterBlock(129, (sideband == "lsb") and {0, -bandwidth}
+                                                                             or {0, bandwidth})
 local am_demod = radio.ComplexToRealBlock()
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local af_gain = radio.MultiplyConstantBlock(gain)
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(1) or radio.WAVFileSink('ssb.wav', 1)
 
-local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {-3100, 3100}, yrange = {-120, -40}})
-local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
+local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {-3100,
+                                                                        3100},
+                                                              yrange = {-120, -40}})
+local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -40},
+                                                              xrange = {0, bandwidth},
+                                                              update_time = 0.05})
 
 top:connect(source, tuner, sb_filter, am_demod, af_filter, af_gain, sink)
 if os.getenv('DISPLAY') then

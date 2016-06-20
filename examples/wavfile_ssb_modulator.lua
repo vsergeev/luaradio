@@ -17,7 +17,8 @@ local source = radio.WAVFileSource(wav_filepath, 1)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local hilbert = radio.HilbertTransformBlock(129)
 local conjugate = radio.ComplexConjugateBlock()
-local sb_filter = radio.ComplexBandpassFilterBlock(129, (sideband == "lsb") and {-bandwidth, 0} or {0, bandwidth})
+local sb_filter = radio.ComplexBandpassFilterBlock(129, (sideband == "lsb") and {-bandwidth, 0}
+                                                                             or {0, bandwidth})
 local sink = radio.IQFileSink(iq_filepath, 'f32le')
 
 if sideband == "lsb" then

@@ -1,7 +1,8 @@
 local radio = require('radio')
 
 if #arg < 4 then
-    io.stderr:write("Usage: " .. arg[0] .. " <input IQ file> <input format> <output IQ file> <output format>\n")
+    io.stderr:write("Usage: " .. arg[0] ..
+                    " <input IQ file> <input format> <output IQ file> <output format>\n")
     io.stderr:write("\nSupported formats:\n" ..
                     "   s8, u8,\n" ..
                     "   u16le, u16be, s16le, s16be,\n" ..

@@ -18,7 +18,9 @@ local af_downsampler = radio.DownsamplerBlock(5)
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(1) or radio.WAVFileSink('wbfm_mono.wav', 1)
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
-local plot2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-120, -40}, xrange = {0, 15e3}, update_time = 0.05})
+local plot2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-120, -40},
+                                                                  xrange = {0, 15e3},
+                                                                  update_time = 0.05})
 
 top:connect(source, tuner, fm_demod, af_filter, af_deemphasis, af_downsampler, sink)
 if os.getenv('DISPLAY') then

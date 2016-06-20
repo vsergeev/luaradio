@@ -23,8 +23,12 @@ local af_gain = radio.MultiplyConstantBlock(gain)
 local af_downsampler = radio.DownsamplerBlock(10)
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(1) or radio.WAVFileSink('am_synchronous.wav', 1)
 
-local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {ifreq - 3*bandwidth, ifreq + 3*bandwidth}, yrange = {-120, -40}})
-local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
+local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {ifreq - 3*bandwidth,
+                                                                        ifreq + 3*bandwidth},
+                                                              yrange = {-120, -40}})
+local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -40},
+                                                              xrange = {0, bandwidth},
+                                                              update_time = 0.05})
 
 top:connect(source, rf_decimator, if_filter)
 top:connect(if_filter, pll)

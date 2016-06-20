@@ -16,7 +16,7 @@
 -- @signature in:Float32 > out:Float32
 --
 -- @usage
--- -- Lowpass filter, 128 taps, 18 KHz
+-- -- Lowpass filter, 128 taps, 18 kHz
 -- local lpf = radio.LowpassFilterBlock(128, 18e3)
 
 local ffi = require('ffi')

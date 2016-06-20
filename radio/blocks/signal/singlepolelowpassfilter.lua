@@ -14,7 +14,7 @@
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 --
 -- @usage
--- -- Single-pole lowpass filter with 100 KHz cutoff
+-- -- Single-pole lowpass filter with 100 kHz cutoff
 -- local lpf = radio.SinglepoleLowpassFilterBlock(100e3)
 
 local block = require('radio.core.block')

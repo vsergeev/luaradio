@@ -14,10 +14,10 @@
 -- @signature in:ComplexFloat32 > out:ComplexFloat32, error:Float32
 --
 -- @usage
--- -- PLL with 1 KHz loop bandwidth, 18 KHz - 21 KHz capture range, 3 multiplier
+-- -- PLL with 1 kHz loop bandwidth, 18 kHz - 21 kHz capture range, 3 multiplier
 -- local pll = radio.PLLBlock(1e3, 18e3, 21e3, 3)
 --
--- -- PLL with 1 KHz loop bandwidth, 18 KHz - 21 KHz capture range, 1/16 multiplier
+-- -- PLL with 1 kHz loop bandwidth, 18 kHz - 21 kHz capture range, 1/16 multiplier
 -- local pll = radio.PLLBlock(1e3, 18e3, 21e3, 1/16)
 
 local block = require('radio.core.block')

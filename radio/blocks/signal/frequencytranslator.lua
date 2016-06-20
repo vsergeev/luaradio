@@ -11,7 +11,7 @@
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 --
 -- @usage
--- -- Frequency translate -200 KHz
+-- -- Frequency translate -200 kHz
 -- local translator = radio.FrequencyTranslatorBlock(-200e3)
 
 local math = require('math')

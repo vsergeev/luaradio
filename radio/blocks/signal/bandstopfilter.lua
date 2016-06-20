@@ -16,7 +16,7 @@
 -- @signature in:Float32 > out:Float32
 --
 -- @usage
--- -- Bandstop filter, 128 taps, 18 KHz to 20 KHz
+-- -- Bandstop filter, 128 taps, 18 kHz to 20 kHz
 -- local bpf = radio.BandstopFilterBlock(128, {18e3, 20e3})
 
 local ffi = require('ffi')

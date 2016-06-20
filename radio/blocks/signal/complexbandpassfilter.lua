@@ -16,10 +16,10 @@
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 --
 -- @usage
--- -- Complex bandpass filter, 128 taps, 18 KHz to 20 KHz
+-- -- Complex bandpass filter, 128 taps, 18 kHz to 20 kHz
 -- local bpf1 = radio.BandpassFilterBlock(128, {18e3, 20e3})
 --
--- -- Complex bandpass filter, 128 taps, -18 KHz to -20 KHz
+-- -- Complex bandpass filter, 128 taps, -18 kHz to -20 kHz
 -- local bpf2 = radio.BandpassFilterBlock(128, {-18e3, -20e3})
 
 local ffi = require('ffi')

@@ -19,7 +19,7 @@ from gnuradio import audio, analog, digital, filter, blocks
 BENCH_TRIAL_DURATION    = 5.0
 
 # Number of benchmark trials to average
-BENCH_NUM_TRIALS        = 3
+BENCH_NUM_TRIALS        = 5
 
 # Benchmark Suite
 BenchmarkSuite = []

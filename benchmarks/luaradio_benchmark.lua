@@ -10,7 +10,7 @@ local radio = require('radio')
 local BENCH_TRIAL_DURATION  = 5
 
 -- Number of benchmark trials to average
-local BENCH_NUM_TRIALS      = 3
+local BENCH_NUM_TRIALS      = 5
 
 -- Benchmark suite
 local BenchmarkSuite = {

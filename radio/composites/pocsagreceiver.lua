@@ -1,5 +1,5 @@
 ---
--- Demodulate and decode POCSAG messages from a baseband, 4.5 KHz shift FSK
+-- Demodulate and decode POCSAG messages from a baseband, 4.5 kHz shift FSK
 -- modulated complex-valued signal.
 --
 -- @category Receivers

@@ -12,7 +12,7 @@
 -- @signature in:Float32 > out:ComplexFloat32
 --
 -- @usage
--- -- SSB LSB modulator with 3 KHz bandwidth
+-- -- SSB LSB modulator with 3 kHz bandwidth
 -- local mod = radio.SSBModulator("lsb", 3e3)
 
 local block = require('radio.core.block')

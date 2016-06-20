@@ -13,7 +13,7 @@
 -- @signature in:ComplexFloat32 > out:Float32
 --
 -- @usage
--- -- AM demodulator with 100 KHz IF, 5 KHz bandwidth
+-- -- AM demodulator with 100 kHz IF, 5 kHz bandwidth
 -- local demod = radio.AMSynchronousDemodulator(100e3, 5e3)
 
 local block = require('radio.core.block')

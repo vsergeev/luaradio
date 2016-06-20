@@ -20,7 +20,7 @@
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 --
 -- @usage
--- -- Translate -100KHz, filter 12KHz, and decimate by 5
+-- -- Translate -100 kHz, filter 12 kHz, and decimate by 5
 -- local tuner = radio.TunerBlock(-100e3, 12e3, 5)
 
 local block = require('radio.core.block')

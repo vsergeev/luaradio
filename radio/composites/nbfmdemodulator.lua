@@ -14,7 +14,7 @@
 -- @signature in:ComplexFloat32 > out:Float32
 --
 -- @usage
--- -- NBFM demodulator with 5KHz deviation and 4KHz bandwidth
+-- -- NBFM demodulator with 5 kHz deviation and 4 kHz bandwidth
 -- local demod = radio.NBFMDemodulator(5e3, 4e3)
 
 local block = require('radio.core.block')

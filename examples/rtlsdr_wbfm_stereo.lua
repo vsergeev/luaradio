@@ -27,11 +27,11 @@ local lmr_am_demod = radio.ComplexToRealBlock()
 -- L
 local l_summer = radio.AddBlock()
 local l_af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)
-local l_decimator = radio.DownsamplerBlock(5)
+local l_downsampler = radio.DownsamplerBlock(5)
 -- R
 local r_subtractor = radio.SubtractBlock()
 local r_af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)
-local r_decimator = radio.DownsamplerBlock(5)
+local r_downsampler = radio.DownsamplerBlock(5)
 -- Sink
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(2) or radio.WAVFileSink('wbfm_stereo.wav', 2)
 
@@ -49,10 +49,10 @@ top:connect(lpr_am_demod, 'out', l_summer, 'in1')
 top:connect(lmr_am_demod, 'out', l_summer, 'in2')
 top:connect(lpr_am_demod, 'out', r_subtractor, 'in1')
 top:connect(lmr_am_demod, 'out', r_subtractor, 'in2')
-top:connect(l_summer, l_af_deemphasis, l_decimator)
-top:connect(r_subtractor, r_af_deemphasis, r_decimator)
-top:connect(l_decimator, 'out', sink, 'in1')
-top:connect(r_decimator, 'out', sink, 'in2')
+top:connect(l_summer, l_af_deemphasis, l_downsampler)
+top:connect(r_subtractor, r_af_deemphasis, r_downsampler)
+top:connect(l_downsampler, 'out', sink, 'in1')
+top:connect(r_downsampler, 'out', sink, 'in2')
 if os.getenv('DISPLAY') then
     top:connect(fm_demod, plot1)
     top:connect(lpr_am_demod, plot2)

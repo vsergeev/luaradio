@@ -13,7 +13,7 @@
 -- @tparam[opt={}] table options Additional options, specifying:
 --                               * `amplitude` (number, default 1.0)
 --                               * `offset` (number, default 0.0)
---                               * `phase` (number, default 0.0)
+--                               * `phase` (number in radians, default 0.0)
 --
 -- @signature > out:ComplexFloat32
 -- @signature > out:Float32

@@ -18,7 +18,7 @@
 -- @signature in:Float32 >
 --
 -- @usage
--- -- Plot a 1 KHz cosine sampled at 250 KHz
+-- -- Plot a 1 kHz cosine sampled at 250 kHz
 -- local snk = radio.SignalSource('cosine', 1e3, 250e3)
 -- local throttle = radio.ThrottleBlock()
 -- local snk = radio.GnuplotPlotSink(1000, 'Cosine')

@@ -1,6 +1,6 @@
 ---
--- Demodulate a baseband, wideband FM modulated complex-valued signal into the
--- real-valued mono channel (L+R) signal.
+-- Demodulate a baseband, broadcast radio wideband FM modulated complex-valued
+-- signal into the real-valued mono channel (L+R) signal.
 --
 -- $$ y[n] = \text{WBFMMonoDemodulate}(x[n], \tau) $$
 --

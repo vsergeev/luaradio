@@ -6,9 +6,9 @@ if #arg < 1 then
 end
 
 local frequency = tonumber(arg[1])
+local gain = tonumber(arg[2]) or 1.0
 local ifreq = 50e3
 local bandwidth = 5e3
-local gain = tonumber(arg[2]) or 1.0
 
 local top = radio.CompositeBlock()
 local source = radio.RtlSdrSource(frequency - ifreq, 1102500)

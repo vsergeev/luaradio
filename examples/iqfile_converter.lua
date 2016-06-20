@@ -12,5 +12,5 @@ end
 
 radio.CompositeBlock():connect(
     radio.IQFileSource(arg[1], arg[2], 0),
-    radio.IQFileSink(arg[3], arg[4], 0)
+    radio.IQFileSink(arg[3], arg[4])
 ):run()

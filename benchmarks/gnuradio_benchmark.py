@@ -35,7 +35,7 @@ def benchmark(test_name, block_name):
 
 ################################################################################
 
-@benchmark("Five Back to Back FIR Filters (256 Real-valued taps, Complex-valued input, Complex-valued output)", "filter.fir_filter_ccf")
+@benchmark("Five Back to Back FIR Filters (256 Real taps, Complex input)", "filter.fir_filter_ccf")
 def test_five_fir_filter():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -45,7 +45,7 @@ def test_five_fir_filter():
 
     return top, probe
 
-@benchmark("Null Source (Complex-valued)", "blocks.null_source")
+@benchmark("Null Source (Complex)", "blocks.null_source")
 def test_null_source_complex():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -54,7 +54,7 @@ def test_null_source_complex():
 
     return top, probe
 
-@benchmark("Null Source (Real-valued)", "blocks.null_source")
+@benchmark("Null Source (Real)", "blocks.null_source")
 def test_null_source_real():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
@@ -76,7 +76,7 @@ def test_file_descriptor_source():
 
     return top, probe
 
-@benchmark("Uniform Random Source (Complex-valued)", "analog.fastnoise_source_c")
+@benchmark("Uniform Random Source (Complex)", "analog.fastnoise_source_c")
 def test_noise_source_complex():
     top = gr.top_block()
     src = analog.fastnoise_source_c(analog.GR_UNIFORM, math.sqrt(2))
@@ -85,7 +85,7 @@ def test_noise_source_complex():
 
     return top, probe
 
-@benchmark("Uniform Random Source (Real-valued)", "analog.fastnoise_source_f")
+@benchmark("Uniform Random Source (Real)", "analog.fastnoise_source_f")
 def test_noise_source_real():
     top = gr.top_block()
     src = analog.fastnoise_source_f(analog.GR_UNIFORM, math.sqrt(2))
@@ -121,7 +121,7 @@ def test_sig_source_square():
 
     return top, probe
 
-@benchmark("FIR Filter (64 Real-valued taps, Complex-valued input, Complex-valued output)", "filter.fir_filter_ccf")
+@benchmark("FIR Filter (64 Real taps, Complex input)", "filter.fir_filter_ccf")
 def test_fir_filter_ccf():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -131,7 +131,7 @@ def test_fir_filter_ccf():
 
     return top, probe
 
-@benchmark("FIR Filter (64 Real-valued taps, Real-valued input, Real-valued output)", "filter.fir_filter_fff")
+@benchmark("FIR Filter (64 Real taps, Real input)", "filter.fir_filter_fff")
 def test_fir_filter_fff():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
@@ -141,7 +141,7 @@ def test_fir_filter_fff():
 
     return top, probe
 
-@benchmark("FIR Filter (64 Complex-valued taps, Complex-valued input, Complex-valued output)", "filter.fir_filter_ccc")
+@benchmark("FIR Filter (64 Complex taps, Complex input)", "filter.fir_filter_ccc")
 def test_fir_filter_ccc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -151,7 +151,7 @@ def test_fir_filter_ccc():
 
     return top, probe
 
-@benchmark("FIR Filter (64 Complex-valued taps, Real-valued input, Complex-valued output)", "filter.fir_filter_fcc")
+@benchmark("FIR Filter (64 Complex taps, Real input)", "filter.fir_filter_fcc")
 def test_fir_filter_fcc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
@@ -161,7 +161,7 @@ def test_fir_filter_fcc():
 
     return top, probe
 
-@benchmark("FIR Filter (256 Real-valued taps, Complex-valued input, Complex-valued output)", "filter.fir_filter_ccf")
+@benchmark("FIR Filter (256 Real taps, Complex input)", "filter.fir_filter_ccf")
 def test_fir_filter_ccf():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -171,7 +171,7 @@ def test_fir_filter_ccf():
 
     return top, probe
 
-@benchmark("FIR Filter (256 Real-valued taps, Real-valued input, Real-valued output)", "filter.fir_filter_fff")
+@benchmark("FIR Filter (256 Real taps, Real input)", "filter.fir_filter_fff")
 def test_fir_filter_fff():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
@@ -181,7 +181,7 @@ def test_fir_filter_fff():
 
     return top, probe
 
-@benchmark("FIR Filter (256 Complex-valued taps, Complex-valued input, Complex-valued output)", "filter.fir_filter_ccc")
+@benchmark("FIR Filter (256 Complex taps, Complex input)", "filter.fir_filter_ccc")
 def test_fir_filter_ccc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -191,7 +191,7 @@ def test_fir_filter_ccc():
 
     return top, probe
 
-@benchmark("FIR Filter (256 Complex-valued taps, Real-valued input, Complex-valued output)", "filter.fir_filter_fcc")
+@benchmark("FIR Filter (256 Complex taps, Real input)", "filter.fir_filter_fcc")
 def test_fir_filter_fcc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
@@ -201,7 +201,7 @@ def test_fir_filter_fcc():
 
     return top, probe
 
-@benchmark("IIR Filter (5 ff 3 fb Real-valued taps, Complex-valued input, Complex-valued output)", "filter.iir_filter_ccf")
+@benchmark("IIR Filter (5 ff 3 fb Real taps, Complex input)", "filter.iir_filter_ccf")
 def test_iir_filter_ccf():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -271,7 +271,7 @@ def test_pll_refout_cc():
 
     return top, probe
 
-@benchmark("Add (Complex-valued)", "blocks.add_cc")
+@benchmark("Add (Complex)", "blocks.add_cc")
 def test_add_cc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -283,7 +283,7 @@ def test_add_cc():
 
     return top, probe
 
-@benchmark("Subtract (Complex-valued)", "blocks.sub_cc")
+@benchmark("Subtract (Complex)", "blocks.sub_cc")
 def test_sub_cc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -295,7 +295,7 @@ def test_sub_cc():
 
     return top, probe
 
-@benchmark("Multiply (Complex-valued)", "blocks.multiply_cc")
+@benchmark("Multiply (Complex)", "blocks.multiply_cc")
 def test_multiply_cc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -307,7 +307,7 @@ def test_multiply_cc():
 
     return top, probe
 
-@benchmark("Multiply (Real-valued)", "blocks.multiply_ff")
+@benchmark("Multiply (Real)", "blocks.multiply_ff")
 def test_multiply_ff():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
@@ -331,7 +331,7 @@ def test_multiply_conjugate_cc():
 
     return top, probe
 
-@benchmark("Multiply Constant (Complex-valued constant, Complex-valued input)", "blocks.multiply_const_cc")
+@benchmark("Multiply Constant (Complex constant, Complex input)", "blocks.multiply_const_cc")
 def test_multiply_const_cc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -341,7 +341,7 @@ def test_multiply_const_cc():
 
     return top, probe
 
-@benchmark("Multiply Constant (Real-valued constant, Real-valued input)", "blocks.multiply_const_ff")
+@benchmark("Multiply Constant (Real constant, Real input)", "blocks.multiply_const_ff")
 def test_multiply_const_ff():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
@@ -391,7 +391,7 @@ def test_complex_to_arg():
 
     return top, probe
 
-@benchmark("Delay (N = 3000, Complex-valued input)", "blocks.delay")
+@benchmark("Delay (N = 3000, Complex input)", "blocks.delay")
 def test_delay():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -456,14 +456,14 @@ def test_float_to_complex():
 # Missing comparable blocks to:
 #   @benchmark("IQ File Source (f32le)", "IQFileSource")
 #   @benchmark("Real File Source (f32le)", "RealFileSource")
-#   @benchmark("IIR Filter (5 feedforward & 3 feedback Real-valued taps, Real-valued input, Real-valued output)", "iir_filter_fff")
-#   @benchmark("Downsampler (M = 7), Complex-valued", "DownsamplerBlock")
-#   @benchmark("Downsampler (M = 7), Real-valued", "DownsamplerBlock")
-#   @benchmark("Upsampler (L = 7), Complex-valued", "UpsamplerBlock")
-#   @benchmark("Upsampler (L = 7), Real-valued", "UpsamplerBlock")
+#   @benchmark("IIR Filter (5 ff 3 fb Real taps, Real input)", "iir_filter_fff")
+#   @benchmark("Downsampler (M = 7), Complex", "DownsamplerBlock")
+#   @benchmark("Downsampler (M = 7), Real", "DownsamplerBlock")
+#   @benchmark("Upsampler (L = 7), Complex", "UpsamplerBlock")
+#   @benchmark("Upsampler (L = 7), Real", "UpsamplerBlock")
 #   @benchmark("Zero Crossing Clock Recovery", "ZeroCrossingClockRecoveryBlock")
 #   @benchmark("Binary Phase Corrector", "BinaryPhaseCorrectorBlock")
-#   @benchmark("Multiply Constant (Real-valued constant, Complex-valued input)", "blocks.multiply_const_cc")
+#   @benchmark("Multiply Constant (Real constant, Complex input)", "blocks.multiply_const_cc")
 
 ################################################################################
 

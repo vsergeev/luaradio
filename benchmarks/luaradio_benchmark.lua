@@ -15,7 +15,7 @@ local BENCH_NUM_TRIALS      = 5
 -- Benchmark suite
 local BenchmarkSuite = {
     {
-        "Five Back to Back FIR Filters (256 Real-valued taps, Complex-valued input, Complex-valued output)",
+        "Five Back to Back FIR Filters (256 Real taps, Complex input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
@@ -36,7 +36,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Null Source (Complex-valued)",
+        "Null Source (Complex)",
         "NullSource",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -46,7 +46,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Null Source (Real-valued)",
+        "Null Source (Real)",
         "NullSource",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -105,7 +105,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Uniform Random Source (Complex-valued)",
+        "Uniform Random Source (Complex)",
         "UniformRandomSource",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -115,7 +115,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Uniform Random Source (Real-valued)",
+        "Uniform Random Source (Real)",
         "UniformRandomSource",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -155,7 +155,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "FIR Filter (64 Real-valued taps, Complex-valued input, Complex-valued output)",
+        "FIR Filter (64 Real taps, Complex input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
@@ -172,7 +172,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "FIR Filter (64 Real-valued taps, Real-valued input, Real-valued output)",
+        "FIR Filter (64 Real taps, Real input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
@@ -189,7 +189,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "FIR Filter (64 Complex-valued taps, Complex-valued input, Complex-valued output)",
+        "FIR Filter (64 Complex taps, Complex input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
@@ -206,7 +206,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "FIR Filter (256 Real-valued taps, Complex-valued input, Complex-valued output)",
+        "FIR Filter (256 Real taps, Complex input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
@@ -223,7 +223,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "FIR Filter (256 Real-valued taps, Real-valued input, Real-valued output)",
+        "FIR Filter (256 Real taps, Real input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
@@ -240,7 +240,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "FIR Filter (256 Complex-valued taps, Complex-valued input, Complex-valued output)",
+        "FIR Filter (256 Complex taps, Complex input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
@@ -257,7 +257,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "IIR Filter (5 ff 3 fb Real-valued taps, Complex-valued input, Complex-valued output)",
+        "IIR Filter (5 ff 3 fb Real taps, Complex input)",
         "IIRFilterBlock",
         function (results_fd)
             local b_taps = {math.random(1.0), math.random(1.0), math.random(1.0), math.random(1.0)}
@@ -271,7 +271,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "IIR Filter (5 ff 3 fb Real-valued taps, Real-valued input, Real-valued output)",
+        "IIR Filter (5 ff 3 fb Real taps, Real input)",
         "IIRFilterBlock",
         function (results_fd)
             local b_taps = {math.random(1.0), math.random(1.0), math.random(1.0), math.random(1.0)}
@@ -296,7 +296,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Downsampler (M = 5), Complex-valued",
+        "Downsampler (M = 5), Complex",
         "DownsamplerBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -307,7 +307,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Downsampler (M = 5), Real-valued",
+        "Downsampler (M = 5), Real",
         "DownsamplerBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -318,7 +318,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Upsampler (L = 3), Complex-valued",
+        "Upsampler (L = 3), Complex",
         "UpsamplerBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -329,7 +329,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Upsampler (L = 3), Real-valued",
+        "Upsampler (L = 3), Real",
         "UpsamplerBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -417,7 +417,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Add (Complex-valued)",
+        "Add (Complex)",
         "AddBlock",
         function (results_fd)
             local src = radio.NullSource(radio.types.ComplexFloat32, 1.0)
@@ -429,7 +429,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Subtract (Complex-valued)",
+        "Subtract (Complex)",
         "SubtractBlock",
         function (results_fd)
             local src = radio.NullSource(radio.types.ComplexFloat32, 1.0)
@@ -441,7 +441,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Multiply (Complex-valued)",
+        "Multiply (Complex)",
         "MultiplyBlock",
         function (results_fd)
             local src = radio.NullSource(radio.types.ComplexFloat32, 1.0)
@@ -453,7 +453,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Multiply (Real-valued)",
+        "Multiply (Real)",
         "MultiplyBlock",
         function (results_fd)
             local src = radio.NullSource(radio.types.Float32, 1.0)
@@ -477,7 +477,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Multiply Constant (Real-valued constant, Complex-valued input)",
+        "Multiply Constant (Real constant, Complex input)",
         "MultiplyConstantBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -488,7 +488,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Multiply Constant (Complex-valued constant, Complex-valued input)",
+        "Multiply Constant (Complex constant, Complex input)",
         "MultiplyConstantBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -499,7 +499,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Multiply Constant (Real-valued constant, Real-valued input)",
+        "Multiply Constant (Real constant, Real input)",
         "MultiplyConstantBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
@@ -554,7 +554,7 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Delay (N = 3000, Complex-valued input)",
+        "Delay (N = 3000, Complex input)",
         "DelayBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(

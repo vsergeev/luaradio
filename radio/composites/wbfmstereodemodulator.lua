@@ -1,6 +1,6 @@
 ---
--- Demodulate a baseband, wideband FM modulated complex-valued signal into the
--- real-valued stereo channel (L and R) signals.
+-- Demodulate a baseband, broadcast radio wideband FM modulated complex-valued
+-- signal into the real-valued stereo channel (L and R) signals.
 --
 -- $$ y_{left}[n], y_{right}[n] = \text{WBFMStereoDemodulate}(x[n], \tau) $$
 --

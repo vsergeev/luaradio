@@ -19,7 +19,7 @@
 -- local snk = radio.IQFileSink('samples.s8.iq', 's8')
 --
 -- -- Sink little-endian 32-bit IQ samples to a file
--- local snk = radio.IQFileSink('samples.f32le.iq', 'f32le', 1e6, true)
+-- local snk = radio.IQFileSink('samples.f32le.iq', 'f32le')
 --
 -- -- Sink little-endian signed 16-bit IQ samples to stdout
 -- local snk = radio.IQFileSink(1, 's16le')

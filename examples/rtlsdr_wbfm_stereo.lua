@@ -7,7 +7,6 @@ end
 
 local frequency = tonumber(arg[1])
 local tune_offset = -250e3
-local bandwidth = 15e3
 
 local top = radio.CompositeBlock()
 local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
@@ -19,10 +18,10 @@ local pilot_filter = radio.ComplexBandpassFilterBlock(129, {18e3, 20e3})
 local pilot_pll = radio.PLLBlock(100, 19e3-50, 19e3+50, 2)
 local mixer = radio.MultiplyConjugateBlock()
 -- L+R
-local lpr_filter = radio.LowpassFilterBlock(128, bandwidth)
+local lpr_filter = radio.LowpassFilterBlock(128, 15e3)
 local lpr_am_demod = radio.ComplexToRealBlock()
 -- L-R
-local lmr_filter = radio.LowpassFilterBlock(128, bandwidth)
+local lmr_filter = radio.LowpassFilterBlock(128, 15e3)
 local lmr_am_demod = radio.ComplexToRealBlock()
 -- L
 local l_summer = radio.AddBlock()
@@ -36,8 +35,8 @@ local r_downsampler = radio.DownsamplerBlock(5)
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(2) or radio.WAVFileSink('wbfm_stereo.wav', 2)
 
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
-local plot2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
-local plot3 = radio.GnuplotSpectrumSink(2048, 'L-R AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
+local plot2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-120, -40}, xrange = {0, 15e3}, update_time = 0.05})
+local plot3 = radio.GnuplotSpectrumSink(2048, 'L-R AF Spectrum', {yrange = {-120, -40}, xrange = {0, 15e3}, update_time = 0.05})
 
 top:connect(source, tuner, fm_demod, hilbert, delay)
 top:connect(hilbert, pilot_filter, pilot_pll)

@@ -220,9 +220,9 @@ end %}
 ``` lua
 local radio = require('radio')
 
--- RTL-SDR Source, frequency 88.5 MHz - 250 KHz, sample rate 1102500 Hz
+-- RTL-SDR Source, frequency 88.5 MHz - 250 kHz, sample rate 1102500 Hz
 local source = radio.RtlSdrSource(88.5e6 - 250e3, 1102500)
--- Tuner block, translate -250 KHz, filter 200 KHz, decimate by 5
+-- Tuner block, translate -250 kHz, filter 200 kHz, decimate by 5
 local tuner = radio.TunerBlock(-250e3, 200e3, 5)
 -- Wideband FM Stereo Demodulator block
 local demodulator = radio.WBFMStereoDemodulator()
@@ -246,7 +246,7 @@ top:run()
 ```
 
 ```
-$ luaradio test.lua
+$ luaradio example.lua
 ```
 
 ## Running Scripts

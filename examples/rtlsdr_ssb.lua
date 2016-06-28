@@ -22,7 +22,7 @@ local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local af_gain = radio.MultiplyConstantBlock(gain)
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(1) or radio.WAVFileSink('ssb.wav', 1)
 
-local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {-3*bandwidth, 3*bandwidth}, yrange = {-120, -40}})
+local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {-3100, 3100}, yrange = {-120, -40}})
 local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -40}, xrange = {0, bandwidth}, update_time = 0.05})
 
 top:connect(source, tuner, sb_filter, am_demod, af_filter, af_gain, sink)

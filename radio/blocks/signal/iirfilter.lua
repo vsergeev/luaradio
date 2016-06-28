@@ -17,7 +17,8 @@
 --
 -- @usage
 -- -- 2nd order Butterworth IIR filter, Wn=0.1
--- local filter = radio.IIRFilterBlock({0.02008337,  0.04016673,  0.02008337}, {1, -1.56101808,  0.64135154})
+-- local filter = radio.IIRFilterBlock({0.02008337,  0.04016673,  0.02008337},
+--                                     {1, -1.56101808,  0.64135154})
 --
 -- -- 2nd order Butterworth IIR filter, Wn=0.1
 -- local b_taps = radio.types.Float32.vector_from_array({0.02008337,  0.04016673,  0.02008337})

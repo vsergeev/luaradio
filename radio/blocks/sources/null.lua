@@ -12,7 +12,7 @@
 -- -- Source a zero complex-valued signal sampled at 1 MHz
 -- local src = radio.NullSource(radio.types.ComplexFloat32, 1e6)
 --
--- -- Source a zero real-valued stream sampled at 500 kHz
+-- -- Source a zero real-valued signal sampled at 500 kHz
 -- local src = radio.NullSource(radio.types.Bit, 500e3)
 --
 -- -- Source a zero bit stream sampled at 2 kHz

@@ -87,18 +87,6 @@ function RtlSdrSource:initialize_rtlsdr()
         error("rtlsdr_open(): " .. tostring(ret))
     end
 
-    -- Set sample rate
-    ret = librtlsdr.rtlsdr_set_sample_rate(self.dev[0], self.rate)
-    if ret ~= 0 then
-        error("rtlsdr_set_sample_rate(): " .. tostring(ret))
-    end
-
-    -- Set frequency
-    ret = librtlsdr.rtlsdr_set_center_freq(self.dev[0], self.frequency)
-    if ret ~= 0 then
-        error("rtlsdr_set_center_freq(): " .. tostring(ret))
-    end
-
     if self.autogain then
         -- Set autogain
         ret = librtlsdr.rtlsdr_set_tuner_gain_mode(self.dev[0], 0)
@@ -135,6 +123,18 @@ function RtlSdrSource:initialize_rtlsdr()
     local ret = librtlsdr.rtlsdr_set_freq_correction(self.dev[0], math.floor(self.freq_correction))
     if ret ~= 0 and ret ~= -2 then
         error("rtlsdr_set_freq_correction(): " .. tostring(ret))
+    end
+
+    -- Set frequency
+    ret = librtlsdr.rtlsdr_set_center_freq(self.dev[0], self.frequency)
+    if ret ~= 0 then
+        error("rtlsdr_set_center_freq(): " .. tostring(ret))
+    end
+
+    -- Set sample rate
+    ret = librtlsdr.rtlsdr_set_sample_rate(self.dev[0], self.rate)
+    if ret ~= 0 then
+        error("rtlsdr_set_sample_rate(): " .. tostring(ret))
     end
 
     -- Reset endpoint buffer

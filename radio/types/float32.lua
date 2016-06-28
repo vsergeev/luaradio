@@ -1,5 +1,6 @@
 ---
 -- Float32 data type, a C structure defined as:
+--
 -- ``` c
 -- typedef struct {
 --     float value;
@@ -22,7 +23,7 @@ typedef struct {
 local mt = {}
 
 ---
--- Construct a new zero-initialized Float32 vector.
+-- Construct a zero-initialized Float32 vector.
 --
 -- @static
 -- @function Float32.vector

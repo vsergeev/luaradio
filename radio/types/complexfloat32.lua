@@ -1,5 +1,6 @@
 ---
 -- ComplexFloat32 data type, a C structure defined as:
+--
 -- ``` c
 -- typedef struct {
 --     float real;
@@ -30,7 +31,7 @@ float sqrtf(float x);
 local mt = {}
 
 ---
--- Construct a new zero-initialized ComplexFloat32 vector.
+-- Construct a zero-initialized ComplexFloat32 vector.
 --
 -- @static
 -- @function ComplexFloat32.vector

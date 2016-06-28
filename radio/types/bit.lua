@@ -1,5 +1,6 @@
 ---
 -- Bit data type, a C structure defined as:
+--
 -- ``` c
 -- typedef struct {
 --     uint8_t value;
@@ -23,7 +24,7 @@ typedef struct {
 local mt = {}
 
 ---
--- Construct a new zero-initialized Bit vector.
+-- Construct a zero-initialized Bit vector.
 --
 -- @static
 -- @function Bit.vector

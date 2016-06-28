@@ -28,7 +28,7 @@ function ObjectType.factory(methods)
     -- Constructors
 
     ---
-    -- Construct a new vector of this type.
+    -- Construct a vector of this type.
     --
     -- @function ObjectType.vector
     -- @tparam int num Number of elements in the vector
@@ -38,7 +38,7 @@ function ObjectType.factory(methods)
     end
 
     ---
-    -- Construct a new vector of this type initialized from an array.
+    -- Construct a vector of this type initialized from an array.
     --
     -- @function ObjectType.vector_from_array
     -- @tparam array arr Array with element initializers

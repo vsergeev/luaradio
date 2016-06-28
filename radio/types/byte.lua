@@ -1,5 +1,6 @@
 ---
 -- Byte data type, a C structure defined as:
+--
 -- ``` c
 -- typedef struct {
 --     uint8_t value;
@@ -22,7 +23,7 @@ typedef struct {
 local mt = {}
 
 ---
--- Construct a new zero-initialized Byte vector.
+-- Construct a zero-initialized Byte vector.
 --
 -- @static
 -- @function Byte.vector

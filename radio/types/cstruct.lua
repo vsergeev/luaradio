@@ -40,7 +40,7 @@ function CStructType.factory(ctype, methods)
     end
 
     ---
-    -- Construct a new zero-initialized vector of this type.
+    -- Construct a zero-initialized vector of this type.
     --
     -- @function CStructType.vector
     -- @tparam int num Number of elements in the vector
@@ -50,7 +50,7 @@ function CStructType.factory(ctype, methods)
     end
 
     ---
-    -- Construct a new vector of this type initialized from an array.
+    -- Construct a vector of this type initialized from an array.
     --
     -- @function CStructType.vector_from_array
     -- @tparam array arr Array with element initializers

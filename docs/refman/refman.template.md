@@ -15,7 +15,7 @@ local block_macro = [[
 ###### Arguments
 
 {% for _, arg in ipairs(block.args) do %]]..[[}
-* `{*arg.name*}` (*{*arg.type*}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
+* `{*arg.name*}` (*{* string.gsub(arg.type, "|", "\\|") *}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
 {% end %]]..[[}
 
 {% end %]]..[[}
@@ -62,7 +62,7 @@ local class_macro = [[
 ###### Arguments
 
 {% for _, arg in ipairs(class.args) do %]]..[[}
-* `{*arg.name*}` (*{*arg.type*}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
+* `{*arg.name*}` (*{* string.gsub(arg.type, "|", "\\|") *}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
 {% end %]]..[[}
 
 {% end %]]..[[}
@@ -85,7 +85,7 @@ local class_macro = [[
 
 {% for _, arg in ipairs(method.args) do %]]..[[}
 {% if arg.type then %]]..[[}
-* `{*arg.name*}` (*{*arg.type*}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
+* `{*arg.name*}` (*{* string.gsub(arg.type, "|", "\\|") *}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
 {% else %]]..[[}
 * `{*arg.name*}`: {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
 {% end %]]..[[}
@@ -132,7 +132,7 @@ local function_macro = [[
 
 {% for _, arg in ipairs(func.args) do %]]..[[}
 {% if arg.type then %]]..[[}
-* `{*arg.name*}` (*{*arg.type*}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
+* `{*arg.name*}` (*{* string.gsub(arg.type, "|", "\\|") *}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
 {% else %]]..[[}
 * `{*arg.name*}`: {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
 {% end %]]..[[}

@@ -19,7 +19,8 @@
 -- local gain = radio.MultiplyConstantBlock(radio.types.Float32(5.0))
 --
 -- -- Complex rotation by 45 degrees
--- local rotator = radio.MultiplyConstantBlock(radio.types.ComplexFloat32(math.cos(math.pi/4), math.sin(math.pi/4)))
+-- local rotator = radio.MultiplyConstantBlock(radio.types.ComplexFloat32(math.cos(math.pi/4),
+--                                                                        math.sin(math.pi/4)))
 
 local block = require('radio.core.block')
 local class = require('radio.core.class')

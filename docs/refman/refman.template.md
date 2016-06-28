@@ -188,7 +188,7 @@ Generated from LuaRadio `{* git_version *}`.
 {% for _, category in ipairs(block_categories) do %}
     * [{* category *}](#{* string.gsub(string.lower(category), " ", "-") *})
 {%  for _, item in ipairs(Blocks[category]) do %}
-        * [{* item.info.name *}](#{* string.lower(item.info.name) *})
+        * [{* item.info.name *}](#{* string.gsub(string.lower(item.info.name), "%.", "") *})
 {%  end
 end %}
 * [Infrastructure](#infrastructure)

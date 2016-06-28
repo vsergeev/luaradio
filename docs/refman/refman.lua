@@ -31,8 +31,18 @@ local Blocks = {}
 -- }
 local Modules = {}
 
-local function trim(s)
-    return string.gsub(string.gsub(s, "^%s*(.-)%s*$", "%1"), "\n ", "\n")
+local function fix_whitespace(s)
+    -- Trim beginning and ending whitespace
+    s = string.gsub(s, "^%s*(.-)%s*$", "%1")
+    -- Add leading newline to code fences (which gets mangled in the summary /
+    -- description split by LDoc)
+    s = string.gsub(s, "([^\n]) ```", "%1\n\n```")
+    -- Trim first column of spaces after docstring comment
+    s = string.gsub(s, "\n ", "\n")
+    -- Add additional newline separate display mathjax
+    s = string.gsub(s, "%$%$\n%$%$", "$$\n\n$$")
+
+    return s
 end
 
 local function format_args_string(params)
@@ -89,7 +99,7 @@ local function extract_function(method, class_name)
         end
         local info = {
             name = param,
-            desc = trim(method.params.map[param]),
+            desc = fix_whitespace(method.params.map[param]),
             type = (method.modifiers.param[i] or {}).type,
             opt = (method.modifiers.param[i] or {}).opt,
         }
@@ -109,12 +119,12 @@ local function extract_function(method, class_name)
     -- Method info
     local info = {
         name = string.gsub(method.name, "[^%s]+([:.].*)", class_name .. "%1"),
-        desc = method.summary .. method.description,
+        desc = fix_whitespace(method.summary .. method.description),
         args = method_args,
         args_string = format_args_string(method_args),
         returns = method_returns,
         raises = type(method.raise) == "string" and {method.raise} or method.raise,
-        example = method.usage and trim(method.usage[1]) or nil,
+        example = method.usage and fix_whitespace(method.usage[1]) or nil,
     }
     return info
 end
@@ -125,7 +135,7 @@ local function extract_fields(table)
     for _, param in ipairs(table.params) do
         local info = {
             name = param,
-            desc = trim(table.params.map[param]),
+            desc = fix_whitespace(table.params.map[param]),
             type = table.modifiers.field[param].type,
         }
         fields_info[#fields_info + 1] = info
@@ -135,7 +145,7 @@ local function extract_fields(table)
         for _, param in ipairs(table.subparams[subparam]) do
             local info = {
                 name = param,
-                desc = trim(table.params.map[param]),
+                desc = fix_whitespace(table.params.map[param]),
                 type = table.modifiers.field[param].type,
             }
             fields_info[#fields_info + 1] = info
@@ -176,11 +186,11 @@ local function format(t)
             local info = {
                 category = v.tags.category[1],
                 name = v.tags.block[1],
-                description = trim(v.summary .. v.description),
+                description = fix_whitespace(v.summary .. v.description),
                 args = constructor_args,
                 args_string = format_args_string(constructor_args),
                 signatures = signatures,
-                example = trim(v.usage[1]),
+                example = fix_whitespace(v.usage[1]),
             }
 
             -- Add it to our Blocks table
@@ -197,7 +207,7 @@ local function format(t)
                 -- Datatype info
                 local type_info = {
                     name = v.tags.datatype[1],
-                    description = trim(v.summary .. "\n" .. v.description),
+                    description = fix_whitespace(v.summary .. v.description),
                     args = constructor_args,
                     args_string = format_args_string(constructor_args),
                     methods = {},
@@ -220,11 +230,11 @@ local function format(t)
             -- Datatype info
             local info = {
                 name = v.tags.datatype[1],
-                description = trim(v.summary .. v.description),
+                description = fix_whitespace(v.summary .. v.description),
                 args = constructor_args,
                 args_string = format_args_string(constructor_args),
                 methods = methods_info,
-                example = v.usage and trim(v.usage[1]) or nil
+                example = v.usage and fix_whitespace(v.usage[1]) or nil
             }
 
             -- Add it to our modules table
@@ -243,11 +253,11 @@ local function format(t)
                     -- Class info
                     local info = {
                         name = item.name,
-                        description = trim(item.summary .. item.description),
+                        description = fix_whitespace(item.summary .. item.description),
                         args = constructor_args,
                         args_string = format_args_string(constructor_args),
                         methods = {},
-                        example = item.usage and trim(item.usage[1]) or nil
+                        example = item.usage and fix_whitespace(item.usage[1]) or nil
                     }
                     classes_info[#classes_info + 1] = info
                 end
@@ -279,7 +289,7 @@ local function format(t)
             end
 
             -- Add it to our modules table
-            Modules[module_name] = Modules[module_name] or {description = trim(v.summary .. v.description)}
+            Modules[module_name] = Modules[module_name] or {description = fix_whitespace(v.summary .. v.description)}
             for _, info in ipairs(classes_info) do
                 Modules[module_name][#Modules[module_name] + 1] = {type = "class", info = info}
             end

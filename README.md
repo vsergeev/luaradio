@@ -51,7 +51,7 @@ Check out some more [examples](examples) of what you can build with LuaRadio.
 With LuaJIT installed, LuaRadio can be run directly from the repository:
 
 ```
-git clone git://github.com/vsergeev/luaradio.git
+git clone https://github.com/vsergeev/luaradio.git
 ```
 
 ``` shell

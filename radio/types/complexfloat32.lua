@@ -135,7 +135,8 @@ function mt:scalar_div(other)
 end
 
 ---
--- Compute the complex argument, in interval $(-\pi, \pi]$. $\angle z = \text{atan2}(\text{Im}(z), \text{Re}(z))$
+-- Compute the complex argument, in interval $$ (-\pi, \pi] $$. $$ \angle z =
+-- \text{atan2}(\text{Im}(z), \text{Re}(z)) $$
 --
 -- @treturn number Result
 function mt:arg()
@@ -143,7 +144,8 @@ function mt:arg()
 end
 
 ---
--- Compute the complex magnitude. $|z| = \sqrt{\text{Re}(z)^2 + \text{Im}(z)^2}$
+-- Compute the complex magnitude. $$ |z| = \sqrt{\text{Re}(z)^2 +
+-- \text{Im}(z)^2} $$
 --
 -- @treturn number Result
 function mt:abs()
@@ -151,7 +153,8 @@ function mt:abs()
 end
 
 ---
--- Compute the complex magnitude squared. $|z|^2 = \text{Re}(z)^2 + \text{Im}(z)^2$
+-- Compute the complex magnitude squared. $$ |z|^2 = \text{Re}(z)^2 +
+-- \text{Im}(z)^2 $$
 --
 -- @treturn number Result
 function mt:abs_squared()

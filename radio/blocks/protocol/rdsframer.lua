@@ -12,7 +12,8 @@
 
 ---
 -- RDS frame type, a C structure defined as:
--- ```
+--
+-- ``` c
 -- typedef struct {
 --     uint16_t blocks[4];
 -- } rds_frame_t;

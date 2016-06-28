@@ -13,11 +13,12 @@
 
 ---
 -- POCSAG frame type, a Lua object with properties:
--- ```
+--
+-- ``` text
 -- {
---  address = <21-bit integer>,
---  func = <2-bit integer>,
---  data = {<20-bit integer>, ...},
+--   address = <21-bit integer>,
+--   func = <2-bit integer>,
+--   data = {<20-bit integer>, ...},
 -- }
 -- ```
 --

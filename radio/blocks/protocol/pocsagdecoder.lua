@@ -15,12 +15,13 @@
 
 ---
 -- POCSAG message type, a Lua object with properties:
--- ```
+--
+-- ``` text
 -- {
---  address = <21-bit integer>,
---  func = <2-bit integer>,
---  alphanumeric = <string>,
---  numeric = <string>,
+--   address = <21-bit integer>,
+--   func = <2-bit integer>,
+--   alphanumeric = <string>,
+--   numeric = <string>,
 -- }
 -- ```
 --

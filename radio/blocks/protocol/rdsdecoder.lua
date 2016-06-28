@@ -12,59 +12,64 @@
 
 ---
 -- RDS packet type, a Lua object with properties:
--- ```
+--
+-- ``` text
 -- {
---  header = {
---      pi_code = <16-bit integer>
---      group_code = <4-bit integer>
---      group_version = <1-bit integer>,
---      tp_code = <1-bit integer>,
---      pty_code = <5-bit integer>,
---  },
---  data = <payload object>,
+--   header = {
+--     pi_code = <16-bit integer>
+--     group_code = <4-bit integer>
+--     group_version = <1-bit integer>,
+--     tp_code = <1-bit integer>,
+--     pty_code = <5-bit integer>,
+--   },
+--   data = <payload object>,
 -- }
 -- ```
 --
 -- The payload object can be one of the four below.
 --
 -- Basic tuning data payload:
--- ```
+--
+-- ``` text
 -- {
---  type = "basictuning",
---  ta_code = <1-bit integer>,
---  ms_code = <1-bit integer>,
---  di_position = <2-bit integer>,
---  di_value = <1-bit integer>,
---  af_code = {<8-bit integer>, <8-bit integer>} or nil,
---  text_address = <2-bit integer>,
---  text_data = <string, length 2>,
+--   type = "basictuning",
+--   ta_code = <1-bit integer>,
+--   ms_code = <1-bit integer>,
+--   di_position = <2-bit integer>,
+--   di_value = <1-bit integer>,
+--   af_code = {<8-bit integer>, <8-bit integer>} or nil,
+--   text_address = <2-bit integer>,
+--   text_data = <string, length 2>,
 -- }
 -- ```
 --
 -- Radio text data payload:
--- ```
+--
+-- ``` text
 -- {
---  type = "radiotext",
---  ab_flag = <1-bit integer>,
---  text_address = <4-bit integer>,
---  text_data = <string, length 4 or 2>,
+--   type = "radiotext",
+--   ab_flag = <1-bit integer>,
+--   text_address = <4-bit integer>,
+--   text_data = <string, length 4 or 2>,
 -- }
 -- ```
 --
 -- Datetime data payload:
--- ```
+--
+-- ``` text
 -- {
---  type = "datetime",
---  date = {year = <integer>, month = <integer>, day = <integer>},
---  time = {hour = <integer>, minute = <integer>, offset = <integer>},
+--   type = "datetime",
+--   date = {year = <integer>, month = <integer>, day = <integer>},
+--   time = {hour = <integer>, minute = <integer>, offset = <integer>},
 -- }
 -- ```
 --
 -- Raw data payload (for unsupported group/version codes):
--- ```
+--
+-- ``` text
 -- {
---  type = "raw",
---  frame = {<16-bit integer>, <16-bit integer>, <16-bit integer>, <16-bit integer>},
+--   type = "raw",
+--   frame = {<16-bit integer>, <16-bit integer>, <16-bit integer>, <16-bit integer>},
 -- }
 -- ```
 --

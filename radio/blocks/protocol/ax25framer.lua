@@ -11,15 +11,19 @@
 
 ---
 -- AX.25 frame type, a Lua object with properties:
--- ```
+--
+-- ``` text
 -- {
---  addresses = {
---      {callsign = <string>, ssid = <integer>},
---      ...
---  },
---  control = <integer>,
---  pid = <integer>,
---  payload = <byte string>,
+--   addresses = {
+--     {
+--       callsign = <string>,
+--       ssid = <integer>
+--     },
+--     ...
+--   },
+--   control = <integer>,
+--   pid = <integer>,
+--   payload = <byte string>,
 -- }
 -- ```
 --

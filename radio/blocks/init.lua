@@ -71,6 +71,7 @@ return {
     SamplerBlock = require('radio.blocks.signal.sampler'),
     SlicerBlock = require('radio.blocks.signal.slicer'),
     DifferentialDecoderBlock = require('radio.blocks.signal.differentialdecoder'),
+    ManchesterDecoderBlock = require('radio.blocks.signal.manchesterdecoder'),
     --- Complex/Float Conversion
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal'),
     ComplexToImagBlock = require('radio.blocks.signal.complextoimag'),

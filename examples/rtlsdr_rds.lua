@@ -8,6 +8,7 @@ end
 local frequency = tonumber(arg[1])
 local tune_offset = -250e3
 
+-- Blocks
 local source = radio.RtlSdrSource(frequency + tune_offset, 1102500, {freq_correction = 1.0})
 local tuner = radio.TunerBlock(tune_offset, 200e6, 5)
 local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
@@ -30,6 +31,7 @@ local framer = radio.RDSFramerBlock()
 local decoder = radio.RDSDecoderBlock()
 local sink = radio.JSONSink()
 
+-- Plotting sinks
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
 local plot2 = radio.GnuplotSpectrumSink(2048, 'BPSK Spectrum', {yrange = {-130, -60},
                                                                 xrange = {-8000, 8000}})
@@ -37,6 +39,7 @@ local plot3 = radio.GnuplotXYPlotSink(1024, 'BPSK Constellation', {complex = tru
                                                                    yrange = {-0.02, 0.02},
                                                                    xrange = {-0.02, 0.02}})
 
+-- Connections
 local top = radio.CompositeBlock()
 top:connect(source, tuner, fm_demod, hilbert, mixer_delay)
 top:connect(hilbert, pilot_filter, pll_baseband)
@@ -52,4 +55,5 @@ if os.getenv('DISPLAY') then
     top:connect(baseband_rrc, plot2)
     top:connect(sampler, plot3)
 end
+
 top:run()

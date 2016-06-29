@@ -10,6 +10,7 @@ local gain = tonumber(arg[2]) or 1.0
 local ifreq = 50e3
 local bandwidth = 5e3
 
+-- Blocks
 local source = radio.RtlSdrSource(frequency - ifreq, 1102500, {freq_correction = -5.0})
 local rf_decimator = radio.DecimatorBlock(5)
 local if_filter = radio.ComplexBandpassFilterBlock(129, {ifreq - bandwidth, ifreq + bandwidth})
@@ -22,6 +23,7 @@ local af_gain = radio.MultiplyConstantBlock(gain)
 local af_downsampler = radio.DownsamplerBlock(10)
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(1) or radio.WAVFileSink('am_synchronous.wav', 1)
 
+-- Plotting sinks
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {xrange = {ifreq - 3*bandwidth,
                                                                         ifreq + 3*bandwidth},
                                                               yrange = {-120, -40}})
@@ -29,6 +31,7 @@ local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -4
                                                               xrange = {0, bandwidth},
                                                               update_time = 0.05})
 
+-- Connections
 local top = radio.CompositeBlock()
 top:connect(source, rf_decimator, if_filter)
 top:connect(if_filter, pll)
@@ -39,4 +42,5 @@ if os.getenv('DISPLAY') then
     top:connect(rf_decimator, plot1)
     top:connect(af_downsampler, plot2)
 end
+
 top:run()

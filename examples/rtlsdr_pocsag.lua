@@ -9,6 +9,7 @@ local frequency = tonumber(arg[1])
 local tune_offset = -100e3
 local baudrate = 1200
 
+-- Blocks
 local source = radio.RtlSdrSource(frequency + tune_offset, 1000000, {freq_correction = 1.0})
 local tuner = radio.TunerBlock(tune_offset, 12e3, 80)
 local space_filter = radio.ComplexBandpassFilterBlock(129, {3500, 5500})
@@ -24,9 +25,11 @@ local framer = radio.POCSAGFramerBlock()
 local decoder = radio.POCSAGDecoderBlock()
 local sink = radio.JSONSink()
 
+-- Plotting sinks
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {yrange = {-120, -40}})
 local plot2 = radio.GnuplotPlotSink(2048, 'Demodulated Bitstream')
 
+-- Connections
 local top = radio.CompositeBlock()
 top:connect(source, tuner)
 top:connect(tuner, space_filter, space_magnitude)
@@ -41,4 +44,5 @@ if os.getenv('DISPLAY') then
     top:connect(tuner, plot1)
     top:connect(data_filter, plot2)
 end
+
 top:run()

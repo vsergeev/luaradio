@@ -8,6 +8,7 @@ end
 local frequency = tonumber(arg[1])
 local tune_offset = -250e3
 
+-- Blocks
 local source = radio.RtlSdrSource(frequency + tune_offset, 1102500, {freq_correction = 1.0})
 local tuner = radio.TunerBlock(tune_offset, 200e3, 5)
 local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
@@ -33,6 +34,7 @@ local r_downsampler = radio.DownsamplerBlock(5)
 -- Sink
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(2) or radio.WAVFileSink('wbfm_stereo.wav', 2)
 
+-- Plotting sinks
 local plot1 = radio.GnuplotSpectrumSink(2048, 'Demodulated FM Spectrum', {yrange = {-120, -40}})
 local plot2 = radio.GnuplotSpectrumSink(2048, 'L+R AF Spectrum', {yrange = {-120, -40},
                                                                   xrange = {0, 15e3},
@@ -41,6 +43,7 @@ local plot3 = radio.GnuplotSpectrumSink(2048, 'L-R AF Spectrum', {yrange = {-120
                                                                   xrange = {0, 15e3},
                                                                   update_time = 0.05})
 
+-- Connections
 local top = radio.CompositeBlock()
 top:connect(source, tuner, fm_demod, hilbert, delay)
 top:connect(hilbert, pilot_filter, pilot_pll)
@@ -61,4 +64,5 @@ if os.getenv('DISPLAY') then
     top:connect(lpr_am_demod, plot2)
     top:connect(lmr_am_demod, plot3)
 end
+
 top:run()

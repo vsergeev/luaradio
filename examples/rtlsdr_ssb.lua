@@ -13,8 +13,7 @@ local gain = tonumber(arg[3]) or 1.0
 local tune_offset = -100e3
 local bandwidth = 3e3
 
-local top = radio.CompositeBlock()
-local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
+local source = radio.RtlSdrSource(frequency + tune_offset, 1102500, {freq_correction = -5.0})
 local tuner = radio.TunerBlock(tune_offset, 2*bandwidth, 50)
 local sb_filter = radio.ComplexBandpassFilterBlock(129, (sideband == "lsb") and {0, -bandwidth}
                                                                              or {0, bandwidth})
@@ -30,6 +29,7 @@ local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -4
                                                               xrange = {0, bandwidth},
                                                               update_time = 0.05})
 
+local top = radio.CompositeBlock()
 top:connect(source, tuner, sb_filter, am_demod, af_filter, af_gain, sink)
 if os.getenv('DISPLAY') then
     top:connect(tuner, plot1)

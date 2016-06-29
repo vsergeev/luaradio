@@ -9,8 +9,7 @@ local frequency = tonumber(arg[1])
 local tune_offset = -100e3
 local baudrate = 1200
 
-local top = radio.CompositeBlock()
-local source = radio.RtlSdrSource(frequency + tune_offset, 1000000)
+local source = radio.RtlSdrSource(frequency + tune_offset, 1000000, {freq_correction = 0.0})
 local tuner = radio.TunerBlock(tune_offset, 12e3, 80)
 local nbfm_demod = radio.NBFMDemodulator(3e3, 3e3)
 local hilbert = radio.HilbertTransformBlock(129)
@@ -28,6 +27,7 @@ local sink = radio.JSONSink()
 local plot1 = radio.GnuplotSpectrumSink(2048, 'RF Spectrum', {yrange = {-120, -60}})
 local plot2 = radio.GnuplotPlotSink(2048, 'Demodulated Bitstream', {yrange = {-0.15, 0.15}})
 
+local top = radio.CompositeBlock()
 top:connect(source, tuner, nbfm_demod)
 top:connect(nbfm_demod, hilbert, translator, afsk_filter, afsk_demod, data_filter, clock_recoverer)
 top:connect(data_filter, 'out', sampler, 'data')

@@ -12,7 +12,6 @@ local iq_filepath = arg[2]
 local bandwidth = tonumber(arg[3])
 local sideband = arg[4]
 
-local top = radio.CompositeBlock()
 local source = radio.WAVFileSource(wav_filepath, 1)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local hilbert = radio.HilbertTransformBlock(129)
@@ -21,6 +20,7 @@ local sb_filter = radio.ComplexBandpassFilterBlock(129, (sideband == "lsb") and 
                                                                              or {0, bandwidth})
 local sink = radio.IQFileSink(iq_filepath, 'f32le')
 
+local top = radio.CompositeBlock()
 if sideband == "lsb" then
     top:connect(source, af_filter, hilbert, conjugate, sb_filter, sink)
 else

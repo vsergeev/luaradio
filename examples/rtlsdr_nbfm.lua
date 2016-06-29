@@ -10,8 +10,7 @@ local tune_offset = -100e3
 local deviation = 5e3
 local bandwidth = 4e3
 
-local top = radio.CompositeBlock()
-local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
+local source = radio.RtlSdrSource(frequency + tune_offset, 1102500, {freq_correction = 1})
 local tuner = radio.TunerBlock(tune_offset, 2*(deviation+bandwidth), 50)
 local fm_demod = radio.FrequencyDiscriminatorBlock(deviation/bandwidth)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
@@ -22,6 +21,7 @@ local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -4
                                                               xrange = {0, bandwidth},
                                                               update_time = 0.05})
 
+local top = radio.CompositeBlock()
 top:connect(source, tuner, fm_demod, af_filter, sink)
 if os.getenv('DISPLAY') then
     top:connect(tuner, plot1)

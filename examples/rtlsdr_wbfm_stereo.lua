@@ -8,8 +8,7 @@ end
 local frequency = tonumber(arg[1])
 local tune_offset = -250e3
 
-local top = radio.CompositeBlock()
-local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
+local source = radio.RtlSdrSource(frequency + tune_offset, 1102500, {freq_correction = 1.0})
 local tuner = radio.TunerBlock(tune_offset, 200e3, 5)
 local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
 local hilbert = radio.HilbertTransformBlock(129)
@@ -42,6 +41,7 @@ local plot3 = radio.GnuplotSpectrumSink(2048, 'L-R AF Spectrum', {yrange = {-120
                                                                   xrange = {0, 15e3},
                                                                   update_time = 0.05})
 
+local top = radio.CompositeBlock()
 top:connect(source, tuner, fm_demod, hilbert, delay)
 top:connect(hilbert, pilot_filter, pilot_pll)
 top:connect(delay, 'out', mixer, 'in1')

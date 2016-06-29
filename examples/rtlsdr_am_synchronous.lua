@@ -10,8 +10,7 @@ local gain = tonumber(arg[2]) or 1.0
 local ifreq = 50e3
 local bandwidth = 5e3
 
-local top = radio.CompositeBlock()
-local source = radio.RtlSdrSource(frequency - ifreq, 1102500)
+local source = radio.RtlSdrSource(frequency - ifreq, 1102500, {freq_correction = -5.0})
 local rf_decimator = radio.DecimatorBlock(5)
 local if_filter = radio.ComplexBandpassFilterBlock(129, {ifreq - bandwidth, ifreq + bandwidth})
 local pll = radio.PLLBlock(1000, ifreq - 100, ifreq + 100)
@@ -30,6 +29,7 @@ local plot2 = radio.GnuplotSpectrumSink(2048, 'AF Spectrum', {yrange = {-120, -4
                                                               xrange = {0, bandwidth},
                                                               update_time = 0.05})
 
+local top = radio.CompositeBlock()
 top:connect(source, rf_decimator, if_filter)
 top:connect(if_filter, pll)
 top:connect(if_filter, 'out', mixer, 'in1')

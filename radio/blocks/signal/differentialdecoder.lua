@@ -1,5 +1,5 @@
 ---
--- Differentially decode a bit stream.
+-- Decode a differentially encoded bit stream.
 --
 -- $$ y[n] = x[n-1] \oplus x[n] $$
 --
@@ -10,7 +10,7 @@
 -- @signature in:Bit > out:Bit
 --
 -- @usage
--- local diffdecoder = radio.DifferentialDecoderBlock()
+-- local diff_decoder = radio.DifferentialDecoderBlock()
 
 local block = require('radio.core.block')
 local types = require('radio.types')

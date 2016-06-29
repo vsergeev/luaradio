@@ -9,7 +9,7 @@ local block_macro = [[
 
 {* block.description *}
 
-#### `radio.{*block.name*}({*block.args_string*})`
+##### `radio.{*block.name*}({*block.args_string*})`
 
 {% if #block.args > 0 then %]]..[[}
 ###### Arguments
@@ -53,7 +53,7 @@ local block_macro = [[
 local class_macro = [[
 #### {*class.name*}
 
-#### `{*namespace*}{*class.name*}({*class.args_string*})`
+##### `{*namespace*}{*class.name*}({*class.args_string*})`
 
 {*class.description*}
 
@@ -121,7 +121,7 @@ local class_macro = [[
 ]]
 
 local function_macro = [[
-#### `{* namespace *}{*func.name*}({*func.args_string*})`
+##### `{* namespace *}{*func.name*}({*func.args_string*})`
 
 {*func.desc*}
 
@@ -164,7 +164,7 @@ if func.example then %]]..[[}
 ]]
 
 local field_macro = [[
-#### `{* namespace *}{* field.name *}`
+##### `{* namespace *}{* field.name *}`
 
 *{*field.type*}*: {*field.desc*}
 
@@ -182,7 +182,8 @@ Generated from LuaRadio `{* git_version *}`.
     * [`luaradio` runner](#luaradio-runner)
     * [Environment Variables](#environment-variables)
 * [Blocks](#blocks)
-    * [CompositeBlock](#compositeblock)
+    * [Composition](#composition)
+        * [CompositeBlock](#compositeblock)
 {% for _, category in ipairs(block_categories) do %}
     * [{* category *}](#{* string.gsub(string.lower(category), " ", "-") *})
 {%  for _, item in ipairs(Blocks[category]) do %}
@@ -314,6 +315,8 @@ $ LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_FFTW3F=1 lu
 ```
 
 ## Blocks
+
+### Composition
 
 {* template.compile(class_macro){class = Modules['radio.composite'][1].info, namespace = "radio."} *}
 

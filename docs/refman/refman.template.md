@@ -47,7 +47,6 @@ local block_macro = [[
 ``` lua
 {*block.example*}
 ```
-<div style="margin-bottom:-10px;" align="right"><a href="#table-of-contents">^</a></div>
 --------------------------------------------------------------------------------
 ]]
 
@@ -118,7 +117,6 @@ local class_macro = [[
 {% end %]]..[[}
 {% end %]]..[[}
 {% end %]]..[[}
-<div style="margin-bottom:-10px;" align="right"><a href="#table-of-contents">^</a></div>
 --------------------------------------------------------------------------------
 ]]
 

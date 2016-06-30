@@ -7,7 +7,7 @@
 -- @block PrintSink
 -- @tparam[opt=io.stdout] string|file|int file Filename, file object, or file descriptor
 --
--- @signature in:implementing >
+-- @signature in:supported >
 --
 -- @usage
 -- -- Sink string formatted samples to stdout

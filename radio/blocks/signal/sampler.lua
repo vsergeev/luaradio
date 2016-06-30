@@ -2,7 +2,7 @@
 -- Sample a complex or real valued data signal on positive zero-crossing
 -- transitions of a real-valued clock signal.
 --
--- $$ y[n] = x_{data}[m] \text{ when } \begin{align}&x_{clk}[m] > 0 \\ &x_{clk}[m-1] < 0\end{align} $$
+-- $$ y[n] = x_{data}[m] \,\text{ when }\, \begin{align}&x_{clk}[m] > 0 \\ &x_{clk}[m-1] < 0\end{align} $$
 --
 -- @category Digital
 -- @block SamplerBlock

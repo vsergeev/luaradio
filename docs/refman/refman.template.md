@@ -178,7 +178,7 @@ Generated from LuaRadio `{* git_version *}`.
 ## Table of contents
 
 * [Example](#example)
-* [Running Scripts](#running-scripts)
+* [Running](#running)
     * [`luaradio` runner](#luaradio-runner)
     * [Environment Variables](#environment-variables)
 * [Blocks](#blocks)
@@ -191,12 +191,13 @@ Generated from LuaRadio `{* git_version *}`.
 {%  end
 end %}
 * [Infrastructure](#infrastructure)
-    * [Radio Package](#radio-package)
+    * [Package](#package)
     * [Basic Types](#basic-types)
         * [ComplexFloat32](#complexfloat32)
         * [Float32](#float32)
         * [Bit](#bit)
         * [Byte](#byte)
+    * [Type Factories](#type-factories)
         * [CStructType](#cstructtype)
         * [ObjectType](#objecttype)
     * [Vector](#vector)
@@ -248,7 +249,7 @@ top:run()
 $ luaradio example.lua
 ```
 
-## Running Scripts
+## Running
 
 LuaRadio scripts can be run with the `luaradio` runner, or directly with
 `luajit`, if the `radio` package is in installed in your Lua path.
@@ -335,7 +336,7 @@ $ LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_FFTW3F=1 lu
 
 ## Infrastructure
 
-### Radio package
+### Package
 
 {* Modules["radio"].description *}
 
@@ -349,6 +350,9 @@ $ LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_FFTW3F=1 lu
 {* template.compile(class_macro){class = lookup("radio.types", "class", "Float32"), namespace = "radio.types."} *}
 {* template.compile(class_macro){class = lookup("radio.types", "class", "Bit"), namespace = "radio.types."} *}
 {* template.compile(class_macro){class = lookup("radio.types", "class", "Byte"), namespace = "radio.types."} *}
+
+### Type Factories
+
 {* template.compile(class_macro){class = lookup("radio.types", "class", "CStructType"), namespace = "radio.types."} *}
 {* template.compile(class_macro){class = lookup("radio.types", "class", "ObjectType"), namespace = "radio.types."} *}
 

@@ -34,11 +34,11 @@ local block_macro = [[
     outputs = table.concat(outputs, ", ")
 %]]..[[}
 {% if #inputs > 0 and #outputs > 0 then %]]..[[}
-* {*inputs*} →❑→ {*outputs*}
+* {*inputs*} ➔❑➔ {*outputs*}
 {% elseif #inputs == 0 and #outputs > 0 then %]]..[[}
-* ❑→ {*outputs*}
+* ❑➔ {*outputs*}
 {% elseif #inputs > 0 and #outputs == 0 then %]]..[[}
-* {*inputs*} →❑
+* {*inputs*} ➔❑
 {% end %]]..[[}
 {% end %]]..[[}
 

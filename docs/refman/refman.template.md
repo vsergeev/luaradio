@@ -5,6 +5,9 @@ local git_version = io.popen("git describe --abbrev --always --tags"):read()
 local block_categories = {"Sources", "Sinks", "Filtering", "Math Operations", "Sample Rate Manipulation", "Spectrum Manipulation", "Carrier and Clock Recovery", "Digital", "Type Conversion", "Miscellaneous", "Modulation", "Demodulation", "Protocol", "Receivers"}
 
 local block_macro = [[
+{% if os.getenv("REFMAN_DIVS") then %}
+<div class="block">
+{% end %]]..[[}
 #### {*block.name*}
 
 {* block.description *}
@@ -47,10 +50,16 @@ local block_macro = [[
 ``` lua
 {*block.example*}
 ```
+{% if os.getenv("REFMAN_DIVS") then %}
+</div>
+{% end %]]..[[}
 --------------------------------------------------------------------------------
 ]]
 
 local class_macro = [[
+{% if os.getenv("REFMAN_DIVS") then %}
+<div class="class">
+{% end %]]..[[}
 #### {*class.name*}
 
 ##### `{*namespace*}{*class.name*}({*class.args_string*})`
@@ -117,10 +126,16 @@ local class_macro = [[
 {% end %]]..[[}
 {% end %]]..[[}
 {% end %]]..[[}
+{% if os.getenv("REFMAN_DIVS") then %}
+</div>
+{% end %]]..[[}
 --------------------------------------------------------------------------------
 ]]
 
 local function_macro = [[
+{% if os.getenv("REFMAN_DIVS") then %}
+<div class="function">
+{% end %]]..[[}
 ##### `{* namespace *}{*func.name*}({*func.args_string*})`
 
 {*func.desc*}
@@ -160,14 +175,23 @@ if func.example then %]]..[[}
 ```
 
 {% end %]]..[[}
+{% if os.getenv("REFMAN_DIVS") then %}
+</div>
+{% end %]]..[[}
 --------------------------------------------------------------------------------
 ]]
 
 local field_macro = [[
+{% if os.getenv("REFMAN_DIVS") then %}
+<div class="field">
+{% end %]]..[[}
 ##### `{* namespace *}{* field.name *}`
 
 *{*field.type*}*: {*field.desc*}
 
+{% if os.getenv("REFMAN_DIVS") then %}
+</div>
+{% end %]]..[[}
 --------------------------------------------------------------------------------
 ]]
 %}

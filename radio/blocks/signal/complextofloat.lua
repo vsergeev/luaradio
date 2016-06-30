@@ -3,7 +3,7 @@
 --
 -- $$ y_{real}[n],\, y_{imag}[n] = \text{Re}(x[n]),\, \text{Im}(x[n]) $$
 --
--- @category Miscellaneous
+-- @category Type Conversion
 -- @block ComplexToFloatBlock
 --
 -- @signature in:ComplexFloat32 > real:Float32, imag:Float32

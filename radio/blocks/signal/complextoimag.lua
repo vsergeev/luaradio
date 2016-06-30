@@ -3,7 +3,7 @@
 --
 -- $$ y[n] = \text{Im}(x[n]) $$
 --
--- @category Miscellaneous
+-- @category Type Conversion
 -- @block ComplexToImagBlock
 --
 -- @signature in:ComplexFloat32 > out:Float32

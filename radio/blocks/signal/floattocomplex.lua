@@ -4,7 +4,7 @@
 --
 -- $$ y[n] = x_{real}[n] + j \, x_{imag}[n] $$
 --
--- @category Miscellaneous
+-- @category Type Conversion
 -- @block FloatToComplexBlock
 --
 -- @signature real:Float32, imag:Float32 > out:ComplexFloat32

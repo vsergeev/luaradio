@@ -4,7 +4,7 @@
 --
 -- $$ y[n] = x[n] + 0 \, j $$
 --
--- @category Miscellaneous
+-- @category Type Conversion
 -- @block RealToComplexBlock
 --
 -- @signature in:Float32 > out:ComplexFloat32

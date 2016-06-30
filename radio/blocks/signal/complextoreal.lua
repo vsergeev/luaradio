@@ -3,7 +3,7 @@
 --
 -- $$ y[n] = \text{Re}(x[n]) $$
 --
--- @category Miscellaneous
+-- @category Type Conversion
 -- @block ComplexToRealBlock
 --
 -- @signature in:ComplexFloat32 > out:Float32

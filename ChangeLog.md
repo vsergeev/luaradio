@@ -1,3 +1,40 @@
+* (Prototype) v0.0.20 - 07/01/2016
+    * Block additions
+        * ManchesterDecoderBlock
+    * Block changes
+        * Re-order initialization in RtlSdrSource to fix "PLL not locked"
+          warning.
+        * Move type conversion blocks from Miscellaneous to their own category
+          in their block docstrings.
+    * Composite changes
+        * Improve bit sampling and decoding, and simplify to non-coherent BPSK
+          demodulation in RDSReceiver.
+    * C API changes
+        * Add install target to Makefile.
+        * Add version number fallbacks to Makefile for building out of git
+          tree.
+        * Fix shared library build on Mac OS X.
+        * Improve portability of rds-timesync example to support Mac OS X.
+        * Rename fmradio example to fm-radio for consistency.
+    * Runner changes
+        * Add support for running scripts from standard in.
+    * Documentation changes
+        * Resize all figures to under 800px.
+        * Simplify instructions in installation guide.
+        * Improve wording in all documents.
+        * Improve formatting and wording in several docstrings.
+        * Improve formatting of reference manual.
+    * Benchmark changes
+        * Bump number of trials from 3 to 5.
+        * Add standard deviation computation.
+        * Shorten benchmark names.
+    * Example changes
+        * Improve bit sampling and decoding, and simplify to non-coherent BPSK
+          demodulation in rtlsdr_rds.
+        * Improve plot range of RF spectrum in rtlsdr_ssb.
+        * Improve variable names in several examples.
+        * Rearrange code and add section comments for clarity in all examples.
+
 * (Prototype) v0.0.19 - 06/04/2016
     * Documentation changes
         * Add packaged third-party modules licenses to LICENSE file.

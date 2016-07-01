@@ -10,10 +10,10 @@
 #include "luaradio.h"
 
 /* Radio context */
-typedef struct luaradio {
+struct luaradio {
     lua_State *L;
     char errmsg[256];
-} luaradio_t;
+};
 
 luaradio_t *luaradio_new(void) {
     luaradio_t *radio;

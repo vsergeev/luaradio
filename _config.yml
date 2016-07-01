@@ -1,5 +1,12 @@
 # General Jekyll Config
-highlighter: pygments
+highlighter: rogue
+markdown: kramdown
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge
+
+host: 0.0.0.0
 url: http://luaradio.io
 lsi: false
-exclude: [CNAME, .gitignore, Gemfile, Gemfile.lock]
+exclude: [CNAME, .gitignore, Gemfile, Gemfile.lock, _thumbnails]

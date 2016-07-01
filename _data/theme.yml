@@ -2,8 +2,11 @@
 
 # Color for top bar, links, etc
 highlight_color: '#3498db'
+contrast_color: '#db3344'
+#highlight_color: '#1F78B4'
 
-# "Hi, I'm _______"
 name: LuaRadio
 description: LuaRadio
 author: Vanya A. Sergeev
+github_url: https://github.com/vsergeev/luaradio
+version: v0.1.0

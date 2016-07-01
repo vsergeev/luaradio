@@ -31,7 +31,7 @@
 .container {
   position: relative;
   width: 100%;
-  max-width: 1100px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 0 20px;
   box-sizing: border-box; }
@@ -44,15 +44,20 @@
 /* For devices larger than 400px */
 @media (min-width: 400px) {
   .container {
-    width: 95%;
+    width: 85%;
     padding: 0; }
 }
 
 /* For devices larger than 550px */
 @media (min-width: 550px) {
-  .container { width: 95%; }
-  .column, .columns { margin-left: 3%; }
-  .column:first-child, .columns:first-child { margin-left: 0; }
+  .container {
+    width: 80%; }
+  .column,
+  .columns {
+    margin-left: 4%; }
+  .column:first-child,
+  .columns:first-child {
+    margin-left: 0; }
 
   .one.column,
   .one.columns                    { width: 4.66666666667%; }
@@ -116,7 +121,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 html {
   font-size: 62.5%; }
 body {
-  font-size: 1.6em; /* currently ems cause chrome bug misinterpreting rems on body element */
+  font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
   line-height: 1.6;
   font-weight: 400;
   font-family: "Raleway", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -282,8 +287,6 @@ label > .label-body {
 
 /* Lists
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-
-/*
 ul {
   list-style: circle inside; }
 ol {
@@ -299,7 +302,6 @@ ol ul {
   font-size: 90%; }
 li {
   margin-bottom: 1rem; }
-*/
 
 
 /* Code
@@ -404,18 +406,10 @@ there.
 @media (min-width: 400px) {}
 
 /* Larger than phablet (also point when grid becomes active) */
-@media (min-width: 550px) {
-  html { font-size: 50.0%; }
-}
-
-@media (min-width: 600px) {
-  html { font-size: 55.0%; }
-}
+@media (min-width: 550px) {}
 
 /* Larger than tablet */
-@media (min-width: 750px) {
-  html { font-size: 62.5%; }
-}
+@media (min-width: 750px) {}
 
 /* Larger than desktop */
 @media (min-width: 1000px) {}

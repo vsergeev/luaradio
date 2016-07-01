@@ -6,26 +6,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if page.title %}
   <title>{{ site.data.theme.name }} - {{ page.title }}</title>
+  {% else %}
+  <title>{{ site.data.theme.name }}</title>
+  {% endif %}
   <meta name="author" content="{{ site.data.theme.author }}" />
   <meta name="description" content="{{ site.data.theme.description }}" />
   <link rel="canonical" href="{{ site.url }}{{ page.url | replace:'index.html','' }}" />
+  <link rel="icon" type="image/x-icon" href="{% base %}/favicon.ico" />
 
-  <link href="//fonts.googleapis.com/css?family=Open+Sans:600,800" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="/assets/css/all.css">
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-k2/8zcNbxVIh5mnQ52A0r3a6jAgMGxFJFE2707UxGCk= sha512-ZV9KawG2Legkwp3nAlxLIVFudTauWuBpC10uEafMHYL0Sarrz5A7G79kXh5+5+woxQ5HM559XX2UZjMJ36Wplg==" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% base %}/assets/css/all.css">
+  <script type="text/javascript" src="{% base %}/assets/js/tocbot.min.js"></script>
+  <script type="text/javascript" src="{% base %}/assets/js/toc.js"></script>
+
+  {% if page.mathjax %}
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  {% endif %}
+  {% if page.chartjs %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>
+  {% endif %}
 </head>
-<body>
+<body id="top">
   <div class="container">
-    <div class="four columns sidebar">
-      {% include sidebar.html %}
-    </div>
+    <div class="row">
+      <div class="three columns sidebar">
+        {% include sidebar.html %}
+      </div>
+      <div class="nine columns content">
+        {{ content }}
 
-    <div class="eleven columns content">
-      {{ content }}
-
-      <div class="footer">
-        {% include footer.html %}
+        <div class="footer">
+          {% include footer.html %}
+        </div>
       </div>
     </div>
   </div>

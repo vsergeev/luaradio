@@ -15,8 +15,14 @@ TEST_SRCS = $(TEST_DIR)/test_api.c
 
 ################################################################################
 
+ifneq ($(shell uname -s),Darwin)
 SHARED_LIB = $(BUILD_DIR)/lib$(LIBNAME).so
+else
+SHARED_LIB = $(BUILD_DIR)/lib$(LIBNAME).dylib
+endif
+
 STATIC_LIB = $(BUILD_DIR)/lib$(LIBNAME).a
+
 LUA_C_SRCS := $(patsubst $(SRC_DIR)/%.lua, $(GEN_DIR)/%.c, $(LUA_SRCS))
 LIB_OBJS := $(patsubst $(GEN_DIR)/%.c, $(BUILD_DIR)/%.o, $(LUA_C_SRCS)) $(patsubst %.c, $(BUILD_DIR)/%.o, $(LIB_SRCS))
 
@@ -50,11 +56,12 @@ CFLAGS += -Wshadow -Wunused -Wno-unused-parameter
 
 LIBFLAGS = $(shell pkg-config --libs luajit)
 
+ifneq ($(shell uname -s),Darwin)
 LDFLAGS = -Wl,-E
 EXTRA_LDFLAGS =
-
-ifeq ($(shell uname -s),Darwin)
-	EXTRA_LDFLAGS = -pagezero_size 10000 -image_base 100000000
+else
+LDFLAGS =
+EXTRA_LDFLAGS = -pagezero_size 10000 -image_base 100000000
 endif
 
 LUAJIT = luajit
@@ -76,9 +83,10 @@ tests: $(SHARED_LIB) $(TEST_BINS)
 .PHONY: runtests
 runtests: $(TEST_BINS)
 	for f in $(TEST_BINS); do \
-		LD_LIBRARY_PATH=$(BUILD_DIR) ./$$f; \
+		LD_LIBRARY_PATH=$(BUILD_DIR) DYLD_LIBRARY_PATH=$(BUILD_DIR) ./$$f; \
 	done
 
+ifneq ($(shell uname -s),Darwin)
 .PHONY: install
 install: $(STATIC_LIB) $(SHARED_LIB)
 	install -d $(DESTDIR)$(PREFIX)/lib
@@ -94,6 +102,23 @@ install: $(STATIC_LIB) $(SHARED_LIB)
 	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
 	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
 	install -m644 ../LICENSE $(DESTDIR)$(PREFIX)/share/licenses/luaradio/LICENSE
+else
+# Mac OS X install
+.PHONY: install
+install: $(STATIC_LIB) $(SHARED_LIB)
+	install -d $(DESTDIR)$(PREFIX)/lib
+	install -m755 $(STATIC_LIB) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).a
+	install -m755 $(SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).$(VERSION_MAJOR).dylib
+	ln -sf lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).dylib
+	install -d $(DESTDIR)$(PREFIX)/include
+	install -m644 luaradio.h $(DESTDIR)$(PREFIX)/include/luaradio.h
+	install -d $(DESTDIR)$(PREFIX)/lib/lua/5.1
+	ln -sf ../../lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(PREFIX)/lib/lua/5.1/radio.so
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
+	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
+	install -m644 ../LICENSE $(DESTDIR)$(PREFIX)/share/licenses/luaradio/LICENSE
+endif
 
 .PHONY: clean
 clean:
@@ -112,10 +137,17 @@ $(BUILD_DIR)/$(EXAMPLE_DIR)/%: $(EXAMPLE_DIR)/%.c $(SHARED_LIB)
 $(STATIC_LIB): $(LIB_OBJS)
 	ar rcs $@ $^
 
+ifneq ($(shell uname -s),Darwin)
 $(SHARED_LIB): $(LIB_OBJS)
 	$(CC) $(CFLAGS) -shared -Wl,-soname,lib$(LIBNAME).so.$(VERSION_MAJOR) -o $@.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $^ $(LDFLAGS)
 	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $@.$(VERSION_MAJOR)
 	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $@
+else
+# Mac OS X shared library build
+$(SHARED_LIB): $(LIB_OBJS)
+	$(CC) $(CFLAGS) -dynamiclib -Wl,-undefined -Wl,dynamic_lookup -install_name "lib$(LIBNAME).$(VERSION_MAJOR).dylib" -current_version $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) -compatibility_version $(VERSION_MAJOR).$(VERSION_MINOR) -o $(subst .dylib,.$(VERSION_MAJOR).dylib,$@) $^ $(LDFLAGS)
+	ln -sf lib$(LIBNAME).$(VERSION_MAJOR).dylib $@
+endif
 
 $(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

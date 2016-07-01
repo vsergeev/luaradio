@@ -46,7 +46,7 @@ CFLAGS += -Wshadow -Wunused -Wno-unused-parameter
 
 LIBFLAGS = $(shell pkg-config --libs luajit)
 
-LDFLAGS =
+LDFLAGS = -Wl,-E
 EXTRA_LDFLAGS =
 
 ifeq ($(shell uname -s),Darwin)

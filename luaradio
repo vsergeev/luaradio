@@ -97,5 +97,10 @@ end
 arg[-2] = arg[-1]
 arg[-1] = arg[0]
 arg[0] = table.remove(arg, 1)
+
 -- Run script
-dofile(arg[0])
+if arg[0] == "-" then
+    dofile()
+else
+    dofile(arg[0])
+end

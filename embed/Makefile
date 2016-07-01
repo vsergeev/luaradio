@@ -30,10 +30,13 @@ PREFIX ?= /usr
 OPT = -O3
 DEBUG =
 
-VERSION_MAJOR = $(shell git describe --tags --abbrev=0 | sed 's/v\([0-9]*\).[0-9]*.[0-9]*/\1/')
-VERSION_MINOR = $(shell git describe --tags --abbrev=0 | sed 's/v[0-9]*.\([0-9]*\).[0-9]*/\1/')
-VERSION_PATCH = $(shell git describe --tags --abbrev=0 | sed 's/v[0-9]*.[0-9]*.\([0-9]*\)/\1/')
-VERSION_COMMIT = $(shell git describe --abbrev --always --tags --dirty)
+GIT_TAG := $(shell git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+GIT_COMMIT := $(shell git describe --abbrev --always --tags --dirty 2>/dev/null || echo "unknown")
+
+VERSION_MAJOR = $(shell echo $(GIT_TAG) | sed 's/v\([0-9]*\).[0-9]*.[0-9]*/\1/')
+VERSION_MINOR = $(shell echo $(GIT_TAG) | sed 's/v[0-9]*.\([0-9]*\).[0-9]*/\1/')
+VERSION_PATCH = $(shell echo $(GIT_TAG) | sed 's/v[0-9]*.[0-9]*.\([0-9]*\)/\1/')
+VERSION_COMMIT = $(GIT_COMMIT)
 
 CFLAGS = $(shell pkg-config --cflags luajit)
 CFLAGS += -fPIC

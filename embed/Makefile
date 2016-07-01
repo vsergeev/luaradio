@@ -80,12 +80,12 @@ install: $(STATIC_LIB) $(SHARED_LIB)
 	install -d $(DESTDIR)$(PREFIX)/lib
 	install -m755 $(STATIC_LIB) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).a
 	install -m755 $(SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
-	ln -rsf $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR)
-	ln -rsf $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so
+	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR)
+	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so
 	install -d $(DESTDIR)$(PREFIX)/include
 	install -m644 luaradio.h $(DESTDIR)$(PREFIX)/include/luaradio.h
 	install -d $(DESTDIR)$(PREFIX)/lib/lua/5.1
-	ln -rsf $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lua/5.1/radio.so
+	ln -sf ../../lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lua/5.1/radio.so
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
 	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
@@ -110,8 +110,8 @@ $(STATIC_LIB): $(LIB_OBJS)
 
 $(SHARED_LIB): $(LIB_OBJS)
 	$(CC) $(CFLAGS) -shared -Wl,-soname,lib$(LIBNAME).so.$(VERSION_MAJOR) -o $@.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $^ $(LDFLAGS)
-	ln -rsf $@.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $@.$(VERSION_MAJOR)
-	ln -rsf $@.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $@
+	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $@.$(VERSION_MAJOR)
+	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $@
 
 $(BUILD_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

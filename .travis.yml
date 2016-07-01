@@ -1,0 +1,48 @@
+language: c
+
+sudo: required
+
+install:
+    - sudo apt-get install lua5.1 luarocks
+    - sudo luarocks install busted
+    - git clone https://github.com/LuaJIT/LuaJIT.git
+    - cd LuaJIT
+    - git checkout v2.0.4
+    - make
+    - sudo make install
+    - cd ../
+    - sudo apt-get install fftw3 fftw3-dev
+    - git clone --depth 1 git://github.com/jgaeddert/liquid-dsp.git
+    - cd liquid-dsp/
+    - sed -i 's/aclocal$/aclocal -I.\/scripts/' bootstrap.sh
+    - ./bootstrap.sh
+    - ./configure
+    - make
+    - sudo make install
+    - cd ../
+    - sudo apt-get install libboost1.48-all-dev libboost-program-options1.48.0
+    - git clone https://github.com/gnuradio/volk.git
+    - cd volk/
+    - git checkout v1.2.2
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+    - sudo make install
+    - sudo ldconfig
+    - cd ../../
+
+script:
+    - ./luaradio --platform
+    - echo "assert(require('radio').platform.features.volk)" | ./luaradio -
+    - echo "assert(require('radio').platform.features.liquid)" | ./luaradio -
+    - echo "assert(require('radio').platform.features.fftw3f)" | ./luaradio -
+    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=0 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=1 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=0 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=0 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=1 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=0 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - cd embed; make && make runtests

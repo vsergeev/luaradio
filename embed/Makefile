@@ -38,7 +38,8 @@ VERSION_MINOR = $(shell echo $(GIT_TAG) | sed 's/v[0-9]*.\([0-9]*\).[0-9]*/\1/')
 VERSION_PATCH = $(shell echo $(GIT_TAG) | sed 's/v[0-9]*.[0-9]*.\([0-9]*\)/\1/')
 VERSION_COMMIT = $(GIT_COMMIT)
 
-CFLAGS = $(shell pkg-config --cflags luajit)
+CFLAGS = -std=c99 -D_DEFAULT_SOURCE
+CFLAGS += $(shell pkg-config --cflags luajit)
 CFLAGS += -fPIC
 CFLAGS += $(OPT) $(DEBUG) $(INCLUDES)
 CFLAGS += -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_PATCH=$(VERSION_PATCH)

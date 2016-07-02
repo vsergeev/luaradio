@@ -150,7 +150,7 @@ function Vector:append(elem)
 end
 
 ---
--- A dynamic array of Lua objects.
+-- A dynamic array of a Lua object type.
 --
 -- @type ObjectVector
 -- @tparam type type Lua class

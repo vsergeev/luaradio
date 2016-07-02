@@ -17,10 +17,10 @@ assert(pcall(require, 'ffi') and pcall(require, 'jit'), 'Error: LuaRadio require
 -- @tfield module platform Platform module.
 local radio = {
     -- Version
-    _VERSION = "0.0.20",
-    version = "0.0.20",
-    version_number = 000020,
-    version_info = {major = 0, minor = 0, patch = 20},
+    _VERSION = "0.1.0",
+    version = "0.1.0",
+    version_number = 000100,
+    version_info = {major = 0, minor = 1, patch = 0},
 
     -- Core modules
     platform = require('radio.core.platform'),

@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>LuaRadio - Creating Blocks</title>
+  
+  <meta name="author" content="Vanya A. Sergeev" />
+  <meta name="description" content="LuaRadio" />
+  <link rel="canonical" href="http://luaradio.io/docs/creating-blocks.html" />
+  <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" href="../assets/css/all.css">
+  <script type="text/javascript" src="../assets/js/tocbot.min.js"></script>
+  <script type="text/javascript" src="../assets/js/toc.js"></script>
+
+  
+  
+</head>
+<body id="top">
+  <div class="container">
+    <div class="row">
+      <div class="three columns sidebar">
+        <nav class="menu">
+  <h1 class="title"><a href="..">LuaRadio</a></h1>
+  <p align="center">
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <ul>
+        <li><a href="../new-to-sdr.html">New to SDR?</a></li>
+        <li><a href="../docs/">Documentation</a>
+            <ul>
+                <li><a href="../docs/installation.html">Installation</a></li>
+                <li><a href="../docs/getting-started.html">Getting Started</a></li>
+                <li><a href="../docs/creating-blocks.html">Creating Blocks</a></li>
+                <li><a href="../docs/embedding-luaradio.html">Embedding LuaRadio</a></li>
+                <li><a href="../docs/architecture.html">Architecture</a></li>
+                <li><a href="../docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
+            </ul>
+        </li>
+        <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="../examples/">Examples</a>
+            <ul>
+                <li><a href="../examples/rtlsdr-wbfm-mono.html">WBFM Mono</a></li>
+                <li><a href="../examples/rtlsdr-wbfm-stereo.html">WBFM Stereo</a></li>
+                <li><a href="../examples/rtlsdr-nbfm.html">NBFM</a></li>
+                <li><a href="../examples/rtlsdr-ax25.html">AX.25</a></li>
+                <li><a href="../examples/rtlsdr-pocsag.html">POCSAG</a></li>
+                <li><a href="../examples/rtlsdr-rds.html">RDS</a></li>
+                <li><a href="../examples/rtlsdr-am-envelope.html">AM (Envelope)</a></li>
+                <li><a href="../examples/rtlsdr-am-synchronous.html">AM (Synchronous)</a></li>
+                <li><a href="../examples/rtlsdr-ssb.html">SSB</a></li>
+                <li><a href="../examples/wavfile-ssb-modulator.html">WAV SSB Modulator</a></li>
+                <li><a href="../examples/iqfile-converter.html">IQ File Converter</a></li>
+            </ul>
+        </li>
+        <li><a href="../benchmarks.html">Benchmarks</a></li>
+    </ul>
+  </div>
+  <p align="center">
+    <a style="font-size: 1.4rem;" href="mailto:vsergeev@gmail.com"><i class="fa fa-envelope-o" aria-hidden="true"></i> vsergeev@gmail.com</a>
+  </p>
+</nav>
+<nav class="scroll-toc">
+  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+  <p align="center">
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <span class="page-title"><a data-scroll href="#top">Creating Blocks</a></span>
+    <div class="js-toc">
+    </div>
+  </div>
+</nav>
+
+      </div>
+      <div class="nine columns content">
+        
+<h1 id="creating-blocks">Creating Blocks</h1>
+
+<p>This guide describes the basic concepts behind blocks, data types, and vectors,
+and demonstrates how to create blocks and data types.</p>
+
+<p>If you’re new to Lua, don’t worry. Lua is a simple, consistent language that
+can be picked up easily.  Check out <a href="https://learnxinyminutes.com/docs/lua/">Learn Lua in Y
+Minutes</a> for a quick introduction.</p>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ul>
+  <li><a href="#hierarchical-blocks">Hierarchical Blocks</a>
+    <ul>
+      <li><a href="#using-compositeblock-directly">Using <code class="highlighter-rouge">CompositeBlock</code> directly</a></li>
+      <li><a href="#deriving-from-compositeblock">Deriving from <code class="highlighter-rouge">CompositeBlock</code></a></li>
+    </ul>
+  </li>
+  <li><a href="#basic-types">Basic Types</a></li>
+  <li><a href="#vectors">Vectors</a></li>
+  <li><a href="#blocks">Blocks</a>
+    <ul>
+      <li><a href="#methods">Methods</a></li>
+      <li><a href="#template">Template</a></li>
+      <li><a href="#type-signatures">Type Signatures</a></li>
+      <li><a href="#example">Example</a></li>
+      <li><a href="#testing">Testing</a></li>
+      <li><a href="#benchmarking">Benchmarking</a></li>
+      <li><a href="#ffi">FFI</a>
+        <ul>
+          <li><a href="#faster-multiplyblock">Faster <code class="highlighter-rouge">MultiplyBlock</code></a></li>
+          <li><a href="#bfsk-modulator">BFSK Modulator</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#custom-types">Custom Types</a>
+    <ul>
+      <li><a href="#cstruct-types"><code class="highlighter-rouge">CStruct</code> types</a></li>
+      <li><a href="#object-types"><code class="highlighter-rouge">Object</code> types</a></li>
+    </ul>
+  </li>
+  <li><a href="#manipulating-bits">Manipulating Bits</a></li>
+  <li><a href="#development-tips">Development Tips</a></li>
+</ul>
+
+<h2 id="hierarchical-blocks">Hierarchical Blocks</h2>
+
+<p>The simplest kind of custom block that can be created in LuaRadio is a
+hierarchical block.</p>
+
+<p align="center">
+<img src="figures/figure_hierarchical_block.png" />
+</p>
+
+<p>A hierarchical block is a composition of several blocks into a single block,
+which abstracts the underlying flow graph and provides a simpler input/output
+port interface. Creating a hierarchical block is a matter of instantiating
+blocks, connecting them, and defining the boundary input and output ports.</p>
+
+<p>Hierarchical blocks have no runtime overhead in LuaRadio; they’re simply a
+convenience. When running a flow graph containing a hierarchical block,
+LuaRadio runs its internal blocks as if they were directly connected into the
+top-level flow graph.</p>
+
+<p>There are two ways to create a hierarchical block. The first is to use
+<a href="reference-manual.html#compositeblock"><code class="highlighter-rouge">CompositeBlock</code></a> directly, and the
+second is to derive a block class from <code class="highlighter-rouge">CompositeBlock</code>.</p>
+
+<p>In the example below, we’ll create a hierarchical block both ways for a mono
+Wideband FM Demodulator for FM broadcast radio, described by the following flow
+graph:</p>
+
+<p align="center">
+<img src="figures/flowgraph_wbfm_mono_demodulator_hierarchical.png" />
+</p>
+
+<h3 id="using-compositeblock-directly">Using <code class="highlighter-rouge">CompositeBlock</code> directly</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+
+<span class="k">function</span> <span class="nf">wbfm_mono_demodulator_factory</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+    <span class="c1">-- Blocks</span>
+    <span class="kd">local</span> <span class="n">fm_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyDiscriminatorBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">25</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">af_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">LowpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mf">15e3</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">af_deemphasis</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FMDeemphasisFilterBlock</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">demodulator</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">()</span>
+
+    <span class="c1">-- Connections</span>
+    <span class="n">demodulator</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">fm_demod</span><span class="p">,</span> <span class="n">af_filter</span><span class="p">,</span> <span class="n">af_deemphasis</span><span class="p">)</span>
+
+    <span class="c1">-- Type signature</span>
+    <span class="n">demodulator</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                                   <span class="p">{</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)})</span>
+
+    <span class="c1">-- Aliases</span>
+    <span class="n">demodulator</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">demodulator</span><span class="p">,</span> <span class="s2">"in"</span><span class="p">,</span> <span class="n">fm_demod</span><span class="p">,</span> <span class="s2">"in"</span><span class="p">)</span>
+    <span class="n">demodulator</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">demodulator</span><span class="p">,</span> <span class="s2">"out"</span><span class="p">,</span> <span class="n">af_deemphasis</span><span class="p">,</span> <span class="s2">"out"</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">demodulator</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>In this example, we create a function <code class="highlighter-rouge">wbfm_mono_demodulator_factory()</code> which
+returns a <code class="highlighter-rouge">CompositeBlock</code> that can be used as an Wideband FM Mono Demodulator
+in a flow graph. The argument to the function specifies the time constant of
+the FM De-emphasis filter (typically 75 μS in the Americas and South Korea, and
+50 μS everywhere else).</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    <span class="c1">-- Blocks</span>
+    <span class="kd">local</span> <span class="n">fm_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyDiscriminatorBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">25</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">af_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">LowpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mf">15e3</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">af_deemphasis</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FMDeemphasisFilterBlock</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">demodulator</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">()</span>
+
+    <span class="c1">-- Connections</span>
+    <span class="n">demodulator</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">fm_demod</span><span class="p">,</span> <span class="n">af_filter</span><span class="p">,</span> <span class="n">af_deemphasis</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>The blocks section instantiates the internal blocks of the demodulator, as well
+as a <code class="highlighter-rouge">CompositeBlock</code> that will hold their composition. The connections section
+connects the internal blocks. This procedure is identical to building a
+top-level flow graph, as seen in the <a href="getting-started.html#example">Getting
+Started</a> guide.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    <span class="c1">-- Type signature</span>
+    <span class="n">demodulator</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                                   <span class="p">{</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)})</span>
+</code></pre>
+</div>
+
+<p>The type signature section adds a type signature that defines the names and
+data types of the boundary input/output ports of the hierarchical block. This
+step creates the external interface to the hierarchical block, so we may
+connect other blocks to it.</p>
+
+<p>The first argument of
+<a href="reference-manual.html#blockaddtypesignatureinputs-outputs-processfuncnil-initializefuncnil"><code class="highlighter-rouge">add_type_signature()</code></a>
+is an array of <a href="reference-manual.html#input"><code class="highlighter-rouge">radio.block.Input()</code></a>
+descriptors, which specifies the name and data type of each input port. The
+second argument is the analogous for output ports, with
+<a href="reference-manual.html#output"><code class="highlighter-rouge">radio.block.Output()</code></a> descriptors.  In this
+case, there is one input named <code class="highlighter-rouge">in</code> of type <code class="highlighter-rouge">ComplexFloat32</code>, and one output
+named <code class="highlighter-rouge">out</code> of type <code class="highlighter-rouge">Float32</code>. We may call <code class="highlighter-rouge">add_type_signature()</code> as many times
+as we need to register multiple type signatures of different data types as
+needed, but they must all share the same input/output port count and names.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    <span class="c1">-- Aliases</span>
+    <span class="n">demodulator</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">demodulator</span><span class="p">,</span> <span class="s2">"in"</span><span class="p">,</span> <span class="n">fm_demod</span><span class="p">,</span> <span class="s2">"in"</span><span class="p">)</span>
+    <span class="n">demodulator</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">demodulator</span><span class="p">,</span> <span class="s2">"out"</span><span class="p">,</span> <span class="n">af_deemphasis</span><span class="p">,</span> <span class="s2">"out"</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>The aliases section aliases the hierarchical block input/output ports we
+defined in <code class="highlighter-rouge">add_type_signature()</code> to concrete input/output ports of its
+internal blocks.  The first one aliases the demodulator’s <code class="highlighter-rouge">in</code> port to the
+frequency discriminator’s <code class="highlighter-rouge">in</code> port. The second aliases the demodulator’s <code class="highlighter-rouge">out</code>
+port to the de-emphasis filter’s <code class="highlighter-rouge">out</code> port.  Note that this invocation of
+<code class="highlighter-rouge">connect()</code> differs from previous invocations, in that the <code class="highlighter-rouge">CompositeBlock</code>
+passes itself in as a block for connection.</p>
+
+<p>We can then instantiate and use our Wideband FM Mono Demodulator in a flow
+graph:</p>
+
+<p align="center">
+<img src="figures/flowgraph_rtlsdr_wbfm_mono_demodulator_composite.png" />
+</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">():</span><span class="n">connect</span><span class="p">(</span>
+    <span class="n">radio</span><span class="p">.</span><span class="n">RtlSdrSource</span><span class="p">(</span><span class="mi">88</span><span class="p">.</span><span class="mf">5e6</span> <span class="o">-</span> <span class="mf">250e3</span><span class="p">,</span> <span class="mi">1102500</span><span class="p">),</span> <span class="c1">-- RTL-SDR source, offset-tuned to 88.5MHz-250kHz</span>
+    <span class="n">radio</span><span class="p">.</span><span class="n">TunerBlock</span><span class="p">(</span><span class="o">-</span><span class="mf">250e3</span><span class="p">,</span> <span class="mf">200e3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>          <span class="c1">-- Translate -250 kHz, filter 200 kHz, decimate by 5</span>
+    <span class="n">wbfm_mono_demodulator_factory</span><span class="p">(</span><span class="mf">75e-6</span><span class="p">),</span>        <span class="c1">-- Wideband FM Mono Demodulator</span>
+    <span class="n">radio</span><span class="p">.</span><span class="n">DownsamplerBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>                   <span class="c1">-- Downsample by 5</span>
+    <span class="n">radio</span><span class="p">.</span><span class="n">PulseAudioSink</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                      <span class="c1">-- Play to system audio with PulseAudio</span>
+<span class="p">):</span><span class="n">run</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<h3 id="deriving-from-compositeblock">Deriving from <code class="highlighter-rouge">CompositeBlock</code></h3>
+
+<p>Instead of building our Wideband FM Mono Demodulator composition in a function,
+we can build it in a new block class derived from <code class="highlighter-rouge">CompositeBlock</code>. The
+resulting block class will look and feel like any other LuaRadio block.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">WBFMMonoDemodulator</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">factory</span><span class="p">(</span><span class="s1">'WBFMMonoDemodulator'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">)</span>
+
+<span class="k">function</span> <span class="nf">WBFMMonoDemodulator</span><span class="p">:</span><span class="n">instantiate</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+    <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">self</span><span class="p">)</span>
+
+    <span class="c1">-- Blocks</span>
+    <span class="kd">local</span> <span class="n">fm_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyDiscriminatorBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">25</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">af_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">LowpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mf">15e3</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">af_deemphasis</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FMDeemphasisFilterBlock</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span>
+
+    <span class="c1">-- Connections</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">fm_demod</span><span class="p">,</span> <span class="n">af_filter</span><span class="p">,</span> <span class="n">af_deemphasis</span><span class="p">)</span>
+
+    <span class="c1">-- Type signature</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                            <span class="p">{</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)})</span>
+
+    <span class="c1">-- Aliases</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="s2">"in"</span><span class="p">,</span> <span class="n">fm_demod</span><span class="p">,</span> <span class="s2">"in"</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="s2">"out"</span><span class="p">,</span> <span class="n">af_deemphasis</span><span class="p">,</span> <span class="s2">"out"</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>The third line manufactures a new block class with name “WBFMMonoDemodulator”
+and parent class <code class="highlighter-rouge">CompositeBlock</code>. The name string is used for debugging
+purposes.</p>
+
+<p>The remaining lines populate the <code class="highlighter-rouge">instantiate()</code> constructor of the
+manufactured block class. This method is called when the block is instantiated,
+e.g. <code class="highlighter-rouge">WBFMMonoDemodulator(...)</code>.  The inner workings are basically the same as
+the function factory above, except that any reference to <code class="highlighter-rouge">demodulator</code> is
+replaced with <code class="highlighter-rouge">self</code>, since the class itself is a <code class="highlighter-rouge">CompositeBlock</code>.</p>
+
+<p>We can use this Wideband FM Mono Demodulator in the same example as before,
+after replacing <code class="highlighter-rouge">wbfm_mono_demodulator_factory(...)</code> with
+<code class="highlighter-rouge">WBFMMonoDemodulator(...)</code>.  This Wideband FM Mono Demodulator will behave
+identically, but will have the added benefits of a descriptive block name and
+being an instance of a well-defined block class.</p>
+
+<h2 id="basic-types">Basic Types</h2>
+
+<p>Before we dive in to implementing blocks, we’ll first need to take a look at
+LuaRadio’s basic types and how to create and manipulate vectors of them.</p>
+
+<p>LuaRadio has four basic types:
+<a href="reference-manual.html#complexfloat32"><code class="highlighter-rouge">ComplexFloat32</code></a>,
+<a href="reference-manual.html#float32"><code class="highlighter-rouge">Float32</code></a>, <a href="reference-manual.html#bit"><code class="highlighter-rouge">Bit</code></a>,
+<a href="reference-manual.html#byte"><code class="highlighter-rouge">Byte</code></a>. Each instance of these types represents
+one element, so a <code class="highlighter-rouge">radio.types.ComplexFloat32(3, 2)</code> is a complex number with
+real value of 3 and imaginary value of 2, and <code class="highlighter-rouge">radio.types.Float32(123.0)</code> is a
+real number with a value of 123.0. These types are LuaJIT ctypes, distinct from
+any of the Lua primitive types.</p>
+
+<p>Each basic type is backed by a C structure type. This is primarily for
+implementation reasons, so that LuaRadio can associate a metatable of
+operations with it, and so that these instances are distinct from other
+occurrences of the underlying C type (e.g. <code class="highlighter-rouge">float</code>, <code class="highlighter-rouge">uint8_t</code>).</p>
+
+<p>The C types for the four basic types are:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/* radio.types.ComplexFloat32 */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">float</span> <span class="n">real</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">imag</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">complex_float32_t</span><span class="p">;</span>
+
+<span class="cm">/* radio.types.Float32 */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">float</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">float32_t</span><span class="p">;</span>
+
+<span class="cm">/* radio.types.Bit */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">uint8_t</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">bit_t</span><span class="p">;</span>
+
+<span class="cm">/* radio.types.Byte */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">uint8_t</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">byte_t</span><span class="p">;</span>
+</code></pre>
+</div>
+
+<p>Despite the structure wrapper, these types are compatible with the C types
+<code class="highlighter-rouge">float complex</code>, <code class="highlighter-rouge">float</code>, <code class="highlighter-rouge">uint8_t</code>, <code class="highlighter-rouge">uint8_t</code>, respectively.</p>
+
+<p>These basic types have metatables associated with them, that define basic
+operations on the type:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">a</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="c1">--&gt; ComplexFloat32&lt;real=3, imag=2&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">a</span><span class="p">)</span> <span class="c1">--&gt; ComplexFloat32&lt;real=6, imag=4&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span> <span class="c1">--&gt; ComplexFloat32&lt;real=5, imag=12&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">scalar_mul</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="c1">--&gt; ComplexFloat32&lt;real=6, imag=4&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">abs</span><span class="p">())</span> <span class="c1">--&gt; 3.6055512428284</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">arg</span><span class="p">())</span> <span class="c1">--&gt; 0.58800262212753</span>
+</code></pre>
+</div>
+
+<p>See the <a href="reference-manual.html#basic-types">LuaRadio Reference Manual</a> for all
+operations defined on the basic types.</p>
+
+<h2 id="vectors">Vectors</h2>
+
+<p>It would be inefficient for blocks to process one sample at a time, as the
+overhead of serializing the sample and calling the block to process it would
+exceed the cost of processing it. Instead, blocks operate on a vector of
+samples at a time, to amortize the overhead of serialization.</p>
+
+<p>A vector is a simple container class for a dynamically-allocated contiguous C
+array, with only a few auxiliary methods for string representation, resizing,
+and appending.  Each basic type provides two static methods for creating a
+vector of itself: <code class="highlighter-rouge">.vector(num)</code> for a zero-initialized vector, or
+<code class="highlighter-rouge">.vector_from_array(arr)</code> for a vector initialized from a Lua array.</p>
+
+<p>The example below illustrates the important uses of the Vector:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Create a length 4, zero-initialized Float32 vector</span>
+<span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1">-- Vector properties</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 4, length of vector</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">size</span><span class="p">)</span> <span class="c1">--&gt; 16, size of vector in bytes</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data_type</span><span class="p">)</span> <span class="c1">--&gt; ctype&lt;struct 159&gt;, C type of vector element</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data_type</span> <span class="o">==</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)</span> <span class="c1">--&gt; true</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ffi</span><span class="p">.</span><span class="n">typeof</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">))</span> <span class="c1">--&gt; ctype&lt;struct 159 *&gt;, C type of vector data</span>
+
+<span class="c1">-- Vector string representation</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="c1">--&gt; [Float32&lt;value=0&gt;, Float32&lt;value=0&gt;, Float32&lt;value=0&gt;, Float32&lt;value=0&gt;]</span>
+
+<span class="c1">-- Accessing and modifying vector elements</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1">--&gt; Float32&lt;value=0&gt;</span>
+<span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">value</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1">--&gt; Float32&lt;value=5&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="c1">--&gt; [Float32&lt;value=5&gt;, Float32&lt;value=0&gt;, Float32&lt;value=0&gt;, Float32&lt;value=0&gt;]</span>
+
+<span class="c1">-- Iterating over a vector's elements</span>
+<span class="c1">-- (Note: Lua for-loop ranges are inclusive)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span> <span class="k">do</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="k">end</span>
+<span class="c1">--&gt; Float&lt;value=5&gt;</span>
+<span class="c1">--&gt; Float&lt;value=0&gt;</span>
+<span class="c1">--&gt; Float&lt;value=0&gt;</span>
+<span class="c1">--&gt; Float&lt;value=0&gt;</span>
+
+<span class="c1">-- Resizing a vector</span>
+<span class="n">vec</span><span class="p">:</span><span class="n">resize</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 6</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">size</span><span class="p">)</span> <span class="c1">--&gt; 24</span>
+
+<span class="c1">-- Appending an element to a vector</span>
+<span class="n">vec</span><span class="p">:</span><span class="n">append</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">(</span><span class="mi">42</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 7</span>
+<span class="n">vec</span><span class="p">:</span><span class="n">append</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">(</span><span class="mi">26</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 8</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span> <span class="c1">--&gt; Float32&lt;value=42&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span> <span class="c1">--&gt; Float32&lt;value=26&gt;</span>
+</code></pre>
+</div>
+
+<p>Much of block processing consists of either iterating over a vector and
+modifying its elements, or passing the vector to an external library.  Since
+<code class="highlighter-rouge">vec.data</code> is a <code class="highlighter-rouge">float *</code> (in the example above) and <code class="highlighter-rouge">vec.length</code> is its
+length, we have all of the information we need to pass the vector memory to an
+external library for processing.</p>
+
+<p>Resizing a vector only causes a re-allocation of the underlying memory when it
+is grown to a larger size. The underlying memory is retained on resizing to a
+smaller size; just the bookkeeping is updated.</p>
+
+<p>All vectors are allocated with page alignment. This is to enable their
+processing with certain library routines that require, or perform better with,
+aligned buffers. This is often because SIMD operations are involved.</p>
+
+<h5 id="caveats">Caveats</h5>
+
+<p>Note that a Vector’s <code class="highlighter-rouge">data</code> is a C pointer with zero-based indexing, where as
+Lua uses one-based indexing for its arrays. This inconsistency seems terribly
+confusing, but in practice doesn’t pose much ambiguity: just think C or
+low-level when working with sample data, and Lua or high-level when working
+with block arguments and curly bracket arrays.</p>
+
+<h2 id="blocks">Blocks</h2>
+
+<p>LuaRadio blocks are written in pure Lua, but may interface with external
+libraries via the <a href="http://luajit.org/ext_ffi_api.html">LuaJIT foreign function
+interface</a> (FFI) to offload processing,
+when needed.</p>
+
+<p>Each block is run in an independent process, under its own Lua state. Blocks
+typically have one hot loop, so they can benefit greatly from LuaJIT’s
+just-in-time trace compiler, and many pure Lua blocks do achieve good
+performance without needing acceleration from an external library.</p>
+
+<p>In other cases — particularly when the block can be accelerated by SIMD
+extensions — being able to prototype in pure Lua first, before wrapping an
+external library, is a nice convenience in block development and can serve as a
+fallback implementation for non-real-time applications.</p>
+
+<h3 id="methods">Methods</h3>
+
+<p>Blocks are classes manufactured by the
+<a href="reference-manual.html#radioblockfactoryname-parentclassnil"><code class="highlighter-rouge">radio.block.factory(name)</code></a>
+factory function. Blocks implement all of their functionality with four
+methods:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">instantiate(...)</code> — constructor</li>
+  <li><code class="highlighter-rouge">initialize()</code> — initialization (optional)</li>
+  <li><code class="highlighter-rouge">process(...)</code> — main work method</li>
+  <li><code class="highlighter-rouge">cleanup()</code> — clean up (optional)</li>
+</ul>
+
+<p>The <code class="highlighter-rouge">instantiate(...)</code> method is the block constructor, called when the block
+is instantiated. This method should establish basic state and register the
+block’s type signatures.</p>
+
+<p>The <code class="highlighter-rouge">initialize()</code> method is called by the framework for additional block
+initialization before the block is run. In this method, the block’s
+differentiated type signature and sample rate are available to the block, and
+can be used to perform additional initialization.</p>
+
+<p>The <code class="highlighter-rouge">process()</code> method is the main work method of the block. It receives
+immutable input vectors of samples as arguments, and returns output vectors of
+samples. This method is called repeatedly by the framework to process inputs
+into outputs.</p>
+
+<p>The <code class="highlighter-rouge">cleanup()</code> method is called by the framework when the flow graph has
+collapsed, right before the block exits. This method can be optionally
+implemented to perform additional clean up, if necessary.</p>
+
+<p>Finally, source blocks and blocks that modify the sample rate must implement
+the <code class="highlighter-rouge">get_rate()</code> method, which returns the block’s sample rate as a number, in
+samples per second.</p>
+
+<h3 id="template">Template</h3>
+
+<p>The template below provides an outline of the block methods and what can be
+done in each one:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">MyBlock</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">factory</span><span class="p">(</span><span class="s1">'MyBlock'</span><span class="p">)</span>
+
+<span class="k">function</span> <span class="nf">MyBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="c1">-- Perform instantiation here</span>
+
+    <span class="c1">-- Call self:add_type_signature(&lt;inputs&gt;, &lt;outputs&gt;) for each type signature</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">MyBlock</span><span class="p">:</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="c1">-- Perform initialization here</span>
+
+    <span class="c1">-- Can use self:get_input_type(), self:get_output_type(), self:get_rate()</span>
+    <span class="c1">-- to get differentiated type signature and sample rate</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">MyBlock</span><span class="p">:</span><span class="n">process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="c1">-- Process input samples and return output samples here</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">MyBlock</span><span class="p">:</span><span class="n">cleanup</span><span class="p">()</span>
+    <span class="c1">-- Perform cleanup here</span>
+<span class="k">end</span>
+
+<span class="k">return</span> <span class="n">MyBlock</span>
+</code></pre>
+</div>
+
+<h3 id="type-signatures">Type Signatures</h3>
+
+<p align="center">
+<img src="figures/figure_type_signatures.png" />
+</p>
+
+<p>A type signature defines the names and data types of input and output ports.
+Type signatures must be added in the <code class="highlighter-rouge">instantiate(...)</code> method of a block, so
+that the block can be connected into a flow graph after it has been
+instantiated.  When a flow graph is run, every block — starting from sources,
+downstream to sinks — is differentiated into the type signature that is
+compatible with its input types.</p>
+
+<p>The syntax for adding a type signature is:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>self:add_type_signature(&lt;inputs&gt;, &lt;outputs&gt;)
+</code></pre>
+</div>
+
+<p>The first argument of
+<a href="reference-manual.html#blockaddtypesignatureinputs-outputs-processfuncnil-initializefuncnil"><code class="highlighter-rouge">add_type_signature()</code></a>
+is an array of <a href="reference-manual.html#input"><code class="highlighter-rouge">radio.block.Input()</code></a>
+descriptors, which specify the name and data type of each input port. The
+second argument is analogous, with
+<a href="reference-manual.html#output"><code class="highlighter-rouge">radio.block.Output()</code></a> descriptors, for output
+ports.  We may call <code class="highlighter-rouge">add_type_signature()</code> as many times as needed to register
+type signatures of different data types, but they must all share the same
+input/output port count and names.</p>
+
+<p>Source and sink type signatures can be described with an empty array for inputs
+or outputs, respectively.</p>
+
+<p>Below are some examples of type signatures:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- One ComplexFloat32 input named `in` and one Float32 output named `out`</span>
+<span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s1">'in'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                        <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s1">'out'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)})</span>
+
+<span class="c1">-- Two Float32 inputs named `in1` and `in2`, and one Float32 output named `out`</span>
+<span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s1">'in1'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">),</span>
+                         <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s1">'in2'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)},</span>
+                        <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s1">'out'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)})</span>
+
+<span class="c1">-- Byte source, one Byte output named `out`</span>
+<span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({},</span> <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s1">'out'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)})</span>
+
+<span class="c1">-- ComplexFloat32 sink, one ComplexFloat32 input named `in`</span>
+<span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s1">'in'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span> <span class="p">{})</span>
+</code></pre>
+</div>
+
+<p>A type signature may also specify custom <code class="highlighter-rouge">process()</code> and <code class="highlighter-rouge">initialize()</code>
+methods.  When the block is differentiated, its <code class="highlighter-rouge">process()</code> and <code class="highlighter-rouge">initialize()</code>
+methods are bound to these methods.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">(</span><span class="o">&lt;</span><span class="n">inputs</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">outputs</span><span class="o">&gt;</span><span class="p">[,</span> <span class="o">&lt;</span><span class="n">process</span> <span class="n">method</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">initialize</span> <span class="n">method</span><span class="o">&gt;</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<p>For example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Complex-valued type signature</span>
+<span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s1">'in'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                        <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s1">'out'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                        <span class="n">self</span><span class="p">.</span><span class="n">process_complex</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">initialize_complex</span><span class="p">)</span>
+
+<span class="c1">-- Real-valued type signature</span>
+<span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s1">'in'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)},</span>
+                        <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s1">'out'</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)},</span>
+                        <span class="n">self</span><span class="p">.</span><span class="n">process_real</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">initialize_real</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>If a block with the type signatures above is differentiated to the
+<code class="highlighter-rouge">ComplexFloat32</code> type, then <code class="highlighter-rouge">initialize()</code> will be mapped to
+<code class="highlighter-rouge">initialize_complex()</code>, and <code class="highlighter-rouge">process()</code> will be mapped to <code class="highlighter-rouge">process_complex()</code>.
+Analogous mapping occurs in the <code class="highlighter-rouge">Float32</code> type differentiation.</p>
+
+<p>This feature removes redundant differentiation from the critical path of
+<code class="highlighter-rouge">process()</code> and makes it easier to separate type-dependent initialization and
+processing code in a block.</p>
+
+<p>A block can look up its differentiated types in <code class="highlighter-rouge">initialize()</code> or <code class="highlighter-rouge">process()</code>
+with the <a href="reference-manual.html#blockgetinputtypeindex1"><code class="highlighter-rouge">get_input_type()</code></a>
+and <a href="reference-manual.html#blockgetoutputtypeindex1"><code class="highlighter-rouge">get_output_type()</code></a>
+methods.  See the <a href="reference-manual.html#block-1">LuaRadio Reference Manual</a>
+for more information.</p>
+
+<h3 id="example">Example</h3>
+
+<p>In the example below, we create a multiply block capable of multiplying
+complex-valued or real-valued inputs.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">MultiplyBlock</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">factory</span><span class="p">(</span><span class="s1">'MultiplyBlock'</span><span class="p">)</span>
+
+<span class="k">function</span> <span class="nf">MultiplyBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">()</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in1"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">),</span>
+                             <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in2"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                            <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)})</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in1"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">),</span>
+                             <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in2"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)},</span>
+                            <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)})</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">MultiplyBlock</span><span class="p">:</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">self</span><span class="p">:</span><span class="n">get_output_type</span><span class="p">().</span><span class="n">vector</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">MultiplyBlock</span><span class="p">:</span><span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">out</span><span class="p">:</span><span class="n">resize</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">length</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">do</span>
+        <span class="n">out</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>The block constructor <code class="highlighter-rouge">instantiate()</code> adds two type signatures with two inputs
+and one output. The first is for complex-valued inputs, and the second is for
+real-valued inputs.</p>
+
+<p>The <code class="highlighter-rouge">initialize()</code> method creates a persistent vector of its differentiated
+output type (either <code class="highlighter-rouge">ComplexFloat32</code> or <code class="highlighter-rouge">Float32</code>) in <code class="highlighter-rouge">self.out</code>, which the
+<code class="highlighter-rouge">process()</code> method can use to resize and store output samples in.</p>
+
+<p>The <code class="highlighter-rouge">process()</code> method resizes its output vector for the input length, performs
+the multiplication on the two input vectors <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code>, storing the results in
+the output vector, and returns the output vector.  Note that this <code class="highlighter-rouge">process()</code>
+implementation is the same for both data types.</p>
+
+<p>Inputs are provided to the block’s <code class="highlighter-rouge">process()</code> method in the same order that
+they are defined in the type signature. In this case, the first argument <code class="highlighter-rouge">x</code>
+corresponds to the input <code class="highlighter-rouge">in1</code>, and the second argument <code class="highlighter-rouge">y</code> corresponds to the
+input <code class="highlighter-rouge">in2</code>. The framework guarantees that blocks with multiple inputs will
+receive equal length vectors for all inputs, so <code class="highlighter-rouge">x.length</code> and <code class="highlighter-rouge">y.length</code> are
+the same in <code class="highlighter-rouge">process()</code>. The framework also guarantees that all inputs to a
+block have equal sample rates.</p>
+
+<p>Although we could have created a new output vector in <code class="highlighter-rouge">process()</code>, instead of
+reusing <code class="highlighter-rouge">self.out</code>, it would lead to unnecessary memory allocations and
+deallocations as the vector is created on each call to <code class="highlighter-rouge">process()</code> and later
+garbage collected. If this block were in the path of high sample throughput,
+then this can also cause more active memory usage than necessary, as the
+garbage collector plays catch-up.</p>
+
+<p>Reusing <code class="highlighter-rouge">self.out</code> allows the output vector to approach a steady state size, as
+it is resized to accommodate the inputs. In turn, this allows the block to
+reach constant memory usage and spend most of its time on computation and
+serialization.</p>
+
+<h3 id="testing">Testing</h3>
+
+<p>There are two ways to go about testing a block. The first is manually, by
+calling the block directly in a test script. This requires differentiating and
+initializing the block first, so that the correct type signature is selected
+and the block is initialized. For example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Instantiate</span>
+<span class="kd">local</span> <span class="n">multiply</span> <span class="o">=</span> <span class="n">MultiplyBlock</span><span class="p">()</span>
+
+<span class="c1">-- Differentiate to Float32 type</span>
+<span class="n">multiply</span><span class="p">:</span><span class="n">differentiate</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">})</span>
+
+<span class="c1">-- Initialize</span>
+<span class="n">multiply</span><span class="p">:</span><span class="n">initialize</span><span class="p">()</span>
+
+<span class="c1">-- Now, we can use process()</span>
+<span class="kd">local</span> <span class="n">a</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">})</span>
+<span class="kd">local</span> <span class="n">b</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">})</span>
+<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="n">multiply</span><span class="p">:</span><span class="n">process</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="c1">--&gt; [Float32&lt;value=2&gt;, Float32&lt;value=12&gt;, Float32&lt;value=30&gt;]</span>
+</code></pre>
+</div>
+
+<p>A block is differentiated with
+<a href="reference-manual.html#blockdifferentiateinputdatatypes"><code class="highlighter-rouge">differentiate()</code></a>
+by providing an array of its input data types. In this case, an array of two
+<code class="highlighter-rouge">Float32</code> data types was provided, so that the block would be differentiated
+into the type signature with two <code class="highlighter-rouge">Float32</code> inputs and one <code class="highlighter-rouge">Float32</code> output.</p>
+
+<p>The second way of testing a block is with LuaRadio’s unit testing suite. This
+suite provides a block testing jig, where only the block arguments, input
+vectors, and expected output vectors need to be specified. For example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">jigs</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'tests.jigs'</span><span class="p">)</span>
+
+<span class="n">jigs</span><span class="p">.</span><span class="n">TestBlock</span><span class="p">(</span><span class="n">MultiplyBlock</span><span class="p">,</span> <span class="p">{</span>
+    <span class="p">{</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="s2">"simple test"</span><span class="p">,</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">}),</span>
+                  <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">})},</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">})},</span>
+    <span class="p">},</span>
+    <span class="c1">-- More unit tests follow</span>
+<span class="p">},</span> <span class="p">{</span><span class="n">epsilon</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">})</span>
+</code></pre>
+</div>
+
+<p>This test can then be run with <code class="highlighter-rouge">busted</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" multiply_test.lua
+●
+1 success / 0 failures / 0 errors / 0 pending : 0.013749 seconds
+$
+</code></pre>
+</div>
+
+<p>Many of testing jig specifications in the LuaRadio test suite are code
+generated with Python 3. See the LuaRadio <a href="https://github.com/vsergeev/luaradio/tree/master/tests"><code class="highlighter-rouge">tests/</code></a> folder for more
+details.</p>
+
+<h3 id="benchmarking">Benchmarking</h3>
+
+<p>LuaRadio includes a <a href="reference-manual.html#benchmarksink"><code class="highlighter-rouge">BenchmarkSink</code></a> for
+benchmarking blocks. This sink reports the average throughput of samples
+delivered to the sink in samples per second. This throughput can be used as a
+rough performance benchmark of a block.</p>
+
+<p>For example, to benchmark the <code class="highlighter-rouge">MultiplyBlock</code> we built above:</p>
+
+<p align="center">
+<img src="figures/flowgraph_multiply_block_benchmark.png" />
+</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">NullSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">multiply</span> <span class="o">=</span> <span class="n">MultiplyBlock</span><span class="p">()</span>
+<span class="kd">local</span> <span class="n">sink</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BenchmarkSink</span><span class="p">()</span>
+<span class="kd">local</span> <span class="n">top</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">()</span>
+
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">multiply</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">multiply</span><span class="p">,</span> <span class="s1">'in2'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">multiply</span><span class="p">,</span> <span class="n">sink</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p>In this flow graph, the multiply block inputs are fed by a
+<a href="reference-manual.html#nullsource"><code class="highlighter-rouge">NullSource</code></a>, which sources zero-valued
+samples, and the multiply block output is connected to a <code class="highlighter-rouge">BenchmarkSink</code>, which
+counts received samples over time. The <code class="highlighter-rouge">BenchmarkSink</code> periodically reports the
+average rate of samples consumed.</p>
+
+<p>The <code class="highlighter-rouge">BenchmarkSink</code> is technically benchmarking the entire flow graph,
+including the <code class="highlighter-rouge">NullSource</code> and the framework’s overhead of serializing samples
+between blocks. However, in this case, the <code class="highlighter-rouge">MultiplyBlock</code> is the computational
+limiting factor by several orders of magnitude, so the overhead of <code class="highlighter-rouge">NullSource</code>
+and the framework is relatively insignificant, and the resulting rate
+corresponds roughly to that of the <code class="highlighter-rouge">MultiplyBlock</code>. Other situations may
+require a different strategy for benchmarking (see caveats below).</p>
+
+<p>Running this flow graph on my platform:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ luaradio multiply_benchmark.lua
+[BenchmarkSink] 204.70 MS/s (1.64 GB/s)
+[BenchmarkSink] 204.57 MS/s (1.64 GB/s)
+[BenchmarkSink] 205.03 MS/s (1.64 GB/s)
+[BenchmarkSink] 203.60 MS/s (1.63 GB/s)
+[BenchmarkSink] 202.17 MS/s (1.62 GB/s)
+[BenchmarkSink] 205.98 MS/s (1.65 GB/s)
+...
+</code></pre>
+</div>
+
+<h5 id="caveats-1">Caveats</h5>
+
+<p><code class="highlighter-rouge">BenchmarkSink</code> results are specific to the platform, affected by CPU load
+caused by external processes, and do not take into account the performance
+degradation that occurs after all available processor cores are utilized in a
+larger flow graph.  Nonetheless, the <code class="highlighter-rouge">BenchmarkSink</code> gives a good idea of
+whether or not a block will be a real-time bottleneck to an upstream block of a
+particular rate, e.g. an SDR source at 2 MS/s.</p>
+
+<p>It’s also important to point out that while the <code class="highlighter-rouge">NullSource</code> is applicable to
+many signal processing blocks, which will perform their computation regardless
+of if the samples are all zero-valued, it might not be the appropriate stimulus
+for blocks that have value-dependent code paths. In those cases, a random
+source or a deliberately constructed source may be more appropriate.</p>
+
+<h3 id="ffi">FFI</h3>
+
+<h4 id="faster-multiplyblock">Faster <code class="highlighter-rouge">MultiplyBlock</code></h4>
+
+<p>The <code class="highlighter-rouge">MultiplyBlock</code> we created above is pretty fast, but we can interface with
+a external library to achieve better performance. In this incarnation of
+<code class="highlighter-rouge">MultiplyBlock</code>, we will wrap the <a href="http://libvolk.org/">VOLK library</a>, a
+library of signal processing routines with SIMD acceleration. VOLK provides
+kernels for multiplying both complex-valued vectors and real-valued vectors,
+with
+<a href="http://libvolk.org/doxygen/volk_32fc_x2_multiply_32fc.html"><code class="highlighter-rouge">volk_32fc_x2_multiply_32fc()</code></a>
+and
+<a href="http://libvolk.org/doxygen/volk_32f_x2_multiply_32f.html"><code class="highlighter-rouge">volk_32f_x2_multiply_32f()</code></a>,
+respectively.</p>
+
+<p>The <a href="http://luajit.org/ext_ffi_api.html">LuaJIT foreign function interface</a>
+(FFI) allows LuaJIT scripts to call C functions and access C symbols in
+dynamically loaded external libraries. This requires defining the function
+prototypes and relevant constants first, like a C header file would, so that
+LuaJIT has the necessary information to translate types and operate the C ABI.</p>
+
+<p>In the example below, we create <code class="highlighter-rouge">FasterMultiplyBlock</code>. This block is similar to
+the <code class="highlighter-rouge">MultiplyBlock</code> above, except that it uses the VOLK library with the FFI in
+its implementation of <code class="highlighter-rouge">process()</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">ffi</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'ffi'</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">FasterMultiplyBlock</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">factory</span><span class="p">(</span><span class="s1">'FasterMultiplyBlock'</span><span class="p">)</span>
+
+<span class="k">function</span> <span class="nf">FasterMultiplyBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">()</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in1"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">),</span>
+                             <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in2"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                            <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)},</span>
+                            <span class="n">self</span><span class="p">.</span><span class="n">process_complex</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in1"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">),</span>
+                             <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in2"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)},</span>
+                            <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)},</span>
+                            <span class="n">self</span><span class="p">.</span><span class="n">process_real</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">FasterMultiplyBlock</span><span class="p">:</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">self</span><span class="p">:</span><span class="n">get_output_type</span><span class="p">().</span><span class="n">vector</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[
+void (*volk_32fc_x2_multiply_32fc)(
+    complex_float32_t* cVector,
+    const complex_float32_t* aVector,
+    const complex_float32_t* bVector,
+    unsigned int num_points
+);
+void (*volk_32f_x2_multiply_32f)(
+    float32_t* cVector,
+    const float32_t* aVector,
+    const float32_t* bVector,
+    unsigned int num_points
+);
+]]</span>
+<span class="kd">local</span> <span class="n">libvolk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">platform</span><span class="p">.</span><span class="n">libs</span><span class="p">.</span><span class="n">volk</span>
+
+<span class="k">function</span> <span class="nf">FasterMultiplyBlock</span><span class="p">:</span><span class="n">process_complex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">out</span><span class="p">:</span><span class="n">resize</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="p">)</span>
+
+    <span class="n">libvolk</span><span class="p">.</span><span class="n">volk_32fc_x2_multiply_32fc</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">FasterMultiplyBlock</span><span class="p">:</span><span class="n">process_real</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">out</span><span class="p">:</span><span class="n">resize</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="p">)</span>
+
+    <span class="n">libvolk</span><span class="p">.</span><span class="n">volk_32f_x2_multiply_32f</span><span class="p">(</span><span class="n">out</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>The example defines the functions for the two VOLK kernels in
+<a href="http://luajit.org/ext_ffi_api.html#ffi_cdef"><code class="highlighter-rouge">ffi.cdef()</code></a>. The first is for
+multiplying complex floats, and the second is for multiplying real floats. The
+definitions are function pointers, because VOLK kernels are exposed as function
+pointers (despite their prototypes in the VOLK documentation).</p>
+
+<p>These definitions are almost identical to their library prototypes —
+<a href="http://libvolk.org/doxygen/volk_32fc_x2_multiply_32fc.html"><code class="highlighter-rouge">volk_32fc_x2_multiply_32fc()</code></a>
+and
+<a href="http://libvolk.org/doxygen/volk_32f_x2_multiply_32f.html"><code class="highlighter-rouge">volk_32f_x2_multiply_32f()</code></a>)
+— with the exception of substituting the VOLK <code class="highlighter-rouge">lv_32fc_t</code> type for
+<code class="highlighter-rouge">complex_float32_t</code>, and the C <code class="highlighter-rouge">float</code> type for <code class="highlighter-rouge">float32_t</code>.</p>
+
+<p>The substituted types are binary compatible. The substitution is necessary for
+the FFI to accept the use of the LuaRadio <code class="highlighter-rouge">ComplexFloat32</code> and <code class="highlighter-rouge">Float32</code> data
+types in those argument positions and not raise a type mismatch.  Other
+alternatives are to use a <code class="highlighter-rouge">typedef</code> alias or
+<a href="http://luajit.org/ext_ffi_api.html#ffi_cast"><code class="highlighter-rouge">ffi.cast()</code></a>.</p>
+
+<p>Next, the example looks up the VOLK library from the <code class="highlighter-rouge">radio.platform.libs</code>
+table.  This pre-loaded table has a few computational libraries
+(<a href="http://libvolk.org/">VOLK</a>,
+<a href="https://github.com/jgaeddert/liquid-dsp">liquid-dsp</a>,
+<a href="http://www.fftw.org/">FFTW</a>) that are used by several blocks in the LuaRadio
+codebase for acceleration. To load a different library, the
+<a href="http://luajit.org/ext_ffi_api.html#ffi_load"><code class="highlighter-rouge">ffi.load()</code></a> call can be used
+directly.</p>
+
+<p>Rather than sharing one <code class="highlighter-rouge">process()</code> method, as the previous <code class="highlighter-rouge">MultiplyBlock</code>
+implementation did, this version of <code class="highlighter-rouge">MultiplyBlock</code> binds a custom process
+method with <code class="highlighter-rouge">add_type_signature()</code> to each type signature, since the library
+call depends on the differentiated type signature.</p>
+
+<p>Each <code class="highlighter-rouge">process()</code> method resizes the output vector, calls the library routine
+with the input vector data and output vector data, and returns the output
+vector.</p>
+
+<p>If we re-run the benchmark from above with this block, we see a roughly 1.5x
+performance improvement:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ luaradio multiply_bench.lua
+[BenchmarkSink] 297.38 MS/s (2.38 GB/s)
+[BenchmarkSink] 304.44 MS/s (2.44 GB/s)
+[BenchmarkSink] 301.10 MS/s (2.41 GB/s)
+[BenchmarkSink] 306.13 MS/s (2.45 GB/s)
+[BenchmarkSink] 305.72 MS/s (2.45 GB/s)
+[BenchmarkSink] 299.13 MS/s (2.39 GB/s)
+...
+</code></pre>
+</div>
+
+<p>This performance improvement is not substantial, given that the block is
+already in the relatively high rate territory, but in other cases —
+particularly filtering and DFT — the performance improvement from wrapping an
+optimized external library can be an order of magnitude or more. Those cases
+are worth accelerating for real-time applications.</p>
+
+<h4 id="bfsk-modulator">BFSK Modulator</h4>
+
+<p>In this FFI example, we create a binary FSK (BFSK/2FSK) modulator block by
+wrapping the FSK modulator in the digital signal processing library
+<a href="https://github.com/jgaeddert/liquid-dsp/">liquid-dsp</a>. This example
+demonstrates adding new functionality to LuaRadio by wrapping an external
+library with the LuaJIT FFI.</p>
+
+<p>The <code class="highlighter-rouge">fskmod</code> module is a recent addition to liquid-dsp, so it has not yet made
+it into the <a href="http://liquidsdr.org/doc/">online documentation</a>.  Nevertheless,
+the docstrings are available in the implementation
+<a href="https://github.com/jgaeddert/liquid-dsp/blob/master/src/modem/src/fskmod.c">here</a>,
+and the module is straightforward to use. Below is the liquid-dsp style
+documentation reproduced for <code class="highlighter-rouge">fskmod</code>:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">fskmod_create(m, k, bandwidth)</code> creates and returns a <code class="highlighter-rouge">fskmod</code> object with
+bits per symbol <code class="highlighter-rouge">m</code>, samples per symbol <code class="highlighter-rouge">k</code>, and total normalized signal
+bandwidth <code class="highlighter-rouge">bandwidth</code>.</li>
+  <li><code class="highlighter-rouge">fskmod_destroy(q)</code> destroys an <code class="highlighter-rouge">fskmod</code> object, freeing all
+internally-allocated memory.</li>
+  <li><code class="highlighter-rouge">fskmod_modulate(q, s, y)</code> modulates the input symbol <code class="highlighter-rouge">s</code>, storing <code class="highlighter-rouge">k</code>
+samples per symbol number of output samples to <code class="highlighter-rouge">y</code>.</li>
+</ul>
+
+<p>The <code class="highlighter-rouge">fskmod</code> module is a M-ary FSK modulator, but since we’re only implementing
+binary FSK for our block, we use 1 for the bits per symbol parameter <code class="highlighter-rouge">m</code>. The
+other parameters (samples per symbol <code class="highlighter-rouge">m</code> and normalized signal bandwidth <code class="highlighter-rouge">k</code>)
+are functions of the block’s input bit rate, output sample rate, and specified
+FSK deviation.</p>
+
+<p>In the example below, we create a block that modulates an input bit stream to a
+complex-valued baseband BFSK signal. The constructor accepts the deviation in
+Hz (the frequency shift between mark and space frequencies), and the output
+sample rate of the modulated samples in samples per second:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">ffi</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'ffi'</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">BFSKModulator</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">factory</span><span class="p">(</span><span class="s1">'BFSKModulator'</span><span class="p">)</span>
+
+<span class="k">function</span> <span class="nf">BFSKModulator</span><span class="p">:</span><span class="n">instantiate</span><span class="p">(</span><span class="n">deviation</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">deviation</span> <span class="o">=</span> <span class="n">deviation</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sample_rate</span>
+
+    <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">)},</span>
+                            <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)})</span>
+<span class="k">end</span>
+
+<span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[
+typedef struct fskmod_s * fskmod;
+fskmod fskmod_create(unsigned int _m, unsigned int _k, float _bandwidth);
+void fskmod_destroy(fskmod _q);
+void fskmod_modulate(fskmod _q, unsigned int _s, complex_float32_t *_y);
+]]</span>
+<span class="kd">local</span> <span class="n">libliquid</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">platform</span><span class="p">.</span><span class="n">libs</span><span class="p">.</span><span class="n">liquid</span>
+
+<span class="k">function</span> <span class="nf">BFSKModulator</span><span class="p">:</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">samples_per_bit</span> <span class="o">=</span> <span class="nb">math.floor</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">sample_rate</span> <span class="o">/</span> <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Block</span><span class="p">.</span><span class="n">get_rate</span><span class="p">(</span><span class="n">self</span><span class="p">))</span>
+
+    <span class="n">self</span><span class="p">.</span><span class="n">modulator</span> <span class="o">=</span> <span class="n">ffi</span><span class="p">.</span><span class="n">gc</span><span class="p">(</span>
+        <span class="n">libliquid</span><span class="p">.</span><span class="n">fskmod_create</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">samples_per_bit</span><span class="p">,</span> <span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">deviation</span> <span class="o">/</span> <span class="n">self</span><span class="p">.</span><span class="n">sample_rate</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">libliquid</span><span class="p">.</span><span class="n">fskmod_destroy</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">self</span><span class="p">.</span><span class="n">modulator</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">then</span>
+        <span class="nb">error</span><span class="p">(</span><span class="s2">"Creating liquid fskmod object."</span><span class="p">)</span>
+    <span class="k">end</span>
+
+    <span class="n">self</span><span class="p">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">.</span><span class="n">vector</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">BFSKModulator</span><span class="p">:</span><span class="n">get_rate</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">sample_rate</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">BFSKModulator</span><span class="p">:</span><span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">out</span><span class="p">:</span><span class="n">resize</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">length</span> <span class="o">*</span> <span class="n">self</span><span class="p">.</span><span class="n">samples_per_bit</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span> <span class="k">do</span>
+        <span class="n">libliquid</span><span class="p">.</span><span class="n">fskmod_modulate</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">modulator</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">value</span><span class="p">,</span> <span class="n">out</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">self</span><span class="p">.</span><span class="n">samples_per_bit</span><span class="p">])</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>The <code class="highlighter-rouge">ffi.cdef()</code> call defines the liquid C API for the <code class="highlighter-rouge">fskmod</code> module. This
+consists of an opaque structure pointer aliased to <code class="highlighter-rouge">fskmod</code>, create and destroy
+functions for the <code class="highlighter-rouge">fskmod</code> object, and the main <code class="highlighter-rouge">fskmod_modulate()</code> method,
+which takes an input symbol (in our case, a bit) and writes the samples of the
+modulated signal to a complex-valued array. These definitions are identical to
+those in the <code class="highlighter-rouge">liquid.h</code> header file, except for substituting the <code class="highlighter-rouge">float complex</code>
+type for the compatible LuaRadio data type, <code class="highlighter-rouge">complex_float32_t</code>, in
+<code class="highlighter-rouge">fskmod_modulate()</code>.</p>
+
+<p>The block’s <code class="highlighter-rouge">initialize()</code> method computes the relevant parameters for
+<code class="highlighter-rouge">fskmod_create()</code>: the number of samples per bit and the normalized frequency
+deviation. The samples per bit parameter is computed by dividing the output
+sample rate — specified in the constructor — by the input bit rate. The input
+bit rate is looked up by using the Block superclass’s
+<a href="reference-manual.html#blockgetrate"><code class="highlighter-rouge">get_rate()</code></a> implementation, which
+returns the rate of the upstream block, since this block redefines <code class="highlighter-rouge">get_rate()</code>
+for the samples it produces. It creates the <code class="highlighter-rouge">fskmod</code> object with these
+parameters, and a <code class="highlighter-rouge">ComplexFloat32</code> persistent output vector in <code class="highlighter-rouge">self.out</code>.</p>
+
+<p>The <code class="highlighter-rouge">fskmod</code> object  is wrapped with
+<a href="http://luajit.org/ext_ffi_api.html#ffi_gc"><code class="highlighter-rouge">ffi.gc()</code></a>, which attaches the
+<code class="highlighter-rouge">fskmod_destroy()</code> finalizer to the object. In effect, <code class="highlighter-rouge">fskmod_destroy()</code> will
+be called on the <code class="highlighter-rouge">fskmod</code> object when it is garbage collected. This allows us
+to delegate the resource management of the <code class="highlighter-rouge">fskmod</code> to LuaJIT’s reference
+counting and garbage collection, so we don’t have to worry about managing it.</p>
+
+<p>The <code class="highlighter-rouge">BFSKModulator</code> implements a custom <code class="highlighter-rouge">get_rate()</code> because its output
+samples, the complex-valued BFSK signal, do not share the sample rate of its
+input samples, the bit stream.</p>
+
+<p>The <code class="highlighter-rouge">process()</code> method resizes its output vector length to the input bit length
+times the number of samples per bit. It calls <code class="highlighter-rouge">fskmod_modulate()</code> for each bit
+value with the proper offset into the output vector, to modulate each bit into
+samples in the output vector, and it returns the output vector.</p>
+
+<p>We can test our BFSK modulator in a simple flow graph, by sourcing it with
+random bits from
+<a href="reference-manual.html#uniformrandomsource"><code class="highlighter-rouge">UniformRandomSource</code></a>, and sinking
+the modulated signal to a
+<a href="reference-manual.html#gnuplotspectrumsink"><code class="highlighter-rouge">GnuplotSpectrumSink</code></a> spectrum
+plotting sink:</p>
+
+<p align="center">
+<img src="figures/flowgraph_bfsk_modulator_example.png" />
+</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">top</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">():</span><span class="n">connect</span><span class="p">(</span>
+  <span class="n">radio</span><span class="p">.</span><span class="n">UniformRandomSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">,</span> <span class="mi">9600</span><span class="p">),</span> <span class="c1">-- Random bit source, 9600 sample rate (bit rate)</span>
+  <span class="n">BFSKModulator</span><span class="p">(</span><span class="mf">100e3</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">),</span>                  <span class="c1">-- BFSK Modulator, 100 kHz deviation, 1 MHz sample rate</span>
+  <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">(),</span>                      <span class="c1">-- Throttle block to pace plotting</span>
+  <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">()</span>                 <span class="c1">-- Spectrum plotting sink</span>
+<span class="p">):</span><span class="n">run</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p>The resulting plot shows the expected two lobes of the BFSK modulated signal,
+100 kHz apart:</p>
+
+<p align="center">
+<img src="figures/plot_bfsk_modulator_example.png" />
+</p>
+
+<p>The liquid <code class="highlighter-rouge">fskmod</code> module actually supports modulating M-ary FSK, by choice of
+M in <code class="highlighter-rouge">fskmod_create()</code>. This example can be extended to a generic M-ary FSK
+modulator by propagating this parameter to <code class="highlighter-rouge">fskmod_create()</code> in <code class="highlighter-rouge">initialize()</code>,
+and by batching input bits into a base-M number that is passed to the input
+symbol argument of <code class="highlighter-rouge">fskmod_modulate()</code> in <code class="highlighter-rouge">process()</code>.</p>
+
+<h2 id="custom-types">Custom Types</h2>
+
+<p>LuaRadio’s four basic types serve well for most signal processing needs, but
+are insufficient for higher-level blocks that need to produce or consume more
+complex aggregate types. This need arises quickly in digital systems, where a
+bit stream may be framed into a data frame, a data frame decoded into a packet,
+and so on.</p>
+
+<p>LuaRadio offers two solutions for custom types. The first, called a <a href="reference-manual.html#cstructtype"><code class="highlighter-rouge">CStruct</code>
+type</a>, is a type backed by a constant-size C
+structure. This is appropriate for fixed size data types and is efficiently
+serialized between blocks. All four basic types are themselves, in fact,
+<code class="highlighter-rouge">CStruct</code> types.</p>
+
+<p>The second, called an <a href="reference-manual.html#objecttype"><code class="highlighter-rouge">Object</code> type</a>, is a
+type backed by any Lua object.  Instances of this type can be variable size and
+contain any Lua primitive data types (tables, numbers, strings, booleans,
+etc.). <code class="highlighter-rouge">Object</code> types are not as efficient as <code class="highlighter-rouge">CStruct</code> types, as they are
+marshalled and unmarshalled with <a href="http://msgpack.org/">MessagePack</a> when
+serialized between blocks. However, for relatively low rate uses, they can be
+very effective.</p>
+
+<h3 id="cstruct-types"><code class="highlighter-rouge">CStruct</code> types</h3>
+
+<p><code class="highlighter-rouge">CStruct</code> types are manufactured with the
+<a href="reference-manual.html#cstructtypefactoryctype-methods"><code class="highlighter-rouge">radio.types.CStructType.factory(ctype, methods)</code></a>
+factory function. The first parameter is the name of the C structure type, and
+the second parameter is an optional table of methods and metamethods to be
+associated with the type.</p>
+
+<p>The type will automatically inherit <code class="highlighter-rouge">.vector()</code> and <code class="highlighter-rouge">.vector_from_array()</code>
+static methods, so that vectors of the type can be created by blocks, as well
+as internal serialization methods so that the framework can serialize the type
+between blocks. See the <a href="reference-manual.html#cstructtype">LuaRadio Reference
+Manual</a> for more inherited methods of
+<code class="highlighter-rouge">CStruct</code> types.</p>
+
+<p>In this example, we construct a fictional type <code class="highlighter-rouge">FooFrame</code> with a 16-bit address
+field, 8-bit type field, and 4-byte data field. We associate a <code class="highlighter-rouge">__tostring()</code>
+string representation method on the type it, as well as <code class="highlighter-rouge">isbeacon()</code> and
+<code class="highlighter-rouge">isdata()</code> methods to test the fictional frame type.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">ffi</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'ffi'</span><span class="p">)</span>
+
+<span class="n">ffi</span><span class="p">.</span><span class="n">cdef</span><span class="s">[[
+typedef struct {
+    uint16_t address;
+    uint8_t type;
+    uint8_t data[4];
+} fooframe_t;
+]]</span>
+
+<span class="kd">local</span> <span class="n">fooframe_methods</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">function</span> <span class="nf">fooframe_methods</span><span class="p">:</span><span class="n">__tostring</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">string.format</span><span class="p">(</span>
+        <span class="s2">"FooFrame&lt;address=0x%04x, type=0x%02x, data=[0x%02x,0x%02x,0x%02x,0x%02x]&gt;"</span><span class="p">,</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">address</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">type</span><span class="p">,</span> <span class="n">self</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">self</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">self</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">self</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">fooframe_methods</span><span class="p">:</span><span class="n">isbeacon</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="mh">0x1</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">fooframe_methods</span><span class="p">:</span><span class="n">isdata</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="mh">0x2</span>
+<span class="k">end</span>
+
+<span class="kd">local</span> <span class="n">FooFrame</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">CStructType</span><span class="p">.</span><span class="n">factory</span><span class="p">(</span><span class="s2">"fooframe_t"</span><span class="p">,</span> <span class="n">fooframe_methods</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>Now, we can use this type like any other <code class="highlighter-rouge">CStruct</code> data type:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- A single FooFrame</span>
+<span class="kd">local</span> <span class="n">a</span> <span class="o">=</span> <span class="n">FooFrame</span><span class="p">(</span><span class="mh">0xbeef</span><span class="p">,</span> <span class="mh">0x1</span><span class="p">,</span> <span class="p">{</span><span class="mh">0xaa</span><span class="p">,</span> <span class="mh">0xbb</span><span class="p">,</span> <span class="mh">0xcc</span><span class="p">,</span> <span class="mh">0xdd</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="c1">--&gt; FooFrame&lt;address=0xbeef, type=0x01, data=[0xaa,0xbb,0xcc,0xdd]&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="n">isbeacon</span><span class="p">(),</span> <span class="n">a</span><span class="p">:</span><span class="n">isdata</span><span class="p">())</span> <span class="c1">--&gt; true    false</span>
+
+<span class="c1">-- A vector of 10 FooFrame</span>
+<span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">FooFrame</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">size</span><span class="p">)</span> <span class="c1">--&gt; 80</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">type</span><span class="p">)</span> <span class="c1">--&gt; ctype&lt;struct 1059&gt;</span>
+
+<span class="c1">-- Assign first FooFrame in vector</span>
+<span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">address</span> <span class="o">=</span> <span class="mh">0x1234</span>
+<span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nb">type</span> <span class="o">=</span> <span class="mh">0x02</span>
+<span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="mh">0xaa</span><span class="p">,</span> <span class="mh">0xbb</span><span class="p">,</span> <span class="mh">0xcc</span><span class="p">,</span> <span class="mh">0xdd</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1">--&gt; FooFrame&lt;address=0x1234, type=0x02, data=[0xaa,0xbb,0xcc,0xdd]&gt;</span>
+</code></pre>
+</div>
+
+<p>Blocks can specify the data type in type signatures to produce or consume it:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="o">...</span>
+<span class="k">function</span> <span class="nf">FooFramerBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">)},</span>
+                            <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">FooFrame</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">FooFramerBlock</span><span class="p">:</span><span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="n">FooFrame</span><span class="p">.</span><span class="n">vector</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span> <span class="k">do</span>
+        <span class="o">...</span>
+        <span class="n">out</span><span class="p">:</span><span class="n">append</span><span class="p">(</span><span class="n">FooFrame</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+<span class="k">end</span>
+<span class="o">...</span>
+</code></pre>
+</div>
+
+<h3 id="object-types"><code class="highlighter-rouge">Object</code> types</h3>
+
+<p><code class="highlighter-rouge">Object</code> types are manufactured with the
+<a href="reference-manual.html#objecttypefactorymethods"><code class="highlighter-rouge">radio.types.ObjectType.factory()</code></a>
+factory function.</p>
+
+<p>The type will automatically inherit <code class="highlighter-rouge">.vector()</code> and <code class="highlighter-rouge">.vector_from_array()</code>
+static methods, so that vectors of the type can be created by blocks, as well
+as internal serialization methods so that the framework can serialize the type
+between blocks.  In addition, the type will inherit the <code class="highlighter-rouge">.to_json()</code> method to
+form a JSON representation, enabling the type to be used with the
+<a href="reference-manual.html#jsonsink"><code class="highlighter-rouge">JSONSink</code></a>. See the <a href="reference-manual.html#objecttype">LuaRadio Reference
+Manual</a> for more inherited methods of
+<code class="highlighter-rouge">Object</code> types.</p>
+
+<p>After an <code class="highlighter-rouge">Object</code> data type is created, its <code class="highlighter-rouge">.new()</code> constructor must be
+implemented. Additional methods can be defined directly on the data type class.</p>
+
+<p>In this example, we construct a fictional type <code class="highlighter-rouge">BarPacket</code> with string address
+and data fields. We define its constructor and a <code class="highlighter-rouge">__tostring()</code> method.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">BarPacket</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ObjectType</span><span class="p">.</span><span class="n">factory</span><span class="p">()</span>
+
+<span class="k">function</span> <span class="nc">BarPacket</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="c1">-- Create a new object with its metatable set to BarPacket</span>
+    <span class="kd">local</span> <span class="n">self</span> <span class="o">=</span> <span class="nb">setmetatable</span><span class="p">({},</span> <span class="n">BarPacket</span><span class="p">)</span>
+
+    <span class="n">self</span><span class="p">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+    <span class="n">self</span><span class="p">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">return</span> <span class="n">self</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">BarPacket</span><span class="p">:</span><span class="n">__tostring</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">string.format</span><span class="p">(</span>
+        <span class="s1">'BarPacket&lt;address="%s", data="%s"&gt;'</span><span class="p">,</span>
+        <span class="nb">tostring</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">address</span><span class="p">),</span> <span class="nb">tostring</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">data</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+
+<p>Now, we can use this type like other data types:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">a</span> <span class="o">=</span> <span class="n">BarPacket</span><span class="p">(</span><span class="s2">"foo"</span><span class="p">,</span> <span class="s2">"abcd"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="c1">--&gt; BarPacket&lt;address="foo", data="abcd"&gt;</span>
+
+<span class="kd">local</span> <span class="n">b</span> <span class="o">=</span> <span class="n">BarPacket</span><span class="p">(</span><span class="s2">"waldo"</span><span class="p">,</span> <span class="s2">"deadbeef"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="c1">--&gt; BarPacket&lt;address="waldo", data="deadbeef"&gt;</span>
+
+<span class="c1">-- A vector of BarPacket</span>
+<span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">BarPacket</span><span class="p">.</span><span class="n">vector</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 0</span>
+
+<span class="n">vec</span><span class="p">:</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">vec</span><span class="p">:</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 2</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1">--&gt; BarPacket&lt;address="foo", data="abcd"&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="c1">--&gt; BarPacket&lt;address="waldo", data="deadbeef"&gt;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
+<span class="c1">--&gt; [BarPacket&lt;address="foo", data="abcd"&gt;, BarPacket&lt;address="waldo", data="deadbeef"&gt;]</span>
+</code></pre>
+</div>
+
+<p>As the example shows, <code class="highlighter-rouge">BarPacket</code> can contain variably sized fields.</p>
+
+<p>Vectors of <code class="highlighter-rouge">Object</code> types provide a similar interface to <code class="highlighter-rouge">CStruct</code> type
+vectors. Note that their data array is also zero-indexed, for consistency with
+<code class="highlighter-rouge">CStruct</code> type vectors.</p>
+
+<p>Just like <code class="highlighter-rouge">CStruct</code> based types, blocks can use the <code class="highlighter-rouge">BarPacket</code> type in type
+signatures to produce or consume vectors of the type:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="o">...</span>
+<span class="k">function</span> <span class="nf">BarDecoderBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in"</span><span class="p">,</span> <span class="n">BarFrame</span><span class="p">)},</span>
+                            <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">BarPacket</span><span class="p">))</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">BarDecoderBlock</span><span class="p">:</span><span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="n">BarPacket</span><span class="p">.</span><span class="n">vector</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span> <span class="k">do</span>
+        <span class="o">...</span>
+        <span class="n">out</span><span class="p">:</span><span class="n">append</span><span class="p">(</span><span class="n">BarPacket</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+    <span class="k">end</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+<span class="k">end</span>
+<span class="o">...</span>
+</code></pre>
+</div>
+
+<h2 id="manipulating-bits">Manipulating Bits</h2>
+
+<p>Digital blocks that manipulate <a href="reference-manual.html#bit"><code class="highlighter-rouge">Bit</code></a> typed vectors
+often need to convert bits into numbers and perform bitwise operations on them.</p>
+
+<p>The <code class="highlighter-rouge">Bit</code> data type provides the static method
+<a href="reference-manual.html#bittonumbervec-offset0-length0-ordermsb"><code class="highlighter-rouge">.tonumber()</code></a>
+that operates on <code class="highlighter-rouge">Bit</code> vectors to extract numbers from bits. This method takes
+a <code class="highlighter-rouge">Bit</code> vector as its first argument, and optional arguments offset, length,
+and bit order to specify most kinds of bit extractions.</p>
+
+<p>Below are a few examples of its use:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 4</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">tonumber</span><span class="p">(</span><span class="n">vec</span><span class="p">))</span> <span class="c1">--&gt; 5</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">tonumber</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'lsb'</span><span class="p">))</span> <span class="c1">--&gt; 10</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">tonumber</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'msb'</span><span class="p">))</span> <span class="c1">--&gt; 1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">tonumber</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'lsb'</span><span class="p">))</span> <span class="c1">--&gt; 2</span>
+</code></pre>
+</div>
+
+<p>The Lua 5.1 language, which LuaJIT implements, does not support bitwise
+operations natively, but LuaJIT includes a built-in <a href="http://bitop.luajit.org/api.html#operations"><code class="highlighter-rouge">bit</code>
+library</a> that can be used to
+perform bitwise operations on numbers:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">bit</span><span class="p">.</span><span class="n">band</span><span class="p">(</span><span class="mh">0x1234abcd</span><span class="p">,</span> <span class="mh">0xff</span><span class="p">)</span> <span class="c1">--&gt; 0x000000cd</span>
+<span class="n">bit</span><span class="p">.</span><span class="n">bor</span><span class="p">(</span><span class="mh">0x1234ab00</span><span class="p">,</span> <span class="mh">0xcd</span><span class="p">)</span> <span class="c1">--&gt; 0x1234abcd</span>
+<span class="n">bit</span><span class="p">.</span><span class="n">rshift</span><span class="p">(</span><span class="mh">0x1234abcd</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">--&gt; 0x091a55e6</span>
+<span class="n">bit</span><span class="p">.</span><span class="n">lshift</span><span class="p">(</span><span class="mh">0x1234abcd</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">--&gt; 0x2469579a</span>
+<span class="n">bit</span><span class="p">.</span><span class="n">bnot</span><span class="p">(</span><span class="mh">0xfffffff0</span><span class="p">)</span> <span class="c1">--&gt; 0x0000000f</span>
+</code></pre>
+</div>
+
+<h5 id="caveats-2">Caveats</h5>
+
+<p>There are two important caveats with the <code class="highlighter-rouge">bit</code> library. First, all operations
+with <code class="highlighter-rouge">bit</code> are limited to 32-bits. For many use cases, this is not a major
+issue, and easy to work around. Second, all results of bitwise operations are
+returned as <strong>signed 32-bit</strong> numbers. This is generally not an issue for
+bitwise operations, which are agnostic to signedness interpretation (with the
+exception of arithmetic shifts), but it is an issue when comparing bitwise
+operation results to literals.  For example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="n">bit</span><span class="p">.</span><span class="n">band</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">,</span> <span class="mh">0x80000000</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0x80000000</span><span class="p">)</span> <span class="c1">--&gt; false (?)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bit</span><span class="p">.</span><span class="n">bor</span><span class="p">(</span><span class="mh">0x0fffffff</span><span class="p">,</span> <span class="mh">0xf0000000</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0xffffffff</span><span class="p">)</span> <span class="c1">--&gt; false (?)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bit</span><span class="p">.</span><span class="n">lshift</span><span class="p">(</span><span class="mh">0x7fffffff</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0xfffffffe</span><span class="p">)</span> <span class="c1">--&gt; false (?)</span>
+</code></pre>
+</div>
+
+<p>The discrepancy here is that the Lua number type is a double, and the bit
+operation results are returned as signed 32-bit numbers in a double. 0x80000000
+and -2147483648, 0xffffffff and -1, 0xfffffffe and -2 are all two different
+double numbers.</p>
+
+<p>To compare the result of a bitwise operation to a literal that has its 31st bit
+set (the sign bit), first normalize the literal to a signed 32-bit number with
+<code class="highlighter-rouge">bit.tobit()</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nb">print</span><span class="p">(</span><span class="n">bit</span><span class="p">.</span><span class="n">band</span><span class="p">(</span><span class="mh">0xdeadbeef</span><span class="p">,</span> <span class="mh">0x80000000</span><span class="p">)</span> <span class="o">==</span> <span class="n">bit</span><span class="p">.</span><span class="n">tobit</span><span class="p">(</span><span class="mh">0x80000000</span><span class="p">))</span> <span class="c1">--&gt; true</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bit</span><span class="p">.</span><span class="n">bor</span><span class="p">(</span><span class="mh">0x0fffffff</span><span class="p">,</span> <span class="mh">0xf0000000</span><span class="p">)</span> <span class="o">==</span> <span class="n">bit</span><span class="p">.</span><span class="n">tobit</span><span class="p">(</span><span class="mh">0xffffffff</span><span class="p">))</span> <span class="c1">--&gt; true</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bit</span><span class="p">.</span><span class="n">lshift</span><span class="p">(</span><span class="mh">0x7fffffff</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">bit</span><span class="p">.</span><span class="n">tobit</span><span class="p">(</span><span class="mh">0xfffffffe</span><span class="p">))</span> <span class="c1">--&gt; true</span>
+</code></pre>
+</div>
+
+<p>These caveats will disappear and bitwise operations will be a lot more natural
+if a future version of LuaJIT implements the Lua 5.3 language, which has a
+64-bit integer type and native bitwise operations.</p>
+
+<h2 id="development-tips">Development Tips</h2>
+
+<p>For prototyping with Lua, the LuaJIT REPL is a bit too minimalist to be
+productive. As in the original Lua 5.1 REPL, it requires preceding expressions
+with “=” to print their value, and it doesn’t support dumping tables. I suggest
+using Torch’s <a href="https://github.com/torch/trepl">trepl</a> for prototyping,
+available in <a href="https://luarocks.org/modules/vsergeev/trepl-torchless">LuaRocks</a>.
+It supports table dumping, pretty printing, tab completion, and line history.</p>
+
+<p>For some blocks, it may be more productive to prototype signal processing
+routines in Python, with libraries like <a href="http://www.numpy.org/">numpy</a>,
+<a href="http://docs.scipy.org/doc/scipy/reference/index.html">scipy</a>, and
+<a href="http://matplotlib.org/">matplotlib</a>, which allow for more traditional sample
+by sample development and plotting than a flow graph paradigm like LuaRadio.
+When the routine is ready, it can be ported to a LuaRadio block for performance
+and reusability.</p>
+
+<p>Samples from LuaRadio can be dumped to a file with the
+<a href="reference-manual.html#rawfilesink"><code class="highlighter-rouge">RawFileSink</code></a>,
+<a href="reference-manual.html#iqfilesink"><code class="highlighter-rouge">IQFileSink</code></a>, or
+<a href="reference-manual.html#realfilesink"><code class="highlighter-rouge">RealFileSink</code></a>, and imported into Python
+for inspection with the
+<a href="http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.fromfile.html"><code class="highlighter-rouge">numpy.fromfile()</code></a>
+function. The <code class="highlighter-rouge">numpy.float32</code> type is compatible with LuaRadio’s <code class="highlighter-rouge">Float32</code>
+type, and the <code class="highlighter-rouge">numpy.complex64</code> type is compatible with LuaRadio’s
+<code class="highlighter-rouge">ComplexFloat32</code> type. The reverse is also possible with numpy ndarray’s
+<a href="http://docs.scipy.org/doc/numpy-1.10.0/reference/generated/numpy.ndarray.tofile.html#numpy.ndarray.tofile"><code class="highlighter-rouge">.tofile()</code></a>
+method, and the <a href="reference-manual.html#rawfilesink"><code class="highlighter-rouge">RawFileSource</code></a>,
+<a href="reference-manual.html#iqfilesource"><code class="highlighter-rouge">IQFileSource</code></a>, or
+<a href="reference-manual.html#realfilesource"><code class="highlighter-rouge">RealFileSource</code></a> blocks.</p>
+
+
+
+        <div class="footer">
+          <div class="disclaimer">
+  <p>
+    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+  </p>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>LuaRadio - New to SDR?</title>
+  
+  <meta name="author" content="Vanya A. Sergeev" />
+  <meta name="description" content="LuaRadio" />
+  <link rel="canonical" href="http://luaradio.io/new-to-sdr.html" />
+  <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+
+  <link rel="stylesheet" href="./assets/css/all.css">
+  <script type="text/javascript" src="./assets/js/tocbot.min.js"></script>
+  <script type="text/javascript" src="./assets/js/toc.js"></script>
+
+  
+  
+</head>
+<body id="top">
+  <div class="container">
+    <div class="row">
+      <div class="three columns sidebar">
+        <nav class="menu">
+  <h1 class="title"><a href=".">LuaRadio</a></h1>
+  <p align="center">
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <ul>
+        <li><a href="./new-to-sdr.html">New to SDR?</a></li>
+        <li><a href="./docs/">Documentation</a>
+            <ul>
+                <li><a href="./docs/installation.html">Installation</a></li>
+                <li><a href="./docs/getting-started.html">Getting Started</a></li>
+                <li><a href="./docs/creating-blocks.html">Creating Blocks</a></li>
+                <li><a href="./docs/embedding-luaradio.html">Embedding LuaRadio</a></li>
+                <li><a href="./docs/architecture.html">Architecture</a></li>
+                <li><a href="./docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
+            </ul>
+        </li>
+        <li><a href="./docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="./examples/">Examples</a>
+            <ul>
+                <li><a href="./examples/rtlsdr-wbfm-mono.html">WBFM Mono</a></li>
+                <li><a href="./examples/rtlsdr-wbfm-stereo.html">WBFM Stereo</a></li>
+                <li><a href="./examples/rtlsdr-nbfm.html">NBFM</a></li>
+                <li><a href="./examples/rtlsdr-ax25.html">AX.25</a></li>
+                <li><a href="./examples/rtlsdr-pocsag.html">POCSAG</a></li>
+                <li><a href="./examples/rtlsdr-rds.html">RDS</a></li>
+                <li><a href="./examples/rtlsdr-am-envelope.html">AM (Envelope)</a></li>
+                <li><a href="./examples/rtlsdr-am-synchronous.html">AM (Synchronous)</a></li>
+                <li><a href="./examples/rtlsdr-ssb.html">SSB</a></li>
+                <li><a href="./examples/wavfile-ssb-modulator.html">WAV SSB Modulator</a></li>
+                <li><a href="./examples/iqfile-converter.html">IQ File Converter</a></li>
+            </ul>
+        </li>
+        <li><a href="./benchmarks.html">Benchmarks</a></li>
+    </ul>
+  </div>
+  <p align="center">
+    <a style="font-size: 1.4rem;" href="mailto:vsergeev@gmail.com"><i class="fa fa-envelope-o" aria-hidden="true"></i> vsergeev@gmail.com</a>
+  </p>
+</nav>
+<nav class="scroll-toc">
+  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+  <p align="center">
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <span class="page-title"><a data-scroll href="#top">New to SDR?</a></span>
+    <div class="js-toc">
+    </div>
+  </div>
+</nav>
+
+      </div>
+      <div class="nine columns content">
+        <h1 id="new-to-sdr">New to SDR?</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+
+<ul>
+  <li><a href="#introduction">Introduction</a>
+    <ul>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#current-state">Current State</a></li>
+    </ul>
+  </li>
+  <li><a href="#hardware">Hardware</a>
+    <ul>
+      <li><a href="#basic-specifications">Basic Specifications</a></li>
+      <li><a href="#rtl-sdr-dongle">RTL-SDR dongle</a></li>
+    </ul>
+  </li>
+  <li><a href="#antennas">Antennas</a></li>
+  <li><a href="#software">Software</a>
+    <ul>
+      <li><a href="#waterfall-receivers">Waterfall Receivers</a></li>
+      <li><a href="#standalone-decoders">Standalone Decoders</a></li>
+      <li><a href="#libraries">Libraries</a></li>
+      <li><a href="#frameworks">Frameworks</a></li>
+      <li><a href="#web-interfaces">Web Interfaces</a></li>
+    </ul>
+  </li>
+  <li><a href="#radio-bands">Radio Bands</a>
+    <ul>
+      <li><a href="#lf">LF</a></li>
+      <li><a href="#mf">MF</a></li>
+      <li><a href="#hf">HF</a></li>
+      <li><a href="#vhf">VHF</a></li>
+      <li><a href="#uhf">UHF</a></li>
+      <li><a href="#shf-and-beyond">SHF and beyond</a></li>
+    </ul>
+  </li>
+  <li><a href="#next-steps">Next Steps</a>
+    <ul>
+      <li><a href="#amateur-radio">Amateur Radio</a></li>
+      <li><a href="#antennas-1">Antennas</a></li>
+      <li><a href="#rf-upconverter">RF Upconverter</a></li>
+      <li><a href="#hardware-1">Hardware</a></li>
+      <li><a href="#resources-and-communities">Resources and Communities</a></li>
+    </ul>
+  </li>
+  <li><a href="#comments">Comments</a></li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>A software-defined radio is a radio implemented with reconfigurable software,
+which processes the raw samples of a digitized radio signal.  This differs from
+conventional hardware radios, which employ RF circuits and digital signal
+processors to implement this processing in a way that is hardwired and
+hardcoded to their application.</p>
+
+<p>Software-defined radios offer the allure of instant reconfigurability in every
+dimension: frequency, modulation, and protocol. In theory, you would simply run
+a different program to implement an entirely different radio — whether it’s a
+FM broadcast radio receiver, a UMTS handset, or a Bluetooth device. While there
+are still real-world limitations to this dream, particularly in antennas and in
+host processing power, software-defined radio today is a powerful technology
+for building flexible communication systems, exploring the radio frequency
+spectrum, and for protocol research and development.</p>
+
+<h3 id="how-it-works">How It Works</h3>
+
+<p>A software-defined radio still requires some hardware, but this hardware is
+relegated to just receiving and transmitting radio signals. In total, a
+software-defined radio consists of an antenna, a transmitter and/or receiver,
+and a host computer.</p>
+
+<p align="center">
+<img src="./images/figure-sdr-receiver.png" />
+</p>
+
+<p>When receiving, the antenna converts electromagnetic waves into a voltage
+signal, which is then amplified, translated down from the tuning frequency, and
+sampled by an SDR receiver. The digital samples are streamed to the host for
+processing.</p>
+
+<p align="center">
+<img src="./images/figure-sdr-transmitter.png" />
+</p>
+
+<p>When transmitting, the host streams digital samples to an SDR transmitter,
+which converts them into a voltage signal and translates it to the tuning
+frequency. The voltage signal may then be further amplified by an external
+amplifier and filtered by a transmit filter, before it is radiated by the
+antenna as electromagnetic waves.</p>
+
+<p>Conventional hardware radios today increasingly resemble software-defined
+radios internally, as more of their processing is pushed into the digital
+domain, and more complex protocols demand integrated CPUs.  However, they are
+still tightly integrated black boxes that are designed to operate on a specific
+frequency band, while software-defined radios provide a raw sample interface
+and tend to have a wide tuning range.</p>
+
+<h3 id="current-state">Current State</h3>
+
+<p>Software-defined radio has become increasingly accessible over the past years
+with the commoditization of high performance CPUs, and the availability of low
+cost, high rate analog to digital converters (ADCs) and digital to analog
+converters (DACs) that are responsible for sampling and synthesizing the radio
+signal. The inexpensive $20 RTL-SDR dongle — described in more detail below —
+has also played a large role in exposing the technology to many engineers and
+hobbyists.</p>
+
+<p>However, the software of software-defined radio has yet to catch up to the
+hardware. Much of it is scattered across esoteric one-off decoding programs,
+trapped in frameworks bloated with boilerplate and dependencies, or proprietary
+Windows software. There has been little consolidation of common code by the way
+of libraries, and even less effort on good documentation.  Fortunately, the
+tide seems to be turning. Lightweight signal processing libraries are gaining
+traction, modern open source SDR applications are cropping up, and the
+developer communities surrounding SDR are growing.</p>
+
+<p>The rest of this guide covers the details of getting started with SDR
+receivers, including hardware, software, a tour of the frequency bands, next
+steps, and additional resources. Most of this introduction focuses on SDR
+receivers, but SDR transmitters are covered briefly in the next steps section.</p>
+
+<h2 id="hardware">Hardware</h2>
+
+<h3 id="basic-specifications">Basic Specifications</h3>
+
+<p>A software-defined radio receiver is defined by three basic specifications:
+bandwidth, resolution, and tuning range. The receiver is further characterized
+by many important figures of merit that reflect performance in noise,
+selectivity, and frequency stability, but these specifications are deferred to
+more advanced discussions.</p>
+
+<p>Bandwidth is the instantaneous width of frequency content that the SDR receiver
+can receive. It can be thought of as the width of the SDR’s window into the RF
+spectrum.  This is usually in the range of 1 to 10 MHz for entry-level SDR
+receivers, and in the 20 to 60 MHz range for the more advanced SDR
+transreceivers.  Bandwidth is different from tuning frequency; rather, more
+bandwidth means that the SDR receiver can capture a wider window of signals
+simultaneously when tuned to a particular frequency. In some cases, more
+bandwidth is required to capture a very wide signal, like a 6 MHz wide DVB-T
+channel.</p>
+
+<p>The sample rate of an SDR receiver is the rate the radio signal is sampled by
+the receiver and streamed to the host. Sample rate is directly related to the
+bandwidth, and while bandwidth is ultimately the specification of interest,
+SDRs are typically described by their sample rate, as it is the underlying
+design parameter. An SDR’s effective bandwidth is usually slightly less than
+its sample rate. Sample rate also dictates the computational burden of the
+host: the wider the receive bandwidth, the more samples per second are required
+to represent it, and consequently, the more bus throughput is required to
+stream it to the host, and the more host computational power is required to
+process it.</p>
+
+<p>Resolution is the bit resolution of the analog to digital converter that
+samples the radio signal. This represents the quantization range of each
+sample. For example, an 8-bit ADC will have 256 levels of quantization,
+whereas as 12-bit ADC will have 4096 levels. All things equal, more bit
+resolution means less quantization noise — the “noise” resulting from the error
+in mapping an analog level onto a discrete level, and more dynamic range — the
+ability to capture both strong and weak signals simultaneously. In practice,
+the usable resolution is highly dependent on the signal conditioning by the
+frontend RF circuitry.</p>
+
+<p>Tuning range is the frequency range that the SDR receiver can tune to. This
+range typically starts in the tens of megahertz and goes up to a few gigahertz.
+However, SDR receivers can receive signals outside of this range with the help
+of an RF upconverter or downconverter, an inline device that translates signals
+by a fixed frequency offset, so that they fall into the tuning range of the SDR.
+For example, an SDR receiver with a tuning range of 24 MHz to 1766 MHz can be
+paired with a 125 MHz RF upconverter, so that it can pick up 0 to 30 MHz at the
+offset frequencies of 125 to 155 MHz.</p>
+
+<p>While bandwidth, resolution, and tuning range are the basic specifications of
+an SDR receiver, other figure of merits and design considerations can
+dramatically affect an SDR receiver’s fidelity and usability.</p>
+
+<h3 id="rtl-sdr-dongle">RTL-SDR dongle</h3>
+
+<p>An inexpensive way to get started with SDR is the RTL-SDR dongle. The original
+incarnation of this dongle and its chipset was marketed as a digital television
+and audio broadcast receiver, particularly for the
+<a href="https://en.wikipedia.org/wiki/DVB-T">DVB-T</a> and
+<a href="https://en.wikipedia.org/wiki/Digital_audio_broadcasting">DAB/DAB+</a> protocols,
+which are used in parts of Europe and Asia. Eventually, <a href="http://rtlsdr.org/#history_and_discovery_of_rtlsdr">a few developers
+discovered</a> that the
+demodulating and decoding for the DAB+ and FM receiver modes was actually
+implemented in the closed-source software itself, and in those modes, the
+underlying <a href="http://www.realtek.com.tw/products/productsView.aspx?Langid=1&amp;PFid=35&amp;Level=4&amp;Conn=3&amp;ProdID=257">Realtek
+RTL2832U</a>
+chip streamed raw samples over USB. In other words, the dongle was a
+software-defined radio receiver in those modes.</p>
+
+<p>Since the RTL2832U enjoys the economy of scale of mass-produced consumer
+silicon, it makes it possible to build an inexpensive SDR receiver hardware
+stack based on the chip for sampling, and an accompanying tuner chip for the RF
+frontend and tuning. Soon, third-parties started manufacturing dongles based on
+the RTL2832U with improved tuners, noise performance, frequency stability, and
+more convenient RF connectors, marketed specifically for software-defined radio
+use.</p>
+
+<p>RTL-SDR dongles can deliver a bandwidth of up to approximately 2.5 MHz
+reliably, have 8-bit resolution, and a tuning range of 24 MHz to 1766 MHz (with
+the currently popular R820T2 tuner). However, not all RTL-SDR dongles are made
+equal. The generic ones found for under $10 on eBay may have inferior noise
+performance and frequency stability.</p>
+
+<p>Two popular dongles that have been vetted by the community are the <a href="http://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/">RTL-SDR
+Blog silver dongle</a> and the
+<a href="http://www.nooelec.com/store/sdr/sdr-receivers/nesdr-mini-2-plus.html">NooElec blue
+dongle</a>.
+Both run about $20, and you can’t go wrong with either one. See this
+<a href="http://rtlsdr4everyone.blogspot.com/p/review.html">review</a> for more detailed
+testing on a variety of dongles, including these two.</p>
+
+<div align="center">
+<figure>
+<a href="http://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/"><img src="./images/rtlsdr-blog-silver-dongle-thumb.jpg" /></a>
+<figcaption>RTL-SDR Blog Silver Dongle</figcaption>
+</figure>
+<figure>
+<a href="http://www.nooelec.com/store/sdr/sdr-receivers/nesdr-mini-2-plus.html"><img src="./images/nooelec-blue-dongle-thumb.jpg" /></a>
+<figcaption>NooElec Blue Dongle</figcaption>
+</figure>
+</div>
+
+<h2 id="antennas">Antennas</h2>
+
+<p>Perhaps the most “software undefined” component of software-defined radio is
+the antenna. It is also one of most important. Good reception on a particular
+frequency band primarily depends on the antenna configuration. Antennas vary
+in design frequency, bandwidth, directionality, and polarization, and different
+applications demand different requirements in these properties.</p>
+
+<p>An antenna’s physical size is typically proportional to the wavelengths it is
+designed to receive. For example, antennas designed for reception at 15 MHz
+tend to be much larger than those intended for 100 MHz, and especially larger
+than a WiFi antenna intended for the 2.4 GHz.</p>
+
+<figure class="float-right">
+<img src="./images/rtlsdr-stock-antenna-thumb.jpg" />
+<figcaption>Stock antenna, included<br />with some RTL-SDR dongles<div style="line-height: 0.8;"><a href="https://www.fabtolab.com/SDR-USB" style="font-size: 0.9rem;">(Image Source)</a></div></figcaption>
+</figure>
+
+<p>For example, the small stock monopole antenna that comes with some RTL-SDR
+dongles (often the generic ones) is limited in performance and frequency
+response to higher UHF frequencies. Users may be disappointed when they are not
+able to pick up much aside from some UHF signals and very strong FM stations.
+But this is entirely to be expected for an antenna of its design and size,
+especially when used indoors and at a low elevation.</p>
+
+<p>Wideband antennas, or antennas that can receive a broad range of frequencies,
+are popular with SDRs, as they can accommodate the wide tuning range of the
+SDR.  For example, the <a href="https://en.wikipedia.org/wiki/Discone_antenna">discone</a>
+is a common wideband antenna design. However, to get the most performance out
+of any dedicated antenna, it should be placed outdoors and at high elevation.</p>
+
+<figure class="float-right">
+<a href="http://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/"><img src="./images/rtlsdr-blog-dongle-antenna-kit-thumb.jpg" /></a>
+<figcaption>RTL-SDR Blog<br />Dongle+Antenna Kit</figcaption>
+</figure>
+
+<p>For getting started with SDR, without initially investing too much time, money,
+or real estate for an antenna, the RTL-SDR Blog’s <a href="http://amzn.to/1SLPS6F">RTL-SDR dongle and antenna
+package</a> is probably the all-around best entry level
+kit. The included tall 1.5m telescopic antenna performs very decently for VHF
+signals, even when used indoors, and the shorter 20cm telescopic antenna covers
+much of the UHF band, so these two antennas can adjusted to most of the
+operating range of the RTL-SDR. All of the VHF LuaRadio examples (WBFM, NBFM,
+AX.25, POCSAG, RDS) have been run successfully with this tall 1.5m telescopic
+antenna indoors.</p>
+
+<div style="clear: both;"></div>
+
+<h2 id="software">Software</h2>
+
+<p>Some of the earliest SDR software has its origins in the late 90s, with dial-up
+<a href="https://en.wikipedia.org/wiki/Softmodem">software modems</a> (e.g. the U.S.
+Robotics “WinModem”) that implemented the majority of the modem in software
+rather than dedicated hardware, allowing for more inexpensive hardware. Other
+early SDR software was software support for amateur radio digital modes (FSK,
+PSK31, PACTOR, AX.25, etc.) that were modulated in the audio band.  Amateur
+radio operators could interface the audio of their radio transceivers to the
+PC’s sound card, and use software to receive or transmit these digital modes.</p>
+
+<p>Sound card operated digital modes are still popular in the amateur radio
+community, and there is an abundance of older decoding software from this era
+still in use or under maintenance. Some of this software has been retrofitted
+to support modern I/Q sampling SDR receivers like the RTL-SDR.</p>
+
+<p>Today, SDR software seems to broadly fall under five categories: waterfall
+receivers, standalone decoders, frameworks, libraries, and web interfaces.
+Below is a Linux-biased sampling of active SDR software projects.</p>
+
+<h3 id="waterfall-receivers">Waterfall Receivers</h3>
+
+<p>Waterfall receivers are characterized by a real-time vertical
+<a href="https://en.wikipedia.org/wiki/Spectrogram">spectrogram</a>, showing the frequency
+domain of the SDR receiver’s passband over time.  Waterfall receivers simulate
+many functions of a wideband hardware RF receiver, like tuning, demodulation
+modes, filters, and listening to and recording demodulated audio. Waterfall
+receivers are useful for exploring the RF spectrum and selectively demodulating
+parts of it.</p>
+
+<div align="center">
+<figure>
+<a href="http://gqrx.dk/"><img src="./images/gqrx-waterfall-screenshot-thumb.png" /></a>
+<figcaption>Waterfall in <a href="http://gqrx.dk/">gqrx</a></figcaption>
+</figure>
+</div>
+
+<ul>
+<li><a href="https://github.com/csete/gqrx"><i class="fa fa-github" aria-hidden="true"></i> gqrx</a></li>
+<li><a href="https://github.com/cjcliffe/CubicSDR"><i class="fa fa-github" aria-hidden="true"></i> CubicSDR</a></li>
+<li><a href="https://github.com/miek/inspectrum"><i class="fa fa-github" aria-hidden="true"></i> inspectrum</a> (for offline use)</li>
+<li><a href="http://sdr.osmocom.org/trac/wiki/sdrangelove"><i class="fa fa-link" aria-hidden="true"></i> sdrangelove</a></li>
+</ul>
+
+<h3 id="standalone-decoders">Standalone Decoders</h3>
+
+<p>Standalone decoders are applications written to specifically decode one or more
+digital modulations and protocols, like aircraft
+<a href="https://en.wikipedia.org/wiki/Automatic_dependent_surveillance_%E2%80%93_broadcast">ADS-B</a>
+transmissions, <a href="https://en.wikipedia.org/wiki/POCSAG">POCSAG</a> pager messages,
+etc.</p>
+
+<ul>
+<li><a href="https://github.com/EliasOenal/multimon-ng"><i class="fa fa-github" aria-hidden="true"></i> multimon-ng</a></li>
+<li><a href="https://github.com/antirez/dump1090"><i class="fa fa-github" aria-hidden="true"></i> dump1090</a></li>
+<li><a href="https://sourceforge.net/projects/fldigi/"><i class="fa fa-link" aria-hidden="true"></i> fldigi</a></li>
+<li>and many more...</li>
+</ul>
+
+<h3 id="libraries">Libraries</h3>
+
+<p>Libraries provide digital signal processing routines, without imposing a
+particular paradigm on their integration. They are a lightweight alternative to
+frameworks.</p>
+
+<ul>
+<li><a href="https://github.com/gnuradio/volk"><i class="fa fa-github" aria-hidden="true"></i> VOLK</a></li>
+<li><a href="https://github.com/jgaeddert/liquid-dsp"><i class="fa fa-github" aria-hidden="true"></i> liquid-dsp</a></li>
+<li><a href="https://github.com/simonyiszk/csdr"><i class="fa fa-github" aria-hidden="true"></i> csdr</a> (also a standalone tool)</li>
+
+</ul>
+
+<h3 id="frameworks">Frameworks</h3>
+
+<p>Frameworks offer a suite of operations and an API to flexibly define custom
+receivers, transmitters, or signal processing in general. These are useful for
+rapidly prototyping SDR projects, and may also be integrated into standalone
+applications.</p>
+
+<ul>
+<li><a href="http://gnuradio.org/"><i class="fa fa-link" aria-hidden="true"></i> GNU Radio</a></li>
+<li><a href="http://www.pothosware.com/"><i class="fa fa-link" aria-hidden="true"></i> Pothos SDR</a></li>
+<li><a href="http://redhawksdr.github.io/Documentation/"><i class="fa fa-link" aria-hidden="true"></i> Redhawk SDR</a></li>
+</ul>
+
+<h3 id="web-interfaces">Web Interfaces</h3>
+
+<p>Web interfaces provide a browser frontend to an SDR, often with server-side
+processing for demodulation and decoding, and a client-side waterfall and
+audio. This is like a waterfall receiver accessible through a browser.</p>
+
+<ul>
+<li><a href="https://github.com/simonyiszk/openwebrx"><i class="fa fa-github" aria-hidden="true"></i> OpenWebRx</a></li>
+<li><a href="https://github.com/kpreid/shinysdr"><i class="fa fa-github" aria-hidden="true"></i> ShinySDR</a></li>
+</ul>
+
+<h2 id="radio-bands">Radio Bands</h2>
+
+<p align="center">
+<img src="./images/figure-itu-bands.png" />
+</p>
+
+<p>The radio spectrum is split up contiguously into named regions called bands.
+Each band refers to a range of frequencies. Several international standards
+have demarcated and named the radio spectrum bands, but in this introduction
+we’ll stick to the <a href="https://en.wikipedia.org/wiki/Radio_spectrum#ITU">ITU
+designations</a>, e.g. HF, VHF,
+UHF, etc.</p>
+
+<p>Radio spectrum bands are not a pure commodity; a slice of the HF band is not
+equivalent to a slice of the VHF band. This is because electromagnetic waves of
+different radio frequencies have different interactions with the atmosphere and
+earth, and this affects their propagation. Propagation on certain bands may be
+sensitive to time of day, space weather, and solar weather. Propagation on
+other radio bands may depend mostly on line of sight, and may be only sensitive
+to terrestrial weather. The atmosphere may also present more or less opacity to
+outer space, depending on the radio band.  In effect, the various radio bands
+offer varying locality, which enables different kinds of communication.</p>
+
+<p>The bandwidth for each ITU band is not divided equally, but rather
+logarithmically. Each subsequent band has approximately ten times the bandwidth
+of the previous. This turns out to be a useful assignment, because the
+frequencies within many of these bands have roughly similar propagation
+characteristics. However, this also means that each frequency band —
+characterized by a mode of propagation — offers different amounts of spectrum
+compared to other frequency bands.</p>
+
+<p>For example, 802.11b WiFi operates around 2.4 GHz in the UHF band (300 MHz to 3
+GHz).  A single 802.11b WiFi channel is 22 MHz wide, which amounts to only 0.8%
+of the UHF band, but on the HF band (3 to 30 MHz), that single channel would
+require more than 80% of the entire band — not to mention the propagation
+related reasons that this would be a bad idea.</p>
+
+<p>The amount of spectrum available in a band dictates the bandwidth of signals
+you can fit in the band, especially if the band is shared among multiple users.
+For digital signals, this also dictates the maximum achievable data rate (see
+<a href="https://en.wikipedia.org/wiki/Channel_capacity">channel capacity</a>). This is
+one reason that high data rate wireless technologies today occupy spectrum up
+in the gigahertz.</p>
+
+<p>Below is a tour of the more common ITU frequency bands, including their primary
+mode of propagation and what kind of signals can be found on them. These
+descriptions are by no means complete; spectrum allocation is complicated and
+region dependent.</p>
+
+<h3 id="lf">LF</h3>
+
+<div align="center">
+<figure>
+<a href="https://www.ntia.doc.gov/page/2011/united-states-frequency-allocation-chart"><img src="./images/us-ntia-spectrum-lf-thumb.png" /></a>
+<figcaption>Snapshot of U.S. Spectrum Allocation for LF</figcaption>
+</figure>
+</div>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Low_frequency">low frequency band</a> (LF)
+spans from 30 kHz to 300 kHz. Signals on LF primary propagate by <a href="https://en.wikipedia.org/wiki/Surface_wave#Ground_wave">ground
+wave</a> propagation.</p>
+
+<p>Due to limited spectrum in this band, LF is home mainly to low data rate
+digital signals. In particular, <a href="https://en.wikipedia.org/wiki/Radio_clock#Longwave_and_shortwave_transmissions">time
+stations</a>
+which “atomic” clocks synchronize their time to (like
+<a href="https://en.wikipedia.org/wiki/WWVB">WWVB</a> at 60 kHz), and <a href="https://en.wikipedia.org/wiki/Non-directional_beacon">non-directional
+beacons</a> used for
+navigation. In the past, the upper half of the band carried ~9 kHz wide
+amplitude modulated audio broadcasting in some regions, and a few stations are
+<a href="https://en.wikipedia.org/wiki/Longwave#List_of_long-wave_broadcasting_transmitters">still
+operating</a>,
+but this has largely been phased out over the years and replaced with
+broadcasting on MF or VHF.</p>
+
+<p>There are also some region-dependent amateur radio allocations.</p>
+
+<h3 id="mf">MF</h3>
+
+<div align="center">
+<figure>
+<a href="https://www.ntia.doc.gov/page/2011/united-states-frequency-allocation-chart"><img src="./images/us-ntia-spectrum-mf-thumb.png" /></a>
+<figcaption>Snapshot of U.S. Spectrum Allocation for MF</figcaption>
+</figure>
+</div>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Medium_frequency">medium frequency band</a>
+(MF) spans from 300 kHz to 3000 kHz. Signals on MF propagate by both <a href="https://en.wikipedia.org/wiki/Surface_wave#Ground_wave">ground
+wave</a> and
+<a href="https://en.wikipedia.org/wiki/Skywave">skywave</a> propagation, but the lower
+two-thirds of the band typically only propagate well by skywave at night.</p>
+
+<p>The lower portion of the band, up to 500 kHz, is used for <a href="https://en.wikipedia.org/wiki/Non-directional_beacon">non-directional
+beacons</a>, like in LF.</p>
+
+<p>Nearly half of the band, from ~520 kHz to ~1600 kHz, is dedicated to ~9 kHz
+wide amplitude modulated audio broadcasting, commonly called <a href="https://en.wikipedia.org/wiki/AM_radio">AM
+radio</a>.</p>
+
+<p>Above AM radio, there is an international amateur radio allocation from 1800
+kHz to 2000 kHz, named the <a href="https://en.wikipedia.org/wiki/160-meter_band">160 meter
+band</a>. This band is the start of
+amateur radio privileges in many countries. Amateur radio is discussed in more
+detail in the Amateur Radio section under Next Steps.</p>
+
+<p>Broadcasting begins again at 3000 kHz and up. However, the aforementioned 160
+meter amateur radio band and this broadcasting band are colloquially lumped
+into HF, in part because their propagation mode is inclined to skywave
+propagation, and frequencies from 1600 kHz to 30 MHz were historically called
+<a href="https://en.wikipedia.org/wiki/Shortwave_radio">shortwave</a>. These allocations
+will be covered in the next section.</p>
+
+<p>Otherwise, MF carries assorted region-dependent emergency communications in
+some of the open patches between 1600 kHz to 3000 kHz.</p>
+
+<p>Since AM radio station signals in the MF band are capable of propagating by
+skywave under the right conditions, there is a hobby called <a href="https://en.wikipedia.org/wiki/MW_DX">medium wave
+DXing</a> for the long distance reception
+(“DXing”) of AM radio stations across state or nation boundaries.</p>
+
+<h3 id="hf">HF</h3>
+
+<div align="center">
+<figure>
+<a href="https://www.ntia.doc.gov/page/2011/united-states-frequency-allocation-chart"><img src="./images/us-ntia-spectrum-hf-thumb.png" /></a>
+<figcaption>Snapshot of U.S. Spectrum Allocation for HF</figcaption>
+</figure>
+</div>
+
+<p>The <a href="https://en.wikipedia.org/wiki/High_frequency">high frequency band</a> (HF)
+spans from 3 MHz (3000 kHz) to 30 MHz. Signals on HF propagate primarily by
+<a href="https://en.wikipedia.org/wiki/Skywave">skywave</a> propagation, in which signals
+skip between the Earth and the ionosphere, enabling them to travel
+international and transoceanic distances. However, this propagation is
+sensitive to space and solar weather conditions, as those phenomena affect the
+ionosphere.</p>
+
+<p>If the radio spectrum is an ocean, then the HF band is its coral reefs.
+Crowded and full of diverse international life, the HF band — commonly called
+shortwave — is a global meeting point on the radio spectrum. With radio, this
+electromagnetic conduit and natural wonder forms an infrastructure that enables
+worldwide communication.</p>
+
+<p>Shortwave is well known for its international radio broadcasts, whose
+allocations are <a href="https://en.wikipedia.org/wiki/Shortwave_radio#Frequency_allocations">scattered
+throughout</a>
+the HF band. Shortwave radio stations typically broadcast 10 kHz wide amplitude
+modulated audio. Many stations are government-run, providing news, culture, and
+propaganda to domestic and international audiences. These stations often
+broadcast in several languages, and may use directional antennas to target
+their transmissions towards particular regions, e.g. the Voice of America
+Africa service. Some government-run stations are public service stations, like
+the time stations <a href="https://en.wikipedia.org/wiki/CHU_(radio_station)">CHU</a>,
+<a href="https://en.wikipedia.org/wiki/WWV_(radio_station)">WWV</a>, and
+<a href="https://en.wikipedia.org/wiki/WWVH">WWVH</a>, which broadcast continuously with
+voice announcements of the time, or digital marine weather and news stations,
+which may use protocols like
+<a href="https://en.wikipedia.org/wiki/Radioteletype">RTTY</a> or
+<a href="https://en.wikipedia.org/wiki/Radiofax">Weatherfax</a> to carry text and images,
+modulated in the audioband of ~3 kHz wide
+<a href="https://en.wikipedia.org/wiki/Single-sideband_modulation">single-sideband</a>
+modulated transmissions.</p>
+
+<p>Although shortwave broadcasting is dominated by government-sponsored stations,
+private shortwave broadcasting exists too. In the US, much of it is religious,
+with a few stations that carry music and talk programs. For a complete schedule
+of shortwave radio stations, check out <a href="http://short-wave.info/"><i class="fa fa-link" aria-hidden="true"></i> http://short-wave.info</a>.</p>
+
+<p>The HF band is home to many international <a href="https://en.wikipedia.org/wiki/Amateur_radio_frequency_allocations#High_frequency">amateur radio
+allocations</a>,
+where amateurs can carry out morse, voice, or digital communication with one
+another. Voice modes are usually ~3 kHz wide single-sideband modulated audio.
+Digital modes are typically modulated in the audioband within these
+single-sideband audio transmissions. Morse code uses a modulation method called
+<a href="https://en.wikipedia.org/wiki/Continuous_wave">continuous wave</a>, which is
+essentially an <a href="https://en.wikipedia.org/wiki/On-off_keying">on-off keyed</a>
+carrier. HF amateur radio operators often participate in
+<a href="https://en.wikipedia.org/wiki/Contesting">contests</a> to make the most contacts
+in a limited period of time.</p>
+
+<p>The military has a presence on HF as well, often for air force and navy related
+communications. Some governments have run <a href="https://en.wikipedia.org/wiki/Numbers_station">numbers
+stations</a> at some point in time
+to deliver instructions to the military or agents operating on foreign soil.
+Several numbers stations continue to operate to this day. Many number stations
+use ordinary amplitude modulated broadcasts that can be received by any
+shortwave radio.</p>
+
+<p>HF is also used as backup commercial aviation and maritime communication.
+Aircraft on trans-oceanic flights are required to be equipped with an HF
+transceiver. The international maritime distress and calling frequency is <a href="https://en.wikipedia.org/wiki/2182_kHz">2182
+kHz</a>.</p>
+
+<p>A notable allocation towards the upper end of the HF band at 27 MHz is <a href="https://en.wikipedia.org/wiki/Citizens_band_radio">Citizen
+Band radio</a>.  This
+allocation provides a <a href="https://en.wikipedia.org/wiki/Personal_radio_service">personal radio
+service</a>, allowing local
+unlicensed communication for individuals. CB radio uses ~10 kHz wide narrowband
+frequency modulated audio, rather than the amplitude modulation that is common
+throughout the HF band. Despite its upstanding name, CB radio has a reputation
+for offensive trucker banter.</p>
+
+<p>While shortwave broadcasting as a medium for news and culture has largely been
+superseded by the internet, it still continues to serve rural communities, and
+is slowly undergoing a modernization push towards digital, with protocols like
+<a href="https://en.wikipedia.org/wiki/Digital_Radio_Mondiale">Digital Radio Mondiale</a>,
+or Voice of America’s pilot <a href="http://voaradiogram.net/">Radiogram</a> project,
+which carries news text and images over a digital protocol called <a href="https://en.wikipedia.org/wiki/Olivia_MFSK">Olivia
+MFSK</a>.</p>
+
+<p>It’s important to point out that while the internet is decentralized in
+protocol and spirit, its infrastructure is inherently centralized physically,
+built with fiber optic, coaxial, and twisted pair cables, and the occasional
+satellite link. The HF band, although drastically limited in bandwidth compared
+to the internet, is nature’s “fiber optic cable” that will continue to carry
+transmissions worldwide from a lantern battery <a href="https://en.wikipedia.org/wiki/QRP_operation">or
+less</a>, even when all of the grid
+lights are out. In this sense, HF is a curiosity as a truly decentralized
+communication medium, in both the network and physical layers.</p>
+
+<h3 id="vhf">VHF</h3>
+
+<div align="center">
+<figure>
+<a href="https://www.ntia.doc.gov/page/2011/united-states-frequency-allocation-chart"><img src="./images/us-ntia-spectrum-vhf-thumb.png" /></a>
+<figcaption>Snapshot of U.S. Spectrum Allocation for VHF</figcaption>
+</figure>
+</div>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Very_high_frequency">very high frequency
+band</a> (VHF) spans from 30
+MHz to 300 MHz. Signals on VHF propagate primarily by <a href="https://en.wikipedia.org/wiki/Line-of-sight_propagation">line of sight
+propagation</a>, similar
+to light. However, VHF radio waves experience a slightly farther horizon than
+visible light, called the radio horizon, due to refraction in the atmosphere
+for these frequencies. VHF radio waves can penetrate non-metallic objects like
+drywalls, although with attenuation, and can reflect off of large metallic
+objects like buildings.</p>
+
+<p>Approximately a quarter of the VHF band is dedicated to audio and television
+broadcasting. The common <a href="https://en.wikipedia.org/wiki/FM_broadcasting">FM
+radio</a> broadcasting sits at ~87
+to ~108 MHz, carrying ~200 kHz wide frequency modulated audio.  Television
+broadcasting allocations vary from region to region, but typically are
+comprised of two contiguous bands in the 40 MHz to 80 MHz range, and one large
+band in the 170 to 216 MHz range. Most television broadcasting has switched to
+digital, using the ~5 to 8 MHz wide
+<a href="https://en.wikipedia.org/wiki/DVB-T">DVB-T</a> protocol in much of the world, or
+the <a href="https://en.wikipedia.org/wiki/Digital_terrestrial_television">ASTC</a>
+protocol in North America. Some regions have reallocated 174 to 230 MHz from
+television to digital audio broadcasting, with the ~1500 kHz wide
+<a href="https://en.wikipedia.org/wiki/Digital_audio_broadcasting">DAB</a> protocol, in an
+effort to eventually upgrade from analog FM radio.</p>
+
+<p>VHF has aviation and marine navigation and emergency communication allocations.
+<a href="https://en.wikipedia.org/wiki/VHF_omnidirectional_range">VHF Omnidirectional
+Range</a> (VOR)
+navigation beacons sit directly above FM radio broadcasting, at 108 to 118 MHz.
+The <a href="https://en.wikipedia.org/wiki/Airband">airband</a> spans from 118 to 137 MHz
+for air traffic control communication, and uses ~10 kHz wide amplitude
+modulation audio (in contrast to most frequency modulated audio signals on
+VHF). <a href="https://en.wikipedia.org/wiki/Marine_VHF_radio">Marine VHF</a> uses ~16 kHz
+wide frequency modulated audio in the 156 to 162 MHz range. <a href="https://en.wikipedia.org/wiki/Automatic_Identification_System">Automatic
+Identification
+System</a> (AIS) is
+a position reporting system used by ships, located at the end of the Marine VHF
+band. AIS uses a ~10 kHz wide digital
+<a href="https://en.wikipedia.org/wiki/Minimum-shift_keying#Gaussian_minimum-shift_keying">GSMK</a>
+modulation.</p>
+
+<p>Amateur radio typically has two main allocations on VHF, the <a href="https://en.wikipedia.org/wiki/6-meter_band">6 meter
+band</a> from 50 to 54 MHz and the <a href="https://en.wikipedia.org/wiki/2-meter_band">2
+meter band</a> from 144 to 148 MHz.
+The 6 meter is a somewhat experimental band, exhibiting long distance skywave
+and <a href="https://en.wikipedia.org/wiki/Sporadic_E_propagation">sporadic E</a>
+propagation under certain seasonal and meteorological conditions. The 2 meter
+band is a very popular amateur radio band for voice communications, often
+supported by local <a href="https://en.wikipedia.org/wiki/Repeater">repeaters</a> that
+receive and rebroadcast transmissions from a high elevation for extended
+reception, and used for amateur satellite
+<a href="https://en.wikipedia.org/wiki/2-meter_band#Satellite_communications">uplink</a>.
+Amateur radio operation on VHF is typically ~10 kHz wide frequency modulated
+audio, carrying voice or a digital protocol like
+<a href="https://en.wikipedia.org/wiki/AX.25">AX.25</a> for packet radio, but can also be
+~3 kHz wide single-sideband modulated audio, or even continuous wave for morse.</p>
+
+<p>The VHF band has numerous allocations for licensed business and public service
+two-way radio communication. Many of these still use analog frequency modulated
+audio, but some carry digital protocols like
+<a href="https://en.wikipedia.org/wiki/Digital_mobile_radio">DMR</a> and may even be
+multiplexed with a <a href="https://en.wikipedia.org/wiki/Trunked_radio_system">trunked radio
+system</a>.</p>
+
+<p>In the US, unlicensed <a href="https://en.wikipedia.org/wiki/Personal_radio_service">personal radio
+service</a> is also provided
+by the <a href="https://en.wikipedia.org/wiki/Multi-Use_Radio_Service">MURS</a> allocation
+from ~151 to ~154 MHz.</p>
+
+<h3 id="uhf">UHF</h3>
+
+<div align="center">
+<figure>
+<a href="https://www.ntia.doc.gov/page/2011/united-states-frequency-allocation-chart"><img src="./images/us-ntia-spectrum-uhf-thumb.png" /></a>
+<figcaption>Snapshot of U.S. Spectrum Allocation for UHF</figcaption>
+</figure>
+</div>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Very_high_frequency">ultra high frequency
+band</a> (UHF) spans from 300 MHz
+to 3 GHz. Signals on UHF propagate primarily by <a href="https://en.wikipedia.org/wiki/Line-of-sight_propagation">line of sight
+propagation</a>, like in VHF.</p>
+
+<p>UHF is by far the most diverse band with respect to devices and digital
+modulations. Its short wavelengths allow for efficient, compact antennas, which
+can be easily integrated into portable electronics and small appliances, like
+mobile phones or WiFi routers. UHF is the primary spectral medium for cellular
+and wireless technologies today.</p>
+
+<p>Like VHF, UHF has some allocations for audio and television broadcasting.
+Television broadcasting spans from approximately 470 to 800 MHz, using the
+digital ~5 to 8 MHz wide <a href="https://en.wikipedia.org/wiki/DVB-T">DVB-T</a> protocol
+in much of the world, or the
+<a href="https://en.wikipedia.org/wiki/ATSC_standards">ASTC</a> protocol in North America.
+Audio broadcasting is also available in some regions in the 1452 to 1492 MHz
+band, with the ~1500 kHz wide digital
+<a href="https://en.wikipedia.org/wiki/Digital_audio_broadcasting">DAB</a> protocol.
+DAB/DAB+ is the leading standard in replacing analog FM broadcast radio in most
+of the world.</p>
+
+<p>Approximately 20% of the UHF band is allocated for cellular technologies.  The
+precise allocations vary by region, and depending on the carrier that owns the
+band, may carry different protocols, e.g. GSM (2G), UMTS (3G), or LTE (4G).
+Allocations tend to exist near 800 to 900 MHz and near 1700 to 2200 MHz bands.
+See the <a href="https://en.wikipedia.org/wiki/Cellular_frequencies">cellular
+frequencies</a> page on
+Wikipedia for more information.</p>
+
+<p>An important set of international allocations are the <a href="https://en.wikipedia.org/wiki/ISM_band">Industrial, Scientific
+and Medical</a> (ISM) bands. Despite their
+catch-all name, the vast majority of low power local wireless technologies from
+garage door openers and weather sensors, to WiFi, Bluetooth, ZigBee, and NFC
+all use these bands. The ISM bands were originally intended to isolate noisy
+electromagnetic devices, like microwaves at 2.45 GHz or some medical devices,
+from clean spectrum reserved for communications. In effect, the ISM bands were
+unlicensed wild west zones in the spectrum and any devices designed for it
+needed to be robust to incidental interference. Over time, low power local
+wireless technologies have proliferated on these bands.</p>
+
+<p>The UHF band has two major ISM allocations. The lower frequency one ranges from
+~433 to ~435 MHz in ITU region 1 (e.g. Europe, Africa, Middle East), or from
+902 to 928 MHz in ITU region 2 (e.g. Americas, Greenland). These bands are
+often called 433 MHz or 915 MHz, respectively, and are frequently used for low
+data rate signaling devices, like key fobs or home alarm systems. These devices
+typically use a simple digital <a href="https://en.wikipedia.org/wiki/Amplitude-shift_keying">amplitude shift
+keying</a> or <a href="https://en.wikipedia.org/wiki/Frequency-shift_keying">frequency
+shift keying</a> modulation.
+The higher frequency ISM allocation is from 2.4 to 2.5 GHz, which spans 100 MHz
+and is available worldwide. This allocation is frequently used by high data
+rate systems, like WiFi or Bluetooth, with more sophisticated digital
+modulations like <a href="https://en.wikipedia.org/wiki/Phase-shift_keying">8PSK</a>,
+<a href="https://en.wikipedia.org/wiki/Orthogonal_frequency-division_multiplexing">OFDM</a>,
+and <a href="https://en.wikipedia.org/wiki/Direct-sequence_spread_spectrum">direct-sequence spread
+spectrum</a>.</p>
+
+<p>Amateur radio has several allocations on the UHF band, the most common of which
+is the <a href="https://en.wikipedia.org/wiki/70-centimeter_band">70 centimeter band</a>
+from ~420 to ~450 MHz.  Like the 2 meter band on VHF, the 70 centimeter band is
+also commonly used for voice communications, supported by local
+<a href="https://en.wikipedia.org/wiki/Repeater">repeaters</a> that receive and
+rebroadcast transmissions from a high elevation for extended reception, and
+used for amateur satellite uplink. The UHF band also includes the <a href="https://en.wikipedia.org/wiki/23-centimeter_band">23
+centimeter band</a>, and the <a href="https://en.wikipedia.org/wiki/13-centimeter_band">13
+centimeter band</a> allocations
+for amateur radio, which might be used for experimental purposes or for amateur
+radio satellite uplinks. Amateur radio operation on UHF is typically ~10 kHz
+wide frequency modulated audio, but can also be ~3 kHz wide single-sideband
+modulated audio, or even continuous wave for morse.</p>
+
+<p>The UHF band has several <a href="https://en.wikipedia.org/wiki/Personal_radio_service">personal radio
+service</a> allocations for
+unlicensed two-way communications by individuals and businesses. For example,
+certain regions have a <a href="https://en.wikipedia.org/wiki/UHF_CB">UHF Citizen Band</a>
+allocation from ~476 to ~478 MHz, similar to the HF Citizen Band. Much of the
+EU has the <a href="https://en.wikipedia.org/wiki/PMR446">PMR446</a> allocation from
+~446.0 to ~446.2 MHz, with channels set aside for analog ~10 kHz wide frequency
+modulated audio, as well as the digital ~6.25 kHz wide
+<a href="https://en.wikipedia.org/wiki/Digital_private_mobile_radio">dPMR446</a> and ~12.5
+kHz wide <a href="https://en.wikipedia.org/wiki/Digital_mobile_radio#DMR_Tier_I">DMR</a>
+protocols.  The US and some other countries in the Americas, have the <a href="https://en.wikipedia.org/wiki/Family_Radio_Service">Family
+Radio Service</a> (FRS) and
+<a href="https://en.wikipedia.org/wiki/General_Mobile_Radio_Service">General Mobile Radio
+Service</a> (GMRS) in
+the ~462 to ~467 MHz range. GMRS requires a license to operate in the United
+States. FRS and GMRS use analog ~10 kHz wide frequency modulated audio.</p>
+
+<p>Aircraft use a position reporting system called
+<a href="https://en.wikipedia.org/wiki/Automatic_dependent_surveillance_%E2%80%93_broadcast">ADS-B</a>
+which is centered at 1090 MHz (Mode-S) in the UHF band. The 1090 MHz Mode-S
+transmissions use a 50 kHz wide <a href="https://en.wikipedia.org/wiki/Pulse-position_modulation">pulse position
+modulation</a>.</p>
+
+<p>Other notable allocations in the UHF band include those for satellite
+communications.
+<a href="https://en.wikipedia.org/wiki/Global_Positioning_System">GPS</a>,
+<a href="https://en.wikipedia.org/wiki/GLONASS">GLONASS</a>, and
+<a href="https://en.wikipedia.org/wiki/Galileo_(satellite_navigation)">Galileo</a> all use
+allocations inside of the 1 to 2 GHz range for their downlink, at carrier
+frequencies around 1.2, 1.3, and 1.6 GHz. The
+<a href="https://en.wikipedia.org/wiki/Iridium_Communications">Iridium</a>,
+<a href="https://en.wikipedia.org/wiki/Inmarsat">Inmarsat</a>, and
+<a href="https://en.wikipedia.org/wiki/Globalstar">Globalstar</a> satellite
+telecommunication services operate uplink and downlink in several bands
+allocated across the 1.5 to 1.7 GHz range. Satellite radio services, like
+<a href="https://en.wikipedia.org/wiki/Sirius_XM_Holdings">SiriusXM</a>, have a 2310 to
+2360 MHz allocation for downlink in North America. These systems all use
+digital modulations and custom protocols.</p>
+
+<h3 id="shf-and-beyond">SHF and beyond</h3>
+
+<div align="center">
+<figure>
+<a href="https://www.ntia.doc.gov/page/2011/united-states-frequency-allocation-chart"><img src="./images/us-ntia-spectrum-shf-thumb.png" /></a>
+<figcaption>Snapshot of U.S. Spectrum Allocation for SHF</figcaption>
+</figure>
+</div>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Super_high_frequency">super high frequency
+band</a> (SHF) spans from 3
+GHz to 30 GHz. Signals on SHF propagate by <a href="https://en.wikipedia.org/wiki/Line-of-sight_propagation">line of sight
+propagation</a>, like in
+UHF and VHF, but due to their small wavelengths, SHF radio waves may also be
+focused by reasonably sized highly directional antennas, e.g. <a href="https://en.wikipedia.org/wiki/Parabolic_antenna">parabolic
+antennas</a>.</p>
+
+<p>SHF has two <a href="https://en.wikipedia.org/wiki/ISM_band">Industrial, Scientific, and Medical
+band</a> allocations from 5.725 to 5.875
+GHz and 24 to 24.25 GHz. The 5.8 GHz is commonly known for its use in the Wi-Fi
+802.11a, 802.11n, and 802.11ac protocols. These protocols either use
+<a href="https://en.wikipedia.org/wiki/Orthogonal_frequency-division_multiplexing">OFDM</a>
+or <a href="https://en.wikipedia.org/wiki/MIMO-OFDM">MIMO-OFDM</a> digital modulations.</p>
+
+<p>Amateur radio has several allocations on the SHF band, including the 9, 5, 3,
+and 1.2 centimeter bands. These bands are well suited for amateur radio
+satellite communication, as well as experimental point-to-point communications.</p>
+
+<p>Due to the achievable high directivity and large spectral bandwidth available,
+SHF is commonly used in point-to-point links for terrestrial and space
+communications. For terrestrial communications, these are often used in
+telecommunications backhaul, linking <a href="https://en.wikipedia.org/wiki/Base_transceiver_station">base
+stations</a> to their
+network. For satellite communications, the SHF band subsumes the more common
+IEEE band names <a href="https://en.wikipedia.org/wiki/C_band">C</a>,
+<a href="https://en.wikipedia.org/wiki/X_band">X</a>,
+<a href="https://en.wikipedia.org/wiki/Ku_band">Ku</a>,
+<a href="https://en.wikipedia.org/wiki/K_band">K</a>, and half of
+<a href="https://en.wikipedia.org/wiki/Ka_band">Ka</a>, many of which have allocations
+dedicated to satellite communication and satellite television broadcasting.</p>
+
+<div align="center">
+<figure>
+<a href="https://www.ntia.doc.gov/page/2011/united-states-frequency-allocation-chart"><img src="./images/us-ntia-spectrum-ehf-thumb.png" /></a>
+<figcaption>Snapshot of U.S. Spectrum Allocation for EHF</figcaption>
+</figure>
+</div>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Extremely_high_frequency">extremely high frequency
+band</a> (EHF) spans from
+30 GHz to 300 GHz. Signals on EHF propagate by <a href="https://en.wikipedia.org/wiki/Line-of-sight_propagation">line of sight
+propagation</a> as well,
+but the higher frequencies have limited range due to atmospheric absorbance by
+water and oxygen molecules. EHF signals are sensitive to
+<a href="https://en.wikipedia.org/wiki/Rain_fade">rain</a>.</p>
+
+<p>The EHF band is used for high data rate, short terrestrial point-to-point
+links, as well as some satellite communications up to about 50 GHz. The
+atmosphere absorbs most EHF frequencies above this, rendering it unusable for
+satellite communication. See the <a href="https://en.wikipedia.org/wiki/Radio_window">radio
+window</a>. The
+<a href="https://en.wikipedia.org/wiki/Wireless_Gigabit_Alliance">802.11ad</a> protocol is
+designed to operate around 60 GHz for local high data rate wireless
+communication. Otherwise, much of the EHF band is undeveloped.</p>
+
+<p>The high data rate, and consequently wide bandwidth, signals on SHF and EHF are
+not easy to receive, process, or transmit with off-the-shelf SDR transceivers,
+as their bandwidth is limited to up to about 60 MHz. In general, SDR technology
+lags behind that of conventional hardware with respect to bandwidth, due to
+limited efficiency of analog to digital conversion technology at high sample
+rates, and the computational burden they impose.</p>
+
+<p>The <a href="https://en.wikipedia.org/wiki/Terahertz_radiation">tremendously high frequency
+band</a> (THF) spans from 300
+GHz to 3 THz. Signals on THF propagate by <a href="https://en.wikipedia.org/wiki/Extremely_high_frequency">line of sight
+propagation</a>.
+Technology to radiate and modulate THF radio waves is still in the research
+phase, but this band will probably be limited in application to close range
+high bandwidth point-to-point links (at least on Earth), like much of the EHF
+band.</p>
+
+<h2 id="next-steps">Next Steps…</h2>
+
+<h3 id="amateur-radio">Amateur Radio</h3>
+
+<p>A great way to further develop radio fundamentals is to become an amateur radio
+operator. Amateur radio is the hobby of making radio contacts, experimenting
+with radio hardware and antennas, and for some, providing backup communications
+in the case of an emergency that compromises local infrastructure.</p>
+
+<p>Portions throughout the RF spectrum have been set aside by international
+agreements expressly for amateur radio use. An amateur radio license grants the
+privilege to transmit on these spectrum allocations, often with unrestricted
+choice of modulation and protocol, and at high power (e.g. up to 1.5 kilowatts
+on many bands in the United States).  Without an amateur radio license, legal
+radio transmissions with unlicensed hardware are limited to relatively low
+power on the crowded <a href="https://en.wikipedia.org/wiki/ISM_band">ISM bands</a>. A map
+of the US amateur radio allocations is available
+<a href="http://www.arrl.org/graphical-frequency-allocations">here</a>.</p>
+
+<p>The spectrum dedicated to amateur radio would be worth billions if it were sold
+for private ownership, so it’s a delicate blessing that politics have favored
+this culture in telecommunications history. As it stands today, transmitting
+with a radio is not protected under a right like free speech, but is a licensed
+privilege regulated by the government.</p>
+
+<p>Operating amateur radio helps to develop an intuition for real world signals,
+like the bandwidth of various analog and digital modulations, the propagation
+of different radio frequency bands, and the logistics of operating a legal
+transmitter. It also revisits some recurring themes in technology, like the
+trade-offs between analog vs. digital systems, proprietary vs. open standards,
+centralized (VHF/UHF repeaters) vs. decentralized (HF) networks.</p>
+
+<h4 id="getting-a-license">Getting a License</h4>
+
+<p>In the United States, amateur radio licenses come in three levels: Technician
+Class, General Class, and Extra Class. The Technician license grants transmit
+privileges on all amateur radio bands above 30 MHz, whereas the higher license
+levels grant transmit privileges on progressively more spectrum in the lower
+frequency HF band. The Technician license can be obtained by scoring 75% or
+better on a 35 question multiple choice exam, and costs about $15 to take. This
+test is not difficult to pass, as the question and answer pools for each level
+are published in advance.</p>
+
+<p>Studying for the amateur radio license is a great way to learn basic concepts
+about modulations, propagation, antennas, and international spectrum laws. This
+is the six-step plan I followed to getting a license and on the air in about
+1.5 weeks:</p>
+
+<ol>
+  <li>Find a local exam session with <a href="http://www.arrl.org/find-an-amateur-radio-license-exam-session">this
+page</a></li>
+  <li>Read <a href="http://amzn.to/1VULRT1">The Fast Track To Your Technician Class Ham Radio
+License</a> book</li>
+  <li>Practice flash cards on <a href="https://hamstudy.org/">HamStudy</a> or
+<a href="http://hamexam.org/">HamExam</a></li>
+  <li>Take and pass the exam</li>
+  <li>Wait until your call sign appears in the <a href="http://wireless2.fcc.gov/UlsApp/UlsSearch/results.jsp">FCC
+database</a></li>
+  <li>Make your first contact on a local VHF or UHF repeater with a Baofeng
+<a href="http://amzn.to/25XhHkN">UV-B5</a> or <a href="http://amzn.to/1Yn8RKO">UV-82</a></li>
+</ol>
+
+<h4 id="culture">Culture</h4>
+
+<p>The amateur radio culture in the United States is a peculiar mix of radio
+geeks, electronics tinkerers, and preppers. Some enjoy it simply for casual
+conversation with like-minded radio enthusiasts on their commute to or from
+work. Others are in it purely for the decentralized, self-sufficient means of
+communications it enables, perhaps for survival preparedness or volunteering
+for emergency communications. And many hams tinker with antennas, low power
+transceivers, installing repeaters, or even building dedicated <a href="https://en.wikipedia.org/wiki/Radio_shack">ham
+shacks</a>.</p>
+
+<p>Hams were some of the original
+<a href="https://en.wikipedia.org/wiki/Maker_culture">“makers”</a> of their time, and
+though on bad days may share their hand-wavy engineering, they also have a
+history of publishing academic-esque articles on subjects like propagation,
+circuits, and antenna design. Amateur radio is also increasingly intersecting
+with the modern “hacker” culture as well, leading to more amateur radio related
+presentations, hosted license exam sessions, or the establishment of a regular
+<a href="http://conham.org/">contact frequency on VHF</a> at security conferences like
+<a href="https://defcon.org/">DEF CON</a>.</p>
+
+<p>The privileges granted by amateur radio also raises some interesting political
+questions, like:</p>
+
+<ul>
+  <li>Is the FCC’s authority justified by the Commerce Clause of the Constitution?</li>
+  <li>Should there be more diverse unlicensed “public parks” on the radio spectrum,
+like <a href="https://en.wikipedia.org/wiki/Citizens_band_radio">Citizens Band</a> and
+<a href="https://en.wikipedia.org/wiki/Family_Radio_Service">Family Radio Service</a>,
+but for broadcasting or for digital transmissions?</li>
+  <li>How does radio contrast to other communication methods that are protected by
+free speech?</li>
+</ul>
+
+<h3 id="antennas-1">Antennas</h3>
+
+<p>As far as antennas go, the sky is the limit. This is true in all respects:
+design, price, size, and elevation. Optimized antennas exist for just about
+every radio frequency band and application.</p>
+
+<p>A great starting point for exploring SDR is a pair of wideband antennas: one
+that covers the lower frequency LF, MF, and HF bands, and one that covers the
+lower bulk of the higher frequency VHF and UHF bands. An easy way to achieve
+this combination is with a long-wire antenna for the lower bands, and a discone
+antenna for the higher bands.</p>
+
+<figure class="float-right">
+<a href="https://en.wikipedia.org/wiki/Random_wire_antenna"><img src="./images/long-wire-antenna-thumb.gif" /></a>
+<figcaption>Long-wire antenna<div style="line-height: 0.8;"><a style="font-size: 0.9rem;" href="http://www.hamuniverse.com/n4jaantennabook.html">(Image Source)</a></div></figcaption>
+</figure>
+
+<p>A <a href="https://en.wikipedia.org/wiki/Random_wire_antenna">long-wire antenna</a> is
+what it sounds like — a long wire, strung up at high elevation. These antennas
+are effective basic antennas for receiving and transmitting across the HF band.
+They are better when paired with a <a href="http://vk6ysf.com/unun_9-1.htm">9:1 unun</a>
+impedance transformer, to help match the relatively large <a href="https://en.wikipedia.org/wiki/Antenna_(radio)#Impedance_matching">antenna
+impedance</a> to
+the lower 75 ohm impedance of the RTL-SDR, or to 50 ohm impedance for most
+other receivers and transmitters.</p>
+
+<div style="clear: both;"></div>
+
+<figure class="float-right">
+<a href="https://en.wikipedia.org/wiki/Discone_antenna"><img src="./images/discone-antenna-thumb.jpg" /></a>
+<figcaption>Discone antenna<div style="line-height: 0.8;"><a style="font-size: 0.9rem;" href="http://www.hamradio.com/detail.cfm?pid=H0-007179">(Image Source)</a></div></figcaption>
+</figure>
+
+<p>A <a href="https://en.wikipedia.org/wiki/Discone_antenna">discone antenna</a> is an
+omnidirectional antenna that looks like a disc on a cone. It has approximately
+10:1 bandwidth, relative to the center frequency. which makes it a good choice
+for the VHF and UHF bands as a receiving antenna. A discone antenna with a
+center frequency of at 50, 75 or 100 MHz is a reasonable size that can be
+constructed with materials from your local hardware store.</p>
+
+<p>For receiving and transmitting on the 2m and 70cm amateur radio bands on VHF or
+UHF, an inexpensive option is the <a href="http://www.n9tax.com/slim%20jim%20info.html">roll-up
+J-pole</a>, which can be bought
+assembled for about $25.</p>
+
+<p>Some applications require specific antennas for effective reception or
+transmission, because of properties like long wave length, polarization, or
+directionality.  For example, receiving a VLF time station benefits from a
+resonant magnetic loop antenna, which is substantially smaller in size than its
+equivalently performing dipole or monopole electric field antenna. Receiving
+circularly polarized radio waves from satellites, e.g. a weather satellite,
+benefit from a circularly polarized antenna, like a quadrifilar helix antenna.
+Receiving the ISS as it orbits the Earth at a certain elevation is a lot easier
+with a directional Yagi antenna.</p>
+
+<p>Certain situations, like electrically noisy apartment buildings or lack of
+outdoor access, may also call for alternate antennas designs like <a href="https://en.wikipedia.org/wiki/Loop_antenna">magnetic
+loop antennas</a>, which may produce
+better results indoors than an electric field antenna.</p>
+
+<h3 id="rf-upconverter">RF Upconverter</h3>
+
+<p>In order to receive the lower frequency LF, MF, and HF bands on the RTL-SDR,
+they must be translated into the tuning range of the RTL-SDR. This can be done
+with the help of an inline RF device called an upconverter, which translate a
+range of frequencies up by a constant frequency offset. For example, a 125 MHz
+upconverter designed for the lower frequency bands will translate signals from
+0 to 30 MHz to 125 to 155 MHz.</p>
+
+<p>Two popular upconverters that can be used with the RTL-SDR and other SDR
+receivers for the LF, MF, and HF bands are the <a href="http://www.nooelec.com/store/ham-it-up.html">NooElec Ham It
+Up</a> and the <a href="http://airspy.com/spyverter/">Airspy
+Spyverter</a>. They are available for around $50 to
+$60 (with a shielded case).</p>
+
+<div align="center">
+<figure>
+<a href="http://www.nooelec.com/store/ham-it-up.html"><img src="./images/nooelec-ham-it-up-thumb.gif" /></a>
+<figcaption>NooElec Ham It Up</figcaption>
+</figure>
+<figure>
+<a href="http://airspy.com/spyverter/"><img src="./images/airspy-spyverter-thumb.png" /></a>
+<figcaption>Airspy Spyverter</figcaption>
+</figure>
+</div>
+
+<p>An appropriate low frequency antenna (e.g. long-wire antenna) and one of these
+upconverters enable an SDR receiver with a higher tuning range to receive the
+lower frequency bands.</p>
+
+<h3 id="hardware-1">Hardware</h3>
+
+<p>There are several SDR receivers on the market with better performance and
+higher sample rates than the RTL-SDR:</p>
+
+<ul>
+  <li><a href="http://airspy.com/airspy-mini/">Airspy Mini</a> — 3, 6, or 10 MSPS sample rate,
+24 to 1800 MHz tuning range, 12-bit ADC, $99 USD</li>
+  <li><a href="http://www.sdrplay.com/">SDRplay RSP</a> — 2 to 10.66 MSPS sample rate, 0.1 to
+2000 MHz tuning range, 12-bit ADC, $149 USD</li>
+  <li><a href="http://airspy.com/airspy-r2/">Airspy R2</a> — 10 MSPS sample rate, 24 to 1800
+MHz tuning range, 12-bit ADC, $199 USD</li>
+</ul>
+
+<p>There are also many SDR transceivers on the market. Note that transmitting with
+an SDR with the intent of high power radiation (i.e. not testing locally or
+with a loopback) requires some additional external hardware, like an RF power
+amplifier and a transmit bandpass filter. Transmissions should only be made on
+authorized frequencies, and with a setup that ensures transmit harmonics are
+thoroughly suppressed, so that they are not unintentionally radiated, otherwise
+they may interfere with other transmissions.</p>
+
+<p>A few examples of SDR transceivers are:</p>
+
+<ul>
+  <li><a href="https://www.ettus.com/product/category/USRP-Bus-Series">USRP</a></li>
+  <li><a href="http://nuand.com/">bladeRF</a></li>
+  <li><a href="https://greatscottgadgets.com/hackrf/">HackRF</a></li>
+  <li><a href="http://limesdr.com">LimeSDR</a></li>
+</ul>
+
+<h3 id="signal-processing">Signal Processing</h3>
+
+<p>Building software radios or modulation/demodulation utilities out of digital
+signal processing primitives requires some background in signals and systems,
+as well as communications, which is beyond the scope of this introduction.
+Below is a short list of some resources:</p>
+
+<ul>
+  <li>Signals and Systems
+    <ul>
+      <li><a href="https://www.amazon.com/Circuits-Signals-Systems-MIT-Press/dp/0262690950">Circuits, Signals, and Systems by Siebert</a> (book)</li>
+      <li><a href="http://cnx.org/content/col10064/">Signals and Systems by Baraniuk</a></li>
+    </ul>
+  </li>
+  <li>Communications Systems
+    <ul>
+      <li><a href="http://www.ece.ucsb.edu/wcsl/Publications/intro_comm_systems_madhow_jan2014b.pdf">Introduction to Communication Systems by Madhow (PDF)</a></li>
+      <li><a href="http://cp.literature.agilent.com/litweb/pdf/5965-7160E.pdf">Digital Modulation in Communication Systems - An Introduction (PDF)</a></li>
+      <li><a href="https://en.wikibooks.org/wiki/Communication_Systems">Communication Systems on Wikibooks</a></li>
+    </ul>
+  </li>
+  <li>I/Q sampling
+    <ul>
+      <li><a href="http://whiteboard.ping.se/SDR/IQ">I/Q Data for Dummies</a></li>
+      <li><a href="http://www.tek.com/blog/what%E2%80%99s-your-iq-%E2%80%93-about-quadrature-signals%E2%80%A6">What’s Your IQ – About Quadrature Signals…</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="resources-and-communities">Resources and Communities</h3>
+
+<p><a href="http://websdr.org/">WebSDR</a> serves a listing of web-hosted SDR receivers.
+This is a neat way to explore the RF spectrum at other locations, though
+it is currently limited to audio demodulations.</p>
+
+<p><a href="http://www.rtl-sdr.com/">RTL-SDR blog</a> actively aggregates SDR news and
+RTL-SDR projects.</p>
+
+<p><a href="http://hackaday.com/">Hackaday</a> often features amateur radio and SDR related
+projects and articles.</p>
+
+<p><a href="http://www.sigidwiki.com/">Signal Identification Wiki</a> is a wiki for
+crowdsourced radio signal identification.</p>
+
+<p><a href="http://www.spectrumwiki.com/">Spectrum Wiki</a> is a wiki for documenting
+worldwide spectrum allocations.</p>
+
+<p>Reddit hosts several active radio and SDR related communities:</p>
+
+<ul>
+<li><a href="https://www.reddit.com/r/rtlsdr"><i class="fa fa-reddit" aria-hidden="true"></i> r/rtlsdr</a></li>
+<li><a href="https://www.reddit.com/r/amateurradio"><i class="fa fa-reddit" aria-hidden="true"></i> r/amateurradio</a></li>
+<li><a href="https://www.reddit.com/r/SignalIdentification"><i class="fa fa-reddit" aria-hidden="true"></i> r/signalidentification</a></li>
+</ul>
+
+<p>The <a href="https://freenode.net/">freenode</a> IRC network has the <code class="highlighter-rouge">##rtlsdr</code> and
+<code class="highlighter-rouge">##hamradio</code> channels, as well as dedicated channels for various SDR hardware
+(e.g. <code class="highlighter-rouge">#airspy</code>, <code class="highlighter-rouge">#bladerf</code>, <code class="highlighter-rouge">#hackrf</code>).</p>
+
+<h2 id="comments">Comments</h2>
+
+<p>Feel free to email me at <a href="&#109;&#097;&#105;&#108;&#116;&#111;:&#118;&#115;&#101;&#114;&#103;&#101;&#101;&#118;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;">&#118;&#115;&#101;&#114;&#103;&#101;&#101;&#118;&#064;&#103;&#109;&#097;&#105;&#108;&#046;&#099;&#111;&#109;</a> with
+any comments, corrections, or questions.</p>
+
+
+        <div class="footer">
+          <div class="disclaimer">
+  <p>
+    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+  </p>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

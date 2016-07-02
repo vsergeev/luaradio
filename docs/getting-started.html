@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>LuaRadio - Getting Started</title>
+  
+  <meta name="author" content="Vanya A. Sergeev" />
+  <meta name="description" content="LuaRadio" />
+  <link rel="canonical" href="http://luaradio.io/docs/getting-started.html" />
+  <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" href="../assets/css/all.css">
+  <script type="text/javascript" src="../assets/js/tocbot.min.js"></script>
+  <script type="text/javascript" src="../assets/js/toc.js"></script>
+
+  
+  
+</head>
+<body id="top">
+  <div class="container">
+    <div class="row">
+      <div class="three columns sidebar">
+        <nav class="menu">
+  <h1 class="title"><a href="..">LuaRadio</a></h1>
+  <p align="center">
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <ul>
+        <li><a href="../new-to-sdr.html">New to SDR?</a></li>
+        <li><a href="../docs/">Documentation</a>
+            <ul>
+                <li><a href="../docs/installation.html">Installation</a></li>
+                <li><a href="../docs/getting-started.html">Getting Started</a></li>
+                <li><a href="../docs/creating-blocks.html">Creating Blocks</a></li>
+                <li><a href="../docs/embedding-luaradio.html">Embedding LuaRadio</a></li>
+                <li><a href="../docs/architecture.html">Architecture</a></li>
+                <li><a href="../docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
+            </ul>
+        </li>
+        <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="../examples/">Examples</a>
+            <ul>
+                <li><a href="../examples/rtlsdr-wbfm-mono.html">WBFM Mono</a></li>
+                <li><a href="../examples/rtlsdr-wbfm-stereo.html">WBFM Stereo</a></li>
+                <li><a href="../examples/rtlsdr-nbfm.html">NBFM</a></li>
+                <li><a href="../examples/rtlsdr-ax25.html">AX.25</a></li>
+                <li><a href="../examples/rtlsdr-pocsag.html">POCSAG</a></li>
+                <li><a href="../examples/rtlsdr-rds.html">RDS</a></li>
+                <li><a href="../examples/rtlsdr-am-envelope.html">AM (Envelope)</a></li>
+                <li><a href="../examples/rtlsdr-am-synchronous.html">AM (Synchronous)</a></li>
+                <li><a href="../examples/rtlsdr-ssb.html">SSB</a></li>
+                <li><a href="../examples/wavfile-ssb-modulator.html">WAV SSB Modulator</a></li>
+                <li><a href="../examples/iqfile-converter.html">IQ File Converter</a></li>
+            </ul>
+        </li>
+        <li><a href="../benchmarks.html">Benchmarks</a></li>
+    </ul>
+  </div>
+  <p align="center">
+    <a style="font-size: 1.4rem;" href="mailto:vsergeev@gmail.com"><i class="fa fa-envelope-o" aria-hidden="true"></i> vsergeev@gmail.com</a>
+  </p>
+</nav>
+<nav class="scroll-toc">
+  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+  <p align="center">
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <span class="page-title"><a data-scroll href="#top">Getting Started</a></span>
+    <div class="js-toc">
+    </div>
+  </div>
+</nav>
+
+      </div>
+      <div class="nine columns content">
+        
+<h1 id="getting-started">Getting Started</h1>
+
+<h2 id="introduction">Introduction</h2>
+
+<p align="center">
+<img src="figures/flowgraph_rtlsdr_wbfm_mono.png" />
+</p>
+
+<p>LuaRadio is a framework for building signal processing flow graphs.  A flow
+graph is a directed graph of blocks that processes data samples. Samples in a
+flow graph originate at source blocks, are manipulated through intermediate
+processing blocks, and terminate at sink blocks.  This paradigm — also called
+dataflow programming — is useful for software-defined radio, because it allows
+you to model the architectures of conventional hardware radios.</p>
+
+<p>In a software-defined radio flow graph, source and sink blocks tend to
+implement some kind of I/O, like reading samples from an SDR dongle, or writing
+samples to an IQ file, while processing blocks tend to be computational, like
+filters and multipliers.</p>
+
+<h3 id="type-signatures">Type Signatures</h3>
+
+<p align="center">
+<img src="figures/figure_type_signatures.png" />
+</p>
+
+<p>LuaRadio blocks have data types associated with their input and output ports.
+For example, a multiplier block may support complex-valued inputs named <code class="highlighter-rouge">in1</code>
+and <code class="highlighter-rouge">in2</code>, and a complex-valued output named <code class="highlighter-rouge">out</code>.  It may also support
+real-valued inputs named <code class="highlighter-rouge">in1</code> and <code class="highlighter-rouge">in2</code>, and a real-valued output named <code class="highlighter-rouge">out</code>.
+Each collection of data types associated with the input and output ports is
+called a type signature.</p>
+
+<p align="center">
+<img src="figures/figure_type_signatures_example.png" />
+</p>
+
+<p>LuaRadio chooses the correct type signature for each block in a flow graph, so
+that output and input types match in the connections between blocks.</p>
+
+<h3 id="sample-rate">Sample Rate</h3>
+
+<p align="center">
+<img src="figures/figure_sample_rate_propagation.png" />
+</p>
+
+<p>LuaRadio blocks have a sample rate associated with them. This is the rate at
+which the discrete samples are spaced in time, relative to one another, but not
+the rate that they are computationally produced, processed, or consumed by the
+framework.  Source blocks define their sample rates, while downstream blocks
+inherit — and possibly modify — the sample rate of their upstream block.  For
+example, interpolator and decimator blocks will multiply and divide the sample
+rate, respectively.</p>
+
+<p>LuaRadio propagates sample rates between blocks for you, and ensures that
+sample rates match across multiple inputs. Blocks can access their runtime
+sample rate to perform sample rate dependent initialization and computations.</p>
+
+<h3 id="flow-graph-termination">Flow Graph Termination</h3>
+
+<p align="center">
+<img src="figures/figure_flowgraph_termination.png" />
+</p>
+
+<p>While some flow graphs may describe a continuously running system (e.g. a
+Wideband FM broadcast radio receiver), LuaRadio flow graphs do not necessarily
+run forever. If a source terminates, the framework will gracefully collapse the
+flow graph as the final samples propagate their way though the graph. This
+allows you to build utilities with LuaRadio that process files to completion,
+or to use it as an engine for processing finite length data.</p>
+
+<h2 id="example">Example</h2>
+
+<p>In this example, we will create a simple flow graph to mix two cosine signals.
+It will demonstrate the basic mechanics of instantiating blocks, connecting
+blocks, and running a flow graph.</p>
+
+<p align="center">
+<img src="figures/flowgraph_mixer_example.png" />
+</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+
+<span class="c1">-- Blocks</span>
+<span class="kd">local</span> <span class="n">source1</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">125e3</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="c1">-- 125 kHz cosine source, sampled at 1 MHz</span>
+<span class="kd">local</span> <span class="n">source2</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">75e3</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span>  <span class="c1">-- 75 kHz cosine source, sampled at 1 MHz</span>
+<span class="kd">local</span> <span class="n">mixer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultiplyBlock</span><span class="p">()</span>                      <span class="c1">-- Multiply block</span>
+<span class="kd">local</span> <span class="n">throttle</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">()</span>                   <span class="c1">-- Throttle block</span>
+<span class="kd">local</span> <span class="n">sink</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">()</span>                 <span class="c1">-- Spectrum plotting sink</span>
+<span class="kd">local</span> <span class="n">top</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">()</span>                       <span class="c1">-- Top-level block to contain the flow graph</span>
+
+<span class="c1">-- Connections</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source1</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">mixer</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source2</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">mixer</span><span class="p">,</span> <span class="s1">'in2'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">mixer</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">sink</span><span class="p">)</span>
+
+<span class="c1">-- Run it</span>
+<span class="n">top</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p>Run the flow graph with the <code class="highlighter-rouge">luaradio</code> runner:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ./luaradio test.lua
+</code></pre>
+</div>
+
+<p>The flow graph can be terminated with Ctrl-C or <code class="highlighter-rouge">SIGINT</code>.</p>
+
+<p>This flow graph <a href="https://en.wikipedia.org/wiki/Frequency_mixer">mixes</a> two
+tones at 125 kHz and 75 kHz to create the sum and difference frequency tones at
+200 kHz and 50 kHz, respectively.</p>
+
+<p>The two sources produce real-valued sinusoids at 125 kHz and 75 kHz and are
+connected to the inputs of the multiplier. The output of the multiplier is
+connected to a throttle block, which artificially throttles processing to limit
+CPU usage. The throttle block is connected to a gnuplot spectrum sink, which
+plots the frequency spectrum of the signal with gnuplot. This flow graph
+produces the plot below:</p>
+
+<p align="center">
+<img src="figures/plot_cosine_mixer_example.png" />
+</p>
+
+<h3 id="explanation">Explanation</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>The first line of the example imports the <code class="highlighter-rouge">radio</code> package under the local
+variable <code class="highlighter-rouge">radio</code>. This package exposes all LuaRadio blocks, as well the
+facilities to create custom blocks and types.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Blocks</span>
+<span class="kd">local</span> <span class="n">source1</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">125e3</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="c1">-- 125 kHz cosine source, sampled at 1 MHz</span>
+<span class="kd">local</span> <span class="n">source2</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">75e3</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span>  <span class="c1">-- 75 kHz cosine source, sampled at 1 MHz</span>
+<span class="kd">local</span> <span class="n">mixer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultiplyBlock</span><span class="p">()</span>                      <span class="c1">-- Multiply block</span>
+<span class="kd">local</span> <span class="n">throttle</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">()</span>                   <span class="c1">-- Throttle block</span>
+<span class="kd">local</span> <span class="n">sink</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">()</span>                 <span class="c1">-- Spectrum plotting sink</span>
+<span class="kd">local</span> <span class="n">top</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">()</span>                       <span class="c1">-- Top-level block to contain the flow graph</span>
+</code></pre>
+</div>
+
+<p>The blocks section lines instantiate each block of the flow graph. Note that
+sample rate parameters are only required for the source blocks; all other
+blocks inherit their sample rate through the connections in the flow graph.</p>
+
+<p>The last line of the blocks section instantiates a special kind of block,
+called the <a href="reference-manual.html#compositeblock"><code class="highlighter-rouge">CompositeBlock</code></a>. A
+composite block is a composition of blocks, created for one of two purposes:
+either for a top-level block: a composition of blocks forming a complete flow
+graph that can be run, or for a hierarchical block: a composition of blocks
+abstracted into one block. In this example, we create a <code class="highlighter-rouge">CompositeBlock</code> to
+serve as a top-level block that contains a complete flow graph.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Connections</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source1</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">mixer</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source2</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">mixer</span><span class="p">,</span> <span class="s1">'in2'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">mixer</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">sink</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>The connections section lines specify the connections between blocks, inside
+the top-level block, which form the complete flow graph.</p>
+
+<p>The first two connections demonstrate the explicit connection syntax. For
+instance, <code class="highlighter-rouge">top:connect(source1, 'out', mixer, 'in1')</code>, where <code class="highlighter-rouge">source1</code>’s output
+port named <code class="highlighter-rouge">out</code> is explicitly connected the <code class="highlighter-rouge">mixer</code>’s input port named <code class="highlighter-rouge">in1</code>.
+In this case, the mixer has two inputs, <code class="highlighter-rouge">in1</code> and <code class="highlighter-rouge">in2</code>, so we use the explicit
+connection syntax to specify which input the source block output should connect
+to.</p>
+
+<p>The third connection demonstrates the linear block connection syntax. This
+syntax will take any number of blocks, e.g.  <code class="highlighter-rouge">top:connect(b1, b2, b3, ...)</code>,
+and connect the first output to the first input of each adjacent block. This
+syntax is convenient for connecting chains of blocks that only have one input
+and output, which is most blocks.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Run it</span>
+<span class="n">top</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p>The last line of the example runs the flow graph. This line will block until
+the flow graph terminates, either naturally by an exiting source, or forcibly
+by a user’s <code class="highlighter-rouge">SIGINT</code> signal. In this case, the cosine signal generator sources
+will generate samples indefinitely, so this flow graph will only terminate by a
+user’s <code class="highlighter-rouge">SIGINT</code> signal.</p>
+
+<h2 id="types-and-blocks">Types and Blocks</h2>
+
+<p>Building flow graphs with LuaRadio is a matter of choosing the right blocks and
+connecting them.  The <a href="reference-manual.html">LuaRadio Reference Manual</a>
+documents all packaged blocks, including a description of their operation,
+their arguments, and their input/output port names and data types. Creating
+blocks is easy, too, and covered in the next guide, <a href="creating-blocks.html">Creating
+Blocks</a>.</p>
+
+<p>LuaRadio blocks may support multiple type signatures for their input and output
+ports, but only blocks with compatible output and input types can be connected.
+When LuaRadio initializes a flow graph, it differentiates each block based on
+its input data types to the correct type signature.  LuaRadio will raise an
+error if a block does not support a type signature that matches its input data
+types.</p>
+
+<p>LuaRadio comes with four basic data types:</p>
+
+<ul>
+  <li><a href="reference-manual.html#complexfloat32"><code class="highlighter-rouge">ComplexFloat32</code></a>, compatible with the
+<code class="highlighter-rouge">float complex</code> C type</li>
+  <li><a href="reference-manual.html#float32"><code class="highlighter-rouge">Float32</code></a>, compatible with the <code class="highlighter-rouge">float</code> C
+type</li>
+  <li><a href="reference-manual.html#byte"><code class="highlighter-rouge">Byte</code></a>, compatible with the <code class="highlighter-rouge">uint8_t</code> C type</li>
+  <li><a href="reference-manual.html#bit"><code class="highlighter-rouge">Bit</code></a>, compatible with the <code class="highlighter-rouge">uint8_t</code> C type,
+stored in the least significant bit</li>
+</ul>
+
+<p>Under the hood, the framework moves vectors of contiguous samples between
+blocks for processing. Since these vectors are simply dynamic arrays of C
+types, LuaRadio blocks can leverage the <a href="http://luajit.org/ext_ffi.html">LuaJIT foreign function
+interface</a> (FFI) to call external libraries to
+process them.</p>
+
+<p>In addition, users may create custom data types based on C structures or Lua
+objects that are serializable between processing blocks. See the <a href="creating-blocks.html#custom-types">Custom
+Types</a> section of the next guide.</p>
+
+<h2 id="caveats">Caveats</h2>
+
+<p>The LuaRadio architecture has a few important caveats.</p>
+
+<h6 id="flow-graphs-must-be-acyclic">Flow graphs must be acyclic.</h6>
+
+<p>Feedback loops cannot be implemented by blocks connected in a cycle.  Instead,
+operations that require feedback loops must be implemented entirely within a
+block (for example, the <a href="reference-manual.html#pllblock"><code class="highlighter-rouge">PLLBlock</code></a>).</p>
+
+<h6 id="blocks-cannot-be-manipulated-after-a-flow-graph-is-running">Blocks cannot be manipulated after a flow graph is running.</h6>
+
+<p>Blocks must get all of the settings they need before they are run in a flow
+graph. This means that building flow graphs that require runtime modifications
+to blocks — for example, programmatically retuning the frequency of an SDR
+source to build a spectrum analyzer —  is not possible without creating a
+custom block that accepts the runtime modifications via out-of-band messaging.</p>
+
+<h2 id="next-steps">Next Steps…</h2>
+
+<p>The next guide, <a href="creating-blocks.html">Creating Blocks</a>, describes the basic
+concepts behind blocks, data types, and vectors, and demonstrates how to create
+blocks and data types.</p>
+
+
+
+        <div class="footer">
+          <div class="disclaimer">
+  <p>
+    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+  </p>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

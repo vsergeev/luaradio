@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>LuaRadio - Benchmarks</title>
+  
+  <meta name="author" content="Vanya A. Sergeev" />
+  <meta name="description" content="LuaRadio" />
+  <link rel="canonical" href="http://luaradio.io/benchmarks.html" />
+  <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+
+  <link rel="stylesheet" href="./assets/css/all.css">
+  <script type="text/javascript" src="./assets/js/tocbot.min.js"></script>
+  <script type="text/javascript" src="./assets/js/toc.js"></script>
+
+  
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>
+  
+</head>
+<body id="top">
+  <div class="container">
+    <div class="row">
+      <div class="three columns sidebar">
+        <nav class="menu">
+  <h1 class="title"><a href=".">LuaRadio</a></h1>
+  <p align="center">
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <ul>
+        <li><a href="./new-to-sdr.html">New to SDR?</a></li>
+        <li><a href="./docs/">Documentation</a>
+            <ul>
+                <li><a href="./docs/installation.html">Installation</a></li>
+                <li><a href="./docs/getting-started.html">Getting Started</a></li>
+                <li><a href="./docs/creating-blocks.html">Creating Blocks</a></li>
+                <li><a href="./docs/embedding-luaradio.html">Embedding LuaRadio</a></li>
+                <li><a href="./docs/architecture.html">Architecture</a></li>
+                <li><a href="./docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
+            </ul>
+        </li>
+        <li><a href="./docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="./examples/">Examples</a>
+            <ul>
+                <li><a href="./examples/rtlsdr-wbfm-mono.html">WBFM Mono</a></li>
+                <li><a href="./examples/rtlsdr-wbfm-stereo.html">WBFM Stereo</a></li>
+                <li><a href="./examples/rtlsdr-nbfm.html">NBFM</a></li>
+                <li><a href="./examples/rtlsdr-ax25.html">AX.25</a></li>
+                <li><a href="./examples/rtlsdr-pocsag.html">POCSAG</a></li>
+                <li><a href="./examples/rtlsdr-rds.html">RDS</a></li>
+                <li><a href="./examples/rtlsdr-am-envelope.html">AM (Envelope)</a></li>
+                <li><a href="./examples/rtlsdr-am-synchronous.html">AM (Synchronous)</a></li>
+                <li><a href="./examples/rtlsdr-ssb.html">SSB</a></li>
+                <li><a href="./examples/wavfile-ssb-modulator.html">WAV SSB Modulator</a></li>
+                <li><a href="./examples/iqfile-converter.html">IQ File Converter</a></li>
+            </ul>
+        </li>
+        <li><a href="./benchmarks.html">Benchmarks</a></li>
+    </ul>
+  </div>
+  <p align="center">
+    <a style="font-size: 1.4rem;" href="mailto:vsergeev@gmail.com"><i class="fa fa-envelope-o" aria-hidden="true"></i> vsergeev@gmail.com</a>
+  </p>
+</nav>
+<nav class="scroll-toc">
+  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+  <p align="center">
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <span class="page-title"><a data-scroll href="#top">Benchmarks</a></span>
+    <div class="js-toc">
+    </div>
+  </div>
+</nav>
+
+      </div>
+      <div class="nine columns content">
+        <h1 id="benchmarks">Benchmarks</h1>
+
+<p>These benchmarks are real-time throughput measurements of blocks, measured in
+samples per second, under both LuaRadio and GNU Radio. Equivalent blocks from
+LuaRadio and GNU Radio are compared, and the results are normalized to GNU
+Radio performance. Benchmark results are included for two platforms: an Intel
+i5 desktop and the Raspberry Pi 3. The benchmark suites can be found in the
+<a href="https://github.com/vsergeev/luaradio/tree/master/benchmarks"><code class="highlighter-rouge">benchmarks/</code></a>
+folder of the project.</p>
+
+<h4 id="observations">Observations</h4>
+
+<p>Generally speaking, LuaRadio performance is on the same order as GNU Radio
+performance. In computationally expensive blocks, like filters, LuaRadio has
+matching or slightly better performance to GNU Radio. In other cases, LuaRadio
+has 30% to 80% the performance of GNU Radio, but this is typically for blocks
+that are already in the very high throughput territory, e.g. hundreds to
+thousands of megasamples per second on an Intel i5 desktop. Analogous
+observations hold for the Raspberry Pi 3.</p>
+
+<p>Some blocks in LuaRadio, like the <code class="highlighter-rouge">SignalSource</code>, have not yet been optimized
+with library accelerated implementations. These blocks will see more comparable
+throughput results to GNU Radio with future performance improvements.</p>
+
+<h4 id="caveats">Caveats</h4>
+
+<p>These benchmarks are implemented by measuring the number of samples produced by
+the entire benchmark flow graph over a duration of time. The resulting
+throughput includes the overhead of the source blocks, as well as the
+framework’s overhead of serializing samples between blocks. However, the block
+under test is the limiting factor by several orders of magnitude (see
+benchmarks of the sources alone for validation of this), so the benchmark flow
+graph throughput corresponds roughly to the throughput of the block.</p>
+
+<p>These results do not reflect the performance degradation that occurs after all
+available processor cores are utilized in a larger flow graph. Instead, these
+benchmarks represent a block’s approximate throughput on a platform, if one CPU
+core were dedicated entirely to it. Nonetheless, the benchmarks still give a
+good idea of whether or not a block will present a real-time bottleneck to a
+flow graph with a certain upstream sample rate.</p>
+
+<p>The benchmarks are sensitive to CPU load by external processes, and are
+specific to the platform. Your actual results may vary, but the overall
+performance relationship between LuaRadio and GNU Radio should remain similar.</p>
+
+<h4 id="intel-i5-desktop">Intel i5 Desktop</h4>
+
+<pre class="benchmark-platform">
+<b>LuaRadio version</b>      0.1.0
+<b>GNU Radio version</b>     3.7.9.2
+<b>CPU model</b>             Intel(R) Core(TM) i5-4570T CPU @ 2.90GHz
+<b>CPU count</b>             4
+<b>Architecture</b>          x64
+<b>Operating System</b>      Linux
+<b>LuaRadio features</b>     fftw3f, volk, liquid
+</pre>
+
+<canvas id="i5_benchmarks" width="100%" height="300"></canvas>
+<script>
+var i5_benchmarks_data = {"type":"horizontalBar","data":{"labels":["PLL",["Uniform Random Source","(Real)"],"Bit Slicer",["FIR Filter","(64 Complex taps, Complex input)"],["Uniform Random Source","(Complex)"],["Hilbert Transform","(65 taps)"],["Hilbert Transform","(257 taps)"],["FIR Filter","(256 Real taps, Real input)"],["FIR Filter","(64 Real taps, Real input)"],["FIR Filter","(256 Complex taps, Complex input)"],["FIR Filter","(64 Real taps, Complex input)"],["FIR Filter","(256 Real taps, Complex input)"],["Five Back to Back FIR Filters","(256 Real taps, Complex input)"],["IIR Filter","(5 ff 3 fb Real taps, Complex input)"],"FM Deemphasis Filter",["Null Source","(Complex)"],"Complex to Real",["Raw File Source","(float)"],["Null Source","(Real)"],"Complex to Imaginary","Frequency Translator",["Delay","(N = 3000, Complex input)"],"Differential Decoder","Frequency Discriminator",["Subtract","(Complex)"],["Add","(Complex)"],["Multiply","(Complex)"],"Complex Phase","Absolute Value",["Multiply","(Real)"],"Float to Complex","Complex Magnitude","Complex Conjugate","Multiply Conjugate",["Multiply Constant","(Real constant, Real input)"],["Multiply Constant","(Complex constant, Complex input)"],["Signal Source","(Complex Exponential)"],["Signal Source","(Cosine)"],["Signal Source","(Square)"]],"datasets":[{"data":[250,250,170.49000914052547,153.58439075593523,151.08818665610667,141.65600138816845,135.0585552452681,114.90386820799057,113.46027338098374,107.16977476974137,105.52502657743634,103.38691122333402,102.17914753342313,97.80309948242503,81.95182629031228,75.05492252592394,73.86904806131741,72.9009910770257,72.02387599777249,71.03060855132671,66.25691150581906,57.85693577874366,57.31368485312276,54.43561858206517,53.974224249361136,51.07225599856818,48.20381914271333,47.6423261293557,47.2979350815977,46.55374989170737,45.58540907406977,43.94547497125627,41.605929008012986,38.196861870773034,25.75547114578206,23.693760148468066,16.181793061545115,15.960058229570702,12.863265791427512],"label":"LuaRadio","backgroundColor":"rgba(52, 152, 219, 0.75)"},{"data":[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0],"label":"GNU Radio","backgroundColor":"rgba(219, 51, 68, 0.75)"}]},"options":{"scales":{"xAxes":[{"type":"linear","ticks":{"min":0,"max":200},"scaleLabel":{"labelString":"Percent","display":true},"position":"top"}]},"tooltips":{"mode":"label","callbacks":{}},"legend":{"position":"top"},"isFixedWidth":false}};
+var i5_benchmarks_tooltips = [["LuaRadio: 396.4%, μ 5.46 MS/s, σ 0.09 MS/s","LuaRadio: 285.2%, μ 177.56 MS/s, σ 4.98 MS/s","LuaRadio: 170.5%, μ 102.50 MS/s, σ 0.46 MS/s","LuaRadio: 153.6%, μ 31.67 MS/s, σ 0.13 MS/s","LuaRadio: 151.1%, μ 95.27 MS/s, σ 1.04 MS/s","LuaRadio: 141.7%, μ 70.58 MS/s, σ 0.34 MS/s","LuaRadio: 135.1%, μ 28.69 MS/s, σ 0.03 MS/s","LuaRadio: 114.9%, μ 24.96 MS/s, σ 0.25 MS/s","LuaRadio: 113.5%, μ 59.63 MS/s, σ 0.43 MS/s","LuaRadio: 107.2%, μ 11.37 MS/s, σ 0.03 MS/s","LuaRadio: 105.5%, μ 42.26 MS/s, σ 0.29 MS/s","LuaRadio: 103.4%, μ 16.44 MS/s, σ 0.02 MS/s","LuaRadio: 102.2%, μ 6.28 MS/s, σ 0.09 MS/s","LuaRadio: 97.8%, μ 52.34 MS/s, σ 0.11 MS/s","LuaRadio: 82.0%, μ 139.92 MS/s, σ 3.00 MS/s","LuaRadio: 75.1%, μ 1319.22 MS/s, σ 64.33 MS/s","LuaRadio: 73.9%, μ 603.90 MS/s, σ 12.22 MS/s","LuaRadio: 72.9%, μ 1262.28 MS/s, σ 13.58 MS/s","LuaRadio: 72.0%, μ 2757.49 MS/s, σ 175.83 MS/s","LuaRadio: 71.0%, μ 605.67 MS/s, σ 4.09 MS/s","LuaRadio: 66.3%, μ 406.09 MS/s, σ 8.15 MS/s","LuaRadio: 57.9%, μ 503.89 MS/s, σ 3.81 MS/s","LuaRadio: 57.3%, μ 152.50 MS/s, σ 1.45 MS/s","LuaRadio: 54.4%, μ 104.76 MS/s, σ 0.80 MS/s","LuaRadio: 54.0%, μ 231.92 MS/s, σ 1.80 MS/s","LuaRadio: 51.1%, μ 230.17 MS/s, σ 2.77 MS/s","LuaRadio: 48.2%, μ 298.06 MS/s, σ 4.25 MS/s","LuaRadio: 47.6%, μ 124.74 MS/s, σ 1.93 MS/s","LuaRadio: 47.3%, μ 663.48 MS/s, σ 11.41 MS/s","LuaRadio: 46.6%, μ 604.25 MS/s, σ 17.03 MS/s","LuaRadio: 45.6%, μ 407.24 MS/s, σ 8.47 MS/s","LuaRadio: 43.9%, μ 298.19 MS/s, σ 2.76 MS/s","LuaRadio: 41.6%, μ 404.86 MS/s, σ 4.46 MS/s","LuaRadio: 38.2%, μ 297.49 MS/s, σ 4.07 MS/s","LuaRadio: 25.8%, μ 588.36 MS/s, σ 10.95 MS/s","LuaRadio: 23.7%, μ 259.88 MS/s, σ 2.84 MS/s","LuaRadio: 16.2%, μ 44.06 MS/s, σ 0.23 MS/s","LuaRadio: 16.0%, μ 81.65 MS/s, σ 0.57 MS/s","LuaRadio: 12.9%, μ 107.45 MS/s, σ 24.42 MS/s"],["GNU Radio: 100.0%, μ 1.38 MS/s, σ 0.00 MS/s","GNU Radio: 100.0%, μ 62.27 MS/s, σ 0.18 MS/s","GNU Radio: 100.0%, μ 60.12 MS/s, σ 0.42 MS/s","GNU Radio: 100.0%, μ 20.62 MS/s, σ 0.29 MS/s","GNU Radio: 100.0%, μ 63.05 MS/s, σ 0.15 MS/s","GNU Radio: 100.0%, μ 49.82 MS/s, σ 0.95 MS/s","GNU Radio: 100.0%, μ 21.24 MS/s, σ 0.16 MS/s","GNU Radio: 100.0%, μ 21.72 MS/s, σ 0.46 MS/s","GNU Radio: 100.0%, μ 52.56 MS/s, σ 1.70 MS/s","GNU Radio: 100.0%, μ 10.61 MS/s, σ 0.07 MS/s","GNU Radio: 100.0%, μ 40.04 MS/s, σ 1.09 MS/s","GNU Radio: 100.0%, μ 15.90 MS/s, σ 0.17 MS/s","GNU Radio: 100.0%, μ 6.14 MS/s, σ 0.10 MS/s","GNU Radio: 100.0%, μ 53.52 MS/s, σ 0.35 MS/s","GNU Radio: 100.0%, μ 170.73 MS/s, σ 3.63 MS/s","GNU Radio: 100.0%, μ 1757.67 MS/s, σ 203.94 MS/s","GNU Radio: 100.0%, μ 817.53 MS/s, σ 28.97 MS/s","GNU Radio: 100.0%, μ 1731.49 MS/s, σ 12.72 MS/s","GNU Radio: 100.0%, μ 3828.57 MS/s, σ 831.54 MS/s","GNU Radio: 100.0%, μ 852.69 MS/s, σ 32.28 MS/s","GNU Radio: 100.0%, μ 612.90 MS/s, σ 28.30 MS/s","GNU Radio: 100.0%, μ 870.92 MS/s, σ 69.36 MS/s","GNU Radio: 100.0%, μ 266.08 MS/s, σ 1.43 MS/s","GNU Radio: 100.0%, μ 192.44 MS/s, σ 0.79 MS/s","GNU Radio: 100.0%, μ 429.68 MS/s, σ 39.68 MS/s","GNU Radio: 100.0%, μ 450.67 MS/s, σ 37.78 MS/s","GNU Radio: 100.0%, μ 618.33 MS/s, σ 55.76 MS/s","GNU Radio: 100.0%, μ 261.84 MS/s, σ 7.73 MS/s","GNU Radio: 100.0%, μ 1402.76 MS/s, σ 80.96 MS/s","GNU Radio: 100.0%, μ 1297.95 MS/s, σ 76.34 MS/s","GNU Radio: 100.0%, μ 893.35 MS/s, σ 58.74 MS/s","GNU Radio: 100.0%, μ 678.56 MS/s, σ 40.54 MS/s","GNU Radio: 100.0%, μ 973.08 MS/s, σ 163.74 MS/s","GNU Radio: 100.0%, μ 778.83 MS/s, σ 134.57 MS/s","GNU Radio: 100.0%, μ 2284.43 MS/s, σ 109.57 MS/s","GNU Radio: 100.0%, μ 1096.82 MS/s, σ 94.76 MS/s","GNU Radio: 100.0%, μ 272.27 MS/s, σ 3.23 MS/s","GNU Radio: 100.0%, μ 511.58 MS/s, σ 12.50 MS/s","GNU Radio: 100.0%, μ 835.31 MS/s, σ 2.24 MS/s"]];
+i5_benchmarks_data['options']['tooltips']['callbacks']['label'] = function (tooltipItem, data) { return i5_benchmarks_tooltips[tooltipItem['datasetIndex']][tooltipItem['index']] };
+new Chart(document.getElementById("i5_benchmarks"), i5_benchmarks_data);
+</script>
+
+<h4 id="raspberry-pi-3">Raspberry Pi 3</h4>
+
+<pre class="benchmark-platform">
+<b>LuaRadio version</b>      0.1.0
+<b>GNU Radio version</b>     3.7.9.2
+<b>CPU model</b>             ARMv7 Processor rev 4 (v7l)
+<b>CPU count</b>             4
+<b>Architecture</b>          arm
+<b>Operating System</b>      Linux
+<b>LuaRadio features</b>     fftw3f, volk, liquid
+</pre>
+
+<canvas id="rpi3_benchmarks" width="100%" height="300"></canvas>
+<script>
+var rpi3_benchmarks_data = {"type":"horizontalBar","data":{"labels":["PLL",["FIR Filter","(256 Complex taps, Complex input)"],["FIR Filter","(64 Complex taps, Complex input)"],["Hilbert Transform","(257 taps)"],["Hilbert Transform","(65 taps)"],["FIR Filter","(256 Real taps, Complex input)"],["FIR Filter","(256 Real taps, Real input)"],["FIR Filter","(64 Real taps, Complex input)"],["Five Back to Back FIR Filters","(256 Real taps, Complex input)"],"Bit Slicer",["FIR Filter","(64 Real taps, Real input)"],["Uniform Random Source","(Real)"],["IIR Filter","(5 ff 3 fb Real taps, Complex input)"],"FM Deemphasis Filter","Frequency Translator",["Null Source","(Real)"],"Complex Magnitude",["Multiply Constant","(Complex constant, Complex input)"],["Multiply","(Complex)"],["Uniform Random Source","(Complex)"],["Null Source","(Complex)"],"Frequency Discriminator","Multiply Conjugate",["Multiply","(Real)"],["Raw File Source","(float)"],"Complex Phase",["Add","(Complex)"],["Subtract","(Complex)"],"Differential Decoder","Absolute Value","Complex to Imaginary","Complex to Real","Float to Complex",["Delay","(N = 3000, Complex input)"],"Complex Conjugate",["Signal Source","(Square)"],["Multiply Constant","(Real constant, Real input)"],["Signal Source","(Cosine)"],["Signal Source","(Complex Exponential)"]],"datasets":[{"data":[250,134.37518541989223,127.3386920606145,105.33037790706288,101.84136200352594,100.60528866205388,95.92975145980854,91.91719250884496,87.47629699132678,87.2818544332085,87.17324029247327,86.82802067600855,71.66937919213265,71.4976472186979,70.9362021076914,66.20787356805701,52.384552751446606,49.68683264247456,48.55137787324646,47.36756610457066,46.087195021308816,45.3870358602424,45.09263543893129,41.968933169559016,38.464622266307444,34.659621343178664,30.47314182364251,30.31921920760077,28.02599205339097,27.15606196334069,19.761843538057047,19.09898862319807,16.303519079021147,15.439721357456959,12.839957062274793,11.97975830181152,10.984694341344529,1.4482777829567726,0.852395412989077],"label":"LuaRadio","backgroundColor":"rgba(52, 152, 219, 0.75)"},{"data":[100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0,100.0],"label":"GNU Radio","backgroundColor":"rgba(219, 51, 68, 0.75)"}]},"options":{"scales":{"xAxes":[{"type":"linear","ticks":{"min":0,"max":200},"scaleLabel":{"labelString":"Percent","display":true},"position":"top"}]},"tooltips":{"mode":"label","callbacks":{}},"legend":{"position":"top"},"isFixedWidth":false}};
+var rpi3_benchmarks_tooltips = [["LuaRadio: 290.4%, μ 0.95 MS/s, σ 0.00 MS/s","LuaRadio: 134.4%, μ 0.42 MS/s, σ 0.00 MS/s","LuaRadio: 127.3%, μ 1.46 MS/s, σ 0.00 MS/s","LuaRadio: 105.3%, μ 1.82 MS/s, σ 0.00 MS/s","LuaRadio: 101.8%, μ 4.74 MS/s, σ 0.01 MS/s","LuaRadio: 100.6%, μ 1.12 MS/s, σ 0.00 MS/s","LuaRadio: 95.9%, μ 1.74 MS/s, σ 0.00 MS/s","LuaRadio: 91.9%, μ 3.08 MS/s, σ 0.01 MS/s","LuaRadio: 87.5%, μ 0.61 MS/s, σ 0.02 MS/s","LuaRadio: 87.3%, μ 11.14 MS/s, σ 0.01 MS/s","LuaRadio: 87.2%, μ 4.51 MS/s, σ 0.01 MS/s","LuaRadio: 86.8%, μ 11.19 MS/s, σ 0.01 MS/s","LuaRadio: 71.7%, μ 7.65 MS/s, σ 0.02 MS/s","LuaRadio: 71.5%, μ 14.02 MS/s, σ 0.03 MS/s","LuaRadio: 70.9%, μ 11.54 MS/s, σ 0.01 MS/s","LuaRadio: 66.2%, μ 366.76 MS/s, σ 4.27 MS/s","LuaRadio: 52.4%, μ 13.59 MS/s, σ 0.05 MS/s","LuaRadio: 49.7%, μ 15.99 MS/s, σ 0.12 MS/s","LuaRadio: 48.6%, μ 12.80 MS/s, σ 0.06 MS/s","LuaRadio: 47.4%, μ 5.94 MS/s, σ 0.00 MS/s","LuaRadio: 46.1%, μ 136.30 MS/s, σ 0.70 MS/s","LuaRadio: 45.4%, μ 11.60 MS/s, σ 0.07 MS/s","LuaRadio: 45.1%, μ 12.74 MS/s, σ 0.15 MS/s","LuaRadio: 42.0%, μ 36.63 MS/s, σ 0.33 MS/s","LuaRadio: 38.5%, μ 99.08 MS/s, σ 0.80 MS/s","LuaRadio: 34.7%, μ 13.17 MS/s, σ 0.03 MS/s","LuaRadio: 30.5%, μ 13.86 MS/s, σ 0.13 MS/s","LuaRadio: 30.3%, μ 13.80 MS/s, σ 0.10 MS/s","LuaRadio: 28.0%, μ 9.55 MS/s, σ 0.14 MS/s","LuaRadio: 27.2%, μ 32.68 MS/s, σ 0.31 MS/s","LuaRadio: 19.8%, μ 39.59 MS/s, σ 0.25 MS/s","LuaRadio: 19.1%, μ 39.58 MS/s, σ 0.25 MS/s","LuaRadio: 16.3%, μ 25.67 MS/s, σ 0.05 MS/s","LuaRadio: 15.4%, μ 28.68 MS/s, σ 0.38 MS/s","LuaRadio: 12.8%, μ 23.25 MS/s, σ 0.16 MS/s","LuaRadio: 12.0%, μ 9.42 MS/s, σ 2.35 MS/s","LuaRadio: 11.0%, μ 31.95 MS/s, σ 0.14 MS/s","LuaRadio: 1.4%, μ 0.57 MS/s, σ 0.00 MS/s","LuaRadio: 0.9%, μ 0.29 MS/s, σ 0.00 MS/s"],["GNU Radio: 100.0%, μ 0.33 MS/s, σ 0.00 MS/s","GNU Radio: 100.0%, μ 0.32 MS/s, σ 0.00 MS/s","GNU Radio: 100.0%, μ 1.14 MS/s, σ 0.01 MS/s","GNU Radio: 100.0%, μ 1.73 MS/s, σ 0.02 MS/s","GNU Radio: 100.0%, μ 4.65 MS/s, σ 0.05 MS/s","GNU Radio: 100.0%, μ 1.11 MS/s, σ 0.01 MS/s","GNU Radio: 100.0%, μ 1.81 MS/s, σ 0.02 MS/s","GNU Radio: 100.0%, μ 3.35 MS/s, σ 0.08 MS/s","GNU Radio: 100.0%, μ 0.70 MS/s, σ 0.02 MS/s","GNU Radio: 100.0%, μ 12.77 MS/s, σ 0.13 MS/s","GNU Radio: 100.0%, μ 5.17 MS/s, σ 0.04 MS/s","GNU Radio: 100.0%, μ 12.88 MS/s, σ 0.01 MS/s","GNU Radio: 100.0%, μ 10.68 MS/s, σ 0.02 MS/s","GNU Radio: 100.0%, μ 19.61 MS/s, σ 0.04 MS/s","GNU Radio: 100.0%, μ 16.27 MS/s, σ 0.03 MS/s","GNU Radio: 100.0%, μ 553.95 MS/s, σ 71.95 MS/s","GNU Radio: 100.0%, μ 25.94 MS/s, σ 0.47 MS/s","GNU Radio: 100.0%, μ 32.19 MS/s, σ 0.06 MS/s","GNU Radio: 100.0%, μ 26.36 MS/s, σ 0.14 MS/s","GNU Radio: 100.0%, μ 12.55 MS/s, σ 0.02 MS/s","GNU Radio: 100.0%, μ 295.74 MS/s, σ 0.92 MS/s","GNU Radio: 100.0%, μ 25.55 MS/s, σ 0.31 MS/s","GNU Radio: 100.0%, μ 28.25 MS/s, σ 0.05 MS/s","GNU Radio: 100.0%, μ 87.27 MS/s, σ 0.99 MS/s","GNU Radio: 100.0%, μ 257.59 MS/s, σ 1.48 MS/s","GNU Radio: 100.0%, μ 38.00 MS/s, σ 0.08 MS/s","GNU Radio: 100.0%, μ 45.48 MS/s, σ 0.03 MS/s","GNU Radio: 100.0%, μ 45.52 MS/s, σ 0.19 MS/s","GNU Radio: 100.0%, μ 34.08 MS/s, σ 0.10 MS/s","GNU Radio: 100.0%, μ 120.35 MS/s, σ 1.18 MS/s","GNU Radio: 100.0%, μ 200.32 MS/s, σ 8.96 MS/s","GNU Radio: 100.0%, μ 207.25 MS/s, σ 2.61 MS/s","GNU Radio: 100.0%, μ 157.44 MS/s, σ 2.74 MS/s","GNU Radio: 100.0%, μ 185.73 MS/s, σ 0.65 MS/s","GNU Radio: 100.0%, μ 181.10 MS/s, σ 1.13 MS/s","GNU Radio: 100.0%, μ 78.66 MS/s, σ 0.24 MS/s","GNU Radio: 100.0%, μ 290.87 MS/s, σ 0.94 MS/s","GNU Radio: 100.0%, μ 39.59 MS/s, σ 0.09 MS/s","GNU Radio: 100.0%, μ 33.88 MS/s, σ 0.04 MS/s"]];
+rpi3_benchmarks_data['options']['tooltips']['callbacks']['label'] = function (tooltipItem, data) { return rpi3_benchmarks_tooltips[tooltipItem['datasetIndex']][tooltipItem['index']] };
+new Chart(document.getElementById("rpi3_benchmarks"), rpi3_benchmarks_data);
+</script>
+
+<p><br /></p>
+
+
+        <div class="footer">
+          <div class="disclaimer">
+  <p>
+    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+  </p>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

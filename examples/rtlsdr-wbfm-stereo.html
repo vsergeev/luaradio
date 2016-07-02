@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>LuaRadio - WBFM Broadcast Stereo Receiver Example</title>
+  
+  <meta name="author" content="Vanya A. Sergeev" />
+  <meta name="description" content="LuaRadio" />
+  <link rel="canonical" href="http://luaradio.io/examples/rtlsdr-wbfm-stereo.html" />
+  <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" href="../assets/css/all.css">
+  <script type="text/javascript" src="../assets/js/tocbot.min.js"></script>
+  <script type="text/javascript" src="../assets/js/toc.js"></script>
+
+  
+  
+</head>
+<body id="top">
+  <div class="container">
+    <div class="row">
+      <div class="three columns sidebar">
+        <nav class="menu">
+  <h1 class="title"><a href="..">LuaRadio</a></h1>
+  <p align="center">
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <ul>
+        <li><a href="../new-to-sdr.html">New to SDR?</a></li>
+        <li><a href="../docs/">Documentation</a>
+            <ul>
+                <li><a href="../docs/installation.html">Installation</a></li>
+                <li><a href="../docs/getting-started.html">Getting Started</a></li>
+                <li><a href="../docs/creating-blocks.html">Creating Blocks</a></li>
+                <li><a href="../docs/embedding-luaradio.html">Embedding LuaRadio</a></li>
+                <li><a href="../docs/architecture.html">Architecture</a></li>
+                <li><a href="../docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
+            </ul>
+        </li>
+        <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="../examples/">Examples</a>
+            <ul>
+                <li><a href="../examples/rtlsdr-wbfm-mono.html">WBFM Mono</a></li>
+                <li><a href="../examples/rtlsdr-wbfm-stereo.html">WBFM Stereo</a></li>
+                <li><a href="../examples/rtlsdr-nbfm.html">NBFM</a></li>
+                <li><a href="../examples/rtlsdr-ax25.html">AX.25</a></li>
+                <li><a href="../examples/rtlsdr-pocsag.html">POCSAG</a></li>
+                <li><a href="../examples/rtlsdr-rds.html">RDS</a></li>
+                <li><a href="../examples/rtlsdr-am-envelope.html">AM (Envelope)</a></li>
+                <li><a href="../examples/rtlsdr-am-synchronous.html">AM (Synchronous)</a></li>
+                <li><a href="../examples/rtlsdr-ssb.html">SSB</a></li>
+                <li><a href="../examples/wavfile-ssb-modulator.html">WAV SSB Modulator</a></li>
+                <li><a href="../examples/iqfile-converter.html">IQ File Converter</a></li>
+            </ul>
+        </li>
+        <li><a href="../benchmarks.html">Benchmarks</a></li>
+    </ul>
+  </div>
+  <p align="center">
+    <a style="font-size: 1.4rem;" href="mailto:vsergeev@gmail.com"><i class="fa fa-envelope-o" aria-hidden="true"></i> vsergeev@gmail.com</a>
+  </p>
+</nav>
+<nav class="scroll-toc">
+  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+  <p align="center">
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+  </p>
+  <div class="toc">
+    <span class="page-title"><a data-scroll href="#top">WBFM Broadcast Stereo Receiver Example</a></span>
+    <div class="js-toc">
+    </div>
+  </div>
+</nav>
+
+      </div>
+      <div class="nine columns content">
+        <h1 id="rtlsdrwbfmstereoluahttpsgithubcomvsergeevluaradioblobmasterexamplesrtlsdrwbfmstereolua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_wbfm_stereo.lua"><code class="highlighter-rouge">rtlsdr_wbfm_stereo.lua</code></a></h1>
+
+<p>This example is a stereo Wideband FM broadcast radio receiver. It can be used
+to listen to <a href="https://en.wikipedia.org/wiki/FM_broadcasting">FM Broadcast</a>
+stations, like the mono Wideband FM example, but it also supports stereo sound.
+It uses the RTL-SDR as an SDR source, plays audio with PulseAudio, and shows
+three real-time plots: the demodulated FM spectrum, the L+R channel audio
+spectrum, and the L-R channel audio spectrum.</p>
+
+<p>This stereo Wideband FM broadcast demodulator composition is available in
+LuaRadio as the <a href="../docs/reference-manual.html#wbfmstereodemodulator"><code class="highlighter-rouge">WBFMStereoDemodulator</code></a> block.</p>
+
+<p align="center">
+<a href="../images/screenshot-rtlsdr_wbfm_stereo.png" target="_blank"><img src="../images/screenshot-rtlsdr_wbfm_stereo-thumb.png" style="display: inline-block; vertical-align: middle;" /></a>
+<a href="https://asciinema.org/a/3u9w5uve8vlqm7t3nws4nj886" target="_blank"><img src="../images/asciinema-rtlsdr_wbfm_stereo-thumb.png" style="display: inline-block; vertical-align: middle;" /></a>
+</p>
+
+<h5 id="flow-graph">Flow Graph</h5>
+
+<p align="center">
+<img src="../docs/figures/flowgraph_rtlsdr_wbfm_stereo.png" />
+</p>
+
+<h5 id="source">Source</h5>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="o">#</span><span class="n">arg</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">then</span>
+    <span class="nb">io.stderr</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">"Usage: "</span> <span class="o">..</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">..</span> <span class="s2">" &lt;FM radio frequency&gt;\n"</span><span class="p">)</span>
+    <span class="nb">os.exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="kd">local</span> <span class="n">frequency</span> <span class="o">=</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="kd">local</span> <span class="n">tune_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mf">250e3</span>
+
+<span class="c1">-- Blocks</span>
+<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RtlSdrSource</span><span class="p">(</span><span class="n">frequency</span> <span class="o">+</span> <span class="n">tune_offset</span><span class="p">,</span> <span class="mi">1102500</span><span class="p">,</span> <span class="p">{</span><span class="n">freq_correction</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">})</span>
+<span class="kd">local</span> <span class="n">tuner</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">TunerBlock</span><span class="p">(</span><span class="n">tune_offset</span><span class="p">,</span> <span class="mf">200e3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">fm_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyDiscriminatorBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">25</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">hilbert</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">HilbertTransformBlock</span><span class="p">(</span><span class="mi">129</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">delay</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DelayBlock</span><span class="p">(</span><span class="mi">129</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">pilot_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexBandpassFilterBlock</span><span class="p">(</span><span class="mi">129</span><span class="p">,</span> <span class="p">{</span><span class="mf">18e3</span><span class="p">,</span> <span class="mf">20e3</span><span class="p">})</span>
+<span class="kd">local</span> <span class="n">pilot_pll</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">PLLBlock</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mf">19e3</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mf">19e3</span><span class="o">+</span><span class="mi">50</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">mixer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultiplyConjugateBlock</span><span class="p">()</span>
+<span class="c1">-- L+R</span>
+<span class="kd">local</span> <span class="n">lpr_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">LowpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mf">15e3</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">lpr_am_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexToRealBlock</span><span class="p">()</span>
+<span class="c1">-- L-R</span>
+<span class="kd">local</span> <span class="n">lmr_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">LowpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mf">15e3</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">lmr_am_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexToRealBlock</span><span class="p">()</span>
+<span class="c1">-- L</span>
+<span class="kd">local</span> <span class="n">l_summer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AddBlock</span><span class="p">()</span>
+<span class="kd">local</span> <span class="n">l_af_deemphasis</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FMDeemphasisFilterBlock</span><span class="p">(</span><span class="mf">75e-6</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">l_downsampler</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DownsamplerBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="c1">-- R</span>
+<span class="kd">local</span> <span class="n">r_subtractor</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SubtractBlock</span><span class="p">()</span>
+<span class="kd">local</span> <span class="n">r_af_deemphasis</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FMDeemphasisFilterBlock</span><span class="p">(</span><span class="mf">75e-6</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">r_downsampler</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DownsamplerBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="c1">-- Sink</span>
+<span class="kd">local</span> <span class="n">sink</span> <span class="o">=</span> <span class="nb">os.getenv</span><span class="p">(</span><span class="s1">'DISPLAY'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">radio</span><span class="p">.</span><span class="n">PulseAudioSink</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="ow">or</span> <span class="n">radio</span><span class="p">.</span><span class="n">WAVFileSink</span><span class="p">(</span><span class="s1">'wbfm_stereo.wav'</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">-- Plotting sinks</span>
+<span class="kd">local</span> <span class="n">plot1</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="s1">'Demodulated FM Spectrum'</span><span class="p">,</span> <span class="p">{</span><span class="n">yrange</span> <span class="o">=</span> <span class="p">{</span><span class="o">-</span><span class="mi">120</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">}})</span>
+<span class="kd">local</span> <span class="n">plot2</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="s1">'L+R AF Spectrum'</span><span class="p">,</span> <span class="p">{</span><span class="n">yrange</span> <span class="o">=</span> <span class="p">{</span><span class="o">-</span><span class="mi">120</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">},</span>
+                                                                  <span class="n">xrange</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mf">15e3</span><span class="p">},</span>
+                                                                  <span class="n">update_time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">05</span><span class="p">})</span>
+<span class="kd">local</span> <span class="n">plot3</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="s1">'L-R AF Spectrum'</span><span class="p">,</span> <span class="p">{</span><span class="n">yrange</span> <span class="o">=</span> <span class="p">{</span><span class="o">-</span><span class="mi">120</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">},</span>
+                                                                  <span class="n">xrange</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mf">15e3</span><span class="p">},</span>
+                                                                  <span class="n">update_time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">05</span><span class="p">})</span>
+
+<span class="c1">-- Connections</span>
+<span class="kd">local</span> <span class="n">top</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">()</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">tuner</span><span class="p">,</span> <span class="n">fm_demod</span><span class="p">,</span> <span class="n">hilbert</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">hilbert</span><span class="p">,</span> <span class="n">pilot_filter</span><span class="p">,</span> <span class="n">pilot_pll</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">mixer</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">pilot_pll</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">mixer</span><span class="p">,</span> <span class="s1">'in2'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="n">lpr_filter</span><span class="p">,</span> <span class="n">lpr_am_demod</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">mixer</span><span class="p">,</span> <span class="n">lmr_filter</span><span class="p">,</span> <span class="n">lmr_am_demod</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">lpr_am_demod</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">l_summer</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">lmr_am_demod</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">l_summer</span><span class="p">,</span> <span class="s1">'in2'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">lpr_am_demod</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">r_subtractor</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">lmr_am_demod</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">r_subtractor</span><span class="p">,</span> <span class="s1">'in2'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">l_summer</span><span class="p">,</span> <span class="n">l_af_deemphasis</span><span class="p">,</span> <span class="n">l_downsampler</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">r_subtractor</span><span class="p">,</span> <span class="n">r_af_deemphasis</span><span class="p">,</span> <span class="n">r_downsampler</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">l_downsampler</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">sink</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">r_downsampler</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">sink</span><span class="p">,</span> <span class="s1">'in2'</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">os.getenv</span><span class="p">(</span><span class="s1">'DISPLAY'</span><span class="p">)</span> <span class="k">then</span>
+    <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">fm_demod</span><span class="p">,</span> <span class="n">plot1</span><span class="p">)</span>
+    <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">lpr_am_demod</span><span class="p">,</span> <span class="n">plot2</span><span class="p">)</span>
+    <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">lmr_am_demod</span><span class="p">,</span> <span class="n">plot3</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">top</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<h5 id="usage">Usage</h5>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Usage: examples/rtlsdr_wbfm_stereo.lua &lt;FM radio frequency&gt;
+</code></pre>
+</div>
+
+<p>Running this example in a headless environment will inhibit plotting and record
+audio to the WAV file <code class="highlighter-rouge">wbfm_stereo.wav</code>.</p>
+
+<h5 id="usage-example">Usage Example</h5>
+
+<p>Listen to 91.1 MHz:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_wbfm_stereo.lua 91.1e6
+</code></pre>
+</div>
+
+
+        <div class="footer">
+          <div class="disclaimer">
+  <p>
+    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+  </p>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

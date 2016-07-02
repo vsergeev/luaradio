@@ -15,7 +15,7 @@
 -- @tparam int decimation Downsampling factor M
 -- @tparam[opt={}] table options Additional options, specifying:
 --                               * `num_taps` (int, default 128)
---                               * `window_type` (string, default "hamming")
+--                               * `window` (string, default "hamming")
 --
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 --
@@ -38,7 +38,7 @@ function TunerBlock:instantiate(offset, bandwidth, decimation, options)
     options = options or {}
 
     local translator = blocks.FrequencyTranslatorBlock(offset)
-    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, bandwidth/2, nil, options.window_type)
+    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, bandwidth/2, nil, options.window)
     local downsampler = blocks.DownsamplerBlock(decimation)
     self:connect(translator, filter, downsampler)
 

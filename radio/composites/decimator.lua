@@ -10,7 +10,7 @@
 -- @tparam int decimation Downsampling factor M
 -- @tparam[opt={}] table options Additional options, specifying:
 --                               * `num_taps` (int, default 128)
---                               * `window_type` (string, default "hamming")
+--                               * `window` (string, default "hamming")
 --
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 -- @signature in:Float32 > out:Float32
@@ -31,7 +31,7 @@ function DecimatorBlock:instantiate(decimation, options)
     assert(decimation, "Missing argument #1 (decimation)")
     options = options or {}
 
-    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, 1/decimation, 1.0, options.window_type)
+    local filter = blocks.LowpassFilterBlock(options.num_taps or 128, 1/decimation, 1.0, options.window)
     local downsampler = blocks.DownsamplerBlock(decimation)
     self:connect(filter, downsampler)
 

@@ -10,7 +10,7 @@ LIBNAME = luaradio
 LIB_SRCS = luaradio.c
 LUA_SRCS = $(shell find $(SRC_DIR)/radio -type f -name "*.lua")
 
-EXAMPLE_SRCS = $(EXAMPLE_DIR)/fmradio.c $(EXAMPLE_DIR)/rds-timesync.c
+EXAMPLE_SRCS = $(EXAMPLE_DIR)/fm-radio.c $(EXAMPLE_DIR)/rds-timesync.c
 TEST_SRCS = $(TEST_DIR)/test_api.c
 
 ################################################################################

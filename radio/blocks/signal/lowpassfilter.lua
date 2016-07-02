@@ -10,7 +10,7 @@
 -- @tparam number cutoff Cutoff frequency in Hz
 -- @tparam[opt=nil] number nyquist Nyquist frequency, if specifying a
 --                                 normalized cutoff frequency
--- @tparam[opt='hamming'] string window_type Window type
+-- @tparam[opt='hamming'] string window Window type
 --
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 -- @signature in:Float32 > out:Float32
@@ -29,10 +29,10 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 
 local LowpassFilterBlock = block.factory("LowpassFilterBlock", FIRFilterBlock)
 
-function LowpassFilterBlock:instantiate(num_taps, cutoff, nyquist, window_type)
+function LowpassFilterBlock:instantiate(num_taps, cutoff, nyquist, window)
     assert(num_taps, "Missing argument #1 (num_taps)")
     self.cutoff = assert(cutoff, "Missing argument #2 (cutoff)")
-    self.window_type = window_type or "hamming"
+    self.window = window or "hamming"
     self.nyquist = nyquist
 
     FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
@@ -43,7 +43,7 @@ function LowpassFilterBlock:initialize()
     local nyquist = self.nyquist or (self:get_rate()/2)
 
     -- Generate taps
-    local taps = filter_utils.firwin_lowpass(self.taps.length, self.cutoff/nyquist, self.window_type)
+    local taps = filter_utils.firwin_lowpass(self.taps.length, self.cutoff/nyquist, self.window)
     self.taps = types.Float32.vector_from_array(taps)
 
     FIRFilterBlock.initialize(self)

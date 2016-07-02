@@ -7,7 +7,7 @@
 -- @category Spectrum Manipulation
 -- @block HilbertTransformBlock
 -- @tparam number num_taps Number of FIR taps, must be odd
--- @tparam[opt='hamming'] string window_type Window type
+-- @tparam[opt='hamming'] string window Window type
 --
 -- @signature in:Float32 > out:ComplexFloat32
 --
@@ -24,13 +24,13 @@ local filter_utils = require('radio.blocks.signal.filter_utils')
 
 local HilbertTransformBlock = block.factory("HilbertTransformBlock")
 
-function HilbertTransformBlock:instantiate(num_taps, window_type)
+function HilbertTransformBlock:instantiate(num_taps, window)
     assert(num_taps, "Missing argument #1 (num_taps)")
     assert((num_taps % 2) == 1, "Number of taps must be odd")
-    window_type = window_type or "hamming"
+    window = window or "hamming"
 
     -- Generate Hilbert transform taps
-    local taps = filter_utils.fir_hilbert_transform(num_taps, window_type)
+    local taps = filter_utils.fir_hilbert_transform(num_taps, window)
     self.hilbert_taps = types.Float32.vector_from_array(taps)
 
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.ComplexFloat32)})

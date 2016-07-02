@@ -10,7 +10,7 @@
 -- @tparam {number,number} cutoffs Cutoff frequencies in Hz
 -- @tparam[opt=nil] number nyquist Nyquist frequency, if specifying
 --                                 normalized cutoff frequencies
--- @tparam[opt='hamming'] string window_type Window type
+-- @tparam[opt='hamming'] string window Window type
 --
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 -- @signature in:Float32 > out:Float32
@@ -29,10 +29,10 @@ local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 
 local BandstopFilterBlock = block.factory("BandstopFilterBlock", FIRFilterBlock)
 
-function BandstopFilterBlock:instantiate(num_taps, cutoffs, nyquist, window_type)
+function BandstopFilterBlock:instantiate(num_taps, cutoffs, nyquist, window)
     assert(num_taps, "Missing argument #1 (num_taps)")
     self.cutoffs = assert(cutoffs, "Missing argument #2 (cutoffs)")
-    self.window_type = window_type or "hamming"
+    self.window = window or "hamming"
     self.nyquist = nyquist
 
     FIRFilterBlock.instantiate(self, types.Float32.vector(num_taps))
@@ -44,7 +44,7 @@ function BandstopFilterBlock:initialize()
 
     -- Generate taps
     local cutoffs = {self.cutoffs[1]/nyquist, self.cutoffs[2]/nyquist}
-    local taps = filter_utils.firwin_bandstop(self.taps.length, cutoffs, self.window_type)
+    local taps = filter_utils.firwin_bandstop(self.taps.length, cutoffs, self.window)
     self.taps = types.Float32.vector_from_array(taps)
 
     FIRFilterBlock.initialize(self)

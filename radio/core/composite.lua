@@ -13,8 +13,8 @@ local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 
 ---
--- This block is used to compose blocks into a top-level or hierarchical block.
--- Top-level blocks may be run with the `run()` method.
+-- Create a block to hold a flow graph composition, for either top-level or
+-- hierarchical purposes. Top-level blocks may be run with the `run()` method.
 --
 -- @type CompositeBlock
 local CompositeBlock = block.factory("CompositeBlock")
@@ -50,7 +50,7 @@ end
 --
 -- This method can be used in three ways:
 --
--- 1. Linear block connections.  Connect the first output to the first input of
+-- **Linear block connections.** Connect the first output to the first input of
 -- each adjacent block. This usage is convenient for connecting blocks that
 -- only have one input port and output port (which is most blocks).
 --
@@ -58,7 +58,7 @@ end
 -- top:connect(b1, b2, b3)
 -- ```
 --
--- 2. Explicit block connections.  Connect a particular output of the first
+-- **Explicit block connections.** Connect a particular output of the first
 -- block to a particular input of the second block. The output and input ports
 -- are specified by name. This invocation is used to connect a block to another
 -- block with multiple input ports.
@@ -67,8 +67,8 @@ end
 -- top:connect(b1, 'out', b2, 'in2')
 -- ```
 --
--- 3. Alias port connections. Alias a composite block's input or output port to
--- a concrete block's input or output port. This invocation is used for
+-- **Alias port connections.** Alias a composite block's input or output port
+-- to a concrete block's input or output port. This invocation is used for
 -- connecting the boundary inputs and outputs of a hierarchical block.
 --
 -- ``` lua

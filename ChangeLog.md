@@ -1,3 +1,6 @@
+* v0.1.0 - 07/02/2016
+    * Initial release.
+
 * (Prototype) v0.0.20 - 07/01/2016
     * Block additions
         * ManchesterDecoderBlock

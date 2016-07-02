@@ -324,19 +324,19 @@ These environment variables are treated as flags that can be enabled with value
 For example, to enable debug verbosity:
 
 ```
-$ LUARADIO_DEBUG=1 luajit script.lua
+$ LUARADIO_DEBUG=1 luaradio script.lua
 ```
 
 To disable use of the VOLK library:
 
 ```
-$ LUARADIO_DISABLE_VOLK=1 luajit script.lua
+$ LUARADIO_DISABLE_VOLK=1 luaradio script.lua
 ```
 
 To run a script with no external libraries for acceleration:
 
 ```
-$ LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_FFTW3F=1 luajit script.lua
+$ LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_FFTW3F=1 luaradio script.lua
 ```
 
 ## Blocks

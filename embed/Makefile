@@ -30,6 +30,7 @@ EXAMPLE_BINS = $(patsubst $(EXAMPLE_DIR)/%.c, $(BUILD_DIR)/$(EXAMPLE_DIR)/%, $(E
 TEST_BINS = $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/$(TEST_DIR)/%, $(TEST_SRCS))
 
 PREFIX ?= /usr
+INSTALL_CMOD = $(shell pkg-config luajit --variable INSTALL_CMOD)
 
 ################################################################################
 
@@ -96,8 +97,8 @@ install: $(STATIC_LIB) $(SHARED_LIB)
 	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so
 	install -d $(DESTDIR)$(PREFIX)/include
 	install -m644 luaradio.h $(DESTDIR)$(PREFIX)/include/luaradio.h
-	install -d $(DESTDIR)$(PREFIX)/lib/lua/5.1
-	ln -sf ../../lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lua/5.1/radio.so
+	install -d $(DESTDIR)$(INSTALL_CMOD)
+	ln -sf $(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(INSTALL_CMOD)/radio.so
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
 	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
@@ -112,8 +113,8 @@ install: $(STATIC_LIB) $(SHARED_LIB)
 	ln -sf lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).dylib
 	install -d $(DESTDIR)$(PREFIX)/include
 	install -m644 luaradio.h $(DESTDIR)$(PREFIX)/include/luaradio.h
-	install -d $(DESTDIR)$(PREFIX)/lib/lua/5.1
-	ln -sf ../../lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(PREFIX)/lib/lua/5.1/radio.so
+	install -d $(DESTDIR)$(INSTALL_CMOD)
+	ln -sf $(PREFIX)/lib/lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(PREFIX)$(INSTALL_CMOD)/radio.so
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
 	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio

@@ -10,6 +10,7 @@
 --                         * `autogain` (bool, default false)
 --                         * `rf_gain` (number, default 10.0 dB)
 --                         * `freq_correction` PPM (number, default 0.0)
+--                         * `device_index` (integer, default 0)
 --
 -- @signature > out:ComplexFloat32
 --
@@ -39,6 +40,7 @@ function RtlSdrSource:instantiate(frequency, rate, options)
     self.autogain = self.options.autogain or false
     self.rf_gain = self.options.rf_gain or 10.0
     self.freq_correction = self.options.freq_correction or 0.0
+    self.device_index = self.options.device_index or 0
 
     self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
 end
@@ -82,7 +84,7 @@ function RtlSdrSource:initialize_rtlsdr()
     local ret
 
     -- Open device
-    ret = librtlsdr.rtlsdr_open(self.dev, 0)
+    ret = librtlsdr.rtlsdr_open(self.dev, self.device_index)
     if ret ~= 0 then
         error("rtlsdr_open(): " .. tostring(ret))
     end

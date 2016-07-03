@@ -146,14 +146,22 @@ module Jekyll
           'isFixedWidth' => false,
         },
       }
+
+      def format_stdev(value)
+        if value > 1e6
+          return sprintf("σ %.2f MS/s", value/1e6)
+        end
+        return sprintf("σ %.2f kS/s", value/1e3)
+      end
+
       tooltips = [
-        benchmarks.map{ |benchmark| sprintf("LuaRadio: %.1f%%, μ %.2f MS/s, σ %.2f MS/s",
+        benchmarks.map{ |benchmark| sprintf("LuaRadio: %.1f%%, μ %.2f MS/s, %s",
                                               benchmark['ratio'],
                                               benchmark['luaradio_sps']/1e6,
-                                              benchmark['luaradio_sps_stdev']/1e6) },
-        benchmarks.map{ |benchmark| sprintf("GNU Radio: 100.0%%, μ %.2f MS/s, σ %.2f MS/s",
+                                              format_stdev(benchmark['luaradio_sps_stdev'])) },
+        benchmarks.map{ |benchmark| sprintf("GNU Radio: 100.0%%, μ %.2f MS/s, %s",
                                               benchmark['gnuradio_sps']/1e6,
-                                              benchmark['gnuradio_sps_stdev']/1e6) },
+                                              format_stdev(benchmark['gnuradio_sps_stdev'])) },
       ]
 
       script = "var #{@div_id}_data = #{JSON.generate(config)};\n"

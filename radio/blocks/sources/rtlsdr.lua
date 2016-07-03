@@ -8,7 +8,7 @@
 -- @tparam number rate Sample rate in Hz
 -- @tparam[opt={}] table options Additional options, specifying:
 --                         * `autogain` (bool, default false)
---                         * `rf_gain` (number, default 10.0 dB)
+--                         * `rf_gain` (number, default closest supported to 10.0 dB)
 --                         * `freq_correction` PPM (number, default 0.0)
 --                         * `device_index` (integer, default 0)
 --
@@ -38,7 +38,7 @@ function RtlSdrSource:instantiate(frequency, rate, options)
 
     self.options = options or {}
     self.autogain = self.options.autogain or false
-    self.rf_gain = self.options.rf_gain or 10.0
+    self.rf_gain = self.options.rf_gain or nil
     self.freq_correction = self.options.freq_correction or 0.0
     self.device_index = self.options.device_index or 0
 
@@ -62,6 +62,7 @@ ffi.cdef[[
     int rtlsdr_set_tuner_gain(rtlsdr_dev_t *dev, int gain);
     int rtlsdr_set_tuner_if_gain(rtlsdr_dev_t *dev, int stage, int gain);
     int rtlsdr_set_freq_correction(rtlsdr_dev_t *dev, int ppm);
+    int rtlsdr_get_tuner_gains(rtlsdr_dev_t *dev, int *gains);
 
     int rtlsdr_reset_buffer(rtlsdr_dev_t *dev);
 
@@ -87,6 +88,31 @@ function RtlSdrSource:initialize_rtlsdr()
     ret = librtlsdr.rtlsdr_open(self.dev, self.device_index)
     if ret ~= 0 then
         error("rtlsdr_open(): " .. tostring(ret))
+    end
+
+    -- Pick a default gain value if one wasn't specified
+    if not self.rf_gain and not self.autogain then
+        -- Look up number of supported gains
+        local num_gains = librtlsdr.rtlsdr_get_tuner_gains(self.dev[0], nil)
+        if num_gains < 0 then
+            error("rtlsdr_get_tuner_gains(): " .. tostring(ret))
+        end
+
+        -- Look up supported gains
+        local supported_gains = ffi.new("int[?]", num_gains)
+        ret = librtlsdr.rtlsdr_get_tuner_gains(self.dev[0], supported_gains)
+        if ret < 0 then
+            error("rtlsdr_get_tuner_gains(): " .. tostring(ret))
+        end
+
+        -- Pick closest gain to 10 dB
+        local closest = math.huge
+        for i = 0, num_gains-1 do
+            if math.abs(supported_gains[i] - 100) < math.abs(closest - 100) then
+                closest = supported_gains[i]
+            end
+        end
+        self.rf_gain = closest/10
     end
 
     if self.autogain then

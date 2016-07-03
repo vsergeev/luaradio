@@ -93,4 +93,6 @@ return {
     --- POCSAG
     POCSAGFramerBlock = require('radio.blocks.protocol.pocsagframer'),
     POCSAGDecoderBlock = require('radio.blocks.protocol.pocsagdecoder'),
+    --- Varicode
+    VaricodeDecoderBlock = require('radio.blocks.protocol.varicodedecoder'),
 }

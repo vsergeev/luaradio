@@ -50,8 +50,8 @@ def serialize(x):
         t = [serialize(e) for e in x]
         return "{" + ", ".join(t) + "}"
     elif isinstance(x, numpy.ndarray):
-        t = [NUMPY_SERIALIZE_TYPE[type(x[0])](e) for e in x]
-        return NUMPY_VECTOR_TYPE[type(x[0])] % ", ".join(t)
+        t = [NUMPY_SERIALIZE_TYPE[x.dtype.type](e) for e in x]
+        return NUMPY_VECTOR_TYPE[x.dtype.type] % ", ".join(t)
     elif isinstance(x, dict):
         t = []
         for k in sorted(x.keys()):

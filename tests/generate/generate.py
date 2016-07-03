@@ -36,12 +36,14 @@ NUMPY_SERIALIZE_TYPE = {
     numpy.float32: lambda x: "%.*f" % (PRECISION, x),
     numpy.int32: lambda x: "%d" % x,
     numpy.bool_: lambda x: "%d" % x,
+    numpy.uint8: lambda x: "0x%02x" % x,
 }
 
 NUMPY_VECTOR_TYPE = {
     numpy.complex64: "radio.types.ComplexFloat32.vector_from_array({%s})",
     numpy.float32: "radio.types.Float32.vector_from_array({%s})",
     numpy.bool_: "radio.types.Bit.vector_from_array({%s})",
+    numpy.uint8: "radio.types.Byte.vector_from_array({%s})",
 }
 
 

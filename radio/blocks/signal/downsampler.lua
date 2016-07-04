@@ -5,8 +5,8 @@
 -- $$ y[n] = x[nM] $$
 --
 -- Note: this block performs no anti-alias filtering. Use the
--- [`DecimatorBlock`](#decimatorblock) composite for signal decimation with
--- anti-alias filtering.
+-- [`DecimatorBlock`](#decimatorblock) for signal decimation with anti-alias
+-- filtering.
 --
 -- @category Sample Rate Manipulation
 -- @block DownsamplerBlock

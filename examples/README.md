@@ -209,8 +209,7 @@ frames in JSON to standard out, and shows three real-time plots: the
 demodulated FM spectrum, the BPSK spectrum, and the BPSK constellation.
 
 This example can be used with FM Broadcast radio stations, like the
-`rtlsdr_wbfm_mono.lua` and `rtlsdr_wbfm_stereo.lua` examples, but may require a
-decent antenna or a strong station.
+`rtlsdr_wbfm_mono.lua` and `rtlsdr_wbfm_stereo.lua` examples.
 
 This RDS receiver composition is available in LuaRadio as the
 [`RDSReceiver`](../docs/0.reference-manual.md#rdsreceiver) block.

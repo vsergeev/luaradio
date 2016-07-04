@@ -82,7 +82,7 @@ Conventional hardware radios today increasingly resemble software-defined
 radios internally, as more of their processing is pushed into the digital
 domain, and more complex protocols demand integrated CPUs.  However, they are
 still tightly integrated black boxes that are designed to operate on a specific
-frequency band, while software-defined radios provide a raw sample interface
+frequency band, whereas software-defined radios provide a raw sample interface
 and tend to have a wide tuning range.
 
 ### Current State
@@ -123,7 +123,7 @@ Bandwidth is the instantaneous width of frequency content that the SDR receiver
 can receive. It can be thought of as the width of the SDR's window into the RF
 spectrum.  This is usually in the range of 1 to 10 MHz for entry-level SDR
 receivers, and in the 20 to 60 MHz range for the more advanced SDR
-transreceivers.  Bandwidth is different from tuning frequency; rather, more
+transceivers.  Bandwidth is different from tuning frequency; rather, more
 bandwidth means that the SDR receiver can capture a wider window of signals
 simultaneously when tuned to a particular frequency. In some cases, more
 bandwidth is required to capture a very wide signal, like a 6 MHz wide DVB-T
@@ -223,7 +223,7 @@ applications demand different requirements in these properties.
 An antenna's physical size is typically proportional to the wavelengths it is
 designed to receive. For example, antennas designed for reception at 15 MHz
 tend to be much larger than those intended for 100 MHz, and especially larger
-than a WiFi antenna intended for the 2.4 GHz.
+than a WiFi antenna intended for 2.4 GHz.
 
 <figure class="float-right">
 <img src="{% base %}{% thumbnail /images/rtlsdr-stock-antenna.jpg 150 %}" />
@@ -284,11 +284,11 @@ Below is a Linux-biased sampling of active SDR software projects.
 
 Waterfall receivers are characterized by a real-time vertical
 [spectrogram](https://en.wikipedia.org/wiki/Spectrogram), showing the frequency
-domain of the SDR receiver's passband over time.  Waterfall receivers simulate
-many functions of a wideband hardware RF receiver, like tuning, demodulation
-modes, filters, and listening to and recording demodulated audio. Waterfall
-receivers are useful for exploring the RF spectrum and selectively demodulating
-parts of it.
+spectrum of the SDR receiver's passband over time.  Waterfall receivers
+simulate many functions of a wideband hardware RF receiver, like tuning,
+demodulation modes, filters, and listening to or recording demodulated audio.
+Waterfall receivers are useful for exploring the RF spectrum and selectively
+demodulating parts of it.
 
 <div align="center">
 <figure>
@@ -314,8 +314,8 @@ etc.
 
 <ul>
 <li><a href="https://github.com/EliasOenal/multimon-ng"><i class="fa fa-github" aria-hidden="true"></i> multimon-ng</a></li>
-<li><a href="https://github.com/antirez/dump1090"><i class="fa fa-github" aria-hidden="true"></i> dump1090</a></li>
 <li><a href="https://sourceforge.net/projects/fldigi/"><i class="fa fa-link" aria-hidden="true"></i> fldigi</a></li>
+<li><a href="https://github.com/antirez/dump1090"><i class="fa fa-github" aria-hidden="true"></i> dump1090</a></li>
 <li>and many more...</li>
 </ul>
 
@@ -375,9 +375,10 @@ different radio frequencies have different interactions with the atmosphere and
 earth, and this affects their propagation. Propagation on certain bands may be
 sensitive to time of day, space weather, and solar weather. Propagation on
 other radio bands may depend mostly on line of sight, and may be only sensitive
-to terrestrial weather. The atmosphere may also present more or less opacity to
-outer space, depending on the radio band.  In effect, the various radio bands
-offer varying locality, which enables different kinds of communication.
+to terrestrial weather. The atmosphere may also present more or less opacity
+for different frequencies to outer space, depending on the radio band.  In
+effect, the various radio bands offer varying locality, which enables different
+kinds of communication.
 
 The bandwidth for each ITU band is not divided equally, but rather
 logarithmically. Each subsequent band has approximately ten times the bandwidth
@@ -397,8 +398,8 @@ The amount of spectrum available in a band dictates the bandwidth of signals
 you can fit in the band, especially if the band is shared among multiple users.
 For digital signals, this also dictates the maximum achievable data rate (see
 [channel capacity](https://en.wikipedia.org/wiki/Channel_capacity)). This is
-one reason that high data rate wireless technologies today occupy spectrum up
-in the gigahertz.
+one reason that high data rate wireless technologies today occupy spectrum in
+bands up in the gigahertz.
 
 Below is a tour of the more common ITU frequency bands, including their primary
 mode of propagation and what kind of signals can be found on them. These
@@ -563,7 +564,7 @@ superseded by the internet, it still continues to serve rural communities, and
 is slowly undergoing a modernization push towards digital, with protocols like
 [Digital Radio Mondiale](https://en.wikipedia.org/wiki/Digital_Radio_Mondiale),
 or Voice of America's pilot [Radiogram](http://voaradiogram.net/) project,
-which carries news text and images over a digital protocol called [Olivia
+which carries news text and images over [Olivia
 MFSK](https://en.wikipedia.org/wiki/Olivia_MFSK).
 
 It's important to point out that while the internet is decentralized in
@@ -623,7 +624,7 @@ Identification
 System](https://en.wikipedia.org/wiki/Automatic_Identification_System) (AIS) is
 a position reporting system used by ships, located at the end of the Marine VHF
 band. AIS uses a ~10 kHz wide digital
-[GSMK](https://en.wikipedia.org/wiki/Minimum-shift_keying#Gaussian_minimum-shift_keying)
+[GMSK](https://en.wikipedia.org/wiki/Minimum-shift_keying#Gaussian_minimum-shift_keying)
 modulation.
 
 Amateur radio typically has two main allocations on VHF, the [6 meter
@@ -686,8 +687,8 @@ DAB/DAB+ is the leading standard in replacing analog FM broadcast radio in most
 of the world.
 
 Approximately 20% of the UHF band is allocated for cellular technologies.  The
-precise allocations vary by region, and depending on the carrier that owns the
-band, may carry different protocols, e.g. GSM (2G), UMTS (3G), or LTE (4G).
+allocations vary by region, and depending on the carrier that owns the band,
+may carry different protocols, e.g. GSM (2G), UMTS (3G), or LTE (4G).
 Allocations tend to exist near 800 to 900 MHz and near 1700 to 2200 MHz bands.
 See the [cellular
 frequencies](https://en.wikipedia.org/wiki/Cellular_frequencies) page on
@@ -695,14 +696,14 @@ Wikipedia for more information.
 
 An important set of international allocations are the [Industrial, Scientific
 and Medical](https://en.wikipedia.org/wiki/ISM_band) (ISM) bands. Despite their
-catch-all name, the vast majority of low power local wireless technologies from
-garage door openers and weather sensors, to WiFi, Bluetooth, ZigBee, and NFC
-all use these bands. The ISM bands were originally intended to isolate noisy
-electromagnetic devices, like microwaves at 2.45 GHz or some medical devices,
-from clean spectrum reserved for communications. In effect, the ISM bands were
-unlicensed wild west zones in the spectrum and any devices designed for it
-needed to be robust to incidental interference. Over time, low power local
-wireless technologies have proliferated on these bands.
+catch-all name, the vast majority of low power local wireless technologies,
+from garage door openers and weather sensors, to WiFi, Bluetooth, ZigBee, and
+NFC, all use these bands. The ISM bands were originally intended to isolate
+noisy electromagnetic devices, like microwaves at 2.45 GHz or some medical
+devices, from clean spectrum reserved for communications. In effect, the ISM
+bands were unlicensed wild west zones in the spectrum and any devices designed
+for it needed to be robust to incidental interference. Over time, low power
+local wireless technologies have proliferated on these bands.
 
 The UHF band has two major ISM allocations. The lower frequency one ranges from
 ~433 to ~435 MHz in ITU region 1 (e.g. Europe, Africa, Middle East), or from
@@ -753,8 +754,8 @@ States. FRS and GMRS use analog ~10 kHz wide frequency modulated audio.
 
 Aircraft use a position reporting system called
 [ADS-B](https://en.wikipedia.org/wiki/Automatic_dependent_surveillance_%E2%80%93_broadcast)
-which is centered at 1090 MHz (Mode-S) in the UHF band. The 1090 MHz Mode-S
-transmissions use a 50 kHz wide [pulse position
+which is centered at 1090 MHz (for "Mode-S" transmissions) in the UHF band. The
+1090 MHz Mode-S transmissions use a 50 kHz wide [pulse position
 modulation](https://en.wikipedia.org/wiki/Pulse-position_modulation).
 
 Other notable allocations in the UHF band include those for satellite
@@ -832,7 +833,7 @@ water and oxygen molecules. EHF signals are sensitive to
 The EHF band is used for high data rate, short terrestrial point-to-point
 links, as well as some satellite communications up to about 50 GHz. The
 atmosphere absorbs most EHF frequencies above this, rendering it unusable for
-satellite communication. See the [radio
+satellite communication — see the [radio
 window](https://en.wikipedia.org/wiki/Radio_window). The
 [802.11ad](https://en.wikipedia.org/wiki/Wireless_Gigabit_Alliance) protocol is
 designed to operate around 60 GHz for local high data rate wireless
@@ -842,8 +843,8 @@ The high data rate, and consequently wide bandwidth, signals on SHF and EHF are
 not easy to receive, process, or transmit with off-the-shelf SDR transceivers,
 as their bandwidth is limited to up to about 60 MHz. In general, SDR technology
 lags behind that of conventional hardware with respect to bandwidth, due to
-limited efficiency of analog to digital conversion technology at high sample
-rates, and the computational burden they impose.
+limited efficiency of analog to digital conversion technology at very high
+sample rates, and the computational burden very high sample rates impose.
 
 The [tremendously high frequency
 band](https://en.wikipedia.org/wiki/Terahertz_radiation) (THF) spans from 300
@@ -884,7 +885,7 @@ like the bandwidth of various analog and digital modulations, the propagation
 of different radio frequency bands, and the logistics of operating a legal
 transmitter. It also revisits some recurring themes in technology, like the
 trade-offs between analog vs. digital systems, proprietary vs. open standards,
-centralized (VHF/UHF repeaters) vs. decentralized (HF) networks.
+and centralized (VHF/UHF repeaters) vs. decentralized (HF) networks.
 
 #### Getting a License
 
@@ -893,9 +894,9 @@ Class, General Class, and Extra Class. The Technician license grants transmit
 privileges on all amateur radio bands above 30 MHz, whereas the higher license
 levels grant transmit privileges on progressively more spectrum in the lower
 frequency HF band. The Technician license can be obtained by scoring 75% or
-better on a 35 question multiple choice exam, and costs about $15 to take. This
-test is not difficult to pass, as the question and answer pools for each level
-are published in advance.
+better on a 35 question multiple choice exam, and costs about $15 to take.
+These tests are not difficult to pass, as the question and answer pools for
+each level are published in advance.
 
 Studying for the amateur radio license is a great way to learn basic concepts
 about modulations, propagation, antennas, and international spectrum laws. This
@@ -930,7 +931,7 @@ Hams were some of the original
 though on bad days may share their hand-wavy engineering, they also have a
 history of publishing academic-esque articles on subjects like propagation,
 circuits, and antenna design. Amateur radio is also increasingly intersecting
-with the modern "hacker" culture as well, leading to more amateur radio related
+with the modern "hacker" culture, leading to more amateur radio related
 presentations, hosted license exam sessions, or the establishment of a regular
 [contact frequency on VHF](http://conham.org/) at security conferences like
 [DEF CON](https://defcon.org/).
@@ -942,7 +943,7 @@ questions, like:
 * Should there be more diverse unlicensed "public parks" on the radio spectrum,
   like [Citizens Band](https://en.wikipedia.org/wiki/Citizens_band_radio) and
   [Family Radio Service](https://en.wikipedia.org/wiki/Family_Radio_Service),
-  but for broadcasting or for digital transmissions?
+  but for audio broadcasting or for digital transmissions?
 * How does radio contrast to other communication methods that are protected by
   free speech?
 
@@ -969,7 +970,7 @@ are effective basic antennas for receiving and transmitting across the HF band.
 They are better when paired with a [9:1 unun](http://vk6ysf.com/unun_9-1.htm)
 impedance transformer, to help match the relatively large [antenna
 impedance](https://en.wikipedia.org/wiki/Antenna_(radio)#Impedance_matching) to
-the lower 75 ohm impedance of the RTL-SDR, or to 50 ohm impedance for most
+the lower 75 ohm impedance of the RTL-SDR, or to the 50 ohm impedance of most
 other receivers and transmitters.
 
 <div style="clear: both;"></div>
@@ -983,7 +984,7 @@ A [discone antenna](https://en.wikipedia.org/wiki/Discone_antenna) is an
 omnidirectional antenna that looks like a disc on a cone. It has approximately
 10:1 bandwidth, relative to the center frequency. which makes it a good choice
 for the VHF and UHF bands as a receiving antenna. A discone antenna with a
-center frequency of at 50, 75 or 100 MHz is a reasonable size that can be
+center frequency of 50, 75 or 100 MHz is reasonably sized, and can be
 constructed with materials from your local hardware store.
 
 For receiving and transmitting on the 2m and 70cm amateur radio bands on VHF or
@@ -1001,9 +1002,9 @@ benefit from a circularly polarized antenna, like a quadrifilar helix antenna.
 Receiving the ISS as it orbits the Earth at a certain elevation is a lot easier
 with a directional Yagi antenna.
 
-Certain situations, like electrically noisy apartment buildings or lack of
+Certain situations, like electrically noisy apartment buildings or the lack of
 outdoor access, may also call for alternate antennas designs like [magnetic
-loop antennas](https://en.wikipedia.org/wiki/Loop_antenna), which may produce
+loop antennas](https://en.wikipedia.org/wiki/Loop_antenna), which can produce
 better results indoors than an electric field antenna.
 
 ### RF Upconverter

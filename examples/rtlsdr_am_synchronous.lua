@@ -11,7 +11,7 @@ local ifreq = 50e3
 local bandwidth = 5e3
 
 -- Blocks
-local source = radio.RtlSdrSource(frequency - ifreq, 1102500, {freq_correction = -5.0})
+local source = radio.RtlSdrSource(frequency - ifreq, 1102500)
 local rf_decimator = radio.DecimatorBlock(5)
 local if_filter = radio.ComplexBandpassFilterBlock(129, {ifreq - bandwidth, ifreq + bandwidth})
 local pll = radio.PLLBlock(1000, ifreq - 100, ifreq + 100)

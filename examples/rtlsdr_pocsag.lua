@@ -10,7 +10,7 @@ local tune_offset = -100e3
 local baudrate = 1200
 
 -- Blocks
-local source = radio.RtlSdrSource(frequency + tune_offset, 1000000, {freq_correction = 1.0})
+local source = radio.RtlSdrSource(frequency + tune_offset, 1000000)
 local tuner = radio.TunerBlock(tune_offset, 12e3, 80)
 local space_filter = radio.ComplexBandpassFilterBlock(129, {3500, 5500})
 local space_magnitude = radio.ComplexMagnitudeBlock()

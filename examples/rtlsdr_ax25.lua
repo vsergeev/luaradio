@@ -10,7 +10,7 @@ local tune_offset = -100e3
 local baudrate = 1200
 
 -- Blocks
-local source = radio.RtlSdrSource(frequency + tune_offset, 1000000, {freq_correction = 0.0})
+local source = radio.RtlSdrSource(frequency + tune_offset, 1000000)
 local tuner = radio.TunerBlock(tune_offset, 12e3, 80)
 local nbfm_demod = radio.NBFMDemodulator(3e3, 3e3)
 local hilbert = radio.HilbertTransformBlock(129)

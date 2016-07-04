@@ -14,7 +14,7 @@ local tune_offset = -100e3
 local bandwidth = 3e3
 
 -- Blocks
-local source = radio.RtlSdrSource(frequency + tune_offset, 1102500, {freq_correction = -5.0})
+local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
 local tuner = radio.TunerBlock(tune_offset, 2*bandwidth, 50)
 local sb_filter = radio.ComplexBandpassFilterBlock(129, (sideband == "lsb") and {0, -bandwidth}
                                                                              or {0, bandwidth})

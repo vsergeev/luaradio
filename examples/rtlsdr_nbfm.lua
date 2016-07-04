@@ -11,7 +11,7 @@ local deviation = 5e3
 local bandwidth = 4e3
 
 -- Blocks
-local source = radio.RtlSdrSource(frequency + tune_offset, 1102500, {freq_correction = 1})
+local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)
 local tuner = radio.TunerBlock(tune_offset, 2*(deviation+bandwidth), 50)
 local fm_demod = radio.FrequencyDiscriminatorBlock(deviation/bandwidth)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)

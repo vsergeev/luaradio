@@ -17,7 +17,7 @@ demodulated FM spectrum, the BPSK spectrum, and the BPSK constellation.
 
 This example can be used with FM Broadcast radio stations, like the [WBFM
 Mono](rtlsdr-wbfm-mono.html) and [WBFM Stereo](rtlsdr-wbfm-stereo.html)
-examples, but may require a decent antenna or a strong station.
+examples.
 
 This RDS receiver composition is available in LuaRadio as the
 [`RDSReceiver`]({% base %}/docs/reference-manual.html#rdsreceiver) block.

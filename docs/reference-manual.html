@@ -30,7 +30,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.1.1</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -71,7 +71,7 @@
 <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.1</code></a>
   </p>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Reference Manual</a></span>
@@ -85,7 +85,7 @@
         <div class="reference-manual">
   <h1 id="luaradio-reference-manual">LuaRadio Reference Manual</h1>
 
-  <p>Generated from LuaRadio <code class="highlighter-rouge">v0.1.0</code>.</p>
+  <p>Generated from LuaRadio <code class="highlighter-rouge">v0.1.1</code>.</p>
 
   <h2 id="table-of-contents">Table of contents</h2>
 
@@ -740,8 +740,9 @@ the librtlsdr library.</p>
       <li><code class="highlighter-rouge">options</code> (<em>table</em>): Additional options, specifying:
         <ul>
           <li><code class="highlighter-rouge">autogain</code> (bool, default false)</li>
-          <li><code class="highlighter-rouge">rf_gain</code> (number, default 10.0 dB)</li>
+          <li><code class="highlighter-rouge">rf_gain</code> (number, default closest supported to 10.0 dB)</li>
           <li><code class="highlighter-rouge">freq_correction</code> PPM (number, default 0.0)</li>
+          <li><code class="highlighter-rouge">device_index</code> (integer, default 0)</li>
         </ul>
       </li>
     </ul>

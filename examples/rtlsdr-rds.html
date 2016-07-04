@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.1.1</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -69,7 +69,7 @@
 <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.0</code></a>
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.1</code></a>
   </p>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">RDS Receiver Example</a></span>
@@ -124,7 +124,7 @@ examples, but may require a decent antenna or a strong station.</p>
 
 <span class="c1">-- Blocks</span>
 <span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RtlSdrSource</span><span class="p">(</span><span class="n">frequency</span> <span class="o">+</span> <span class="n">tune_offset</span><span class="p">,</span> <span class="mi">1102500</span><span class="p">,</span> <span class="p">{</span><span class="n">freq_correction</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">})</span>
-<span class="kd">local</span> <span class="n">tuner</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">TunerBlock</span><span class="p">(</span><span class="n">tune_offset</span><span class="p">,</span> <span class="mf">200e6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">tuner</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">TunerBlock</span><span class="p">(</span><span class="n">tune_offset</span><span class="p">,</span> <span class="mf">200e3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">fm_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyDiscriminatorBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">25</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">hilbert</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">HilbertTransformBlock</span><span class="p">(</span><span class="mi">129</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">mixer_delay</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DelayBlock</span><span class="p">(</span><span class="mi">129</span><span class="p">)</span>

@@ -214,7 +214,7 @@ testing on a variety of dongles, including these two.
 
 ## Antennas
 
-Perhaps the most "software undefined" component of software-defined radio is
+Perhaps the most "software-undefined" component of software-defined radio is
 the antenna. It is also one of most important. Good reception on a particular
 frequency band primarily depends on the antenna configuration. Antennas vary
 in design frequency, bandwidth, directionality, and polarization, and different

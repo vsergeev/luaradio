@@ -1,3 +1,16 @@
+* v0.1.1 - 07/03/2016
+    * Block changes
+        * Add device index option to RtlSdrSource.
+        * Choose default RF gain from dongle supported gains in RtlSdrSource.
+    * C API changes
+        * Look up lua C module install path instead of presuming it in
+          Makefile.
+    * Example changes
+        * Fix tuner filter bandwidth in rtlsdr_rds.
+    * Documentation changes
+        * Make types bold in type signatures example figure.
+        * Improve wording in Comparison to GNU Radio document.
+
 * v0.1.0 - 07/02/2016
     * Initial release.
 

@@ -112,11 +112,11 @@ emphasizes fast, compilation-free block development.</p>
 
 <h2 id="footprint">Footprint</h2>
 
-<p>GNU Radio has a large size footprint. A typical binary GNU Radio installation
-weighs in at over 100 MB. When the installation includes development support,
-the <a href="http://www.boost.org/">boost</a> development headers and numerous other
-libraries and tools (gsl, blas, swig, orc, etc.) can add another 100 MB or
-more.</p>
+<p>GNU Radio tends to have a large size footprint. A typical binary GNU Radio
+installation weighs in at over 100 MB. When the installation includes
+development support, the <a href="http://www.boost.org/">boost</a> development headers and
+numerous other libraries and tools (gsl, blas, swig, orc, etc.) can add another
+100 MB or more.</p>
 
 <p>GNU Radio also has a large compilation footprint, in terms of time and
 dependencies. Compilation of the GNU Radio framework and its modules is
@@ -143,19 +143,20 @@ accessible to embedded Linux platforms.</p>
 
 <h2 id="extension">Extension</h2>
 
-<p>GNU Radio blocks are written in C++ and tend to have a lot of boilerplate for
-building, Python binding, and testing. See the GNU Radio <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/OutOfTreeModules">Out-of-tree Modules
+<p>GNU Radio blocks are typically written in C++ and tend to have a lot of
+boilerplate for building, Python binding, and testing. See the GNU Radio
+<a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/OutOfTreeModules">Out-of-tree Modules
 guide</a> and
 <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/BlocksCodingGuide">Blocks Coding
 Guide</a>
 for examples of the block development flow and blocks. Blocks require
 compilation before they can be used in a flow graph. Blocks sometimes use a
 custom form of string templating (e.g.
-<a href="https://github.com/gnuradio/gnuradio/blob/v3.7.9.2/gr-blocks/lib/add_XX_impl.cc.t#L53"><code class="highlighter-rouge">add_XX_impl.cc.t</code></a>)
+<a href="https://github.com/gnuradio/gnuradio/blob/v3.7.9.2/gr-blocks/lib/add_XX_impl.cc.t#L53"><code class="highlighter-rouge">add_XX_impl.cc.t</code></a>),
 despite being written in C++, to code generate support for multiple data types.
 Blocks are bound to Python using <a href="http://www.swig.org/">SWIG</a>, which generates
-usable, but also unnatural bindings. For examples of typical GNU Radio blocks,
-see the source code of one of the third-party modules on
+usable, but unnatural bindings. For examples of typical GNU Radio blocks, see
+the source code of one of the third-party modules on
 <a href="http://www.cgran.org/">CGRAN</a>. In a nutshell, GNU Radio block development is
 shrouded in boilerplate and esoterica.</p>
 
@@ -168,7 +169,7 @@ Passing</a>, which pass
 data out-of-band of flow graph streams.</p>
 
 <p>LuaRadio blocks are written in pure Lua, have substantially less boilerplate,
-and require no compilation or bindings. In LuaRadio, the convenience of
+and require no compilation or bindings. With LuaRadio, the convenience of
 scripting applies to both defining flow graphs and developing blocks. For
 examples of typical LuaRadio blocks, see the <a href="creating-blocks.html">Creating
 Blocks</a> guide.</p>
@@ -211,11 +212,11 @@ well as ease of use in defining flow graphs.</p>
 
 <h3 id="sample-rate-propagation">Sample Rate Propagation</h3>
 
-<p>GNU Radio requires users to manually specify the sample rate of every block.
-This is alleviated by defining common sample rates in variables that are shared
-among blocks, but ultimately is still error prone. Some blocks require
-normalized parameters (e.g. angular frequency), which also obligates users to
-compute the correct normalization.</p>
+<p>GNU Radio requires users to manually specify the sample rate of every block
+that needs it. This can be alleviated by defining common sample rates in
+variables that are shared among blocks, but ultimately is still error prone.
+Some blocks require normalized parameters (e.g. angular frequency), which also
+obligates users to compute the correct normalization.</p>
 
 <p>LuaRadio automatically propagates sample rates between all blocks.  This
 reduces the amount of configuration needed by blocks, and any frequency
@@ -236,10 +237,10 @@ and examples.</p>
 <p>Generally speaking, LuaRadio performance is on the same order as GNU Radio
 performance. In computationally expensive blocks, like filters, LuaRadio has
 matching or slightly better performance to GNU Radio. In other cases, LuaRadio
-may have 30% to 80% the performance of GNU Radio, but this is typically for
-blocks that are already in the very high throughput territory, e.g. hundreds to
-thousands of megasamples per second on an Intel i5 CPU. In a few cases,
-LuaRadio performance exceeds GNU Radio performance.</p>
+may range from 30% to 80% the performance of GNU Radio, but this is typically
+for blocks that are already in the very high throughput territory, e.g.
+hundreds to thousands of megasamples per second on an Intel i5 CPU. In a few
+cases, LuaRadio performance exceeds GNU Radio performance.</p>
 
 <p>While LuaRadio performance is more than adequate for real-time SDR projects,
 GNU Radio still performs better than LuaRadio overall. If performance is your

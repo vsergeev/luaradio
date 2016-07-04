@@ -198,7 +198,7 @@ context can be freed with <code class="highlighter-rouge">luaradio_free()</code>
 context with <code class="highlighter-rouge">luaradio_get_state()</code> . Applications can use this with the Lua C
 API to prepare a custom environment for scripts prior to loading them.</p>
 
-<p>Most API functions return 0 on success and a negative integer code on failure.
+<p>Most API functions return 0 on success or a negative integer code on failure.
 <code class="highlighter-rouge">luaradio_new()</code> returns <code class="highlighter-rouge">NULL</code> on memory allocation failure.
 <code class="highlighter-rouge">luaradio_strerror()</code> can be used to get a human-readable error string of the
 last failure that occurred.</p>
@@ -217,7 +217,7 @@ the application is sinking samples, or both.</p>
 
 <p>The application can then use standard file descriptor I/O calls <code class="highlighter-rouge">read()</code> or
 <code class="highlighter-rouge">write()</code> on its file descriptor to serialize samples from or to LuaRadio. The
-application must specify the C type of the samples, as the samples are read and
+application must know the C type of the samples, as the samples are read and
 written raw, in their native memory representation, with no marshalling.</p>
 
 <p>In the case of an application sinking samples of a variable-sized

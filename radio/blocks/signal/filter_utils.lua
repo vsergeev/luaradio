@@ -27,7 +27,7 @@ local function fir_lowpass(num_taps, cutoff)
 end
 
 ---
--- Generate the shifted, truncated coefficients of an ideal low-pass filter.
+-- Generate the shifted, truncated coefficients of an ideal high-pass filter.
 --
 -- @local
 -- @tparam int num_taps Number of taps, must be odd

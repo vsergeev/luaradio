@@ -29,6 +29,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local platform = require('radio.core.platform')
 local types = require('radio.types')
+local async = require('radio.core.async')
 
 local RtlSdrSource = block.factory("RtlSdrSource")
 
@@ -172,10 +173,26 @@ function RtlSdrSource:initialize_rtlsdr()
     end
 end
 
-local function read_async_callback_factory(pipes)
+local function sigterm_handler_factory(dev)
+    local ffi = require('ffi')
+
+    ffi.cdef[[
+        typedef struct rtlsdr_dev rtlsdr_dev_t;
+        int rtlsdr_cancel_async(rtlsdr_dev_t *dev);
+    ]]
+    local librtlsdr = ffi.load('rtlsdr')
+
+    local function sigterm_handler(sig)
+        librtlsdr.rtlsdr_cancel_async(ffi.cast('rtlsdr_dev_t *', dev))
+    end
+
+    return ffi.cast('void (*)(int)', sigterm_handler)
+end
+
+local function read_callback_factory(pipes)
     local out = types.ComplexFloat32.vector()
 
-    local function read_async_callback(buf, len, ctx)
+    local function read_callback(buf, len, ctx)
         -- Resize output vector
         out:resize(len/2)
 
@@ -191,17 +208,29 @@ local function read_async_callback_factory(pipes)
         end
     end
 
-    return read_async_callback
+    return read_callback
 end
 
 function RtlSdrSource:run()
     -- Initialize the rtlsdr in our own running process
     self:initialize_rtlsdr()
 
+    -- Register SIGTERM signal handler
+    local handler, handler_state = async.callback(sigterm_handler_factory, tonumber(ffi.cast("intptr_t", self.dev[0])))
+    ffi.C.signal(ffi.C.SIGTERM, handler)
+
+    local ret
+
     -- Start asynchronous read
-    local ret = librtlsdr.rtlsdr_read_async(self.dev[0], read_async_callback_factory(self.outputs[1].pipes), nil, 0, 32768)
+    ret = librtlsdr.rtlsdr_read_async(self.dev[0], read_callback_factory(self.outputs[1].pipes), nil, 0, 32768)
     if ret ~= 0 then
         error("rtlsdr_read_async(): " .. tostring(ret))
+    end
+
+    -- Close rtlsdr
+    ret = librtlsdr.rtlsdr_close(self.dev[0])
+    if ret ~= 0 then
+        error("rtlsdr_close(): " .. tostring(ret))
     end
 end
 

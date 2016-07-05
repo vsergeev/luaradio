@@ -176,10 +176,10 @@ local function read_async_callback_factory(pipes)
     local out = types.ComplexFloat32.vector()
 
     local function read_async_callback(buf, len, ctx)
-        -- Size output vector
+        -- Resize output vector
         out:resize(len/2)
 
-        -- Convert to complex u8 in buf to complex floats in output vector
+        -- Convert complex u8 in buf to complex floats in output vector
         for i = 0, out.length-1 do
             out.data[i].real = (buf[2*i]   - 127.5) * (1/127.5)
             out.data[i].imag = (buf[2*i+1] - 127.5) * (1/127.5)

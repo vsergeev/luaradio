@@ -107,8 +107,9 @@ are inspired by GNU Radio.</p>
 
 <h2 id="purpose">Purpose</h2>
 
-<p>LuaRadio is inclined more towards scripting and prototyping than GNU Radio, and
-emphasizes fast, compilation-free block development.</p>
+<p>LuaRadio is not a GNU Radio replacement, but rather an alternative inclined
+more towards scripting and prototyping, emphasizing fast, compilation-free
+block development.</p>
 
 <h2 id="footprint">Footprint</h2>
 
@@ -120,14 +121,14 @@ numerous other libraries and tools (gsl, blas, swig, orc, etc.) can add another
 
 <p>GNU Radio also has a large compilation footprint, in terms of time and
 dependencies. Compilation of the GNU Radio framework and its modules is
-generally slow. Compiled versions of GNU Radio modules and applications can
-also break in complex ways when the underlying GNU Radio or boost runtimes are
-updated. These modules and applications may require routine re-compilation —
-sometimes in a particular order — to be linked correctly with the updated
-libraries and each other.</p>
+generally slow, and can be temperamental due to its dependency on boost.
+Compiled versions of GNU Radio modules and applications can break in complex
+ways when the underlying GNU Radio or boost runtimes are updated. These modules
+and applications may require routine re-compilation — sometimes in a particular
+order — to be linked correctly with the updated libraries and each other.</p>
 
 <p>LuaRadio’s total footprint is on the order of 1 MB and its blocks require no
-compilation.  LuaRadio has zero dependencies for non-real-time applications,
+compilation. LuaRadio has zero dependencies for non-real-time applications,
 and may otherwise use <a href="https://github.com/jgaeddert/liquid-dsp">liquid-dsp</a> or
 <a href="http://libvolk.org/">VOLK</a> for acceleration in real-time applications.
 <a href="https://github.com/jgaeddert/liquid-dsp">liquid-dsp</a> shares LuaRadio’s
@@ -143,22 +144,30 @@ accessible to embedded Linux platforms.</p>
 
 <h2 id="extension">Extension</h2>
 
-<p>GNU Radio blocks are typically written in C++ and tend to have a lot of
-boilerplate for building, Python binding, and testing. See the GNU Radio
+<p>GNU Radio blocks are typically written in C++, and tend to have a lot of
+boilerplate for building, Python binding, graphical editor binding, and
+testing. This is mitigated with tooling, i.e. the <code class="highlighter-rouge">gr_modtool</code>, but to some,
+this may contribute to the opaqueness of the framework. See the GNU Radio
 <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/OutOfTreeModules">Out-of-tree Modules
 guide</a> and
 <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/BlocksCodingGuide">Blocks Coding
-Guide</a>
-for examples of the block development flow and blocks. Blocks require
-compilation before they can be used in a flow graph. Blocks sometimes use a
-custom form of string templating (e.g.
+guide</a>
+for examples of the block development flow and block skeletons.</p>
+
+<p>GNU Radio C++ blocks naturally require compilation before they can be used in a
+flow graph, which affects the ease of their iteration. C++ blocks sometimes use
+a custom form of string templating (e.g.
 <a href="https://github.com/gnuradio/gnuradio/blob/v3.7.9.2/gr-blocks/lib/add_XX_impl.cc.t#L53"><code class="highlighter-rouge">add_XX_impl.cc.t</code></a>),
 despite being written in C++, to code generate support for multiple data types.
-Blocks are bound to Python using <a href="http://www.swig.org/">SWIG</a>, which generates
-usable, but unnatural bindings. For examples of typical GNU Radio blocks, see
-the source code of one of the third-party modules on
-<a href="http://www.cgran.org/">CGRAN</a>. In a nutshell, GNU Radio block development is
-shrouded in boilerplate and esoterica.</p>
+C++ blocks are usually bound to Python with <a href="http://www.swig.org/">SWIG</a>, which
+generates usable, but unnatural bindings. Blocks can also be written in pure
+Python (see the <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/Guided_Tutorial_GNU_Radio_in_Python">Working with GNU Radio in Python
+tutorial</a>),
+and though they are limited in performance compared to C++ blocks, do provide
+an avenue for more rapid prototyping. Altogether, the uninitiated may still
+find GNU Radio block development shrouded in boilerplate and esoterica. For
+examples of typical GNU Radio blocks, see the source code of one of the
+third-party modules on <a href="http://www.cgran.org/">CGRAN</a>.</p>
 
 <p>GNU Radio does not support creating custom first-class data types for
 serialization between blocks, but blocks may exchange Protocol Data Units
@@ -192,7 +201,7 @@ Radio</a>,
 <code class="highlighter-rouge">sizeof(gr_complex)</code>) in block connections, whereas LuaRadio’s type signature
 system is safer and more flexible. Types in block connections are matched
 explicitly in LuaRadio, and input types can also be specified by a function
-predicate.  For example, the <a href="reference-manual.html#jsonsink"><code class="highlighter-rouge">JSONSink</code></a> block
+predicate. For example, the <a href="reference-manual.html#jsonsink"><code class="highlighter-rouge">JSONSink</code></a> block
 can accept any data type that implements <code class="highlighter-rouge">to_json()</code>.</p>
 
 <p>GNU Radio blocks can only support one type signature each, which pushes the
@@ -218,11 +227,11 @@ variables that are shared among blocks, but ultimately is still error prone.
 Some blocks require normalized parameters (e.g. angular frequency), which also
 obligates users to compute the correct normalization.</p>
 
-<p>LuaRadio automatically propagates sample rates between all blocks.  This
+<p>LuaRadio automatically propagates sample rates between all blocks. This
 reduces the amount of configuration needed by blocks, and any frequency
 parameters that are required can be specified in units of hertz. It also allows
 for a suite of convenience blocks that automatically perform sample rate
-dependent initialization, e.g.  the
+dependent initialization, e.g. the
 <a href="reference-manual.html#lowpassfilterblock"><code class="highlighter-rouge">LowpassFilterBlock</code></a>, whose
 parameters are just number of taps and a cutoff frequency in hertz.</p>
 
@@ -260,9 +269,9 @@ more mature codebase.</p>
 <p>LuaRadio does not have a graphical flow graph editing tool, like the GNU Radio
 Companion (GRC).</p>
 
-<p>GNU Radio currently has some more efficient signal processing blocks, like
-blocks with integrated decimation and translation, but these can be added to
-LuaRadio as needed.</p>
+<p>GNU Radio currently has some more efficient signal processing blocks, like FFT
+filters, polyphase filters, or filters with integrated translation and
+decimation, but these can be added to LuaRadio as needed.</p>
 
 
 

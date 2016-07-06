@@ -11,6 +11,7 @@ return {
     UniformRandomSource = require('radio.blocks.sources.uniformrandom'),
     SignalSource = require('radio.blocks.sources.signal'),
     RtlSdrSource = require('radio.blocks.sources.rtlsdr'),
+    AirspySource = require('radio.blocks.sources.airspy'),
 
     -- Sink Blocks
     IQFileSink = require('radio.blocks.sinks.iqfile'),

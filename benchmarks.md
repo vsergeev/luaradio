@@ -35,8 +35,8 @@ the entire benchmark flow graph over a duration of time. The resulting
 throughput includes the overhead of the source blocks, as well as the
 framework's overhead of serializing samples between blocks. However, the block
 under test is the limiting factor by several orders of magnitude (see
-benchmarks of the sources alone for validation of this), so the benchmark flow
-graph throughput corresponds roughly to the throughput of the block.
+benchmarks of the sources alone for validation of this), so the throughput of
+the benchmark flow graph corresponds roughly to the throughput of the block.
 
 These results do not reflect the performance degradation that occurs after all
 available processor cores are utilized in a larger flow graph. Instead, these

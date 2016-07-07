@@ -155,10 +155,10 @@ function HackRFSource:initialize_hackrf()
     local computed_baseband_bandwidth
     if self.baseband_bandwidth then
         -- Snap supplied bandwidth to closest
-        computed_baseband_bandwidth = ffi.C.hackrf_compute_baseband_filter_bw(self.baseband_bandwidth)
+        computed_baseband_bandwidth = libhackrf.hackrf_compute_baseband_filter_bw(self.baseband_bandwidth)
     else
         -- Round down from sample rate
-        computed_baseband_bandwidth = ffi.Chackrf_compute_baseband_filter_bw_round_down_lt(self.rate)
+        computed_baseband_bandwidth = libhackrf.hackrf_compute_baseband_filter_bw_round_down_lt(self.rate)
     end
 
     -- Set baseband filter bandwidth
@@ -206,7 +206,7 @@ local function read_callback_factory(...)
 
     local fds = {...}
 
-    local out = radio.ComplexFloat32.vector()
+    local out = radio.types.ComplexFloat32.vector()
 
     local function read_callback(transfer)
         -- Resize output vector

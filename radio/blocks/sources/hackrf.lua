@@ -207,7 +207,7 @@ local function read_callback_factory(...)
 
     local fds = {...}
 
-    local out = radio.ComplexFloat32.vector()
+    local out = radio.types.ComplexFloat32.vector()
 
     local function read_callback(transfer)
         -- Resize output vector

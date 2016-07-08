@@ -111,7 +111,7 @@ install: $(STATIC_LIB) $(SHARED_LIB)
 	install -d $(DESTDIR)$(PREFIX)/include
 	install -m644 luaradio.h $(DESTDIR)$(PREFIX)/include/luaradio.h
 	install -d $(DESTDIR)$(INSTALL_CMOD)
-	ln -sf $(PREFIX)/lib/lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(PREFIX)$(INSTALL_CMOD)/radio.so
+	ln -sf $(PREFIX)/lib/lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(INSTALL_CMOD)/radio.so
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
 	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio

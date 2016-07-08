@@ -37,13 +37,10 @@ INSTALL_CMOD = $(shell pkg-config luajit --variable INSTALL_CMOD)
 OPT = -O3
 DEBUG =
 
-GIT_TAG := $(shell git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-GIT_COMMIT := $(shell git describe --abbrev --always --tags --dirty 2>/dev/null || echo "unknown")
-
-VERSION_MAJOR = $(shell echo $(GIT_TAG) | sed 's/v\([0-9]*\).[0-9]*.[0-9]*/\1/')
-VERSION_MINOR = $(shell echo $(GIT_TAG) | sed 's/v[0-9]*.\([0-9]*\).[0-9]*/\1/')
-VERSION_PATCH = $(shell echo $(GIT_TAG) | sed 's/v[0-9]*.[0-9]*.\([0-9]*\)/\1/')
-VERSION_COMMIT = $(GIT_COMMIT)
+VERSION_MAJOR := $(shell cd ../; luajit -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.major)")
+VERSION_MINOR := $(shell cd ../; luajit -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.minor)")
+VERSION_PATCH := $(shell cd ../; luajit -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.patch)")
+VERSION_COMMIT := $(shell git describe --abbrev --always --tags --dirty 2>/dev/null || echo "")
 
 CFLAGS = -std=c99 -D_DEFAULT_SOURCE
 CFLAGS += $(shell pkg-config --cflags luajit)

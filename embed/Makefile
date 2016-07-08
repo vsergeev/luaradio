@@ -29,7 +29,8 @@ LIB_OBJS := $(patsubst $(GEN_DIR)/%.c, $(BUILD_DIR)/%.o, $(LUA_C_SRCS)) $(patsub
 EXAMPLE_BINS = $(patsubst $(EXAMPLE_DIR)/%.c, $(BUILD_DIR)/$(EXAMPLE_DIR)/%, $(EXAMPLE_SRCS))
 TEST_BINS = $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/$(TEST_DIR)/%, $(TEST_SRCS))
 
-PREFIX ?= /usr
+PREFIX ?= /usr/local
+
 INSTALL_CMOD = $(shell pkg-config luajit --variable INSTALL_CMOD)
 
 ################################################################################

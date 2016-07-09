@@ -18,6 +18,10 @@ ffi.cdef[[
     int luaL_loadbuffer(lua_State *L, const char *buff, size_t sz, const char *name);
     const char *lua_tolstring(lua_State *L, int index, size_t *len);
 
+    enum { LUA_GLOBALSINDEX = -10002 };
+    void lua_getfield (lua_State *L, int index, const char *k);
+    void lua_setfield (lua_State *L, int index, const char *k);
+
     void lua_pushnumber(lua_State *L, lua_Number n);
     void lua_pushlstring(lua_State *L, const char *s, size_t len);
     void lua_pushboolean(lua_State *L, int b);
@@ -76,6 +80,12 @@ function callback(callback_factory, ...)
 
     -- Open standard libraries in the Lua state
     ffi.C.luaL_openlibs(L)
+
+    -- Inherit parent environment's package.path
+    ffi.C.lua_getfield(L, ffi.C.LUA_GLOBALSINDEX, "package")
+    ffi.C.lua_pushlstring(L, package.path, #package.path)
+    ffi.C.lua_setfield(L, -2, "path")
+    ffi.C.lua_settop(L, -2)
 
     -- Load the callback factory bytecode into the Lua state
     local bytecode = string.dump(callback_factory)

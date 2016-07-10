@@ -1,3 +1,18 @@
+* v0.1.2 - 07/09/2016
+    * C API changes
+        * Use /usr/local as default prefix for installation in Makefile.
+        * Extract version numbers from radio package rather than git tag in
+          Makefile.
+    * Examples changes
+        * Remove setup-specific RtlSdrSource frequency correction settings from
+          examples, which were accidentally committed.
+    * Documentation changes
+        * Fix type signatures example figure.
+        * Fix minor typos and wording in a few documents and docstrings.
+        * Qualify a few points in the Comparison to GNU Radio document.
+        * Add prerequisites and dependencies to installation guide.
+        * Add contributing document.
+
 * v0.1.1 - 07/03/2016
     * Block changes
         * Add device index option to RtlSdrSource.

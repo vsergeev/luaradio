@@ -100,6 +100,15 @@ Arch Linux users can install LuaRadio with the AUR package `luaradio`.
 See the [Installation](docs/1.installation.md) guide for other installation
 methods.
 
+## Project Roadmap
+
+Check out the [project
+roadmap](https://github.com/vsergeev/luaradio/wiki#project-roadmap) for
+upcoming changes.
+
+Contributions are welcome! See the [contributing document](CONTRIBUTING.md) for
+guidelines.
+
 ## Documentation
 
 LuaRadio documentation is contained in the [docs](docs) folder.

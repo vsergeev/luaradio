@@ -46,8 +46,8 @@ hardcoded to their application.
 Software-defined radios offer the allure of instant reconfigurability in every
 dimension: frequency, modulation, and protocol. In theory, you would simply run
 a different program to implement an entirely different radio — whether it's a
-FM broadcast radio receiver, a UMTS handset, or a Bluetooth device. While there
-are still real-world limitations to this dream, particularly in antennas and in
+FM broadcast receiver, a UMTS handset, or a Bluetooth device. While there are
+still real-world limitations to this dream, particularly in antennas and in
 host processing power, software-defined radio today is a powerful technology
 for building flexible communication systems, exploring the radio frequency
 spectrum, and for protocol research and development.
@@ -56,8 +56,8 @@ spectrum, and for protocol research and development.
 
 A software-defined radio still requires some hardware, but this hardware is
 relegated to just receiving and transmitting radio signals. In total, a
-software-defined radio consists of an antenna, a transmitter and/or receiver,
-and a host computer.
+software-defined radio system consists of an antenna, a transmitter and/or
+receiver, and a host computer.
 
 <p align="center">
 <img src="{% base %}/images/figure-sdr-receiver.png" />
@@ -92,22 +92,23 @@ with the commoditization of high performance CPUs, and the availability of low
 cost, high rate analog to digital converters (ADCs) and digital to analog
 converters (DACs) that are responsible for sampling and synthesizing the radio
 signal. The inexpensive $20 RTL-SDR dongle — described in more detail below —
-has also played a large role in exposing the technology to many engineers and
+has also played a role in exposing the technology to many engineers and
 hobbyists.
 
 However, the software of software-defined radio has yet to catch up to the
 hardware. Much of it is scattered across esoteric one-off decoding programs,
-trapped in frameworks bloated with boilerplate and dependencies, or proprietary
-Windows software. There has been little consolidation of common code by the way
-of libraries, and even less effort on good documentation.  Fortunately, the
-tide seems to be turning. Lightweight signal processing libraries are gaining
-traction, modern open source SDR applications are cropping up, and the
-developer communities surrounding SDR are growing.
+trapped in frameworks bloated with boilerplate and dependencies, or confined to
+proprietary Windows software. There has been little consolidation of common
+code by the way of libraries, and even less effort on good documentation.
+Fortunately, the tide seems to be turning. Lightweight signal processing
+libraries are gaining traction, modern open source SDR applications are
+cropping up, and the developer communities surrounding SDR are growing.
 
 The rest of this guide covers the details of getting started with SDR
 receivers, including hardware, software, a tour of the frequency bands, next
 steps, and additional resources. Most of this introduction focuses on SDR
-receivers, but SDR transmitters are covered briefly in the next steps section.
+receivers, but SDR transmitters are touched on briefly in the next steps
+section.
 
 ## Hardware
 
@@ -126,15 +127,15 @@ receivers, and in the 20 to 60 MHz range for the more advanced SDR
 transceivers.  Bandwidth is different from tuning frequency; rather, more
 bandwidth means that the SDR receiver can capture a wider window of signals
 simultaneously when tuned to a particular frequency. In some cases, more
-bandwidth is required to capture a very wide signal, like a 6 MHz wide DVB-T
-channel.
+bandwidth is required to capture a very wide signal, like a 6 MHz wide
+[DVB-T](https://en.wikipedia.org/wiki/DVB-T) channel.
 
 The sample rate of an SDR receiver is the rate the radio signal is sampled by
 the receiver and streamed to the host. Sample rate is directly related to the
 bandwidth, and while bandwidth is ultimately the specification of interest,
 SDRs are typically described by their sample rate, as it is the underlying
 design parameter. An SDR's effective bandwidth is usually slightly less than
-its sample rate. Sample rate also dictates the computational burden of the
+its sample rate. Sample rate also dictates the computational burden on the
 host: the wider the receive bandwidth, the more samples per second are required
 to represent it, and consequently, the more bus throughput is required to
 stream it to the host, and the more host computational power is required to
@@ -160,7 +161,7 @@ paired with a 125 MHz RF upconverter, so that it can pick up 0 to 30 MHz at the
 offset frequencies of 125 to 155 MHz.
 
 While bandwidth, resolution, and tuning range are the basic specifications of
-an SDR receiver, other figure of merits and design considerations can
+an SDR receiver, other figures of merit and design considerations can
 dramatically affect an SDR receiver's fidelity and usability.
 
 ### RTL-SDR dongle
@@ -172,9 +173,9 @@ and audio broadcast receiver, particularly for the
 [DAB/DAB+](https://en.wikipedia.org/wiki/Digital_audio_broadcasting) protocols,
 which are used in parts of Europe and Asia. Eventually, [a few developers
 discovered](http://rtlsdr.org/#history_and_discovery_of_rtlsdr) that the
-demodulating and decoding for the DAB+ and FM receiver modes was actually
-implemented in the closed-source software itself, and in those modes, the
-underlying [Realtek
+demodulating and decoding for the DAB+ and FM receiver modes of this device was
+actually implemented in the closed-source software itself, and in those modes,
+the underlying [Realtek
 RTL2832U](http://www.realtek.com.tw/products/productsView.aspx?Langid=1&PFid=35&Level=4&Conn=3&ProdID=257)
 chip streamed raw samples over USB. In other words, the dongle was a
 software-defined radio receiver in those modes.
@@ -222,8 +223,8 @@ applications demand different requirements in these properties.
 
 An antenna's physical size is typically proportional to the wavelengths it is
 designed to receive. For example, antennas designed for reception at 15 MHz
-tend to be much larger than those intended for 100 MHz, and especially larger
-than a WiFi antenna intended for 2.4 GHz.
+tend to be much larger than those designed for 100 MHz, and especially larger
+than a WiFi antenna designed for 2.4 GHz.
 
 <figure class="float-right">
 <img src="{% base %}{% thumbnail /images/rtlsdr-stock-antenna.jpg 150 %}" />
@@ -251,7 +252,7 @@ of any dedicated antenna, it should be placed outdoors and at high elevation.
 For getting started with SDR, without initially investing too much time, money,
 or real estate for an antenna, the RTL-SDR Blog's [RTL-SDR dongle and antenna
 package](http://amzn.to/1SLPS6F) is probably the all-around best entry level
-kit. The included tall 1.5m telescopic antenna performs very decently for VHF
+kit. The included tall 1.5m telescopic antenna performs decently for VHF
 signals, even when used indoors, and the shorter 20cm telescopic antenna covers
 much of the UHF band, so these two antennas can adjusted to most of the
 operating range of the RTL-SDR. All of the VHF LuaRadio examples (WBFM, NBFM,
@@ -264,17 +265,17 @@ antenna indoors.
 
 Some of the earliest SDR software has its origins in the late 90s, with dial-up
 [software modems](https://en.wikipedia.org/wiki/Softmodem) (e.g. the U.S.
-Robotics "WinModem") that implemented the majority of the modem in software
+Robotics "WinModem") that implemented the majority of the modem in software,
 rather than dedicated hardware, allowing for more inexpensive hardware. Other
 early SDR software was software support for amateur radio digital modes (FSK,
 PSK31, PACTOR, AX.25, etc.) that were modulated in the audio band.  Amateur
-radio operators could interface the audio of their radio transceivers to the
+radio operators could interface the audio of their radio transceivers to their
 PC's sound card, and use software to receive or transmit these digital modes.
 
 Sound card operated digital modes are still popular in the amateur radio
-community, and there is an abundance of older decoding software from this era
-still in use or under maintenance. Some of this software has been retrofitted
-to support modern I/Q sampling SDR receivers like the RTL-SDR.
+community today, and there is an abundance of older decoding software from this
+era in use or under maintenance. Some of this software has been retrofitted to
+support modern I/Q sampling SDR receivers like the RTL-SDR.
 
 Today, SDR software seems to broadly fall under five categories: waterfall
 receivers, standalone decoders, frameworks, libraries, and web interfaces.
@@ -284,11 +285,11 @@ Below is a Linux-biased sampling of active SDR software projects.
 
 Waterfall receivers are characterized by a real-time vertical
 [spectrogram](https://en.wikipedia.org/wiki/Spectrogram), showing the frequency
-spectrum of the SDR receiver's passband over time.  Waterfall receivers
+spectrum of the SDR receiver's passband over time.  Waterfall receivers also
 simulate many functions of a wideband hardware RF receiver, like tuning,
-demodulation modes, filters, and listening to or recording demodulated audio.
-Waterfall receivers are useful for exploring the RF spectrum and selectively
-demodulating parts of it.
+demodulation modes, filters, and listening to demodulated audio.  Waterfall
+receivers are useful for exploring the RF spectrum and selectively demodulating
+parts of it.
 
 <div align="center">
 <figure>
@@ -349,7 +350,7 @@ applications.
 
 Web interfaces provide a browser frontend to an SDR, often with server-side
 processing for demodulation and decoding, and a client-side waterfall and
-audio. This is like a waterfall receiver accessible through a browser.
+audio. They are like a waterfall receiver accessible through a browser.
 
 <ul>
 <li><a href="https://github.com/simonyiszk/openwebrx"><i class="fa fa-github" aria-hidden="true"></i> OpenWebRx</a></li>
@@ -374,7 +375,7 @@ equivalent to a slice of the VHF band. This is because electromagnetic waves of
 different radio frequencies have different interactions with the atmosphere and
 earth, and this affects their propagation. Propagation on certain bands may be
 sensitive to time of day, space weather, and solar weather. Propagation on
-other radio bands may depend mostly on line of sight, and may be only sensitive
+other radio bands may depend mostly on line of sight, and may only be sensitive
 to terrestrial weather. The atmosphere may also present more or less opacity
 for different frequencies to outer space, depending on the radio band.  In
 effect, the various radio bands offer varying locality, which enables different
@@ -862,7 +863,7 @@ band.
 A great way to further develop radio fundamentals is to become an amateur radio
 operator. Amateur radio is the hobby of making radio contacts, experimenting
 with radio hardware and antennas, and for some, providing backup communications
-in the case of an emergency that compromises local infrastructure.
+in case of an emergency that compromises local infrastructure.
 
 Portions throughout the RF spectrum have been set aside by international
 agreements expressly for amateur radio use. An amateur radio license grants the
@@ -921,9 +922,9 @@ The amateur radio culture in the United States is a peculiar mix of radio
 geeks, electronics tinkerers, and preppers. Some enjoy it simply for casual
 conversation with like-minded radio enthusiasts on their commute to or from
 work. Others are in it purely for the decentralized, self-sufficient means of
-communications it enables, perhaps for survival preparedness or volunteering
-for emergency communications. And many hams tinker with antennas, low power
-transceivers, installing repeaters, or even building dedicated [ham
+communications it enables, perhaps for survival preparedness or for
+volunteering for emergency communications. And many hams tinker with antennas,
+low power transceivers, installing repeaters, or even building dedicated [ham
 shacks](https://en.wikipedia.org/wiki/Radio_shack).
 
 Hams were some of the original
@@ -999,8 +1000,8 @@ resonant magnetic loop antenna, which is substantially smaller in size than its
 equivalently performing dipole or monopole electric field antenna. Receiving
 circularly polarized radio waves from satellites, e.g. a weather satellite,
 benefit from a circularly polarized antenna, like a quadrifilar helix antenna.
-Receiving the ISS as it orbits the Earth at a certain elevation is a lot easier
-with a directional Yagi antenna.
+Receiving the ISS, as it orbits the Earth at a certain elevation, is a lot
+easier with a directional Yagi antenna.
 
 Certain situations, like electrically noisy apartment buildings or the lack of
 outdoor access, may also call for alternate antennas designs like [magnetic

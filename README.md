@@ -120,6 +120,7 @@ LuaRadio documentation is contained in the [docs](docs) folder.
 * 4. [Embedding LuaRadio](docs/4.embedding-luaradio.md)
 * 5. [Architecture](docs/5.architecture.md)
 * 6. [Comparison to GNU Radio](docs/6.comparison-gnuradio.md)
+* 7. [Supported Hardware](docs/7.supported-hardware.md)
 
 ## Project Structure
 

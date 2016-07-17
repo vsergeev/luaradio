@@ -1,3 +1,22 @@
+* v0.2.0 - 07/16/2016
+    * Block additions
+        * AirspySource
+        * HackRFSource
+        * SDRplaySource
+    * Block changes
+        * Add proper device close to RtlSdrSource.
+    * Core changes
+        * Add asynchronous callback wrapper to support callbacks from threads
+          and signal handlers.
+    * Documentation changes
+        * Add Supported Hardware document.
+        * Add Homebrew install instructons to installation guide.
+    * Contributors
+        * Martin Müller - 354cd5e0
+        * Dominic Spill - 26bcbf72
+        * Special thanks to @zeryl, @rxseger, @dominicgs for testing and fixing
+          the HackRF source block.
+
 * v0.1.2 - 07/09/2016
     * C API changes
         * Use /usr/local as default prefix for installation in Makefile.
@@ -12,6 +31,8 @@
         * Qualify a few points in the Comparison to GNU Radio document.
         * Add prerequisites and dependencies to installation guide.
         * Add contributing document.
+    * Contributors
+        * Kevin Mehall - 8a859261
 
 * v0.1.1 - 07/03/2016
     * Block changes

@@ -8,7 +8,7 @@
 -- @tparam number rate Sample rate in Hz
 -- @tparam[opt={}] table options Additional options, specifying:
 --      * `lna_gain` (int, default 8 dB, range 0 to 40 dB, 8 dB step)
---      * `vga_gain` (int, default 20 dB, range 0 to 62 dB, 2 dB step)
+--      * `vga_gain` (int, default 40 dB, range 0 to 62 dB, 2 dB step)
 --      * `bandwidth` (number in Hz, default round down from sample rate)
 --      * `rf_amplifier_enable` (bool, default false)
 --      * `antenna_power_enable` (bool, default false)

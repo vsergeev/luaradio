@@ -25,7 +25,7 @@
 -- local src = radio.AirspySource(135e6, 6e6)
 --
 -- -- Source samples from 91.1 MHz sampled at 3 MHz, with custom gain settings
--- local src = radio.AirspySource(91.1e6, 3e6, {lna_gain = 4, mixer_gain = 1, vga_gain = 6})
+-- local src = radio.AirspySource(91.1e6, 3e6, {gain_mode = "custom", lna_gain = 4, mixer_gain = 1, vga_gain = 6})
 --
 -- -- Source samples from 91.1 MHz sampled at 2.5 MHz, with linearity gain mode
 -- local src = radio.AirspySource(91.1e6, 2.5e6, {gain_mode = "linearity", linearity_gain = 8})

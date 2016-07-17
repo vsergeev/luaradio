@@ -29,6 +29,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local platform = require('radio.core.platform')
 local types = require('radio.types')
+local debug = require('radio.core.debug')
 
 local RtlSdrSource = block.factory("RtlSdrSource")
 
@@ -146,6 +147,8 @@ function RtlSdrSource:initialize_rtlsdr()
             error("rtlsdr_set_tuner_gain(): " .. tostring(ret))
         end
     end
+
+    debug.printf("[RtlSdrSource] Frequency: %u Hz, Sample rate: %u Hz\n", self.frequency, self.rate)
 
     -- Set frequency correction
     local ret = librtlsdr.rtlsdr_set_freq_correction(self.dev[0], math.floor(self.freq_correction))

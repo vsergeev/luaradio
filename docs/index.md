@@ -11,4 +11,5 @@ title: Documentation
 * [Embedding LuaRadio](embedding-luaradio.html)
 * [Architecture](architecture.html)
 * [Comparison to GNU Radio](comparison-gnuradio.html)
+* [Supported Hardware](supported-hardware.html)
 

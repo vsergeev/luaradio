@@ -2,12 +2,13 @@
 -- Correct the phase of a complex-valued BPSK modulated signal, by rotating it
 -- against a moving average of the phase angle.
 --
--- $$ y[n] = x[n] \; e^{-j\phi_{avg}} $$
+-- $$ y[n] = x[n] \; e^{-j\phi_{avg}[n]} $$
 --
 -- @category Digital
 -- @block BinaryPhaseCorrectorBlock
 -- @tparam int num_samples Number of samples in phase angle moving average
--- @tparam[opt=32] int sample_interval Number of samples to skip between measurements
+-- @tparam[opt=32] int sample_interval Number of samples to skip between phase
+--                                     measurements
 --
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 --

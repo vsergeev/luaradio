@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.1.2</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.2.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -41,6 +41,7 @@
                 <li><a href="../docs/embedding-luaradio.html">Embedding LuaRadio</a></li>
                 <li><a href="../docs/architecture.html">Architecture</a></li>
                 <li><a href="../docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
+                <li><a href="../docs/supported-hardware.html">Supported Hardware</a></li>
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
@@ -70,7 +71,7 @@
 <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.1.2</code></a>
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.2.0</code></a>
   </p>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Installation</a></span>
@@ -84,7 +85,8 @@
         
 <h1 id="installation">Installation</h1>
 
-<p>LuaRadio can be installed from the Arch Linux AUR or from source.</p>
+<p>LuaRadio can be installed from the Arch Linux AUR, from Homebrew on Mac OS X,
+or from source.</p>
 
 <p>Packaging for other distributions and platforms is a work in progress.</p>
 
@@ -97,6 +99,20 @@ also be necessary for real-time applications.</p>
 
 <p>LuaRadio is available in the Arch Linux AUR under the package
 <a href="https://aur.archlinux.org/packages/luaradio"><code class="highlighter-rouge">luaradio</code></a>.</p>
+
+<p>Desktop users should also install the <code class="highlighter-rouge">gnuplot</code> package for plotting support.</p>
+
+<h2 id="installing-from-homebrew-on-mac-os-x">Installing from Homebrew on Mac OS X</h2>
+
+<p>LuaRadio is available in <a href="http://brew.sh/">Homebrew</a> for Mac OS X:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>brew install luaradio
+</code></pre>
+</div>
+
+<p><em>Note</em>: Currently, the optional dependency liquid-dsp (used for real-time
+acceleration) is not yet available in Homebrew. liquid-dsp or VOLK can be
+installed <a href="#install-real-time-dependencies">from source</a>.</p>
 
 <p>Desktop users should also install the <code class="highlighter-rouge">gnuplot</code> package for plotting support.</p>
 

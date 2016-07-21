@@ -9,7 +9,7 @@ local frequency = tonumber(arg[1])
 
 -- Blocks
 local source = radio.AirspySource(frequency, 3e6)
-local tuner = radio.TunerBlock(0, 200e3, 12)
+local tuner = radio.TunerBlock(0, 200e3, 25)
 local fm_demod = radio.FrequencyDiscriminatorBlock(1.25)
 local af_filter = radio.LowpassFilterBlock(128, 15e3)
 local af_deemphasis = radio.FMDeemphasisFilterBlock(75e-6)

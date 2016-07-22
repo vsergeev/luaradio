@@ -83,6 +83,7 @@ return {
     FloatToComplexBlock = require('radio.blocks.signal.floattocomplex'),
     --- Miscellaneous
     ThrottleBlock = require('radio.blocks.signal.throttle'),
+    PowerSquelchBlock = require('radio.blocks.signal.powersquelch'),
 
     -- Protocol Blocks
     --- RDS

@@ -84,6 +84,7 @@ return {
     --- Miscellaneous
     ThrottleBlock = require('radio.blocks.signal.throttle'),
     PowerSquelchBlock = require('radio.blocks.signal.powersquelch'),
+    AGCBlock = require('radio.blocks.signal.agc'),
 
     -- Protocol Blocks
     --- RDS

@@ -19,8 +19,8 @@ local mixer = radio.MultiplyConjugateBlock()
 local am_demod = radio.ComplexToRealBlock()
 local dcr_filter = radio.SinglepoleHighpassFilterBlock(100)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
-local af_gain = radio.MultiplyConstantBlock(gain)
 local af_downsampler = radio.DownsamplerBlock(10)
+local af_gain = radio.MultiplyConstantBlock(gain)
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(1) or radio.WAVFileSink('am_synchronous.wav', 1)
 
 -- Plotting sinks
@@ -37,7 +37,7 @@ top:connect(source, rf_decimator, if_filter)
 top:connect(if_filter, pll)
 top:connect(if_filter, 'out', mixer, 'in1')
 top:connect(pll, 'out', mixer, 'in2')
-top:connect(mixer, am_demod, dcr_filter, af_filter, af_gain, af_downsampler, sink)
+top:connect(mixer, am_demod, dcr_filter, af_filter, af_downsampler, af_gain, sink)
 if os.getenv('DISPLAY') then
     top:connect(rf_decimator, plot1)
     top:connect(af_downsampler, plot2)

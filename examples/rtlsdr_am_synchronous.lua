@@ -1,12 +1,11 @@
 local radio = require('radio')
 
 if #arg < 1 then
-    io.stderr:write("Usage: " .. arg[0] .. " <frequency> [audio gain]\n")
+    io.stderr:write("Usage: " .. arg[0] .. " <frequency>\n")
     os.exit(1)
 end
 
 local frequency = tonumber(arg[1])
-local gain = tonumber(arg[2]) or 1.0
 local ifreq = 50e3
 local bandwidth = 5e3
 
@@ -20,7 +19,7 @@ local am_demod = radio.ComplexToRealBlock()
 local dcr_filter = radio.SinglepoleHighpassFilterBlock(100)
 local af_filter = radio.LowpassFilterBlock(128, bandwidth)
 local af_downsampler = radio.DownsamplerBlock(10)
-local af_gain = radio.MultiplyConstantBlock(gain)
+local af_gain = radio.AGCBlock('slow')
 local sink = os.getenv('DISPLAY') and radio.PulseAudioSink(1) or radio.WAVFileSink('am_synchronous.wav', 1)
 
 -- Plotting sinks

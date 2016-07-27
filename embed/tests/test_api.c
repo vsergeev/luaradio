@@ -38,6 +38,10 @@ void test_load(void) {
     /* Create context */
     passert((radio = luaradio_new()) != NULL);
 
+    /* Test invalid load: error in script */
+    passert(luaradio_load(radio, "error('foobar')") < 0);
+    passert(luaradio_start(radio) < 0);
+
     /* Test invalid load: no object returned */
     passert(luaradio_load(radio, "x = 5") < 0);
     passert(luaradio_start(radio) < 0);

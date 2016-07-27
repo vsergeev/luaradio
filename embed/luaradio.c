@@ -12,7 +12,7 @@
 /* Radio context */
 struct luaradio {
     lua_State *L;
-    char errmsg[256];
+    char errmsg[1024];
 };
 
 luaradio_t *luaradio_new(void) {
@@ -62,20 +62,39 @@ static int lua_iscompositeblock(lua_State *L) {
     return 1;
 }
 
+static int _luaradio_traceback(lua_State *L) {
+    /* Return error object directly, if it's not a string */
+    if (!lua_isstring(L, 1))
+        return 1;
+
+    /* Create traceback appended to error string */
+    luaL_traceback(L, L, lua_tostring(L, 1), 1);
+    return 1;
+}
+
 int luaradio_load(luaradio_t *radio, const char *script) {
     /* Clear stack */
     lua_settop(radio->L, 0);
 
     /* Load radio module into global namespace */
+    lua_pushcfunction(radio->L, _luaradio_traceback);
     lua_getglobal(radio->L, "require");
     lua_pushliteral(radio->L, "radio");
-    if (lua_pcall(radio->L, 1, 1, 0) != 0)
+    if (lua_pcall(radio->L, 1, 1, 1) != 0)
         goto handle_error;
+    /* Pop error handler */
+    lua_remove(radio->L, 1);
+    /* Set radio global to module */
     lua_setglobal(radio->L, "radio");
 
     /* Run script */
-    if (luaL_dostring(radio->L, script) != 0)
+    lua_pushcfunction(radio->L, _luaradio_traceback);
+    if (luaL_loadstring(radio->L, script) != 0)
         goto handle_error;
+    if (lua_pcall(radio->L, 0, LUA_MULTRET, 1) != 0)
+        goto handle_error;
+    /* Pop error handler */
+    lua_remove(radio->L, 1);
 
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
@@ -103,15 +122,18 @@ int luaradio_start(luaradio_t *radio) {
     }
 
     /* Call top:start() */
-    lua_getfield(radio->L, -1, "start");
-    lua_pushvalue(radio->L, -2);
-    if (lua_pcall(radio->L, 1, 0, 0) != 0) {
+    lua_pushcfunction(radio->L, _luaradio_traceback);
+    lua_getfield(radio->L, -2, "start");
+    lua_pushvalue(radio->L, -3);
+    if (lua_pcall(radio->L, 1, 0, 2) != 0) {
         /* Copy error message into context */
         strncpy(radio->errmsg, lua_tostring(radio->L, -1), sizeof(radio->errmsg));
-        /* Pop error off of stack */
-        lua_pop(radio->L, 1);
+        /* Pop error and error handler off of stack */
+        lua_pop(radio->L, 2);
         return -1;
     }
+    /* Pop error handler */
+    lua_remove(radio->L, 2);
 
     return 0;
 }
@@ -124,15 +146,18 @@ int luaradio_status(luaradio_t *radio, bool *running) {
     }
 
     /* Call top:status() */
-    lua_getfield(radio->L, -1, "status");
-    lua_pushvalue(radio->L, -2);
-    if (lua_pcall(radio->L, 1, 1, 0) != 0) {
+    lua_pushcfunction(radio->L, _luaradio_traceback);
+    lua_getfield(radio->L, -2, "status");
+    lua_pushvalue(radio->L, -3);
+    if (lua_pcall(radio->L, 1, 1, 2) != 0) {
         /* Copy error message into context */
         strncpy(radio->errmsg, lua_tostring(radio->L, -1), sizeof(radio->errmsg));
-        /* Pop error off of stack */
-        lua_pop(radio->L, 1);
+        /* Pop error and error handler off of stack */
+        lua_pop(radio->L, 2);
         return -1;
     }
+    /* Pop error handler */
+    lua_remove(radio->L, 2);
 
     /* Extract boolean value under "running" key */
     lua_getfield(radio->L, -1, "running");
@@ -150,15 +175,18 @@ int luaradio_wait(luaradio_t *radio) {
     }
 
     /* Call top:wait() */
-    lua_getfield(radio->L, -1, "wait");
-    lua_pushvalue(radio->L, -2);
-    if (lua_pcall(radio->L, 1, 0, 0) != 0) {
+    lua_pushcfunction(radio->L, _luaradio_traceback);
+    lua_getfield(radio->L, -2, "wait");
+    lua_pushvalue(radio->L, -3);
+    if (lua_pcall(radio->L, 1, 0, 2) != 0) {
         /* Copy error message into context */
         strncpy(radio->errmsg, lua_tostring(radio->L, -1), sizeof(radio->errmsg));
-        /* Pop error off of stack */
-        lua_pop(radio->L, 1);
+        /* Pop error and error handler off of stack */
+        lua_pop(radio->L, 2);
         return -1;
     }
+    /* Pop error handler */
+    lua_remove(radio->L, 2);
 
     return 0;
 }
@@ -171,15 +199,18 @@ int luaradio_stop(luaradio_t *radio) {
     }
 
     /* Call top:stop() */
-    lua_getfield(radio->L, -1, "stop");
-    lua_pushvalue(radio->L, -2);
-    if (lua_pcall(radio->L, 1, 0, 0) != 0) {
+    lua_pushcfunction(radio->L, _luaradio_traceback);
+    lua_getfield(radio->L, -2, "stop");
+    lua_pushvalue(radio->L, -3);
+    if (lua_pcall(radio->L, 1, 0, 2) != 0) {
         /* Copy error message into context */
         strncpy(radio->errmsg, lua_tostring(radio->L, -1), sizeof(radio->errmsg));
-        /* Pop error off of stack */
-        lua_pop(radio->L, 1);
+        /* Pop error and error handler off of stack */
+        lua_pop(radio->L, 2);
         return -1;
     }
+    /* Pop error handler */
+    lua_remove(radio->L, 2);
 
     return 0;
 }

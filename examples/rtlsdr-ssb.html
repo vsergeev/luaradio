@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.2.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.3.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -71,7 +71,7 @@
 <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.2.0</code></a>
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.3.0</code></a>
   </p>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">SSB Receiver Example</a></span>
@@ -114,7 +114,7 @@ bands with the RTL-SDR.</p>
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="o">#</span><span class="n">arg</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">then</span>
-    <span class="nb">io.stderr</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">"Usage: "</span> <span class="o">..</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">..</span> <span class="s2">" &lt;frequency&gt; &lt;sideband&gt; [audio gain]\n"</span><span class="p">)</span>
+    <span class="nb">io.stderr</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">"Usage: "</span> <span class="o">..</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">..</span> <span class="s2">" &lt;frequency&gt; &lt;sideband&gt;\n"</span><span class="p">)</span>
     <span class="nb">os.exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">end</span>
 
@@ -122,7 +122,6 @@ bands with the RTL-SDR.</p>
 
 <span class="kd">local</span> <span class="n">frequency</span> <span class="o">=</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="kd">local</span> <span class="n">sideband</span> <span class="o">=</span> <span class="n">arg</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-<span class="kd">local</span> <span class="n">gain</span> <span class="o">=</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="ow">or</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span>
 <span class="kd">local</span> <span class="n">tune_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mf">100e3</span>
 <span class="kd">local</span> <span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">3e3</span>
 
@@ -133,7 +132,7 @@ bands with the RTL-SDR.</p>
                                                                              <span class="ow">or</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">})</span>
 <span class="kd">local</span> <span class="n">am_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexToRealBlock</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">af_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">LowpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">bandwidth</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">af_gain</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultiplyConstantBlock</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">af_gain</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AGCBlock</span><span class="p">(</span><span class="s1">'fast'</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">sink</span> <span class="o">=</span> <span class="nb">os.getenv</span><span class="p">(</span><span class="s1">'DISPLAY'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">radio</span><span class="p">.</span><span class="n">PulseAudioSink</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">radio</span><span class="p">.</span><span class="n">WAVFileSink</span><span class="p">(</span><span class="s1">'ssb.wav'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="c1">-- Plotting sinks</span>
@@ -158,23 +157,18 @@ bands with the RTL-SDR.</p>
 
 <h5 id="usage">Usage</h5>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>Usage: examples/rtlsdr_ssb.lua &lt;frequency&gt; &lt;sideband&gt; [audio gain]
+<div class="highlighter-rouge"><pre class="highlight"><code>Usage: examples/rtlsdr_ssb.lua &lt;frequency&gt; &lt;sideband&gt;
 </code></pre>
 </div>
 
 <p>Running this example in a headless environment will inhibit plotting and record
 audio to the WAV file <code class="highlighter-rouge">ssb.wav</code>.</p>
 
-<p>This example currently uses a constant audio gain block, which may need
-adjustment with the station signal strength. In the future, this will be
-replaced with an automatic gain control block.</p>
-
 <h5 id="usage-example">Usage Example</h5>
 
-<p>Listen to 3.745 MHz (with a 125 MHz upconverter), lower sideband, with an audio
-gain of 40:</p>
+<p>Listen to 3.745 MHz (with a 125 MHz upconverter), lower sideband:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_ssb.lua 128.745e6 lsb 40
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_ssb.lua 128.745e6 lsb
 </code></pre>
 </div>
 

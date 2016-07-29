@@ -256,8 +256,7 @@ kit. The included tall 1.5m telescopic antenna performs decently for VHF
 signals, even when used indoors, and the shorter 20cm telescopic antenna covers
 much of the UHF band, so these two antennas can adjusted to most of the
 operating range of the RTL-SDR. All of the VHF LuaRadio examples (WBFM, NBFM,
-AX.25, POCSAG, RDS) have been run successfully with this tall 1.5m telescopic
-antenna indoors.
+AX.25, POCSAG, RDS) can be run with the tall 1.5m telescopic antenna indoors.
 
 <div style="clear: both;"></div>
 
@@ -266,11 +265,11 @@ antenna indoors.
 Some of the earliest SDR software has its origins in the late 90s, with dial-up
 [software modems](https://en.wikipedia.org/wiki/Softmodem) (e.g. the U.S.
 Robotics "WinModem") that implemented the majority of the modem in software,
-rather than dedicated hardware, allowing for more inexpensive hardware. Other
-early SDR software was software support for amateur radio digital modes (FSK,
-PSK31, PACTOR, AX.25, etc.) that were modulated in the audio band.  Amateur
-radio operators could interface the audio of their radio transceivers to their
-PC's sound card, and use software to receive or transmit these digital modes.
+allowing for more inexpensive hardware. Other early SDR software was software
+support for amateur radio digital modes (FSK, PSK31, PACTOR, AX.25, etc.) that
+were modulated in the audio band.  Amateur radio operators could interface the
+audio of their radio transceivers to their PC's sound card, and use software to
+receive or transmit these digital modes.
 
 Sound card operated digital modes are still popular in the amateur radio
 community today, and there is an abundance of older decoding software from this
@@ -337,7 +336,7 @@ frameworks.
 
 Frameworks offer a suite of operations and an API to flexibly define custom
 receivers, transmitters, or signal processing in general. These are useful for
-rapidly prototyping SDR projects, and may also be integrated into standalone
+rapidly prototyping SDR projects, but may also be integrated into standalone
 applications.
 
 <ul>

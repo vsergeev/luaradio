@@ -2,7 +2,7 @@
 
 local git_version = io.popen("git describe --abbrev --always --tags"):read()
 
-local block_categories = {"Sources", "Sinks", "Filtering", "Math Operations", "Sample Rate Manipulation", "Spectrum Manipulation", "Carrier and Clock Recovery", "Digital", "Type Conversion", "Miscellaneous", "Modulation", "Demodulation", "Protocol", "Receivers"}
+local block_categories = {"Sources", "Sinks", "Filtering", "Math Operations", "Level Control", "Sample Rate Manipulation", "Spectrum Manipulation", "Carrier and Clock Recovery", "Digital", "Type Conversion", "Miscellaneous", "Modulation", "Demodulation", "Protocol", "Receivers"}
 
 local block_macro = [[
 {% if os.getenv("REFMAN_DIVS") then %}

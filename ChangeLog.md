@@ -1,3 +1,19 @@
+* v0.3.0 - 07/28/2016
+    * Block additions
+        * AGCBlock
+        * PowerSquelchBlock
+        * VaricodeDecoderBlock
+    * Composite additions
+        * BPSK31Receiver
+    * C API changes
+        * Add stack traceback to error messages.
+    * Documentation changes
+        * Add Ubuntu install instructions to installation guide.
+        * Fix minor typos and wording in a few documents and docstrings.
+    * Example changes
+        * Replace constant gain with automatic gain control in
+          rtlsdr_am_envelope, rtlsdr_am_synchronous, and rtlsdr_ssb examples.
+
 * v0.2.0 - 07/16/2016
     * Block additions
         * AirspySource

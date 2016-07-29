@@ -41,28 +41,23 @@ This AM synchronous demodulator composition is available in LuaRadio as the
 ##### Usage
 
 ```
-Usage: examples/rtlsdr_am_synchronous.lua <frequency> [audio gain]
+Usage: examples/rtlsdr_am_synchronous.lua <frequency>
 ```
 
 Running this example in a headless environment will inhibit plotting and record
 audio to the WAV file `am_synchronous.wav`.
 
-This example currently uses a constant audio gain block, which may need
-adjustment with the station signal strength. In the future, this will be
-replaced with an automatic gain control block.
-
 ##### Usage Example
 
 Listen to [WWV](https://en.wikipedia.org/wiki/WWV_(radio_station)) at 5 MHz
-(with a 125 MHz upconverter), with an audio gain of 40:
+(with a 125 MHz upconverter):
 
 ```
-$ ./luaradio examples/rtlsdr_am_synchronous.lua 130e6 40
+$ ./luaradio examples/rtlsdr_am_synchronous.lua 130e6
 ```
 
-Listen to an AM radio station at 560 kHz (with a 125 MHz upconverter), with an
-audio gain of 40:
+Listen to an AM radio station at 560 kHz (with a 125 MHz upconverter):
 
 ```
-$ ./luaradio examples/rtlsdr_am_synchronous.lua 125.560e6 40
+$ ./luaradio examples/rtlsdr_am_synchronous.lua 125.560e6
 ```

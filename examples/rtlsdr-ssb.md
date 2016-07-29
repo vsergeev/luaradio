@@ -38,21 +38,16 @@ This single-sideband demodulator composition is available in LuaRadio as the
 ##### Usage
 
 ```
-Usage: examples/rtlsdr_ssb.lua <frequency> <sideband> [audio gain]
+Usage: examples/rtlsdr_ssb.lua <frequency> <sideband>
 ```
 
 Running this example in a headless environment will inhibit plotting and record
 audio to the WAV file `ssb.wav`.
 
-This example currently uses a constant audio gain block, which may need
-adjustment with the station signal strength. In the future, this will be
-replaced with an automatic gain control block.
-
 ##### Usage Example
 
-Listen to 3.745 MHz (with a 125 MHz upconverter), lower sideband, with an audio
-gain of 40:
+Listen to 3.745 MHz (with a 125 MHz upconverter), lower sideband:
 
 ```
-$ ./luaradio examples/rtlsdr_ssb.lua 128.745e6 lsb 40
+$ ./luaradio examples/rtlsdr_ssb.lua 128.745e6 lsb
 ```

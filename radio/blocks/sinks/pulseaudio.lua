@@ -82,18 +82,23 @@ function PulseAudioSink:initialize()
     self.sample_spec.rate = self:get_rate()
 end
 
+function PulseAudioSink:initialize_pulseaudio()
+    -- Open PulseAudio connection
+    self.pa_conn = ffi.new("pa_simple *")
+    self.pa_conn = libpulse.pa_simple_new(nil, "LuaRadio", ffi.C.PA_STREAM_PLAYBACK, nil, "PulseAudioSink", self.sample_spec, nil, nil, error_code)
+    if self.pa_conn == nil then
+        error("pa_simple_new(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
+    end
+end
+
 function PulseAudioSink:process(...)
     local samples = {...}
     local error_code = ffi.new("int[1]")
 
-    -- We can't fork with a PulseAudio connection, so we create it here
+    -- We can't fork with a PulseAudio connection, so we create it in our own
+    -- running process
     if not self.pa_conn then
-        -- Open PulseAudio connection
-        self.pa_conn = ffi.new("pa_simple *")
-        self.pa_conn = libpulse.pa_simple_new(nil, "LuaRadio", ffi.C.PA_STREAM_PLAYBACK, nil, "PulseAudioSink", self.sample_spec, nil, nil, error_code)
-        if self.pa_conn == nil then
-            error("pa_simple_new(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
-        end
+        self:initialize_pulseaudio()
     end
 
     local interleaved_samples

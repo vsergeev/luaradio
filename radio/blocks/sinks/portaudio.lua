@@ -1,6 +1,6 @@
 ---
 -- Sink one or more real-valued signals to the system's audio device with
--- PortAudio. This source requires the PortAudio library.
+-- PortAudio. This sink requires the PortAudio library.
 --
 -- @category Sinks
 -- @block PortAudioSink

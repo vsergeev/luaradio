@@ -14,6 +14,7 @@ return {
     AirspySource = require('radio.blocks.sources.airspy'),
     HackRFSource = require('radio.blocks.sources.hackrf'),
     SDRplaySource = require('radio.blocks.sources.sdrplay'),
+    PulseAudioSource = require('radio.blocks.sources.pulseaudio'),
 
     -- Sink Blocks
     IQFileSink = require('radio.blocks.sinks.iqfile'),

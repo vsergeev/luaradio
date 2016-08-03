@@ -40,33 +40,44 @@ function PulseAudioSink:instantiate(num_channels)
     end
 end
 
-ffi.cdef[[
-    typedef struct pa_simple pa_simple;
+if not package.loaded['radio.blocks.sources.pulseaudio'] then
+    ffi.cdef[[
+        typedef struct pa_simple pa_simple;
 
-    typedef enum pa_sample_format { PA_SAMPLE_FLOAT32LE = 5, PA_SAMPLE_FLOAT32BE = 6 } pa_sample_format_t;
+        typedef enum pa_sample_format { PA_SAMPLE_FLOAT32LE = 5, PA_SAMPLE_FLOAT32BE = 6 } pa_sample_format_t;
 
-    typedef struct pa_sample_spec {
-        pa_sample_format_t format;
-        uint32_t rate;
-        uint8_t channels;
-    } pa_sample_spec;
-    typedef struct pa_buffer_attr pa_buffer_attr;
-    typedef struct pa_channel_map pa_channel_map;
+        typedef struct pa_sample_spec {
+            pa_sample_format_t format;
+            uint32_t rate;
+            uint8_t channels;
+        } pa_sample_spec;
+        typedef struct pa_buffer_attr pa_buffer_attr;
+        typedef struct pa_channel_map pa_channel_map;
 
-    typedef enum pa_stream_direction {
-        PA_STREAM_NODIRECTION,
-        PA_STREAM_PLAYBACK,
-        PA_STREAM_RECORD,
-        PA_STREAM_UPLOAD
-    } pa_stream_direction_t;
+        typedef enum pa_stream_direction {
+            PA_STREAM_NODIRECTION,
+            PA_STREAM_PLAYBACK,
+            PA_STREAM_RECORD,
+            PA_STREAM_UPLOAD
+        } pa_stream_direction_t;
 
-    pa_simple* pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir, const char *dev, const char *stream_name, const pa_sample_spec *ss, const pa_channel_map *map, const pa_buffer_attr *attr, int *error);
+        typedef struct pa_buffer_attr {
+            uint32_t maxlength;
+            uint32_t tlength;
+            uint32_t prebuf;
+            uint32_t minreq;
+            uint32_t fragsize;
+        } pa_buffer_attr;
 
-    void pa_simple_free(pa_simple *s);
-    int pa_simple_write(pa_simple *s, const void *data, size_t bytes, int *error);
+        pa_simple* pa_simple_new(const char *server, const char *name, pa_stream_direction_t dir, const char *dev, const char *stream_name, const pa_sample_spec *ss, const pa_channel_map *map, const pa_buffer_attr *attr, int *error);
 
-    const char* pa_strerror(int error);
-]]
+        void pa_simple_free(pa_simple *s);
+        int pa_simple_write(pa_simple *s, const void *data, size_t bytes, int *error);
+        int pa_simple_read(pa_simple *s, void *data, size_t bytes, int *error);
+
+        const char* pa_strerror(int error);
+    ]]
+end
 local libpulse_available, libpulse = pcall(ffi.load, "pulse-simple")
 
 function PulseAudioSink:initialize()

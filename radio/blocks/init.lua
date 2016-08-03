@@ -86,6 +86,7 @@ return {
     --- Miscellaneous
     DelayBlock = require('radio.blocks.signal.delay'),
     ThrottleBlock = require('radio.blocks.signal.throttle'),
+    DeinterleaveBlock = require('radio.blocks.signal.deinterleave'),
 
     -- Protocol Blocks
     --- RDS

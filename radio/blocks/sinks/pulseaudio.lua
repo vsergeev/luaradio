@@ -80,6 +80,11 @@ function PulseAudioSink:initialize()
     self.sample_spec.format = ffi.abi("le") and ffi.C.PA_SAMPLE_FLOAT32LE or ffi.C.PA_SAMPLE_FLOAT32BE
     self.sample_spec.channels = self.num_channels
     self.sample_spec.rate = self:get_rate()
+
+    -- Create interleaved sample vector for multiple channels
+    if self.num_channels > 1 then
+        self.interleaved_samples = types.Float32.vector()
+    end
 end
 
 function PulseAudioSink:initialize_pulseaudio()
@@ -106,7 +111,7 @@ function PulseAudioSink:process(...)
         interleaved_samples = samples[1]
     else
         -- Interleave samples
-        interleaved_samples = types.Float32.vector(self.num_channels*samples[1].length)
+        interleaved_samples = self.interleaved_samples:resize(self.num_channels*samples[1].length)
         for i = 0, samples[1].length-1 do
             for j = 0, self.num_channels-1 do
                 interleaved_samples.data[i*self.num_channels + j] = samples[j+1].data[i]

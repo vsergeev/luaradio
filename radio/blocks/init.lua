@@ -45,19 +45,7 @@ return {
     SinglepoleHighpassFilterBlock = require('radio.blocks.signal.singlepolehighpassfilter'),
     FMDeemphasisFilterBlock = require('radio.blocks.signal.fmdeemphasisfilter'),
     FMPreemphasisFilterBlock = require('radio.blocks.signal.fmpreemphasisfilter'),
-    --- Sample Rate Conversion
-    DownsamplerBlock = require('radio.blocks.signal.downsampler'),
-    UpsamplerBlock = require('radio.blocks.signal.upsampler'),
-    --- Spectrum Manipulation
-    FrequencyTranslatorBlock = require('radio.blocks.signal.frequencytranslator'),
-    HilbertTransformBlock = require('radio.blocks.signal.hilberttransform'),
-    --- Frequency Discriminator
-    FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator'),
-    --- Carrier Recovery
-    PLLBlock = require('radio.blocks.signal.pll'),
-    --- Clock Recovery
-    ZeroCrossingClockRecoveryBlock = require('radio.blocks.signal.zerocrossingclockrecovery'),
-    --- Basic Operators
+    --- Math Operations
     AddBlock = require('radio.blocks.signal.add'),
     AddConstantBlock = require('radio.blocks.signal.addconstant'),
     SubtractBlock = require('radio.blocks.signal.subtract'),
@@ -68,23 +56,35 @@ return {
     ComplexConjugateBlock = require('radio.blocks.signal.complexconjugate'),
     ComplexMagnitudeBlock = require('radio.blocks.signal.complexmagnitude'),
     ComplexPhaseBlock = require('radio.blocks.signal.complexphase'),
-    --- Sampling and Bits
+    --- Level control
+    PowerSquelchBlock = require('radio.blocks.signal.powersquelch'),
+    AGCBlock = require('radio.blocks.signal.agc'),
+    --- Sample Rate Manipulation
+    DownsamplerBlock = require('radio.blocks.signal.downsampler'),
+    UpsamplerBlock = require('radio.blocks.signal.upsampler'),
+    --- Spectrum Manipulation
+    FrequencyTranslatorBlock = require('radio.blocks.signal.frequencytranslator'),
+    HilbertTransformBlock = require('radio.blocks.signal.hilberttransform'),
+    --- Carrier and Clock Recovery
+    PLLBlock = require('radio.blocks.signal.pll'),
+    ZeroCrossingClockRecoveryBlock = require('radio.blocks.signal.zerocrossingclockrecovery'),
+    --- Digital
     BinaryPhaseCorrectorBlock = require('radio.blocks.signal.binaryphasecorrector'),
-    DelayBlock = require('radio.blocks.signal.delay'),
     SamplerBlock = require('radio.blocks.signal.sampler'),
     SlicerBlock = require('radio.blocks.signal.slicer'),
     DifferentialDecoderBlock = require('radio.blocks.signal.differentialdecoder'),
     ManchesterDecoderBlock = require('radio.blocks.signal.manchesterdecoder'),
-    --- Complex/Float Conversion
+    --- Type Conversion
     ComplexToRealBlock = require('radio.blocks.signal.complextoreal'),
     ComplexToImagBlock = require('radio.blocks.signal.complextoimag'),
     ComplexToFloatBlock = require('radio.blocks.signal.complextofloat'),
     RealToComplexBlock = require('radio.blocks.signal.realtocomplex'),
     FloatToComplexBlock = require('radio.blocks.signal.floattocomplex'),
+    --- Demodulation
+    FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator'),
     --- Miscellaneous
+    DelayBlock = require('radio.blocks.signal.delay'),
     ThrottleBlock = require('radio.blocks.signal.throttle'),
-    PowerSquelchBlock = require('radio.blocks.signal.powersquelch'),
-    AGCBlock = require('radio.blocks.signal.agc'),
 
     -- Protocol Blocks
     --- RDS

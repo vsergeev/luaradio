@@ -1,6 +1,6 @@
 ---
 -- Sink one or more real-valued signals to the system's audio device with
--- PulseAudio. This source requires PulseAudio.
+-- PulseAudio. This sink requires PulseAudio.
 --
 -- @category Sinks
 -- @block PulseAudioSink

@@ -34,7 +34,7 @@ function PortAudioSink:instantiate(num_channels)
     else
         local block_inputs = {}
         for i = 1, self.num_channels do
-            block_inputs[#block_inputs+1] = block.Input("in" .. i, types.Float32)
+            block_inputs[i] = block.Input("in" .. i, types.Float32)
         end
         self:add_type_signature(block_inputs, {})
     end

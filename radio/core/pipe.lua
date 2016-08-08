@@ -185,22 +185,6 @@ function Pipe:initialize()
     self._buf_read_offset = 0
 end
 
-local function platform_read(fd, buf, size)
-    local bytes_read = tonumber(ffi.C.read(fd, buf, size))
-    if bytes_read < 0 then
-        error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
-    return bytes_read
-end
-
-local function platform_write(fd, buf, size)
-    local bytes_written = tonumber(ffi.C.write(fd, buf, size))
-    if bytes_written <= 0 then
-        error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
-    return bytes_written
-end
-
 ---
 -- Update the Pipe's internal read buffer.
 --
@@ -213,8 +197,10 @@ function Pipe:_read_buffer_update()
     end
 
     -- Read new samples in
-    local bytes_read = platform_read(self._rfd, ffi.cast("char *", self._buf) + unread_length, self._buf_capacity - unread_length)
-    if unread_length == 0 and bytes_read == 0 then
+    local bytes_read = tonumber(ffi.C.read(self._rfd, ffi.cast("char *", self._buf) + unread_length, self._buf_capacity - unread_length))
+    if bytes_read < 0 then
+        error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    elseif unread_length == 0 and bytes_read == 0 then
         self._eof = true
     end
 
@@ -303,7 +289,10 @@ function Pipe:write(vec)
     -- Write entire buffer
     local len = 0
     while len < size do
-        local bytes_written = platform_write(self._wfd, ffi.cast("char *", data) + len, size - len)
+        local bytes_written = tonumber(ffi.C.write(self._wfd, ffi.cast("char *", data) + len, size - len))
+        if bytes_written <= 0 then
+            error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
         len = len + bytes_written
     end
 end

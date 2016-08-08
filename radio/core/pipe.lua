@@ -157,6 +157,8 @@ enum { SOCK_STREAM = 1 };
 int socketpair(int domain, int type, int protocol, int socket_vector[2]);
 int close(int fildes);
 
+enum { EPIPE = 32, ECONNRESET = 104 };
+
 ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, const void *buf, size_t count);
 ]]
@@ -291,7 +293,11 @@ function Pipe:write(vec)
     while len < size do
         local bytes_written = tonumber(ffi.C.write(self._wfd, ffi.cast("char *", data) + len, size - len))
         if bytes_written <= 0 then
-            error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            local errno = ffi.errno()
+            if errno == ffi.C.EPIPE or errno == ffi.C.ECONNRESET then
+                io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.pipe_output.owner.name, self.pipe_input.owner.name))
+            end
+            error("write(): " .. ffi.string(ffi.C.strerror(errno)))
         end
         len = len + bytes_written
     end

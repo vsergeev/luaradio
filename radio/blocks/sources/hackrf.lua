@@ -213,10 +213,10 @@ local function read_callback_factory(...)
         -- Resize output vector
         out:resize(transfer.valid_length/2)
 
-        -- Convert complex u8 in buf to complex floats in output vector
+        -- Convert complex s8 in buf to complex floats in output vector
         for i = 0, out.length-1 do
-            out.data[i].real = (transfer.buffer[2*i]   - 127.5) * (1/127.5)
-            out.data[i].imag = (transfer.buffer[2*i+1] - 127.5) * (1/127.5)
+            out.data[i].real = ffi.cast("int8_t *", transfer.buffer)[2*i] * (1/127.5)
+            out.data[i].imag = ffi.cast("int8_t *", transfer.buffer)[2*i+1] * (1/127.5)
         end
 
         -- Write to each output fd

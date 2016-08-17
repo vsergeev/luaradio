@@ -30,6 +30,7 @@ return {
     GnuplotSpectrumSink = require('radio.blocks.sinks.gnuplotspectrum'),
     GnuplotWaterfallSink = require('radio.blocks.sinks.gnuplotwaterfall'),
     BenchmarkSink = require('radio.blocks.sinks.benchmark'),
+    HackRFSink = require('radio.blocks.sinks.hackrf'),
 
     -- Signal Blocks
     --- Filtering

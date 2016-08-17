@@ -1,32 +1,30 @@
 ---
--- Source a complex-valued signal from a HackRF One. This source requires the
+-- Sink a complex-valued signal to a HackRF One. This sink requires the
 -- libhackrf library.
 --
--- @category Sources
--- @block HackRFSource
+-- @category Sinks
+-- @block HackRFSink
 -- @tparam number frequency Tuning frequency in Hz
--- @tparam number rate Sample rate in Hz
 -- @tparam[opt={}] table options Additional options, specifying:
---      * `lna_gain` (int, default 8 dB, range 0 to 40 dB, 8 dB step)
---      * `vga_gain` (int, default 40 dB, range 0 to 62 dB, 2 dB step)
+--      * `vga_gain` (int in dB, default 0 dB, range 0 to 47 dB, 1 dB step)
 --      * `bandwidth` (number in Hz, default round down from sample rate)
 --      * `rf_amplifier_enable` (bool, default false)
 --      * `antenna_power_enable` (bool, default false)
 --
--- @signature > out:ComplexFloat32
+-- @signature in:ComplexFloat32 >
 --
 -- @usage
--- -- Source samples from 135 MHz sampled at 10 MHz
--- local src = radio.HackRFSource(135e6, 10e6)
+-- -- Sink samples to 146 MHz
+-- local snk = radio.HackRFSink(146e6)
 --
--- -- Source samples from 135 MHz sampled at 10 MHz, with 2.5 MHz bandwidth
--- local src = radio.HackRFSource(135e6, 10e6, {bandwidth = 2.5e6})
+-- -- Sink samples to 433.92 MHz, with 1.75 MHz baseband bandwidth
+-- local src = radio.HackRFSink(433.92e6, {bandwidth = 1.75e6})
 --
--- -- Source samples from 91.1 MHz sampled at 8 MHz, with custom gain settings
--- local src = radio.HackRFSource(91.1e6, 8e6, {lna_gain = 16, vga_gain = 22})
+-- -- Sink samples to 915 MHz, with 22 dB VGA gain
+-- local src = radio.HackRFSink(915e6, {vga_gain = 22})
 --
--- -- Source samples from 144.390 MHz sampled at 8 MHz, with antenna power enabled
--- local src = radio.HackRFSource(144.390e6, 8e6, {antenna_power_enable = true})
+-- -- Sink samples to 144.390 MHz, with antenna power enabled
+-- local src = radio.HackRFSink(144.390e6, {antenna_power_enable = true})
 
 local ffi = require('ffi')
 
@@ -36,27 +34,21 @@ local debug = require('radio.core.debug')
 local types = require('radio.types')
 local async = require('radio.core.async')
 
-local HackRFSource = block.factory("HackRFSource")
+local HackRFSink = block.factory("HackRFSink")
 
-function HackRFSource:instantiate(frequency, rate, options)
+function HackRFSink:instantiate(frequency, options)
     self.frequency = assert(frequency, "Missing argument #1 (frequency)")
-    self.rate = assert(rate, "Missing argument #2 (rate)")
 
     self.options = options or {}
-    self.lna_gain = self.options.lna_gain or 8
-    self.vga_gain = self.options.vga_gain or 40
+    self.vga_gain = self.options.vga_gain or 0
     self.bandwidth = self.options.bandwidth
     self.rf_amplifier_enable = self.options.rf_amplifier_enable or false
     self.antenna_power_enable = self.options.antenna_power_enable or false
 
-    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {})
 end
 
-function HackRFSource:get_rate()
-    return self.rate
-end
-
-if not package.loaded['radio.blocks.sinks.hackrf'] then
+if not package.loaded['radio.blocks.sources.hackrf'] then
     ffi.cdef[[
         typedef struct hackrf_device hackrf_device;
 
@@ -105,14 +97,14 @@ if not package.loaded['radio.blocks.sinks.hackrf'] then
 end
 local libhackrf_available, libhackrf = pcall(ffi.load, "hackrf")
 
-function HackRFSource:initialize()
+function HackRFSink:initialize()
     -- Check library is available
     if not libhackrf_available then
-        error("HackRFSource: libhackrf not found. Is libhackrf installed?")
+        error("HackRFSink: libhackrf not found. Is libhackrf installed?")
     end
 end
 
-function HackRFSource:initialize_hackrf()
+function HackRFSink:initialize_hackrf()
     self.dev = ffi.new("struct hackrf_device *[1]")
 
     local ret
@@ -147,18 +139,18 @@ function HackRFSource:initialize_hackrf()
         end
         board_id = ffi.string(libhackrf.hackrf_board_id_name(board_id[0]))
 
-        debug.printf("[HackRFSource] Firmware version:  %s\n", firmware_version)
-        debug.printf("[HackRFSource] Board ID:          %s\n", board_id)
+        debug.printf("[HackRFSink] Firmware version:  %s\n", firmware_version)
+        debug.printf("[HackRFSink] Board ID:          %s\n", board_id)
     end
 
     -- Check sample rate
-    if self.rate < 8e6 then
-        io.stderr:write(string.format("[HackRFSource] Warning: low sample rate (%u Hz).\n", self.rate))
-        io.stderr:write("[HackRFSource] Using a sample rate under 8 MHz is not recommended!\n")
+    if self:get_rate() < 8e6 then
+        io.stderr:write(string.format("[HackRFSink] Warning: low sample rate (%u Hz).\n", self:get_rate()))
+        io.stderr:write("[HackRFSink] Using a sample rate under 8 MHz is not recommended!\n")
     end
 
     -- Set sample rate
-    ret = libhackrf.hackrf_set_sample_rate(self.dev[0], self.rate)
+    ret = libhackrf.hackrf_set_sample_rate(self.dev[0], self:get_rate())
     if ret ~= 0 then
         error("hackrf_set_sample_rate(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
     end
@@ -170,11 +162,11 @@ function HackRFSource:initialize_hackrf()
         computed_bandwidth = libhackrf.hackrf_compute_baseband_filter_bw(self.bandwidth)
     else
         -- Round down from sample rate
-        computed_bandwidth = libhackrf.hackrf_compute_baseband_filter_bw_round_down_lt(self.rate)
+        computed_bandwidth = libhackrf.hackrf_compute_baseband_filter_bw_round_down_lt(self:get_rate())
     end
 
-    debug.printf("[HackRFSource] Frequency: %u Hz, Sample rate: %u Hz\n", self.frequency, self.rate)
-    debug.printf("[HackRFSource] Requested Bandwidth: %u Hz, Actual Bandwidth: %u Hz\n", self.bandwidth or computed_bandwidth, computed_bandwidth)
+    debug.printf("[HackRFSink] Frequency: %u Hz, Sample rate: %u Hz\n", self.frequency, self:get_rate())
+    debug.printf("[HackRFSink] Requested Bandwidth: %u Hz, Actual Bandwidth: %u Hz\n", self.bandwidth or computed_bandwidth, computed_bandwidth)
 
     -- Set baseband filter bandwidth
     ret = libhackrf.hackrf_set_baseband_filter_bandwidth(self.dev[0], computed_bandwidth)
@@ -182,16 +174,10 @@ function HackRFSource:initialize_hackrf()
         error("hackrf_set_baseband_filter_bandwidth(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
     end
 
-    -- Set LNA gain
-    ret = libhackrf.hackrf_set_lna_gain(self.dev[0], self.lna_gain)
+    -- Set TX VGA gain
+    ret = libhackrf.hackrf_set_txvga_gain(self.dev[0], self.vga_gain)
     if ret ~= 0 then
-        error("hackrf_set_lna_gain(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
-    end
-
-    -- Set VGA gain
-    ret = libhackrf.hackrf_set_vga_gain(self.dev[0], self.vga_gain)
-    if ret ~= 0 then
-        error("hackrf_set_vga_gain(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
+        error("hackrf_set_txvga_gain(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
     end
 
     -- Set RF amplifier enable
@@ -213,44 +199,46 @@ function HackRFSource:initialize_hackrf()
     end
 end
 
-local function read_callback_factory(...)
+local function write_callback_factory(fd)
     local ffi = require('ffi')
     local radio = require('radio')
 
-    local fds = {...}
+    local vec = radio.types.ComplexFloat32.vector()
 
-    local out = radio.types.ComplexFloat32.vector()
+    local function write_callback(transfer)
+        -- Resize vector
+        vec:resize(transfer.valid_length/2)
 
-    local function read_callback(transfer)
-        -- Resize output vector
-        out:resize(transfer.valid_length/2)
-
-        -- Convert complex s8 in buf to complex floats in output vector
-        for i = 0, out.length-1 do
-            out.data[i].real = ffi.cast("int8_t *", transfer.buffer)[2*i] * (1/127.5)
-            out.data[i].imag = ffi.cast("int8_t *", transfer.buffer)[2*i+1] * (1/127.5)
+        -- Read fd into vector
+        local total_bytes_read = 0
+        while total_bytes_read < vec.size do
+            local bytes_read = tonumber(ffi.C.read(fd, ffi.cast("uint8_t *", vec.data) + total_bytes_read, vec.size - total_bytes_read))
+            if bytes_read < 0 then
+                error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            elseif bytes_read == 0 and total_bytes_read == 0 then
+                -- EOF and no bytes read into vec
+                return -1
+            elseif bytes_read == 0 then
+                -- Zero out remainder of vec
+                ffi.C.memset(ffi.cast("uint8_t *", vec.data) + total_bytes_read, 0, vec.size - total_bytes_read)
+                break
+            end
+            total_bytes_read = total_bytes_read + bytes_read
         end
 
-        -- Write to each output fd
-        for i = 1, #fds do
-            local total_bytes_written = 0
-            while total_bytes_written < out.size do
-                local bytes_written = tonumber(ffi.C.write(fds[i], ffi.cast("uint8_t *", out.data) + total_bytes_written, out.size - total_bytes_written))
-                if bytes_written <= 0 then
-                    error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-                end
-
-                total_bytes_written = total_bytes_written + bytes_written
-            end
+        -- Convert complex floats in vector to complex s8 in buffer
+        for i = 0, vec.length-1 do
+            ffi.cast("int8_t *", transfer.buffer)[2*i] = vec.data[i].real*127.5
+            ffi.cast("int8_t *", transfer.buffer)[2*i+1] = vec.data[i].imag*127.5
         end
 
         return 0
     end
 
-    return ffi.cast('int (*)(hackrf_transfer *)', read_callback)
+    return ffi.cast('int (*)(hackrf_transfer *)', write_callback)
 end
 
-function HackRFSource:run()
+function HackRFSink:run()
     -- Initialize the hackrf in our own running process
     self:initialize_hackrf()
 
@@ -264,23 +252,22 @@ function HackRFSource:run()
         error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 
-    -- Start receiving
-    local read_callback, read_callback_state = async.callback(read_callback_factory, unpack(self.outputs[1]:filenos()))
-    local ret = libhackrf.hackrf_start_rx(self.dev[0], read_callback, nil)
+    -- Start transmitting
+    local write_callback, write_callback_state = async.callback(write_callback_factory, self.inputs[1]:filenos()[1])
+    local ret = libhackrf.hackrf_start_tx(self.dev[0], write_callback, nil)
     if ret ~= 0 then
-        error("hackrf_start_rx(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
+        error("hackrf_start_tx(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
     end
 
-    -- Wait for SIGTERM
-    local sig = ffi.new("int[1]")
-    if ffi.C.sigwait(sigset, sig) ~= 0 then
-        error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    -- While it's still transmitting
+    while libhackrf.hackrf_is_streaming(self.dev[0]) == 1 do
+        ffi.C.usleep(500000)
     end
 
-    -- Stop receiving
-    ret = libhackrf.hackrf_stop_rx(self.dev[0])
+    -- Stop transmitting
+    ret = libhackrf.hackrf_stop_tx(self.dev[0])
     if ret ~= 0 then
-        error("hackrf_stop_rx(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
+        error("hackrf_stop_tx(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
     end
 
     -- Close hackrf
@@ -290,4 +277,4 @@ function HackRFSource:run()
     end
 end
 
-return HackRFSource
+return HackRFSink

@@ -78,16 +78,16 @@ ffi.cdef[[
 
 function RealFileSink:instantiate(file, format)
     local supported_formats = {
-        u8    = {ctype = "format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
-        s8    = {ctype = "format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
-        u16le = {ctype = "format_u16_t", swap = ffi.abi("be"), offset = 32767.5,       scale = 1.0/32767.5},
-        u16be = {ctype = "format_u16_t", swap = ffi.abi("le"), offset = 32767.5,       scale = 1.0/32767.5},
-        s16le = {ctype = "format_s16_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0/32767.5},
-        s16be = {ctype = "format_s16_t", swap = ffi.abi("le"), offset = 0,             scale = 1.0/32767.5},
-        u32le = {ctype = "format_u32_t", swap = ffi.abi("be"), offset = 2147483647.5,  scale = 1.0/2147483647.5},
-        u32be = {ctype = "format_u32_t", swap = ffi.abi("le"), offset = 2147483647.5,  scale = 1.0/2147483647.5},
-        s32le = {ctype = "format_s32_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0/2147483647.5},
-        s32be = {ctype = "format_s32_t", swap = ffi.abi("le"), offset = 0,             scale = 1.0/2147483647.5},
+        u8    = {ctype = "format_u8_t",  swap = false,         offset = 127.5,         scale = 127.5},
+        s8    = {ctype = "format_s8_t",  swap = false,         offset = 0,             scale = 127.5},
+        u16le = {ctype = "format_u16_t", swap = ffi.abi("be"), offset = 32767.5,       scale = 32767.5},
+        u16be = {ctype = "format_u16_t", swap = ffi.abi("le"), offset = 32767.5,       scale = 32767.5},
+        s16le = {ctype = "format_s16_t", swap = ffi.abi("be"), offset = 0,             scale = 32767.5},
+        s16be = {ctype = "format_s16_t", swap = ffi.abi("le"), offset = 0,             scale = 32767.5},
+        u32le = {ctype = "format_u32_t", swap = ffi.abi("be"), offset = 2147483647.5,  scale = 2147483647.5},
+        u32be = {ctype = "format_u32_t", swap = ffi.abi("le"), offset = 2147483647.5,  scale = 2147483647.5},
+        s32le = {ctype = "format_s32_t", swap = ffi.abi("be"), offset = 0,             scale = 2147483647.5},
+        s32be = {ctype = "format_s32_t", swap = ffi.abi("le"), offset = 0,             scale = 2147483647.5},
         f32le = {ctype = "format_f32_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0},
         f32be = {ctype = "format_f32_t", swap = ffi.abi("le"), offset = 0,             scale = 1.0},
         f64le = {ctype = "format_f64_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0},
@@ -138,7 +138,7 @@ function RealFileSink:process(x)
 
     -- Convert Float32 samples to raw samples
     for i = 0, x.length-1 do
-        raw_samples[i].value = (x.data[i].value/self.format.scale) + self.format.offset
+        raw_samples[i].value = (x.data[i].value*self.format.scale) + self.format.offset
     end
 
     -- Perform byte swap for endianness if needed

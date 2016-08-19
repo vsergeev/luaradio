@@ -46,38 +46,49 @@ function GnuplotPlotSink:initialize()
     assert(os.execute("gnuplot --version >/dev/null 2>&1") == 0, "gnuplot not found. Is gnuplot installed?")
 end
 
+function GnuplotPlotSink:write_gnuplot(s)
+    local len = 0
+    while len < #s do
+        local bytes_written = tonumber(ffi.C.fwrite(ffi.cast("char *", s) + len, 1, #s - len, self.gnuplot_f))
+        if bytes_written <= 0 then
+            error("gnuplot write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+        len = len + bytes_written
+    end
+end
+
 function GnuplotPlotSink:initialize_gnuplot()
     -- Initialize gnuplot
     self.gnuplot_f = io.popen("gnuplot >/dev/null 2>&1", "w")
-    self.gnuplot_f:write("set xtics\n")
-    self.gnuplot_f:write("set ytics\n")
-    self.gnuplot_f:write("set grid\n")
-    self.gnuplot_f:write("set style data linespoints\n")
-    self.gnuplot_f:write("unset key\n")
-    self.gnuplot_f:write(string.format("set xlabel '%s'\n", self.options.xlabel or "Sample Number"))
-    self.gnuplot_f:write(string.format("set ylabel '%s'\n", self.options.ylabel or "Value"))
-    self.gnuplot_f:write(string.format("set title '%s'\n", self.title))
+    self:write_gnuplot("set xtics\n")
+    self:write_gnuplot("set ytics\n")
+    self:write_gnuplot("set grid\n")
+    self:write_gnuplot("set style data linespoints\n")
+    self:write_gnuplot("unset key\n")
+    self:write_gnuplot(string.format("set xlabel '%s'\n", self.options.xlabel or "Sample Number"))
+    self:write_gnuplot(string.format("set ylabel '%s'\n", self.options.ylabel or "Value"))
+    self:write_gnuplot(string.format("set title '%s'\n", self.title))
 
     -- Set xrange to number of samples
-    self.gnuplot_f:write(string.format("set xrange [%d:%d]\n", 0, self.num_samples))
+    self:write_gnuplot(string.format("set xrange [%d:%d]\n", 0, self.num_samples))
 
     -- Use yrange if it was specified, otherwise default to autoscale
     if self.options.yrange then
-        self.gnuplot_f:write(string.format("set yrange [%f:%f]\n", self.options.yrange[1], self.options.yrange[2]))
+        self:write_gnuplot(string.format("set yrange [%f:%f]\n", self.options.yrange[1], self.options.yrange[2]))
     else
-        self.gnuplot_f:write("set autoscale y\n")
+        self:write_gnuplot("set autoscale y\n")
     end
 
     -- Apply any extra settings
     if self.options.extra_settings then
         for i = 1, #self.options.extra_settings do
-            self.gnuplot_f:write(self.options.extra_settings[i] .. "\n")
+            self:write_gnuplot(self.options.extra_settings[i] .. "\n")
         end
     end
 
     -- Build plot string
     self.plot_str = string.format("plot '-' binary format='%%float32' array=%d using 1 linestyle 1\n", self.num_samples)
-    self.gnuplot_f:write(self.plot_str)
+    self:write_gnuplot(self.plot_str)
 end
 
 function GnuplotPlotSink:process(x)
@@ -87,13 +98,13 @@ function GnuplotPlotSink:process(x)
 
     for i = 0, x.length-1 do
         -- Write each raw sample
-        self.gnuplot_f:write(ffi.string(x.data[i], ffi.sizeof(x.data[0])))
+        self:write_gnuplot(ffi.string(x.data[i], ffi.sizeof(x.data[0])))
         self.sample_count = self.sample_count + 1
 
         -- Restart plot when we reach num_samples
         if self.sample_count == self.num_samples then
             self.sample_count = 0
-            self.gnuplot_f:write(self.plot_str)
+            self:write_gnuplot(self.plot_str)
         end
     end
 end

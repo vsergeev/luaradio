@@ -86,16 +86,16 @@ ffi.cdef[[
 
 function IQFileSink:instantiate(file, format)
     local supported_formats = {
-        u8    = {ctype = "iq_format_u8_t",  swap = false,         offset = 127.5,         scale = 1.0/127.5},
-        s8    = {ctype = "iq_format_s8_t",  swap = false,         offset = 0,             scale = 1.0/127.5},
-        u16le = {ctype = "iq_format_u16_t", swap = ffi.abi("be"), offset = 32767.5,       scale = 1.0/32767.5},
-        u16be = {ctype = "iq_format_u16_t", swap = ffi.abi("le"), offset = 32767.5,       scale = 1.0/32767.5},
-        s16le = {ctype = "iq_format_s16_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0/32767.5},
-        s16be = {ctype = "iq_format_s16_t", swap = ffi.abi("le"), offset = 0,             scale = 1.0/32767.5},
-        u32le = {ctype = "iq_format_u32_t", swap = ffi.abi("be"), offset = 2147483647.5,  scale = 1.0/2147483647.5},
-        u32be = {ctype = "iq_format_u32_t", swap = ffi.abi("le"), offset = 2147483647.5,  scale = 1.0/2147483647.5},
-        s32le = {ctype = "iq_format_s32_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0/2147483647.5},
-        s32be = {ctype = "iq_format_s32_t", swap = ffi.abi("le"), offset = 0,             scale = 1.0/2147483647.5},
+        u8    = {ctype = "iq_format_u8_t",  swap = false,         offset = 127.5,         scale = 127.5},
+        s8    = {ctype = "iq_format_s8_t",  swap = false,         offset = 0,             scale = 127.5},
+        u16le = {ctype = "iq_format_u16_t", swap = ffi.abi("be"), offset = 32767.5,       scale = 32767.5},
+        u16be = {ctype = "iq_format_u16_t", swap = ffi.abi("le"), offset = 32767.5,       scale = 32767.5},
+        s16le = {ctype = "iq_format_s16_t", swap = ffi.abi("be"), offset = 0,             scale = 32767.5},
+        s16be = {ctype = "iq_format_s16_t", swap = ffi.abi("le"), offset = 0,             scale = 32767.5},
+        u32le = {ctype = "iq_format_u32_t", swap = ffi.abi("be"), offset = 2147483647.5,  scale = 2147483647.5},
+        u32be = {ctype = "iq_format_u32_t", swap = ffi.abi("le"), offset = 2147483647.5,  scale = 2147483647.5},
+        s32le = {ctype = "iq_format_s32_t", swap = ffi.abi("be"), offset = 0,             scale = 2147483647.5},
+        s32be = {ctype = "iq_format_s32_t", swap = ffi.abi("le"), offset = 0,             scale = 2147483647.5},
         f32le = {ctype = "iq_format_f32_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0},
         f32be = {ctype = "iq_format_f32_t", swap = ffi.abi("le"), offset = 0,             scale = 1.0},
         f64le = {ctype = "iq_format_f64_t", swap = ffi.abi("be"), offset = 0,             scale = 1.0},
@@ -147,8 +147,8 @@ function IQFileSink:process(x)
 
     -- Convert ComplexFloat32 samples to raw samples
     for i = 0, x.length-1 do
-        raw_samples[i].real.value = (x.data[i].real/self.format.scale) + self.format.offset
-        raw_samples[i].imag.value = (x.data[i].imag/self.format.scale) + self.format.offset
+        raw_samples[i].real.value = (x.data[i].real*self.format.scale) + self.format.offset
+        raw_samples[i].imag.value = (x.data[i].imag*self.format.scale) + self.format.offset
     end
 
     -- Perform byte swap for endianness if needed

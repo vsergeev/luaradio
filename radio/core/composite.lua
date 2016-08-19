@@ -342,6 +342,7 @@ ffi.cdef[[
     int sigismember(const sigset_t *set, int signum);
 
     /* Signal handling */
+    enum { SIG_IGN = 1 };
     typedef void (*sighandler_t)(int);
     sighandler_t signal(int signum, sighandler_t handler);
     int sigwait(const sigset_t *set, int *sig);
@@ -510,6 +511,9 @@ function CompositeBlock:start(multiprocess)
                 -- Create a set of file descriptors to save
                 local save_fds = {}
 
+                -- Ignore SIGPIPE, handle with error from write()
+                ffi.C.signal(ffi.C.SIGPIPE, ffi.cast("sighandler_t", ffi.C.SIG_IGN))
+
                 -- Save input pipe fds
                 for i = 1, #block.inputs do
                     for _, fd in pairs(block.inputs[i]:filenos()) do
@@ -584,6 +588,9 @@ function CompositeBlock:start(multiprocess)
         if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
             error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
+
+        -- Ignore SIGPIPE, handle with error from write()
+        ffi.C.signal(ffi.C.SIGPIPE, ffi.cast("sighandler_t", ffi.C.SIG_IGN))
 
         -- Run blocks in round-robin order
         local running = true

@@ -145,6 +145,12 @@ function HackRFSource:initialize_hackrf()
         debug.printf("[HackRFSource] Board ID:          %s\n", board_id)
     end
 
+    -- Check sample rate
+    if self.rate < 8e6 then
+        io.stderr:write(string.format("[HackRFSource] Warning: low sample rate (%u Hz).\n", self.rate))
+        io.stderr:write("[HackRFSource] Using a sample rate under 8 MHz is not recommended!\n")
+    end
+
     -- Set sample rate
     ret = libhackrf.hackrf_set_sample_rate(self.dev[0], self.rate)
     if ret ~= 0 then

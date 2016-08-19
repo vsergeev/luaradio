@@ -57,7 +57,7 @@ if platform.os == "Linux" then
         f:close()
     end
     -- Signal definitions
-    ffi.cdef("enum { SIGINT = 2, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 17 };")
+    ffi.cdef("enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 17 };")
     -- sigprocmask() definitions
     ffi.cdef("enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 2 };")
 elseif platform.os == "BSD" then
@@ -72,7 +72,7 @@ elseif platform.os == "BSD" then
         platform.cpu_model = ffi.string(buf, sz[0])
     end
     -- Signal definitions
-    ffi.cdef("enum { SIGINT = 2, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };")
+    ffi.cdef("enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };")
     -- sigprocmask() definitions
     ffi.cdef("enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };")
 elseif platform.os == "OSX" then
@@ -87,7 +87,7 @@ elseif platform.os == "OSX" then
         platform.cpu_model = ffi.string(buf, sz[0])
     end
     -- Signal definitions
-    ffi.cdef("enum { SIGINT = 2, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };")
+    ffi.cdef("enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };")
     -- sigprocmask() definitions
     ffi.cdef("enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };")
 end

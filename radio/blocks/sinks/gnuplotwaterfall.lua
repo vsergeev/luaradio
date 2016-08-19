@@ -68,20 +68,31 @@ function GnuplotWaterfallSink:initialize()
     assert(os.execute("gnuplot --version >/dev/null 2>&1") == 0, "gnuplot not found. Is gnuplot installed?")
 end
 
+function GnuplotWaterfallSink:write_gnuplot(s)
+    local len = 0
+    while len < #s do
+        local bytes_written = tonumber(ffi.C.fwrite(ffi.cast("char *", s) + len, 1, #s - len, self.gnuplot_f))
+        if bytes_written <= 0 then
+            error("gnuplot write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+        len = len + bytes_written
+    end
+end
+
 function GnuplotWaterfallSink:initialize_gnuplot()
     local sample_rate = self:get_rate()
     local data_type = self:get_input_type()
 
     -- Initialize gnuplot
     self.gnuplot_f = io.popen("gnuplot >/dev/null 2>&1", "w")
-    self.gnuplot_f:write("set xtics\n")
-    self.gnuplot_f:write("set ytics\n")
-    self.gnuplot_f:write("set grid\n")
-    self.gnuplot_f:write("set style data lines\n")
-    self.gnuplot_f:write("set xlabel 'Frequency (Hz)'\n")
-    self.gnuplot_f:write("set ylabel 'Time (s)'\n")
-    self.gnuplot_f:write("unset key\n")
-    self.gnuplot_f:write(string.format("set title '%s'\n", self.title))
+    self:write_gnuplot("set xtics\n")
+    self:write_gnuplot("set ytics\n")
+    self:write_gnuplot("set grid\n")
+    self:write_gnuplot("set style data lines\n")
+    self:write_gnuplot("set xlabel 'Frequency (Hz)'\n")
+    self:write_gnuplot("set ylabel 'Time (s)'\n")
+    self:write_gnuplot("unset key\n")
+    self:write_gnuplot(string.format("set title '%s'\n", self.title))
 
     -- Calculate plot duration
     -- Plot Duration = Number of Rows * ( (PSD Length * Number of PSD Averages) / Sample Rate )
@@ -89,29 +100,29 @@ function GnuplotWaterfallSink:initialize_gnuplot()
 
     -- Use yrange if it was specified, otherwise default to autoscale
     if self.options.yrange then
-        self.gnuplot_f:write(string.format("set yrange [%f:%f]\n", self.options.yrange[1], self.options.yrange[2]))
+        self:write_gnuplot(string.format("set yrange [%f:%f]\n", self.options.yrange[1], self.options.yrange[2]))
     else
-        self.gnuplot_f:write(string.format("set yrange [0:%f]\n", -self.plot_duration))
+        self:write_gnuplot(string.format("set yrange [0:%f]\n", -self.plot_duration))
     end
 
     -- Use xrange if it was specified, otherwise default to sample rate
     if self.options.xrange then
-        self.gnuplot_f:write(string.format("set xrange [%f:%f]\n", self.options.xrange[1], self.options.xrange[2]))
+        self:write_gnuplot(string.format("set xrange [%f:%f]\n", self.options.xrange[1], self.options.xrange[2]))
     else
         -- Show onesided spectrum if input is real and onesided is enabled
         local onesided = (self.options.onesided == nil) and true or self.options.onesided
 
         if data_type == types.Float32 and onesided then
-           self.gnuplot_f:write(string.format("set xrange [0:%f]\n", sample_rate/2))
+           self:write_gnuplot(string.format("set xrange [0:%f]\n", sample_rate/2))
         else
-           self.gnuplot_f:write(string.format("set xrange [%f:%f]\n", -sample_rate/2, sample_rate/2))
+           self:write_gnuplot(string.format("set xrange [%f:%f]\n", -sample_rate/2, sample_rate/2))
         end
     end
 
     -- Apply any extra settings
     if self.options.extra_settings then
         for i = 1, #self.options.extra_settings do
-            self.gnuplot_f:write(self.options.extra_settings[i] .. "\n")
+            self:write_gnuplot(self.options.extra_settings[i] .. "\n")
         end
     end
 
@@ -227,8 +238,8 @@ function GnuplotWaterfallSink:process(x)
             self.psd_average_count = 0
 
             -- Plot waterfall
-            self.gnuplot_f:write(self.plot_str)
-            self.gnuplot_f:write(ffi.string(self.pixels, 3*self.rows*self.columns))
+            self:write_gnuplot(self.plot_str)
+            self:write_gnuplot(ffi.string(self.pixels, 3*self.rows*self.columns))
         end
     end
 end

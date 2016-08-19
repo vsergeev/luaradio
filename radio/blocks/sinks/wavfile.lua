@@ -81,9 +81,9 @@ ffi.cdef[[
 
 function WAVFileSink:instantiate(file, num_channels, bits_per_sample)
     local supported_formats = {
-        [8]     = {ctype = "wave_sample_u8_t",  swap = false,           offset = 127.5, scale = 1.0/127.5},
-        [16]    = {ctype = "wave_sample_s16_t", swap = ffi.abi("be"),   offset = 0,     scale = 1.0/32767.5},
-        [32]    = {ctype = "wave_sample_s32_t", swap = ffi.abi("be"),   offset = 0,     scale = 1.0/2147483647.5},
+        [8]     = {ctype = "wave_sample_u8_t",  swap = false,           offset = 127.5, scale = 127.5},
+        [16]    = {ctype = "wave_sample_s16_t", swap = ffi.abi("be"),   offset = 0,     scale = 32767.5},
+        [32]    = {ctype = "wave_sample_s32_t", swap = ffi.abi("be"),   offset = 0,     scale = 2147483647.5},
     }
 
     assert(ffi.sizeof("riff_header_t") == 12)
@@ -211,7 +211,7 @@ function WAVFileSink:process(...)
     -- Convert float32 samples to raw samples
     for i = 0, num_samples_per_channel-1 do
         for j = 1, self.num_channels do
-            raw_samples[i*self.num_channels + (j-1)].value = (samples[j].data[i].value/self.format.scale) + self.format.offset
+            raw_samples[i*self.num_channels + (j-1)].value = (samples[j].data[i].value*self.format.scale) + self.format.offset
         end
     end
 

@@ -1,12 +1,11 @@
 ---
--- Source a complex-valued signal from a SoapySDR device. This source requires
+-- Sink a complex-valued signal to a SoapySDR device. This sink requires
 -- [SoapySDR](https://github.com/pothosware/SoapySDR).
 --
--- @category Sources
--- @block SoapySDRSource
+-- @category Sinks
+-- @block SoapySDRSink
 -- @tparam string|table driver Driver string or key-value table
 -- @tparam number frequency Tuning frequency in Hz
--- @tparam number rate Sample rate in Hz
 -- @tparam[opt={}] table options Additional options, specifying:
 --      * `channel` (int, default 0)
 --      * `bandwidth` (number in Hz)
@@ -17,22 +16,14 @@
 --      * `frequencies` (table, frequency element name to value in Hz)
 --      * `settings` (table, string key-value pairs of driver-specific settings)
 --
--- @signature > out:ComplexFloat32
+-- @signature in:ComplexFloat32 >
 --
 -- @usage
--- -- Source samples from an RTL-SDR at 91.1 MHz sampled at 1 MHz
--- local src = radio.SoapySDRSource("driver=rtlsdr", 91.1e6, 1e6)
+-- -- Sink samples to a HackRF at 433.92 MHz
+-- local src = radio.SoapySDRSink("driver=hackrf", 433.92e6)
 --
--- -- Source samples from an Airspy at 15 MHz sampled at 6 MHz, with 10 dB overall gain
--- local src = radio.SoapySDRSource("driver=airspy", 6e6, {gain = 10})
---
--- -- Source samples from a LimeSDR at 915 MHz sampled at 10 MHz,
--- -- with 20 dB overall gain and 4 MHz baseband bandwidth
--- local src = radio.SoapySDRSource("driver=limesdr", 915e6, 10e6, {gain = 20, bandwidth = 4e6})
---
--- -- Source samples from a HackRF at 144.390 MHz sampled at 8 MHz,
--- -- with 2.5 MHz baseband bandwidth
--- local src = radio.SoapySDRSource("driver=hackrf", 144.390e6, 8e6, {bandwidth = 2.5e6})
+-- -- Sink samples to a LimeSDR at 915 MHz, with 10 dB overall gain and 5 MHz baseband bandwidth
+-- local src = radio.SoapySDRSink("driver=limesdr", 915e6, {gain = 10, bandwidth = 5e6})
 
 local ffi = require('ffi')
 
@@ -41,12 +32,11 @@ local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
 
-local SoapySDRSource = block.factory("SoapySDRSource")
+local SoapySDRSink = block.factory("SoapySDRSink")
 
-function SoapySDRSource:instantiate(driver, frequency, rate, options)
+function SoapySDRSink:instantiate(driver, frequency, options)
     self.driver = assert(driver, "Missing argument #1 (driver)")
     self.frequency = assert(frequency, "Missing argument #2 (frequency)")
-    self.rate = assert(rate, "Missing argument #3 (rate)")
 
     assert(type(driver) == "string" or type(driver) == "table", "Invalid argument #1 (driver), should be string or table of string key-value pairs.")
 
@@ -60,14 +50,10 @@ function SoapySDRSource:instantiate(driver, frequency, rate, options)
     self.frequencies = self.options.frequencies
     self.driver_settings = self.options.driver_settings
 
-    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {})
 end
 
-function SoapySDRSource:get_rate()
-    return self.rate
-end
-
-if not package.loaded['radio.blocks.sinks.soapysdr'] then
+if not package.loaded['radio.blocks.sources.soapysdr'] then
     ffi.cdef[[
         typedef struct SoapySDRDevice SoapySDRDevice;
         typedef struct SoapySDRStream SoapySDRStream;
@@ -173,10 +159,10 @@ if not package.loaded['radio.blocks.sinks.soapysdr'] then
 end
 local libsoapysdr_available, libsoapysdr = pcall(ffi.load, "libSoapySDR")
 
-function SoapySDRSource:initialize()
+function SoapySDRSink:initialize()
     -- Check library is available
     if not libsoapysdr_available then
-        error("SoapySDRSource: libSoapySDR not found. Is SoapySDR installed?")
+        error("SoapySDRSink: libSoapySDR not found. Is SoapySDR installed?")
     end
 end
 
@@ -200,148 +186,148 @@ local function kwargs2array(kwargs)
     return arr
 end
 
-function SoapySDRSource:debug_dump_soapysdr()
+function SoapySDRSink:debug_dump_soapysdr()
     local ret
 
     -- Driver and hardware key
-    debug.printf("[SoapySDRSource] Driver key: %s\n", ffi.string(libsoapysdr.SoapySDRDevice_getDriverKey(self.dev)))
-    debug.printf("[SoapySDRSource] Hardware key: %s\n", ffi.string(libsoapysdr.SoapySDRDevice_getDriverKey(self.dev)))
+    debug.printf("[SoapySDRSink] Driver key: %s\n", ffi.string(libsoapysdr.SoapySDRDevice_getDriverKey(self.dev)))
+    debug.printf("[SoapySDRSink] Hardware key: %s\n", ffi.string(libsoapysdr.SoapySDRDevice_getDriverKey(self.dev)))
 
     -- Hardware info
-    debug.printf("[SoapySDRSource] Hardware info:\n", ffi.string(libsoapysdr.SoapySDRDevice_getDriverKey(self.dev)))
+    debug.printf("[SoapySDRSink] Hardware info:\n", ffi.string(libsoapysdr.SoapySDRDevice_getDriverKey(self.dev)))
     local hardware_info_kwargs = libsoapysdr.SoapySDRDevice_getHardwareInfo(self.dev)
     local hardware_info = kwargs2array(hardware_info_kwargs)
     libsoapysdr.SoapySDRKwargs_clear(hardware_info_kwargs)
     for i = 1, #hardware_info do
-        debug.printf("[SoapySDRSource]     %s: %s\n", hardware_info[i][1], hardware_info[i][2])
+        debug.printf("[SoapySDRSink]     %s: %s\n", hardware_info[i][1], hardware_info[i][2])
     end
     if #hardware_info == 0 then
-        debug.printf("[SoapySDRSource]     (no hardware info)\n")
+        debug.printf("[SoapySDRSink]     (no hardware info)\n")
     end
 
     -- Number of channels
-    local num_channels = libsoapysdr.SoapySDRDevice_getNumChannels(self.dev, ffi.C.SOAPY_SDR_RX)
-    debug.printf("[SoapySDRSource] Number of RX channels: %u\n", tonumber(num_channels))
+    local num_channels = libsoapysdr.SoapySDRDevice_getNumChannels(self.dev, ffi.C.SOAPY_SDR_TX)
+    debug.printf("[SoapySDRSink] Number of TX channels: %u\n", tonumber(num_channels))
 
     -- Channel info
-    debug.printf("[SoapySDRSource] RX Channel %u info:\n", self.channel)
-    local channel_info_kwargs = libsoapysdr.SoapySDRDevice_getChannelInfo(self.dev, ffi.C.SOAPY_SDR_RX, self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u info:\n", self.channel)
+    local channel_info_kwargs = libsoapysdr.SoapySDRDevice_getChannelInfo(self.dev, ffi.C.SOAPY_SDR_TX, self.channel)
     local channel_info = kwargs2array(channel_info_kwargs)
     libsoapysdr.SoapySDRKwargs_clear(channel_info_kwargs)
     for i = 1, #channel_info do
-        debug.printf("[SoapySDRSource]     %s: %s\n", channel_info[i][1], channel_info[i][2])
+        debug.printf("[SoapySDRSink]     %s: %s\n", channel_info[i][1], channel_info[i][2])
     end
     if #channel_info == 0 then
-        debug.printf("[SoapySDRSource]     (no channel info)\n")
+        debug.printf("[SoapySDRSink]     (no channel info)\n")
     end
 
     -- Supported sample rates
-    debug.printf("[SoapySDRSource] RX Channel %u sample rates:\n", self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u sample rates:\n", self.channel)
     local num_rates = ffi.new("size_t[1]")
-    local rates = libsoapysdr.SoapySDRDevice_listSampleRates(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_rates)
+    local rates = libsoapysdr.SoapySDRDevice_listSampleRates(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_rates)
     for i = 0, tonumber(num_rates[0])-1 do
-        debug.printf("[SoapySDRSource]     %f\n", rates[i])
+        debug.printf("[SoapySDRSink]     %f\n", rates[i])
     end
     if num_rates[0] == 0 then
-        debug.printf("[SoapySDRSource]     (no sample rates)\n")
+        debug.printf("[SoapySDRSink]     (no sample rates)\n")
     end
     ffi.C.free(rates)
 
     -- Frequency ranges
-    debug.printf("[SoapySDRSource] RX Channel %u center frequency ranges:\n", self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u center frequency ranges:\n", self.channel)
     local num_freq_ranges = ffi.new("size_t[1]")
-    local freq_ranges = libsoapysdr.SoapySDRDevice_getFrequencyRange(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_freq_ranges)
+    local freq_ranges = libsoapysdr.SoapySDRDevice_getFrequencyRange(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_freq_ranges)
     for i = 0, tonumber(num_freq_ranges[0])-1 do
-        debug.printf("[SoapySDRSource]     %f - %f\n", freq_ranges[i].minimum, freq_ranges[i].maximum)
+        debug.printf("[SoapySDRSink]     %f - %f\n", freq_ranges[i].minimum, freq_ranges[i].maximum)
     end
     if num_freq_ranges[0] == 0 then
-        debug.printf("[SoapySDRSource]     (no frequency ranges)\n")
+        debug.printf("[SoapySDRSink]     (no frequency ranges)\n")
     end
     ffi.C.free(freq_ranges)
 
     -- Frequency element ranges
-    debug.printf("[SoapySDRSource] RX Channel %u frequency element ranges:\n", self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u frequency element ranges:\n", self.channel)
     local num_freq_elements = ffi.new("size_t[1]")
-    local freq_elements = libsoapysdr.SoapySDRDevice_listFrequencies(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_freq_elements)
+    local freq_elements = libsoapysdr.SoapySDRDevice_listFrequencies(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_freq_elements)
     for i = 0, tonumber(num_freq_elements[0])-1 do
-        debug.printf("[SoapySDRSource]     %s\n", ffi.string(freq_elements[i]))
+        debug.printf("[SoapySDRSink]     %s\n", ffi.string(freq_elements[i]))
         local num_freq_ranges = ffi.new("size_t[1]")
-        local freq_ranges = libsoapysdr.SoapySDRDevice_getFrequencyRangeComponent(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, freq_elements[i], num_freq_ranges)
+        local freq_ranges = libsoapysdr.SoapySDRDevice_getFrequencyRangeComponent(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, freq_elements[i], num_freq_ranges)
         for i = 0, tonumber(num_freq_ranges[0])-1 do
-            debug.printf("[SoapySDRSource]         %f - %f\n", freq_ranges[i].minimum, freq_ranges[i].maximum)
+            debug.printf("[SoapySDRSink]         %f - %f\n", freq_ranges[i].minimum, freq_ranges[i].maximum)
         end
         if num_freq_ranges[0] == 0 then
-            debug.printf("[SoapySDRSource]         (no frequency ranges)\n", freq_ranges[i].minimum, freq_ranges[i].maximum)
+            debug.printf("[SoapySDRSink]         (no frequency ranges)\n", freq_ranges[i].minimum, freq_ranges[i].maximum)
         end
         ffi.C.free(freq_ranges)
     end
     if num_freq_elements[0] == 0 then
-        debug.printf("[SoapySDRSource]     (no frequency elements)\n")
+        debug.printf("[SoapySDRSink]     (no frequency elements)\n")
     end
     libsoapysdr.SoapySDRStrings_clear(ffi.new("char **[1]", {freq_elements}), num_freq_elements[0])
 
     -- Bandwidths
-    debug.printf("[SoapySDRSource] RX Channel %u bandwidths:\n", self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u bandwidths:\n", self.channel)
     local num_bandwidths = ffi.new("size_t[1]")
-    local bandwidths = libsoapysdr.SoapySDRDevice_listBandwidths(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_bandwidths)
+    local bandwidths = libsoapysdr.SoapySDRDevice_listBandwidths(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_bandwidths)
     for i = 0, tonumber(num_bandwidths[0])-1 do
-        debug.printf("[SoapySDRSource]     %f\n", bandwidths[i])
+        debug.printf("[SoapySDRSink]     %f\n", bandwidths[i])
     end
     if num_bandwidths[0] == 0 then
-        debug.printf("[SoapySDRSource]     (no bandwidths)\n")
+        debug.printf("[SoapySDRSink]     (no bandwidths)\n")
     end
     ffi.C.free(bandwidths)
 
     -- Bandwidth ranges
-    debug.printf("[SoapySDRSource] RX Channel %u bandwidth ranges:\n", self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u bandwidth ranges:\n", self.channel)
     local num_bandwidth_ranges = ffi.new("size_t[1]")
-    local bandwidth_ranges = libsoapysdr.SoapySDRDevice_getBandwidthRange(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_bandwidth_ranges)
+    local bandwidth_ranges = libsoapysdr.SoapySDRDevice_getBandwidthRange(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_bandwidth_ranges)
     for i = 0, tonumber(num_bandwidth_ranges[0])-1 do
-        debug.printf("[SoapySDRSource]     %f - %f\n", bandwidth_ranges[i].minimum, bandwidth_ranges[i].maximum)
+        debug.printf("[SoapySDRSink]     %f - %f\n", bandwidth_ranges[i].minimum, bandwidth_ranges[i].maximum)
     end
     if num_bandwidth_ranges[0] == 0 then
-        debug.printf("[SoapySDRSource]     (no bandwidth ranges)\n")
+        debug.printf("[SoapySDRSink]     (no bandwidth ranges)\n")
     end
     ffi.C.free(bandwidth_ranges)
 
     -- Overall gain range
-    local gain_range = libsoapysdr.SoapySDRDevice_getGainRange(self.dev, ffi.C.SOAPY_SDR_RX, self.channel)
-    debug.printf("[SoapySDRSource] RX Channel %u overall gain range:\n", self.channel)
-    debug.printf("[SoapySDRSource]     %f - %f\n", gain_range.minimum, gain_range.maximum)
+    local gain_range = libsoapysdr.SoapySDRDevice_getGainRange(self.dev, ffi.C.SOAPY_SDR_TX, self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u overall gain range:\n", self.channel)
+    debug.printf("[SoapySDRSink]     %f - %f\n", gain_range.minimum, gain_range.maximum)
 
     -- Gain element ranges
-    debug.printf("[SoapySDRSource] RX Channel %u gain element ranges:\n", self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u gain element ranges:\n", self.channel)
     local num_gain_elements = ffi.new("size_t[1]")
-    local gain_elements = libsoapysdr.SoapySDRDevice_listGains(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_gain_elements)
+    local gain_elements = libsoapysdr.SoapySDRDevice_listGains(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_gain_elements)
     for i = 0, tonumber(num_gain_elements[0])-1 do
-        local range = libsoapysdr.SoapySDRDevice_getGainElementRange(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, gain_elements[i])
-        debug.printf("[SoapySDRSource]     %s: %f - %f\n", ffi.string(gain_elements[i]), range.minimum, range.maximum)
+        local range = libsoapysdr.SoapySDRDevice_getGainElementRange(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, gain_elements[i])
+        debug.printf("[SoapySDRSink]     %s: %f - %f\n", ffi.string(gain_elements[i]), range.minimum, range.maximum)
     end
     if num_gain_elements[0] == 0 then
-        debug.printf("[SoapySDRSource]     (no gain elements)\n")
+        debug.printf("[SoapySDRSink]     (no gain elements)\n")
     end
     libsoapysdr.SoapySDRStrings_clear(ffi.new("char **[1]", {gain_elements}), num_gain_elements[0])
 
     -- Antennas
-    debug.printf("[SoapySDRSource] RX Channel %u antennas:\n", self.channel)
+    debug.printf("[SoapySDRSink] TX Channel %u antennas:\n", self.channel)
     local num_antennas = ffi.new("size_t[1]")
-    local antennas = libsoapysdr.SoapySDRDevice_listAntennas(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_antennas)
+    local antennas = libsoapysdr.SoapySDRDevice_listAntennas(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_antennas)
     for i = 0, tonumber(num_antennas[0])-1 do
-        debug.printf("[SoapySDRSource]     %s\n", ffi.string(antennas[i]))
+        debug.printf("[SoapySDRSink]     %s\n", ffi.string(antennas[i]))
     end
     if num_antennas[0] == 0 then
-        debug.printf("[SoapySDRSource]     (no antennas)\n")
+        debug.printf("[SoapySDRSink]     (no antennas)\n")
     end
     libsoapysdr.SoapySDRStrings_clear(ffi.new("char **[1]", {antennas}), num_antennas[0])
 end
 
-function SoapySDRSource:initialize_soapysdr()
+function SoapySDRSink:initialize_soapysdr()
     local ret
 
     -- (Debug) Dump version info
     if debug.enabled then
         -- Look up library version
-        debug.printf("[SoapySDRSource] SoapySDR library version: %s\n", ffi.string(libsoapysdr.SoapySDR_getLibVersion()))
+        debug.printf("[SoapySDRSink] SoapySDR library version: %s\n", ffi.string(libsoapysdr.SoapySDR_getLibVersion()))
     end
 
     -- Make device
@@ -360,22 +346,22 @@ function SoapySDRSource:initialize_soapysdr()
     end
 
     -- (Debug) Print frequency and sample rate
-    debug.printf("[SoapySDRSource] Frequency: %f Hz, Sample rate: %f Hz\n", self.frequency, self.rate)
+    debug.printf("[SoapySDRSink] Frequency: %f Hz, Sample rate: %f Hz\n", self.frequency, self:get_rate())
 
     -- Set sample rate
-    ret = libsoapysdr.SoapySDRDevice_setSampleRate(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, self.rate)
+    ret = libsoapysdr.SoapySDRDevice_setSampleRate(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, self:get_rate())
     if ret < 0 then
         local errstr = ffi.string(libsoapysdr.SoapySDRDevice_lastError())
 
-        io.stderr:write(string.format("[SoapySDRSource] Error setting sample rate %f Hz.\n", self.rate))
-        io.stderr:write("[SoapySDRSource] Supported sample rates:\n")
+        io.stderr:write(string.format("[SoapySDRSink] Error setting sample rate %f Hz.\n", self:get_rate()))
+        io.stderr:write("[SoapySDRSink] Supported sample rates:\n")
         local num_rates = ffi.new("size_t[1]")
-        local rates = libsoapysdr.SoapySDRDevice_listSampleRates(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_rates)
+        local rates = libsoapysdr.SoapySDRDevice_listSampleRates(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_rates)
         if rates == nil then
-            io.stderr:write(string.format("[SoapySDRSource] Error SoapySDRDevice_listSampleRates(): %s\n", ffi.string(libsoapysdr.SoapySDRDevice_lastError())))
+            io.stderr:write(string.format("[SoapySDRSink] Error SoapySDRDevice_listSampleRates(): %s\n", ffi.string(libsoapysdr.SoapySDRDevice_lastError())))
         else
             for i = 0, tonumber(num_rates[0])-1 do
-                io.stderr:write(string.format("[SoapySDRSource]     %f\n", rates[i]))
+                io.stderr:write(string.format("[SoapySDRSink]     %f\n", rates[i]))
             end
             ffi.C.free(rates)
         end
@@ -384,19 +370,19 @@ function SoapySDRSource:initialize_soapysdr()
     end
 
     -- Set frequency
-    ret = libsoapysdr.SoapySDRDevice_setFrequency(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, self.frequency, nil)
+    ret = libsoapysdr.SoapySDRDevice_setFrequency(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, self.frequency, nil)
     if ret < 0 then
         local errstr = ffi.string(libsoapysdr.SoapySDRDevice_lastError())
 
-        io.stderr:write(string.format("[SoapySDRSource] Error setting frequency %f Hz.\n", self.frequency))
-        io.stderr:write("[SoapySDRSource] Supported frequency ranges:\n")
+        io.stderr:write(string.format("[SoapySDRSink] Error setting frequency %f Hz.\n", self.frequency))
+        io.stderr:write("[SoapySDRSink] Supported frequency ranges:\n")
         local num_freq_ranges = ffi.new("size_t[1]")
-        local freq_ranges = libsoapysdr.SoapySDRDevice_getFrequencyRange(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, num_freq_ranges)
+        local freq_ranges = libsoapysdr.SoapySDRDevice_getFrequencyRange(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, num_freq_ranges)
         if freq_ranges == nil then
-            io.stderr:write(string.format("[SoapySDRSource] Error SoapySDRDevice_getFrequencyRange(): %s\n", ffi.string(libsoapysdr.SoapySDRDevice_lastError())))
+            io.stderr:write(string.format("[SoapySDRSink] Error SoapySDRDevice_getFrequencyRange(): %s\n", ffi.string(libsoapysdr.SoapySDRDevice_lastError())))
         else
             for i = 0, tonumber(num_freq_ranges[0])-1 do
-                io.stderr:write(string.format("[SoapySDRSource]     %f - %f\n", freq_ranges[i].minimum, freq_ranges[i].maximum))
+                io.stderr:write(string.format("[SoapySDRSink]     %f - %f\n", freq_ranges[i].minimum, freq_ranges[i].maximum))
             end
             ffi.C.free(freq_ranges)
         end
@@ -406,7 +392,7 @@ function SoapySDRSource:initialize_soapysdr()
 
     -- Set bandwidth (if specified)
     if self.bandwidth then
-        ret = libsoapysdr.SoapySDRDevice_setBandwidth(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, self.bandwidth)
+        ret = libsoapysdr.SoapySDRDevice_setBandwidth(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, self.bandwidth)
         if ret < 0 then
             error("SoapySDRDevice_setBandwidth(): " .. ffi.string(libsoapysdr.SoapySDRDevice_lastError()))
         end
@@ -414,14 +400,14 @@ function SoapySDRSource:initialize_soapysdr()
 
     -- (Debug) Print bandwidth
     if debug.enabled then
-        local bandwidth = libsoapysdr.SoapySDRDevice_getBandwidth(self.dev, ffi.C.SOAPY_SDR_RX, self.channel)
-        debug.printf("[SoapySDRSource] Bandwidth: %f\n", bandwidth)
+        local bandwidth = libsoapysdr.SoapySDRDevice_getBandwidth(self.dev, ffi.C.SOAPY_SDR_TX, self.channel)
+        debug.printf("[SoapySDRSink] Bandwidth: %f\n", bandwidth)
     end
 
     -- Set frequencies (if specified)
     if self.frequencies then
         for name, value in pairs(self.frequencies) do
-            ret = libsoapysdr.SoapySDRDevice_setFrequencyComponent(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, name, value, nil)
+            ret = libsoapysdr.SoapySDRDevice_setFrequencyComponent(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, name, value, nil)
             if ret < 0 then
                 error(string.format("SoapySDRDevice_setFrequencyComponent(\"%s\", %f): %s", name, value, ffi.string(libsoapysdr.SoapySDRDevice_lastError())))
             end
@@ -430,7 +416,7 @@ function SoapySDRSource:initialize_soapysdr()
 
     -- Set gain (if specified)
     if self.gain then
-        ret = libsoapysdr.SoapySDRDevice_setGain(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, self.gain)
+        ret = libsoapysdr.SoapySDRDevice_setGain(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, self.gain)
         if ret < 0 then
             error("SoapySDRDevice_setGain(): " .. ffi.string(libsoapysdr.SoapySDRDevice_lastError()))
         end
@@ -439,7 +425,7 @@ function SoapySDRSource:initialize_soapysdr()
     -- Set gains (if specified)
     if self.gains then
         for name, value in pairs(self.gains) do
-            ret = libsoapysdr.SoapySDRDevice_setGainElement(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, name, value)
+            ret = libsoapysdr.SoapySDRDevice_setGainElement(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, name, value)
             if ret < 0 then
                 error(string.format("SoapySDRDevice_setGainElement(\"%s\", %f): %s", name, value, ffi.string(libsoapysdr.SoapySDRDevice_lastError())))
             end
@@ -448,7 +434,7 @@ function SoapySDRSource:initialize_soapysdr()
 
     -- Set autogain (if specified)
     if self.autogain ~= nil then
-        ret = libsoapysdr.SoapySDRDevice_setGainMode(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, self.autogain)
+        ret = libsoapysdr.SoapySDRDevice_setGainMode(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, self.autogain)
         if ret < 0 then
             error("SoapySDRDevice_setGainMode(): " .. ffi.string(libsoapysdr.SoapySDRDevice_lastError()))
         end
@@ -456,7 +442,7 @@ function SoapySDRSource:initialize_soapysdr()
 
     -- Set antenna (if specified)
     if self.antenna then
-        ret = libsoapysdr.SoapySDRDevice_setAntenna(self.dev, ffi.C.SOAPY_SDR_RX, self.channel, self.antenna)
+        ret = libsoapysdr.SoapySDRDevice_setAntenna(self.dev, ffi.C.SOAPY_SDR_TX, self.channel, self.antenna)
         if ret < 0 then
             error("SoapySDRDevice_setAntenna(): " .. ffi.string(libsoapysdr.SoapySDRDevice_lastError()))
         end
@@ -472,14 +458,10 @@ function SoapySDRSource:initialize_soapysdr()
     -- Setup the stream
     self.stream = ffi.new("SoapySDRStream*[1]")
     local channels = ffi.new("size_t[1]", {self.channel})
-    ret = libsoapysdr.SoapySDRDevice_setupStream(self.dev, self.stream, ffi.C.SOAPY_SDR_RX, "CF32", channels, 1, nil)
+    ret = libsoapysdr.SoapySDRDevice_setupStream(self.dev, self.stream, ffi.C.SOAPY_SDR_TX, "CF32", channels, 1, nil)
     if ret < 0 then
         error("SoapySDRDevice_setupStream(): " .. ffi.string(libsoapysdr.SoapySDR_errToStr(ret)))
     end
-
-    -- Create output vector
-    self.chunk_size = 10*libsoapysdr.SoapySDRDevice_getStreamMTU(self.dev, self.stream[0])
-    self.out = types.ComplexFloat32.vector(self.chunk_size)
 
     -- Activate the stream
     ret = libsoapysdr.SoapySDRDevice_activateStream(self.dev, self.stream[0], 0, 0, 0)
@@ -491,28 +473,41 @@ function SoapySDRSource:initialize_soapysdr()
     self.initialized = true
 end
 
-function SoapySDRSource:process()
+function SoapySDRSink:cleanup()
+    if self.initialized then
+        -- Deactivate the stream
+        ret = libsoapysdr.SoapySDRDevice_deactivateStream(self.dev, self.stream[0], 0, 0)
+        if ret < 0 then
+            error("SoapySDRDevice_deactivateStream(): " .. ffi.string(libsoapysdr.SoapySDR_errToStr(ret)))
+        end
+
+        -- Close the stream
+        libsoapysdr.SoapySDRDevice_closeStream(self.dev, self.stream[0])
+
+        -- Close the device
+        libsoapysdr.SoapySDRDevice_unmake(self.dev)
+    end
+end
+
+function SoapySDRSink:process(x)
     if not self.initialized then
         -- Initialize the SoapySDR in our own running process
         self:initialize_soapysdr()
     end
 
-    local buffs = ffi.new("void*[1]")
+    local buffs = ffi.new("const void *[1]")
     local flags = ffi.new("int[1]")
-    local timeNs = ffi.new("long long[1]")
 
-    -- Read stream into our output vector
+    -- Write vector to stream
     local len = 0
-    while len < self.chunk_size do
-        buffs[0] = self.out.data + len
-        local elems_read = libsoapysdr.SoapySDRDevice_readStream(self.dev, self.stream[0], buffs, self.chunk_size - len, flags, timeNs, 1e12)
-        if elems_read < 0 then
-            error("SoapySDRDevice_readStream(): " .. ffi.string(libsoapysdr.SoapySDR_errToStr(elems_read)))
+    while len < x.length do
+        buffs[0] = x.data + len
+        local elems_written = libsoapysdr.SoapySDRDevice_writeStream(self.dev, self.stream[0], buffs, x.length - len, flags, 0, 1e12)
+        if elems_written < 0 then
+            error("SoapySDRDevice_writeStream(): " .. ffi.string(libsoapysdr.SoapySDR_errToStr(elems_written)))
         end
-        len = len + elems_read
+        len = len + elems_written
     end
-
-    return self.out
 end
 
-return SoapySDRSource
+return SoapySDRSink

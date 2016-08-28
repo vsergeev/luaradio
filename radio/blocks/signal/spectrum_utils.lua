@@ -63,8 +63,7 @@ function DFT:initialize()
     end
 
     -- Create sample buffers
-    self.samples = types.ComplexFloat32.vector(self.num_samples)
-    self.windowed_samples = types.ComplexFloat32.vector(self.num_samples)
+    self.windowed_samples = self.data_type.vector(self.num_samples)
     self.dft_samples = types.ComplexFloat32.vector(self.num_samples)
     self.psd_samples = types.Float32.vector(self.num_samples)
 
@@ -97,20 +96,33 @@ if platform.features.volk then
 
     ffi.cdef[[
     void (*volk_32fc_32f_multiply_32fc_a)(complex_float32_t* cVector, const complex_float32_t* aVector, const float32_t* bVector, unsigned int num_points);
+    void (*volk_32f_x2_multiply_32f_a)(float32_t* cVector, const float32_t* aVector, const float32_t* bVector, unsigned int num_points);
     ]]
     local libvolk = platform.libs.volk
 
-    function DFT:_window(samples)
+    function DFT:_window_complex(samples)
         -- Window samples (product of complex samples and real window)
         libvolk.volk_32fc_32f_multiply_32fc_a(self.windowed_samples.data, samples.data, self.window.data, self.num_samples)
     end
 
+    function DFT:_window_real(samples)
+        -- Window samples (product of real samples and real window)
+        libvolk.volk_32f_x2_multiply_32f_a(self.windowed_samples.data, samples.data, self.window.data, self.num_samples)
+    end
+
 else
 
-    function DFT:_window(samples)
+    function DFT:_window_complex(samples)
         -- Window samples (product of complex samples and real window)
         for i = 0, self.num_samples-1 do
             self.windowed_samples.data[i] = samples.data[i]:scalar_mul(self.window.data[i].value)
+        end
+    end
+
+    function DFT:_window_real(samples)
+        -- Window samples (product of real samples and real window)
+        for i = 0, self.num_samples-1 do
+            self.windowed_samples.data[i].value = samples.data[i].value*self.window.data[i].value
         end
     end
 
@@ -124,9 +136,11 @@ if platform.features.fftw3f then
 
     ffi.cdef[[
     typedef struct fftwf_plan_s *fftwf_plan;
+    typedef float32_t fftwf_real;
     typedef complex_float32_t fftwf_complex;
 
     fftwf_plan fftwf_plan_dft_1d(int n, fftwf_complex *in, fftwf_complex *out, int sign, unsigned flags);
+    fftwf_plan fftwf_plan_dft_r2c_1d(int n0, fftwf_real *in, fftwf_complex *out, unsigned flags);
     void fftwf_execute(const fftwf_plan plan);
     void fftwf_destroy_plan(fftwf_plan plan);
 
@@ -137,7 +151,12 @@ if platform.features.fftw3f then
 
     function DFT:initialize_dft()
         -- Create plan
-        self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.FFTW_FORWARD, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+        if self.data_type == types.ComplexFloat32 then
+            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.FFTW_FORWARD, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+        else
+            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_r2c_1d(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+        end
+
         if self.plan == nil then
             error("Creating FFTW plan.")
         end
@@ -145,10 +164,32 @@ if platform.features.fftw3f then
 
     function DFT:dft_complex(samples)
         -- Window samples
-        self:_window(samples)
+        self:_window_complex(samples)
 
         -- Execute FFTW plan
         libfftw3f.fftwf_execute(self.plan)
+
+        -- Swap indices
+        for k = 0, (self.num_samples/2)-1 do
+            self.dft_samples.data[self.fftshift_indices[k]].real, self.dft_samples.data[k].real = self.dft_samples.data[k].real, self.dft_samples.data[self.fftshift_indices[k]].real
+            self.dft_samples.data[self.fftshift_indices[k]].imag, self.dft_samples.data[k].imag = self.dft_samples.data[k].imag, self.dft_samples.data[self.fftshift_indices[k]].imag
+        end
+
+        return self.dft_samples
+    end
+
+    function DFT:dft_real(samples)
+        -- Window samples
+        self:_window_real(samples)
+
+        -- Execute FFTW plan
+        libfftw3f.fftwf_execute(self.plan)
+
+        -- Populate negative frequencies
+        for k = math.floor(self.num_samples/2)+1, self.num_samples-1 do
+            self.dft_samples.data[k].real = self.dft_samples.data[self.num_samples-k].real
+            self.dft_samples.data[k].imag = -self.dft_samples.data[self.num_samples-k].imag
+        end
 
         -- Swap indices
         for k = 0, (self.num_samples/2)-1 do
@@ -175,7 +216,15 @@ elseif platform.features.liquid then
 
     function DFT:initialize_dft()
         -- Create plan
-        self.plan = ffi.gc(libliquid.fft_create_plan(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.LIQUID_FFT_FORWARD, 0), libliquid.fft_destroy_plan)
+        if self.data_type == types.ComplexFloat32 then
+            self.plan = ffi.gc(libliquid.fft_create_plan(self.num_samples, self.windowed_samples.data, self.dft_samples.data, ffi.C.LIQUID_FFT_FORWARD, 0), libliquid.fft_destroy_plan)
+        else
+            -- Create complex samples buffer for dft_real()
+            self._samples = types.ComplexFloat32.vector(self.num_samples)
+
+            self.plan = ffi.gc(libliquid.fft_create_plan(self.num_samples, self._samples.data, self.dft_samples.data, ffi.C.LIQUID_FFT_FORWARD, 0), libliquid.fft_destroy_plan)
+        end
+
         if self.plan == nil then
             error("Creating liquid fftplan object.")
         end
@@ -183,7 +232,28 @@ elseif platform.features.liquid then
 
     function DFT:dft_complex(samples)
         -- Window samples
-        self:_window(samples)
+        self:_window_complex(samples)
+
+        -- Execute FFTW plan
+        libliquid.fft_execute(self.plan)
+
+        -- Swap indices
+        libliquid.fft_shift(self.dft_samples.data, self.dft_samples.length)
+
+        return self.dft_samples
+    end
+
+    function DFT:dft_real(samples)
+        -- liquid-dsp doesn't provide a r2c DFT, so we copy real samples into a
+        -- complex sample buffer and use the c2c DFT.
+
+        -- Window samples
+        self:_window_real(samples)
+
+        -- Copy real samples to complex samples
+        for i = 0, self.num_samples-1 do
+            self._samples.data[i].real = self.windowed_samples.data[i].value
+        end
 
         -- Execute FFTW plan
         libliquid.fft_execute(self.plan)
@@ -200,6 +270,7 @@ elseif platform.features.volk then
     void (*volk_32fc_s32fc_x2_rotator_32fc_a)(complex_float32_t* outVector, const complex_float32_t* inVector, const complex_float32_t phase_inc, complex_float32_t* phase, unsigned int num_points);
     void (*volk_32fc_32f_multiply_32fc_a)(complex_float32_t* cVector, const complex_float32_t* aVector, const float32_t* bVector, unsigned int num_points);
     void (*volk_32fc_x2_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const complex_float32_t* taps, unsigned int num_points);
+    void (*volk_32fc_32f_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const float32_t* taps, unsigned int num_points);
     ]]
     local libvolk = platform.libs.volk
 
@@ -219,16 +290,33 @@ elseif platform.features.volk then
             local phase = types.ComplexFloat32(1, 0)
             libvolk.volk_32fc_s32fc_x2_rotator_32fc_a(self.exponentials[k].data, dc_vec.data, rotator, phase, self.num_samples)
         end
-
     end
 
     function DFT:dft_complex(samples)
         -- Window samples
-        self:_window(samples)
+        self:_window_complex(samples)
 
         -- Compute DFT of windowed samples (dot product of each complex exponential with the windowed samples)
         for k = 0, self.num_samples-1 do
             libvolk.volk_32fc_x2_dot_prod_32fc_a(self.dft_samples.data[self.fftshift_indices[k]], self.windowed_samples.data, self.exponentials[k].data, self.num_samples)
+        end
+
+        return self.dft_samples
+    end
+
+    function DFT:dft_real(samples)
+        --Window samples
+        self:_window_real(samples)
+
+        -- Compute DFT of windowed samples (dot product of each complex exponential with the windowed samples)
+        for k = 0, self.num_samples/2 do
+            libvolk.volk_32fc_32f_dot_prod_32fc_a(self.dft_samples.data[self.fftshift_indices[k]], self.exponentials[k].data, self.windowed_samples.data, self.num_samples)
+        end
+
+        -- Populate negative frequencies
+        for k = math.floor(self.num_samples/2)+1, self.num_samples-1 do
+            self.dft_samples.data[self.fftshift_indices[k]].real = self.dft_samples.data[self.num_samples-self.fftshift_indices[k]].real
+            self.dft_samples.data[self.fftshift_indices[k]].imag = -self.dft_samples.data[self.num_samples-self.fftshift_indices[k]].imag
         end
 
         return self.dft_samples
@@ -250,7 +338,7 @@ else
 
     function DFT:dft_complex(samples)
         -- Window samples
-        self:_window(samples)
+        self:_window_complex(samples)
 
         -- Compute DFT of windowed samples (dot product of each complex exponential with the windowed samples)
         ffi.fill(self.dft_samples.data, self.dft_samples.size)
@@ -264,17 +352,30 @@ else
         return self.dft_samples
     end
 
-end
+    function DFT:dft_real(samples)
+        -- Window samples
+        self:_window_real(samples)
 
--- Wrapper for real samples
+        -- Zero DFT samples
+        ffi.fill(self.dft_samples.data, self.dft_samples.size)
 
-function DFT:dft_real(samples)
-    -- Convert real samples to complex samples
-    for i = 0, self.num_samples-1 do
-        self.samples.data[i].real = samples.data[i].value
+        -- Compute DFT of windowed samples (dot product of each complex exponential with the windowed samples)
+        for k = 0, self.num_samples/2 do
+            local k_shifted = self.fftshift_indices[k]
+            for n = 0, self.num_samples-1 do
+                self.dft_samples.data[k_shifted] = self.dft_samples.data[k_shifted] + self.exponentials[k].data[n]:scalar_mul(self.windowed_samples.data[n].value)
+            end
+        end
+
+        -- Populate negative frequencies
+        for k = math.floor(self.num_samples/2)+1, self.num_samples-1 do
+            self.dft_samples.data[self.fftshift_indices[k]].real = self.dft_samples.data[self.num_samples-self.fftshift_indices[k]].real
+            self.dft_samples.data[self.fftshift_indices[k]].imag = -self.dft_samples.data[self.num_samples-self.fftshift_indices[k]].imag
+        end
+
+        return self.dft_samples
     end
 
-    return self:dft_complex(self.samples)
 end
 
 --------------------------------------------------------------------------------

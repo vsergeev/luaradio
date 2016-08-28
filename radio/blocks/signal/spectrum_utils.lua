@@ -23,6 +23,8 @@ function DFT.new(num_samples, data_type, window_type, sample_rate)
 
     if data_type ~= types.ComplexFloat32 and data_type ~= types.Float32 then
         error("Unsupported data type.")
+    elseif (num_samples % 2) ~= 0 then
+        error("DFT length must be even.")
     end
 
     self.num_samples = num_samples

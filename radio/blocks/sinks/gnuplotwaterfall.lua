@@ -130,7 +130,7 @@ function GnuplotWaterfallSink:initialize_gnuplot()
     self.plot_str = string.format("plot '-' binary format='%%uchar' array=%dx%d origin=(%.3f,%.3f) dx=%.3f dy=%f with rgbimage\n", self.columns, self.rows, -sample_rate/2, -self.plot_duration, sample_rate/self.num_samples, self.plot_duration/self.rows)
 
     -- Build DFT context
-    local window_type = self.options.window or "hanning"
+    local window_type = self.options.window or "hamming"
     self.dft = spectrum_utils.DFT(self.num_samples, data_type, window_type, sample_rate)
 
     -- Create state buffer and counters

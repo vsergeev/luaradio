@@ -45,12 +45,6 @@ function DFT.new(input_samples, output_samples)
         self.compute = self.compute_real
     end
 
-    -- Generate unwrapped fft indices
-    self.fftshift_indices = {}
-    for k = 0, self.num_samples-1 do
-        self.fftshift_indices[k] = (k < (self.num_samples/2)) and (k + (self.num_samples/2)) or (k - (self.num_samples/2))
-    end
-
     -- Initialize the DFT
     self:initialize()
 
@@ -111,12 +105,6 @@ if platform.features.fftw3f then
     function DFT:compute_complex()
         -- Execute FFTW plan
         libfftw3f.fftwf_execute(self.plan)
-
-        -- Swap indices
-        for k = 0, (self.num_samples/2)-1 do
-            self.output_samples.data[self.fftshift_indices[k]].real, self.output_samples.data[k].real = self.output_samples.data[k].real, self.output_samples.data[self.fftshift_indices[k]].real
-            self.output_samples.data[self.fftshift_indices[k]].imag, self.output_samples.data[k].imag = self.output_samples.data[k].imag, self.output_samples.data[self.fftshift_indices[k]].imag
-        end
     end
 
     function DFT:compute_real()
@@ -127,12 +115,6 @@ if platform.features.fftw3f then
         for k = math.floor(self.num_samples/2)+1, self.num_samples-1 do
             self.output_samples.data[k].real = self.output_samples.data[self.num_samples-k].real
             self.output_samples.data[k].imag = -self.output_samples.data[self.num_samples-k].imag
-        end
-
-        -- Swap indices
-        for k = 0, (self.num_samples/2)-1 do
-            self.output_samples.data[self.fftshift_indices[k]].real, self.output_samples.data[k].real = self.output_samples.data[k].real, self.output_samples.data[self.fftshift_indices[k]].real
-            self.output_samples.data[self.fftshift_indices[k]].imag, self.output_samples.data[k].imag = self.output_samples.data[k].imag, self.output_samples.data[self.fftshift_indices[k]].imag
         end
     end
 
@@ -169,9 +151,6 @@ elseif platform.features.liquid then
     function DFT:compute_complex()
         -- Execute liquid fft plan
         libliquid.fft_execute(self.plan)
-
-        -- Swap indices
-        libliquid.fft_shift(self.output_samples.data, self.output_samples.length)
     end
 
     function DFT:compute_real()
@@ -185,9 +164,6 @@ elseif platform.features.liquid then
 
         -- Execute liquid fft plan
         libliquid.fft_execute(self.plan)
-
-        -- Swap indices
-        libliquid.fft_shift(self.output_samples.data, self.output_samples.length)
     end
 
 elseif platform.features.volk then
@@ -220,20 +196,20 @@ elseif platform.features.volk then
     function DFT:compute_complex()
         -- Compute DFT (dot product of each complex exponential with the input samples)
         for k = 0, self.num_samples-1 do
-            libvolk.volk_32fc_x2_dot_prod_32fc_a(self.output_samples.data[self.fftshift_indices[k]], self.input_samples.data, self.exponentials[k].data, self.num_samples)
+            libvolk.volk_32fc_x2_dot_prod_32fc_a(self.output_samples.data[k], self.input_samples.data, self.exponentials[k].data, self.num_samples)
         end
     end
 
     function DFT:compute_real()
         -- Compute DFT (dot product of each complex exponential with the input samples)
         for k = 0, self.num_samples/2 do
-            libvolk.volk_32fc_32f_dot_prod_32fc_a(self.output_samples.data[self.fftshift_indices[k]], self.exponentials[k].data, self.input_samples.data, self.num_samples)
+            libvolk.volk_32fc_32f_dot_prod_32fc_a(self.output_samples.data[k], self.exponentials[k].data, self.input_samples.data, self.num_samples)
         end
 
         -- Populate negative frequencies
         for k = math.floor(self.num_samples/2)+1, self.num_samples-1 do
-            self.output_samples.data[self.fftshift_indices[k]].real = self.output_samples.data[self.num_samples-self.fftshift_indices[k]].real
-            self.output_samples.data[self.fftshift_indices[k]].imag = -self.output_samples.data[self.num_samples-self.fftshift_indices[k]].imag
+            self.output_samples.data[k].real = self.output_samples.data[self.num_samples-k].real
+            self.output_samples.data[k].imag = -self.output_samples.data[self.num_samples-k].imag
         end
     end
 
@@ -255,9 +231,8 @@ else
         -- Compute DFT (dot product of each complex exponential with the input samples)
         ffi.fill(self.output_samples.data, self.output_samples.size)
         for k = 0, self.num_samples-1 do
-            local k_shifted = self.fftshift_indices[k]
             for n = 0, self.num_samples-1 do
-                self.output_samples.data[k_shifted] = self.output_samples.data[k_shifted] + self.exponentials[k].data[n]*self.input_samples.data[n]
+                self.output_samples.data[k] = self.output_samples.data[k] + self.exponentials[k].data[n]*self.input_samples.data[n]
             end
         end
     end
@@ -268,16 +243,15 @@ else
 
         -- Compute DFT (dot product of each complex exponential with the input samples)
         for k = 0, self.num_samples/2 do
-            local k_shifted = self.fftshift_indices[k]
             for n = 0, self.num_samples-1 do
-                self.output_samples.data[k_shifted] = self.output_samples.data[k_shifted] + self.exponentials[k].data[n]:scalar_mul(self.input_samples.data[n].value)
+                self.output_samples.data[k] = self.output_samples.data[k] + self.exponentials[k].data[n]:scalar_mul(self.input_samples.data[n].value)
             end
         end
 
         -- Populate negative frequencies
         for k = math.floor(self.num_samples/2)+1, self.num_samples-1 do
-            self.output_samples.data[self.fftshift_indices[k]].real = self.output_samples.data[self.num_samples-self.fftshift_indices[k]].real
-            self.output_samples.data[self.fftshift_indices[k]].imag = -self.output_samples.data[self.num_samples-self.fftshift_indices[k]].imag
+            self.output_samples.data[k].real = self.output_samples.data[self.num_samples-k].real
+            self.output_samples.data[k].imag = -self.output_samples.data[self.num_samples-k].imag
         end
     end
 
@@ -419,4 +393,28 @@ else
 
 end
 
-return {DFT = DFT, PSD = PSD}
+--------------------------------------------------------------------------------
+-- fftshift()
+--------------------------------------------------------------------------------
+
+---
+-- Shift frequency components into negative, zero, positive frequency order.
+--
+-- @local
+-- @tparam vector samples ComplexFloat32 or Float32 vector of samples
+local function fftshift(samples)
+    local offset = samples.length/2
+
+    if samples.data_type == types.ComplexFloat32 then
+        for k = 0, (samples.length/2)-1 do
+            samples.data[k].real, samples.data[k+offset].real = samples.data[k+offset].real, samples.data[k].real
+            samples.data[k].imag, samples.data[k+offset].imag = samples.data[k+offset].imag, samples.data[k].imag
+        end
+    else
+        for k = 0, (samples.length/2)-1 do
+            samples.data[k].value, samples.data[k+offset].value = samples.data[k+offset].value, samples.data[k].value
+        end
+    end
+end
+
+return {DFT = DFT, PSD = PSD, fftshift = fftshift}

@@ -29,6 +29,20 @@ describe("spectrum_utils", function ()
         return output_samples
     end
 
+    -- Wrapper for using fftshift()
+    function fftshift(samples)
+        -- Create a copy of the samples
+        local output_samples = samples.data_type.vector(samples.length)
+        for i = 0, samples.length-1 do
+            output_samples.data[i] = samples.data[i]
+        end
+
+        -- Perform FFT shift
+        spectrum_utils.fftshift(output_samples)
+
+        return output_samples
+    end
+
     it("test complex dft", function ()
         jigs.assert_vector_equal(dft(test_vectors.complex_test_vector), test_vectors.complex_test_vector_dft, 1e-4)
     end)
@@ -49,5 +63,10 @@ describe("spectrum_utils", function ()
         jigs.assert_vector_equal(psd(test_vectors.real_test_vector, 'rectangular', 44100, true), test_vectors.real_test_vector_rectangular_psd_log, 3)
         jigs.assert_vector_equal(psd(test_vectors.real_test_vector, 'hamming', 44100, false), test_vectors.real_test_vector_hamming_psd, 1e-5)
         jigs.assert_vector_equal(psd(test_vectors.real_test_vector, 'hamming', 44100, true), test_vectors.real_test_vector_hamming_psd_log, 3)
+    end)
+
+    it("test fftshift", function ()
+        jigs.assert_vector_equal(fftshift(test_vectors.complex_test_vector), test_vectors.complex_test_vector_fftshift, 1e-6)
+        jigs.assert_vector_equal(fftshift(test_vectors.real_test_vector), test_vectors.real_test_vector_fftshift, 1e-6)
     end)
 end)

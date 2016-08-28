@@ -164,6 +164,8 @@ function GnuplotSpectrumSink:process(x)
         if self.state_index == self.num_samples then
             -- Compute power spectrum
             self.psd:compute()
+            -- Shift frequency components
+            spectrum_utils.fftshift(self.state_psd)
 
             -- Accumulate it in our average
             for i = 0, self.state_psd_average.length-1 do

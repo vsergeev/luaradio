@@ -117,10 +117,6 @@ function GnuplotSpectrumSink:initialize_gnuplot()
     -- Build plot string
     self.plot_str = string.format("plot '-' binary format='%%float32' array=%d origin=(%.3f,0) dx=%.3f using 1 linestyle 1\n", self.num_samples, -sample_rate/2, sample_rate/self.num_samples)
 
-    -- Build DFT context
-    local window_type = self.options.window or "hamming"
-    self.dft = spectrum_utils.DFT(self.num_samples, data_type, window_type, sample_rate)
-
     -- Create state buffer and counters
     self.state = data_type.vector(self.num_samples)
     self.state_index = 0
@@ -128,9 +124,16 @@ function GnuplotSpectrumSink:initialize_gnuplot()
     self.num_overlap = math.floor(self.overlap*self.num_samples)
     self.num_plot_update = math.floor(self.update_time*sample_rate)
 
-    -- Create our PSD averaging buffer
-    self.psd_average = types.Float32.vector(self.num_samples)
-    self.psd_average_count = 0
+    -- Create state PSD buffer
+    self.state_psd = types.Float32.vector(self.num_samples)
+
+    -- Create our state PSD averaging buffer
+    self.state_psd_average = types.Float32.vector(self.num_samples)
+    self.state_psd_average_count = 0
+
+    -- Build PSD context
+    local window_type = self.options.window or "hamming"
+    self.psd = spectrum_utils.PSD(self.state, self.state_psd, window_type, sample_rate, true)
 end
 
 ffi.cdef[[
@@ -160,13 +163,13 @@ function GnuplotSpectrumSink:process(x)
 
         if self.state_index == self.num_samples then
             -- Compute power spectrum
-            local psd = self.dft:psd(self.state, true)
+            self.psd:compute()
 
             -- Accumulate it in our average
-            for i = 0, self.psd_average.length-1 do
-                self.psd_average.data[i] = self.psd_average.data[i] + psd.data[i]
+            for i = 0, self.state_psd_average.length-1 do
+                self.state_psd_average.data[i] = self.state_psd_average.data[i] + self.state_psd.data[i]
             end
-            self.psd_average_count = self.psd_average_count + 1
+            self.state_psd_average_count = self.state_psd_average_count + 1
 
             -- Shift overlap samples down
             ffi.C.memmove(self.state.data, self.state.data[self.num_samples - self.num_overlap], self.num_overlap*ffi.sizeof(self.state.data[0]))
@@ -175,19 +178,19 @@ function GnuplotSpectrumSink:process(x)
             self.state_index = self.num_overlap
         end
 
-        if self.sample_count >= self.num_plot_update and self.psd_average_count > 0 then
+        if self.sample_count >= self.num_plot_update and self.state_psd_average_count > 0 then
             -- Normalize our average
-            for i = 0, self.psd_average.length-1 do
-                self.psd_average.data[i].value = (self.psd_average.data[i].value / self.psd_average_count) - self.reference_level
+            for i = 0, self.state_psd_average.length-1 do
+                self.state_psd_average.data[i].value = (self.state_psd_average.data[i].value / self.state_psd_average_count) - self.reference_level
             end
 
             -- Plot power spectrum
             self:write_gnuplot(self.plot_str)
-            self:write_gnuplot(ffi.string(self.psd_average.data, self.psd_average.length*ffi.sizeof(self.psd_average.data[0])))
+            self:write_gnuplot(ffi.string(self.state_psd_average.data, self.state_psd_average.length*ffi.sizeof(self.state_psd_average.data[0])))
 
-            -- Reset psd average and count
-            ffi.fill(self.psd_average.data, self.psd_average.size)
-            self.psd_average_count = 0
+            -- Reset state psd average and count
+            ffi.fill(self.state_psd_average.data, self.state_psd_average.size)
+            self.state_psd_average_count = 0
 
             -- Reset sample count
             self.sample_count = 0

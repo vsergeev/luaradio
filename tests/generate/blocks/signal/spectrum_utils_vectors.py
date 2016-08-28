@@ -4,13 +4,9 @@ from generate import *
 
 
 def generate():
-    def dft(samples, window_type):
-        # Apply window
-        win = scipy.signal.get_window(window_type, len(samples)).astype(numpy.float32)
-        windowed_samples = samples * win
-
+    def dft(samples):
         # Compute DFT
-        dft_samples = numpy.fft.fftshift(numpy.fft.fft(windowed_samples)).astype(numpy.complex64)
+        dft_samples = numpy.fft.fftshift(numpy.fft.fft(samples)).astype(numpy.complex64)
 
         return dft_samples
 
@@ -46,21 +42,19 @@ def generate():
     lines.append("")
 
     # DFT functions
-    lines.append("M.dft_complex_rectangular = " + serialize(dft(x, 'rectangular')))
-    lines.append("M.dft_complex_hamming = " + serialize(dft(x, 'hamming')))
-    lines.append("M.dft_real_rectangular = " + serialize(dft(y, 'rectangular')))
-    lines.append("M.dft_real_hamming = " + serialize(dft(y, 'hamming')))
+    lines.append("M.complex_test_vector_dft = " + serialize(dft(x)))
+    lines.append("M.real_test_vector_dft = " + serialize(dft(y)))
     lines.append("")
 
     # PSD functions
-    lines.append("M.psd_complex_rectangular = " + serialize(psd(x, 'rectangular', 44100, False)))
-    lines.append("M.psd_complex_rectangular_log = " + serialize(psd(x, 'rectangular', 44100, True)))
-    lines.append("M.psd_complex_hamming = " + serialize(psd(x, 'hamming', 44100, False)))
-    lines.append("M.psd_complex_hamming_log = " + serialize(psd(x, 'hamming', 44100, True)))
-    lines.append("M.psd_real_rectangular = " + serialize(psd(y, 'rectangular', 44100, False)))
-    lines.append("M.psd_real_rectangular_log = " + serialize(psd(y, 'rectangular', 44100, True)))
-    lines.append("M.psd_real_hamming = " + serialize(psd(y, 'hamming', 44100, False)))
-    lines.append("M.psd_real_hamming_log = " + serialize(psd(y, 'hamming', 44100, True)))
+    lines.append("M.complex_test_vector_rectangular_psd = " + serialize(psd(x, 'rectangular', 44100, False)))
+    lines.append("M.complex_test_vector_rectangular_psd_log = " + serialize(psd(x, 'rectangular', 44100, True)))
+    lines.append("M.complex_test_vector_hamming_psd = " + serialize(psd(x, 'hamming', 44100, False)))
+    lines.append("M.complex_test_vector_hamming_psd_log = " + serialize(psd(x, 'hamming', 44100, True)))
+    lines.append("M.real_test_vector_rectangular_psd = " + serialize(psd(y, 'rectangular', 44100, False)))
+    lines.append("M.real_test_vector_rectangular_psd_log = " + serialize(psd(y, 'rectangular', 44100, True)))
+    lines.append("M.real_test_vector_hamming_psd = " + serialize(psd(y, 'hamming', 44100, False)))
+    lines.append("M.real_test_vector_hamming_psd_log = " + serialize(psd(y, 'hamming', 44100, True)))
     lines.append("")
 
     lines.append("return M")

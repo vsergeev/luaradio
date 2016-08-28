@@ -258,6 +258,283 @@ else
 end
 
 --------------------------------------------------------------------------------
+-- IDFT
+--------------------------------------------------------------------------------
+
+---
+-- Inverse Discrete Fourier Transform class.
+--
+-- @local
+-- @type IDFT
+-- @tparam vector input_samples ComplexFloat32 vector of input DFT samples
+-- @tparam vector output_samples ComplexFloat32 or Float32 vector of output samples
+local IDFT = class.factory()
+
+function IDFT.new(input_samples, output_samples)
+    local self = setmetatable({}, IDFT)
+
+    if input_samples.data_type ~= types.ComplexFloat32 then
+        error("Unsupported input samples data type.")
+    elseif output_samples.data_type ~= types.ComplexFloat32 and output_samples.data_type ~= types.Float32 then
+        error("Unsupported ouptut samples data type.")
+    elseif input_samples.length ~= output_samples.length then
+        error("Input samples and output samples length mismatch.")
+    elseif (input_samples.length % 2) ~= 0 then
+        error("DFT length must be even.")
+    end
+
+    self.input_samples = input_samples
+    self.output_samples = output_samples
+
+    self.num_samples = self.input_samples.length
+    self.data_type = self.output_samples.data_type
+
+    -- Pick complex or real DFT
+    if self.data_type == types.ComplexFloat32 then
+        self.compute = self.compute_complex
+    else
+        self.compute = self.compute_real
+    end
+
+    -- Initialize the IDFT
+    self:initialize()
+
+    return self
+end
+
+---
+-- Compute the inverse discrete fourier transform.
+--
+-- @local
+-- @function DFT:compute
+
+--------------------------------------------------------------------------------
+-- IDFT implementations
+--------------------------------------------------------------------------------
+
+if platform.features.fftw3f then
+
+    ffi.cdef[[
+    typedef struct fftwf_plan_s *fftwf_plan;
+    typedef float32_t fftwf_real;
+    typedef complex_float32_t fftwf_complex;
+
+    fftwf_plan fftwf_plan_dft_1d(int n, fftwf_complex *in, fftwf_complex *out, int sign, unsigned flags);
+    fftwf_plan fftwf_plan_dft_c2r_1d(int n0, fftwf_complex *in, fftwf_real *out, unsigned flags);
+    void fftwf_execute(const fftwf_plan plan);
+    void fftwf_destroy_plan(fftwf_plan plan);
+    ]]
+    local libfftw3f = platform.libs.fftw3f
+
+    function IDFT:initialize()
+        -- Preserve input samples vector (FFTW_MEASURE overwrites input array)
+        local input_samples_save = self.input_samples.data_type.vector(self.num_samples)
+        for i = 0, self.num_samples-1 do
+            input_samples_save.data[i] = self.input_samples.data[i]
+        end
+
+        -- Create plan
+        if self.data_type == types.ComplexFloat32 then
+            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_BACKWARD, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+        else
+            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_c2r_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+        end
+
+        if self.plan == nil then
+            error("Creating FFTW plan.")
+        end
+
+        -- Restore input samples
+        for i = 0, self.num_samples-1 do
+            self.input_samples.data[i] = input_samples_save.data[i]
+        end
+    end
+
+    function IDFT:compute_complex()
+        -- Execute FFTW plan
+        libfftw3f.fftwf_execute(self.plan)
+
+        -- Normalize inverse transform
+        for i = 0, self.num_samples-1 do
+            self.output_samples.data[i].real = self.output_samples.data[i].real*(1/self.num_samples)
+            self.output_samples.data[i].imag = self.output_samples.data[i].imag*(1/self.num_samples)
+        end
+    end
+
+    function IDFT:compute_real()
+        -- Execute FFTW plan
+        libfftw3f.fftwf_execute(self.plan)
+
+        -- Normalize output
+        for i = 0, self.num_samples-1 do
+            self.output_samples.data[i].value = self.output_samples.data[i].value*(1/self.num_samples)
+        end
+    end
+
+elseif platform.features.liquid then
+
+    ffi.cdef[[
+    typedef struct fftplan_s * fftplan;
+    fftplan fft_create_plan(unsigned int _n, complex_float32_t *_x, complex_float32_t *_y, int _dir, int _flags);
+    void fft_destroy_plan(fftplan _p);
+
+    void fft_execute(fftplan _p);
+    void fft_shift(complex_float32_t *_x, unsigned int _n);
+    ]]
+    local libliquid = platform.libs.liquid
+
+    function IDFT:initialize()
+        -- Create plan
+        if self.data_type == types.ComplexFloat32 then
+            self.plan = ffi.gc(libliquid.fft_create_plan(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.LIQUID_FFT_BACKWARD, 0), libliquid.fft_destroy_plan)
+        else
+            -- Create complex samples buffer for compute_real()
+            self._complex_output_samples = types.ComplexFloat32.vector(self.num_samples)
+
+            self.plan = ffi.gc(libliquid.fft_create_plan(self.num_samples, self.input_samples.data, self._complex_output_samples.data, ffi.C.LIQUID_FFT_BACKWARD, 0), libliquid.fft_destroy_plan)
+        end
+
+        if self.plan == nil then
+            error("Creating liquid fftplan object.")
+        end
+    end
+
+    function IDFT:compute_complex()
+        -- Execute liquid fft plan
+        libliquid.fft_execute(self.plan)
+
+        -- Normalize output
+        for i = 0, self.num_samples-1 do
+            self.output_samples.data[i].real = self.output_samples.data[i].real*(1/self.num_samples)
+            self.output_samples.data[i].imag = self.output_samples.data[i].imag*(1/self.num_samples)
+        end
+    end
+
+    function IDFT:compute_real()
+        -- liquid-dsp doesn't provide a c2r IDFT, so we use the c2c IDFT and
+        -- take the real part of the complex output samples to the real output
+        -- samples.
+
+        -- Execute liquid fft plan
+        libliquid.fft_execute(self.plan)
+
+        -- Normalize output, while taking real part of complex samples
+        for i = 0, self.num_samples-1 do
+            self.output_samples.data[i].value = self._complex_output_samples.data[i].real*(1/self.num_samples)
+        end
+    end
+
+elseif platform.features.volk then
+
+    ffi.cdef[[
+    void (*volk_32fc_s32fc_x2_rotator_32fc_a)(complex_float32_t* outVector, const complex_float32_t* inVector, const complex_float32_t phase_inc, complex_float32_t* phase, unsigned int num_points);
+    void (*volk_32fc_x2_dot_prod_32fc_a)(complex_float32_t* result, const complex_float32_t* input, const complex_float32_t* taps, unsigned int num_points);
+    ]]
+    local libvolk = platform.libs.volk
+
+    function IDFT:initialize()
+        -- Generate a DC vector
+        local dc_vec = types.ComplexFloat32.vector(self.num_samples)
+        for i = 0, self.num_samples-1 do
+            dc_vec.data[i] = types.ComplexFloat32(1, 0)
+        end
+
+        -- Generate complex exponentials from DC vector
+        self.exponentials = {}
+        for k = 0, self.num_samples-1 do
+            self.exponentials[k] = types.ComplexFloat32.vector(self.num_samples)
+            local omega = (2*math.pi*k)/self.num_samples
+            local rotator = types.ComplexFloat32(math.cos(omega), math.sin(omega))
+            local phase = types.ComplexFloat32(1, 0)
+            libvolk.volk_32fc_s32fc_x2_rotator_32fc_a(self.exponentials[k].data, dc_vec.data, rotator, phase, self.num_samples)
+        end
+
+        if self.data_type == types.Float32 then
+            -- Create complex samples buffer for compute_real()
+            self._complex_output_samples = types.ComplexFloat32.vector(self.num_samples)
+        end
+    end
+
+    function IDFT:compute_complex()
+        -- Compute IDFT (dot product of each complex exponential with the input samples)
+        for k = 0, self.num_samples-1 do
+            libvolk.volk_32fc_x2_dot_prod_32fc_a(self.output_samples.data[k], self.input_samples.data, self.exponentials[k].data, self.num_samples)
+        end
+
+        -- Normalize output
+        for i = 0, self.num_samples-1 do
+            self.output_samples.data[i].real = self.output_samples.data[i].real*(1/self.num_samples)
+            self.output_samples.data[i].imag = self.output_samples.data[i].imag*(1/self.num_samples)
+        end
+    end
+
+    function IDFT:compute_real()
+        -- Compute IDFT (dot product of each complex exponential with the input samples)
+        for k = 0, self.num_samples-1 do
+            libvolk.volk_32fc_x2_dot_prod_32fc_a(self._complex_output_samples.data[k], self.input_samples.data, self.exponentials[k].data, self.num_samples)
+        end
+
+        -- Normalize output, while taking real part of complex samples
+        for i = 0, self.num_samples-1 do
+            self.output_samples.data[i].value = self._complex_output_samples.data[i].real*(1/self.num_samples)
+        end
+    end
+
+else
+
+    function IDFT:initialize()
+        -- Generate complex exponentials
+        self.exponentials = {}
+        for k = 0, self.num_samples-1 do
+            self.exponentials[k] = types.ComplexFloat32.vector(self.num_samples)
+            local omega = (2*math.pi*k)/self.num_samples
+            for n = 0, self.num_samples-1 do
+                self.exponentials[k].data[n] = types.ComplexFloat32(math.cos(omega*n), math.sin(omega*n))
+            end
+        end
+
+        if self.data_type == types.Float32 then
+            -- Create complex samples buffer for compute_real()
+            self._complex_output_samples = types.ComplexFloat32.vector(self.num_samples)
+        end
+    end
+
+    function IDFT:compute_complex()
+        -- Compute IDFT (dot product of each complex exponential with the input samples)
+        ffi.fill(self.output_samples.data, self.output_samples.size)
+        for k = 0, self.num_samples-1 do
+            for n = 0, self.num_samples-1 do
+                self.output_samples.data[k] = self.output_samples.data[k] + self.exponentials[k].data[n]*self.input_samples.data[n]
+            end
+        end
+
+        -- Normalize output
+        for i = 0, self.num_samples-1 do
+            self.output_samples.data[i].real = self.output_samples.data[i].real*(1/self.num_samples)
+            self.output_samples.data[i].imag = self.output_samples.data[i].imag*(1/self.num_samples)
+        end
+    end
+
+    function IDFT:compute_real()
+        -- Zero IDFT complex output samples
+        ffi.fill(self._complex_output_samples.data, self._complex_output_samples.size)
+
+        -- Compute IDFT (dot product of each complex exponential with the input samples)
+        for k = 0, self.num_samples-1 do
+            for n = 0, self.num_samples-1 do
+                self._complex_output_samples.data[k] = self._complex_output_samples.data[k] + self.exponentials[k].data[n]*self.input_samples.data[n]
+            end
+        end
+
+        -- Normalize output, while taking real part of complex samples
+        for i = 0, self.num_samples-1 do
+            self.output_samples.data[i].value = self._complex_output_samples.data[i].real*(1/self.num_samples)
+        end
+    end
+
+end
+
+--------------------------------------------------------------------------------
 -- PSD
 --------------------------------------------------------------------------------
 
@@ -417,4 +694,4 @@ local function fftshift(samples)
     end
 end
 
-return {DFT = DFT, PSD = PSD, fftshift = fftshift}
+return {DFT = DFT, IDFT = IDFT, PSD = PSD, fftshift = fftshift}

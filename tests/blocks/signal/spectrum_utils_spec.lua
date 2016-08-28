@@ -17,6 +17,18 @@ describe("spectrum_utils", function ()
         return output_samples
     end
 
+    -- Wrapper for using IDFT class
+    function idft(samples, output_type)
+        -- Create input and output sample buffers and DFT context
+        local output_samples = output_type.vector(samples.length)
+        local idft = spectrum_utils.IDFT(samples, output_samples)
+
+        -- Compute DFT
+        idft:compute()
+
+        return output_samples
+    end
+
     -- Wrapper for using PSD class
     function psd(samples, window_type, sample_rate, logarithmic)
         -- Create input and output sample buffers and PSD context
@@ -47,8 +59,16 @@ describe("spectrum_utils", function ()
         jigs.assert_vector_equal(dft(test_vectors.complex_test_vector), test_vectors.complex_test_vector_dft, 1e-4)
     end)
 
+    it("test complex idft", function ()
+        jigs.assert_vector_equal(idft(test_vectors.complex_test_vector_dft, radio.types.ComplexFloat32), test_vectors.complex_test_vector, 1e-4)
+    end)
+
     it("test real dft", function ()
         jigs.assert_vector_equal(dft(test_vectors.real_test_vector), test_vectors.real_test_vector_dft, 1e-4)
+    end)
+
+    it("test real idft", function ()
+        jigs.assert_vector_equal(idft(test_vectors.real_test_vector_dft, radio.types.Float32), test_vectors.real_test_vector, 1e-4)
     end)
 
     it("test complex psd", function ()

@@ -52,7 +52,7 @@ function GnuplotWaterfallSink:instantiate(num_samples, title, options)
 
     self.overlap = self.options.overlap or 0.00
     self.rows = self.options.height or 64
-    self.columns = num_samples
+    self.columns = self.num_samples
     self.num_psd_averages = 1
     self.min_magnitude = self.options.min_magnitude or -150
     self.max_magnitude = self.options.max_magnitude or 0

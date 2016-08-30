@@ -56,19 +56,19 @@ describe("spectrum_utils", function ()
     end
 
     it("test complex dft", function ()
-        jigs.assert_vector_equal(dft(test_vectors.complex_test_vector), test_vectors.complex_test_vector_dft, 1e-4)
+        jigs.assert_vector_equal(dft(test_vectors.complex_test_vector), test_vectors.complex_test_vector_dft, 1e-5)
     end)
 
     it("test complex idft", function ()
-        jigs.assert_vector_equal(idft(test_vectors.complex_test_vector_dft, radio.types.ComplexFloat32), test_vectors.complex_test_vector, 1e-4)
+        jigs.assert_vector_equal(idft(test_vectors.complex_test_vector_dft, radio.types.ComplexFloat32), test_vectors.complex_test_vector, 1e-5)
     end)
 
     it("test real dft", function ()
-        jigs.assert_vector_equal(dft(test_vectors.real_test_vector), test_vectors.real_test_vector_dft, 1e-4)
+        jigs.assert_vector_equal(dft(test_vectors.real_test_vector), test_vectors.real_test_vector_dft, 1e-5)
     end)
 
     it("test real idft", function ()
-        jigs.assert_vector_equal(idft(test_vectors.real_test_vector_dft, radio.types.Float32), test_vectors.real_test_vector, 1e-4)
+        jigs.assert_vector_equal(idft(test_vectors.real_test_vector_dft, radio.types.Float32), test_vectors.real_test_vector, 1e-5)
     end)
 
     it("test complex psd", function ()

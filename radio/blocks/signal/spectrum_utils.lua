@@ -176,20 +176,14 @@ elseif platform.features.volk then
     local libvolk = platform.libs.volk
 
     function DFT:initialize()
-        -- Generate a DC vector
-        local dc_vec = types.ComplexFloat32.vector(self.num_samples)
-        for i = 0, self.num_samples-1 do
-            dc_vec.data[i] = types.ComplexFloat32(1, 0)
-        end
-
-        -- Generate complex exponentials from DC vector
+        -- Generate complex exponentials
         self.exponentials = {}
         for k = 0, self.num_samples-1 do
             self.exponentials[k] = types.ComplexFloat32.vector(self.num_samples)
             local omega = (-2*math.pi*k)/self.num_samples
-            local rotator = types.ComplexFloat32(math.cos(omega), math.sin(omega))
-            local phase = types.ComplexFloat32(1, 0)
-            libvolk.volk_32fc_s32fc_x2_rotator_32fc_a(self.exponentials[k].data, dc_vec.data, rotator, phase, self.num_samples)
+            for n = 0, self.num_samples-1 do
+                self.exponentials[k].data[n] = types.ComplexFloat32(math.cos(omega*n), math.sin(omega*n))
+            end
         end
     end
 
@@ -433,20 +427,14 @@ elseif platform.features.volk then
     local libvolk = platform.libs.volk
 
     function IDFT:initialize()
-        -- Generate a DC vector
-        local dc_vec = types.ComplexFloat32.vector(self.num_samples)
-        for i = 0, self.num_samples-1 do
-            dc_vec.data[i] = types.ComplexFloat32(1, 0)
-        end
-
-        -- Generate complex exponentials from DC vector
+        -- Generate complex exponentials
         self.exponentials = {}
         for k = 0, self.num_samples-1 do
             self.exponentials[k] = types.ComplexFloat32.vector(self.num_samples)
             local omega = (2*math.pi*k)/self.num_samples
-            local rotator = types.ComplexFloat32(math.cos(omega), math.sin(omega))
-            local phase = types.ComplexFloat32(1, 0)
-            libvolk.volk_32fc_s32fc_x2_rotator_32fc_a(self.exponentials[k].data, dc_vec.data, rotator, phase, self.num_samples)
+            for n = 0, self.num_samples-1 do
+                self.exponentials[k].data[n] = types.ComplexFloat32(math.cos(omega*n), math.sin(omega*n))
+            end
         end
 
         if self.data_type == types.Float32 then

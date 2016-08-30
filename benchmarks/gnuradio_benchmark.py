@@ -35,11 +35,11 @@ def benchmark(test_name, block_name):
 
 ################################################################################
 
-@benchmark("Five Back to Back FIR Filters (256 Real taps, Complex input)", "filter.fir_filter_ccf")
-def test_five_fir_filter():
+@benchmark("Five Back to Back FIR Filters (FFT, 256 Real taps, Complex input)", "filter.fft_filter_ccf")
+def test_five_fft_filter():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
-    filters = [filter.fir_filter_ccf(1, [random.random() for j in range(256)]) for i in range(5)]
+    filters = [filter.fft_filter_ccf(1, [random.random() for j in range(256)]) for i in range(5)]
     probe = blocks.probe_rate(gr.sizeof_gr_complex)
     top.connect(*([src] + filters + [probe]))
 
@@ -121,81 +121,61 @@ def test_sig_source_square():
 
     return top, probe
 
-@benchmark("FIR Filter (64 Real taps, Complex input)", "filter.fir_filter_ccf")
+@benchmark("FIR Filter (Dotprod, 16 Real taps, Complex input)", "filter.fir_filter_ccf")
 def test_fir_filter_ccf():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
-    firfilter = filter.fir_filter_ccf(1, [random.random() for _ in range(64)])
+    firfilter = filter.fir_filter_ccf(1, [random.random() for _ in range(16)])
     probe = blocks.probe_rate(gr.sizeof_gr_complex)
     top.connect(src, firfilter, probe)
 
     return top, probe
 
-@benchmark("FIR Filter (64 Real taps, Real input)", "filter.fir_filter_fff")
+@benchmark("FIR Filter (Dotprod, 16 Real taps, Real input)", "filter.fir_filter_fff")
 def test_fir_filter_fff():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
-    firfilter = filter.fir_filter_fff(1, [random.random() for _ in range(64)])
+    firfilter = filter.fir_filter_fff(1, [random.random() for _ in range(16)])
     probe = blocks.probe_rate(gr.sizeof_float)
     top.connect(src, firfilter, probe)
 
     return top, probe
 
-@benchmark("FIR Filter (64 Complex taps, Complex input)", "filter.fir_filter_ccc")
+@benchmark("FIR Filter (Dotprod, 16 Complex taps, Complex input)", "filter.fir_filter_ccc")
 def test_fir_filter_ccc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
-    firfilter = filter.fir_filter_ccc(1, [complex(random.random(), random.random()) for _ in range(64)])
+    firfilter = filter.fir_filter_ccc(1, [complex(random.random(), random.random()) for _ in range(16)])
     probe = blocks.probe_rate(gr.sizeof_gr_complex)
     top.connect(src, firfilter, probe)
 
     return top, probe
 
-@benchmark("FIR Filter (64 Complex taps, Real input)", "filter.fir_filter_fcc")
-def test_fir_filter_fcc():
-    top = gr.top_block()
-    src = blocks.null_source(gr.sizeof_float)
-    firfilter = filter.fir_filter_fcc(1, [complex(random.random(), random.random()) for _ in range(64)])
-    probe = blocks.probe_rate(gr.sizeof_gr_complex)
-    top.connect(src, firfilter, probe)
-
-    return top, probe
-
-@benchmark("FIR Filter (256 Real taps, Complex input)", "filter.fir_filter_ccf")
-def test_fir_filter_ccf():
+@benchmark("FIR Filter (FFT, 128 Real taps, Complex input)", "filter.fft_filter_ccf")
+def test_fft_filter_ccf():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
-    firfilter = filter.fir_filter_ccf(1, [random.random() for _ in range(256)])
+    firfilter = filter.fft_filter_ccf(1, [random.random() for _ in range(128)])
     probe = blocks.probe_rate(gr.sizeof_gr_complex)
     top.connect(src, firfilter, probe)
 
     return top, probe
 
-@benchmark("FIR Filter (256 Real taps, Real input)", "filter.fir_filter_fff")
-def test_fir_filter_fff():
+@benchmark("FIR Filter (FFT, 128 Real taps, Real input)", "filter.fft_filter_fff")
+def test_fft_filter_fff():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
-    firfilter = filter.fir_filter_fff(1, [random.random() for _ in range(256)])
+    firfilter = filter.fft_filter_fff(1, [random.random() for _ in range(128)])
     probe = blocks.probe_rate(gr.sizeof_float)
     top.connect(src, firfilter, probe)
 
     return top, probe
 
-@benchmark("FIR Filter (256 Complex taps, Complex input)", "filter.fir_filter_ccc")
-def test_fir_filter_ccc():
+@benchmark("FIR Filter (FFT, 128 Complex taps, Complex input)", "filter.fft_filter_ccc")
+def test_fft_filter_ccc():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
-    firfilter = filter.fir_filter_ccc(1, [complex(random.random(), random.random()) for _ in range(256)])
-    probe = blocks.probe_rate(gr.sizeof_gr_complex)
-    top.connect(src, firfilter, probe)
-
-    return top, probe
-
-@benchmark("FIR Filter (256 Complex taps, Real input)", "filter.fir_filter_fcc")
-def test_fir_filter_fcc():
-    top = gr.top_block()
-    src = blocks.null_source(gr.sizeof_float)
-    firfilter = filter.fir_filter_fcc(1, [complex(random.random(), random.random()) for _ in range(256)])
+    firfilter = filter.fft_filter_ccc(1, [complex(random.random(), random.random()) for _ in range(128)])
     probe = blocks.probe_rate(gr.sizeof_gr_complex)
     top.connect(src, firfilter, probe)
 
@@ -241,11 +221,11 @@ def test_hilbert():
 
     return top, probe
 
-@benchmark("Hilbert Transform (257 taps)", "filter.hilbert_fc")
+@benchmark("Hilbert Transform (129 taps)", "filter.hilbert_fc")
 def test_hilbert():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)
-    hilbert = filter.hilbert_fc(257)
+    hilbert = filter.hilbert_fc(129)
     probe = blocks.probe_rate(gr.sizeof_gr_complex)
     top.connect(src, hilbert, probe)
 

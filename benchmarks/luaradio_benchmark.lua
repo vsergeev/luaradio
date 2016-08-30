@@ -15,7 +15,7 @@ local BENCH_NUM_TRIALS      = 5
 -- Benchmark suite
 local BenchmarkSuite = {
     {
-        "Five Back to Back FIR Filters (256 Real taps, Complex input)",
+        "Five Back to Back FIR Filters (FFT, 256 Real taps, Complex input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
@@ -26,11 +26,11 @@ local BenchmarkSuite = {
 
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.FIRFilterBlock(taps),
-                radio.FIRFilterBlock(taps),
-                radio.FIRFilterBlock(taps),
-                radio.FIRFilterBlock(taps),
-                radio.FIRFilterBlock(taps),
+                radio.FIRFilterBlock(taps, true),
+                radio.FIRFilterBlock(taps, true),
+                radio.FIRFilterBlock(taps, true),
+                radio.FIRFilterBlock(taps, true),
+                radio.FIRFilterBlock(taps, true),
                 radio.BenchmarkSink(results_fd, true)
             )
         end
@@ -155,103 +155,103 @@ local BenchmarkSuite = {
         end
     },
     {
-        "FIR Filter (64 Real taps, Complex input)",
+        "FIR Filter (Dotprod, 16 Real taps, Complex input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
-            for i = 1, 64 do
+            for i = 1, 16 do
                 taps[i] = math.random(1.0)
             end
             taps = radio.types.Float32.vector_from_array(taps)
 
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.FIRFilterBlock(taps),
+                radio.FIRFilterBlock(taps, false),
                 radio.BenchmarkSink(results_fd, true)
             )
         end
     },
     {
-        "FIR Filter (64 Real taps, Real input)",
+        "FIR Filter (Dotprod, 16 Real taps, Real input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
-            for i = 1, 64 do
-                taps[i] = math.random(1.0)
-            end
-            taps = radio.types.Float32.vector_from_array(taps)
-
-            return radio.CompositeBlock():connect(
-                radio.NullSource(radio.types.Float32, 1.0),
-                radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd, true)
-            )
-        end
-    },
-    {
-        "FIR Filter (64 Complex taps, Complex input)",
-        "FIRFilterBlock",
-        function (results_fd)
-            local taps = {}
-            for i = 1, 64 do
-                taps[i] = {math.random(1.0), math.random(1.0)}
-            end
-            taps = radio.types.ComplexFloat32.vector_from_array(taps)
-
-            return radio.CompositeBlock():connect(
-                radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd, true)
-            )
-        end
-    },
-    {
-        "FIR Filter (256 Real taps, Complex input)",
-        "FIRFilterBlock",
-        function (results_fd)
-            local taps = {}
-            for i = 1, 256 do
-                taps[i] = math.random(1.0)
-            end
-            taps = radio.types.Float32.vector_from_array(taps)
-
-            return radio.CompositeBlock():connect(
-                radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.FIRFilterBlock(taps),
-                radio.BenchmarkSink(results_fd, true)
-            )
-        end
-    },
-    {
-        "FIR Filter (256 Real taps, Real input)",
-        "FIRFilterBlock",
-        function (results_fd)
-            local taps = {}
-            for i = 1, 256 do
+            for i = 1, 16 do
                 taps[i] = math.random(1.0)
             end
             taps = radio.types.Float32.vector_from_array(taps)
 
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
-                radio.FIRFilterBlock(taps),
+                radio.FIRFilterBlock(taps, false),
                 radio.BenchmarkSink(results_fd, true)
             )
         end
     },
     {
-        "FIR Filter (256 Complex taps, Complex input)",
+        "FIR Filter (Dotprod, 16 Complex taps, Complex input)",
         "FIRFilterBlock",
         function (results_fd)
             local taps = {}
-            for i = 1, 256 do
+            for i = 1, 16 do
                 taps[i] = {math.random(1.0), math.random(1.0)}
             end
             taps = radio.types.ComplexFloat32.vector_from_array(taps)
 
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.ComplexFloat32, 1.0),
-                radio.FIRFilterBlock(taps),
+                radio.FIRFilterBlock(taps, false),
+                radio.BenchmarkSink(results_fd, true)
+            )
+        end
+    },
+    {
+        "FIR Filter (FFT, 128 Real taps, Complex input)",
+        "FIRFilterBlock",
+        function (results_fd)
+            local taps = {}
+            for i = 1, 128 do
+                taps[i] = math.random(1.0)
+            end
+            taps = radio.types.Float32.vector_from_array(taps)
+
+            return radio.CompositeBlock():connect(
+                radio.NullSource(radio.types.ComplexFloat32, 1.0),
+                radio.FIRFilterBlock(taps, true),
+                radio.BenchmarkSink(results_fd, true)
+            )
+        end
+    },
+    {
+        "FIR Filter (FFT, 128 Real taps, Real input)",
+        "FIRFilterBlock",
+        function (results_fd)
+            local taps = {}
+            for i = 1, 128 do
+                taps[i] = math.random(1.0)
+            end
+            taps = radio.types.Float32.vector_from_array(taps)
+
+            return radio.CompositeBlock():connect(
+                radio.NullSource(radio.types.Float32, 1.0),
+                radio.FIRFilterBlock(taps, true),
+                radio.BenchmarkSink(results_fd, true)
+            )
+        end
+    },
+    {
+        "FIR Filter (FFT, 128 Complex taps, Complex input)",
+        "FIRFilterBlock",
+        function (results_fd)
+            local taps = {}
+            for i = 1, 128 do
+                taps[i] = {math.random(1.0), math.random(1.0)}
+            end
+            taps = radio.types.ComplexFloat32.vector_from_array(taps)
+
+            return radio.CompositeBlock():connect(
+                radio.NullSource(radio.types.ComplexFloat32, 1.0),
+                radio.FIRFilterBlock(taps, true),
                 radio.BenchmarkSink(results_fd, true)
             )
         end
@@ -362,12 +362,12 @@ local BenchmarkSuite = {
         end
     },
     {
-        "Hilbert Transform (257 taps)",
+        "Hilbert Transform (129 taps)",
         "HilbertTransformBlock",
         function (results_fd)
             return radio.CompositeBlock():connect(
                 radio.NullSource(radio.types.Float32, 1.0),
-                radio.HilbertTransformBlock(257),
+                radio.HilbertTransformBlock(129),
                 radio.BenchmarkSink(results_fd, true)
             )
         end

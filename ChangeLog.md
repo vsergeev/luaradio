@@ -1,3 +1,28 @@
+* v0.4.0 - 08/31/2016
+    * Block additions
+        * HackRFSink
+        * SoapySDRSource
+        * SoapySDRSink
+        * PulseAudioSource
+        * InterleaveBlock
+        * DeinterleaveBlock
+    * Block changes
+        * Fix I/Q sample conversion in HackRFSource.
+        * Add FFT overlap-save implementation to FIRFilterBlock.
+        * Improve performance of real to complex DFT in spectrum_utils.
+        * Refactor PSD into separate class in spectrum_utils.
+        * Add IDFT to spectrum_utils.
+        * Add error handling for process pipe writes in gnuplot plotting sinks.
+        * Fix default window type and columns values in GnuplotWaterfallSink.
+    * Benchmark changes
+        * Add FFT-based FIR filters to benchmarks.
+        * Adjust filter tap lengths in benchmarks.
+    * Core changes
+        * Improve error handling and traceback when a downstream block crashes.
+    * Documentation changes
+        * Fix minor typos in a few docstrings.
+        * Update supported hardware document.
+
 * v0.3.0 - 07/28/2016
     * Block additions
         * AGCBlock

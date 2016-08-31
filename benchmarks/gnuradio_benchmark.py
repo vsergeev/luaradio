@@ -513,7 +513,7 @@ if __name__ == '__main__':
             'results': {
                 'samples_per_second': mean_samples_per_second,
                 'samples_per_second_stdev': stdev_samples_per_second,
-                'bytes_per_second': bytes_per_second
+                'bytes_per_second': mean_bytes_per_second
             }
         })
 

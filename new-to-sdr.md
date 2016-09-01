@@ -1114,5 +1114,5 @@ The [freenode](https://freenode.net/) IRC network has the `##rtlsdr` and
 
 ## Comments
 
-Feel free to email me at [vsergeev@gmail.com](mailto:vsergeev@gmail.com) with
+Feel free to email me at [v@sergeev.io](mailto:v@sergeev.io) with
 any comments, corrections, or questions.

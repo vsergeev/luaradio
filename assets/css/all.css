@@ -1143,17 +1143,18 @@ pre.benchmark-platform {
 /* Reference Manual formatting */
 
 .reference-manual hr {
-  margin-top: 1.5rem;
-  margin-bottom: 2.0rem;
+  margin-top: 2.0rem;
+  margin-bottom: 1.5rem;
 }
 
 .reference-manual h4 {
-  margin-bottom: 1.4rem;
+  margin-bottom: 1.0rem;
 }
 
 .reference-manual h5 {
   font-size: 1.8rem;
   margin-top: 0;
+  padding-top: 0.25rem;
   margin-bottom: 1.0rem;
 }
 
@@ -1161,8 +1162,8 @@ pre.benchmark-platform {
 .reference-manual .block p, .reference-manual .block ul, .reference-manual .block pre, .reference-manual .block h6,
 .reference-manual .field p, .reference-manual .field ul, .reference-manual .field pre, .reference-manual .field h6,
 .reference-manual .function p, .reference-manual .function ul, .reference-manual .function pre, .reference-manual .function h6 {
-    margin-bottom: 1.0rem;
-    margin-left: 2.0rem;
+  margin-bottom: 0.75rem;
+  margin-left: 2.0rem;
 }
 
 .reference-manual .class h5 code {
@@ -1170,7 +1171,7 @@ pre.benchmark-platform {
 }
 
 .reference-manual .block h5 code {
-   margin-left: 1.4rem;
+  margin-left: 1.4rem;
 }
 
 .reference-manual h6 {

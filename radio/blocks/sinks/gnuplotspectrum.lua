@@ -26,7 +26,7 @@
 --
 -- @usage
 -- -- Plot the spectrum of a 1 kHz complex exponential sampled at 250 kHz
--- local snk = radio.SignalSource('exponential', 1e3, 250e3)
+-- local src = radio.SignalSource('exponential', 1e3, 250e3)
 -- local throttle = radio.ThrottleBlock()
 -- local snk = radio.GnuplotSpectrumSink()
 -- top:connect(src, throttle, snk)

@@ -11,7 +11,7 @@
 --                           with a ComplexFloat32 vector
 -- @tparam[opt] bool use_fft Use FFT overlap-save convolution. Defaults to true
 --                           when acceleration is available and taps length is
---                           greater than 16.
+--                           greater than 16
 --
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 -- @signature in:Float32 > out:Float32

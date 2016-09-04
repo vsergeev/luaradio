@@ -43,7 +43,7 @@ LuaRadio follows a rebase development flow to maintain a linear history. The
 `master` branch is sacrosanct, and will never be rewritten. On the other hand,
 the `devel` branch will be frequently amended and reordered.
 
-Your pull requests will cherry-picked, rather than merged, and may be
+Your pull requests will be cherry-picked, rather than merged, and may be
 reshuffled in history before release. GitHub may not like this, but I find the
 history much more useful.
 

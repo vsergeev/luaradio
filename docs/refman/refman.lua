@@ -52,6 +52,8 @@ local function format_args_string(params)
     for _, param in ipairs(params) do
         if param.opt == nil then
             required_args[#required_args + 1] = param.name
+        elseif param.opt == true then
+            optional_args[#optional_args + 1] = param.name
         else
             optional_args[#optional_args + 1] = param.name .. "=" .. tostring(param.opt)
         end

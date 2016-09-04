@@ -58,7 +58,7 @@ function SoapySDRSource:instantiate(driver, frequency, rate, options)
     self.gain = self.options.gain
     self.gains = self.options.gains
     self.frequencies = self.options.frequencies
-    self.driver_settings = self.options.driver_settings
+    self.driver_settings = self.options.settings
 
     self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
 end

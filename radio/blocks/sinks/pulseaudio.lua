@@ -99,6 +99,8 @@ function PulseAudioSink:initialize()
 end
 
 function PulseAudioSink:initialize_pulseaudio()
+    local error_code = ffi.new("int[1]")
+
     -- Open PulseAudio connection
     self.pa_conn = ffi.new("pa_simple *")
     self.pa_conn = libpulse.pa_simple_new(nil, "LuaRadio", ffi.C.PA_STREAM_PLAYBACK, nil, "PulseAudioSink", self.sample_spec, nil, nil, error_code)

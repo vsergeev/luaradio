@@ -276,7 +276,7 @@ $ luaradio example.lua
 ## Running
 
 LuaRadio scripts can be run with the `luaradio` runner, or directly with
-`luajit`, if the `radio` package is in installed in your Lua path.
+`luajit`, if the `radio` package is installed in your Lua path.
 
 ### `luaradio` runner
 

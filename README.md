@@ -24,7 +24,7 @@ Radio](docs/6.comparison-gnuradio.md).
 
 ## Example
 
-##### Mono Wideband FM Broadcast Radio Receiver
+##### Wideband FM Broadcast Radio Receiver
 
 <p align="center">
 <img src="docs/figures/flowgraph_rtlsdr_wbfm_mono_compact.png" />

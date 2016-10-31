@@ -28,6 +28,7 @@ local ffi = require('ffi')
 local json = require('radio.thirdparty.json')
 
 local block = require('radio.core.block')
+local platform = require('radio.core.platform')
 
 local BenchmarkSink = block.factory("BenchmarkSink")
 
@@ -46,27 +47,6 @@ function BenchmarkSink:instantiate(file, use_json)
 
     -- Accept all input types
     self:add_type_signature({block.Input("in", function (t) return true end)}, {})
-end
-
--- Clock
-ffi.cdef[[
-    enum { CLOCK_REALTIME = 0 };
-    typedef long int time_t;
-    typedef int clockid_t;
-
-    struct timespec {
-        time_t tv_sec;
-        long tv_nsec;
-    };
-    int clock_gettime(clockid_t clk_id, struct timespec *tp);
-]]
-
-local function time_us()
-    local tp = ffi.new("struct timespec")
-    if ffi.C.clock_gettime(ffi.C.CLOCK_REALTIME, tp) ~= 0 then
-        error("clock_gettime(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
-    return tonumber(tp.tv_sec) + (tonumber(tp.tv_nsec) / 1e9)
 end
 
 local function normalize(amount)
@@ -108,14 +88,14 @@ function BenchmarkSink:initialize()
     self.files[self.file] = true
 
     self.count = 0
-    self.tic = time_us()
+    self.tic = platform.time_us()
 end
 
 function BenchmarkSink:process(x)
     self.count = self.count + x.length
 
     if not self.use_json then
-        local toc = time_us()
+        local toc = platform.time_us()
 
         if (toc - self.tic) > self.report_period then
             -- Compute rate
@@ -148,7 +128,7 @@ end
 
 function BenchmarkSink:cleanup()
     if self.use_json then
-        local toc = time_us()
+        local toc = platform.time_us()
 
         -- Calculate throughput
         local samples_per_second = self.count / (toc - self.tic)

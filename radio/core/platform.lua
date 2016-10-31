@@ -112,6 +112,29 @@ platform.alloc = function (size)
     return ffi.gc(ptr[0], ffi.C.free)
 end
 
+
+-- Time
+ffi.cdef[[
+    enum { CLOCK_REALTIME = 0 };
+    typedef long int time_t;
+    typedef int clockid_t;
+
+    struct timespec {
+        time_t tv_sec;
+        long tv_nsec;
+    };
+    int clock_gettime(clockid_t clk_id, struct timespec *tp);
+]]
+
+platform.time_us = function ()
+    local tp = ffi.new("struct timespec")
+    if ffi.C.clock_gettime(ffi.C.CLOCK_REALTIME, tp) ~= 0 then
+        error("clock_gettime(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+    return tonumber(tp.tv_sec) + (tonumber(tp.tv_nsec) / 1e9)
+end
+
+
 -- Load libraries
 for _, name in ipairs({"liquid", "volk", "fftw3f"}) do
     local lib_available, lib = pcall(ffi.load, name)

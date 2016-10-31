@@ -15,6 +15,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
 
@@ -52,14 +53,6 @@ ffi.cdef[[
     int usleep(unsigned int usec);
 ]]
 
-local function time_us()
-    local tp = ffi.new("struct timespec")
-    if ffi.C.clock_gettime(ffi.C.CLOCK_REALTIME, tp) ~= 0 then
-        error("clock_gettime(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
-    return tonumber(tp.tv_sec) + (tonumber(tp.tv_nsec) / 1e9)
-end
-
 function ThrottleBlock:run()
     local data_in_offset = 0
     local data_out_offset = 0
@@ -73,7 +66,7 @@ function ThrottleBlock:run()
         data_in_offset = 0
 
         -- Write throttled input vector
-        local tic = time_us()
+        local tic = platform.time_us()
         while data_in_offset < data_in.length do
             -- Shift from data_in to data_out vector
             local shift_length = math.min(self.chunk_size - data_out_offset, data_in.length - data_in_offset)
@@ -94,7 +87,7 @@ function ThrottleBlock:run()
                 data_out_offset = 0
             end
         end
-        local toc = time_us()
+        local toc = platform.time_us()
 
         -- Adjust sleep time based on actual rate
         local actual_rate = (data_in.length - data_out_offset)/(toc - tic)

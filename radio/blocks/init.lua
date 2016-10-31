@@ -33,6 +33,7 @@ return {
     BenchmarkSink = require('radio.blocks.sinks.benchmark'),
     HackRFSink = require('radio.blocks.sinks.hackrf'),
     SoapySDRSink = require('radio.blocks.sinks.soapysdr'),
+    NopSink = require('radio.blocks.sinks.nop'),
 
     -- Signal Blocks
     --- Filtering

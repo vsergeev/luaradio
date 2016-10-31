@@ -2,7 +2,7 @@ local radio = require('radio')
 local jigs = require('tests.jigs')
 local buffer = require('tests.buffer')
 
-jigs.TestSourceBlock(radio.NullSource, {
+jigs.TestSourceBlock(radio.ZeroSource, {
     {
         desc = "Data type ComplexFloat32, rate 1",
         args = {radio.types.ComplexFloat32, 1},

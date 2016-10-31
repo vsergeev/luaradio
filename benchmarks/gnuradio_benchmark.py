@@ -45,7 +45,7 @@ def test_five_fft_filter():
 
     return top, probe
 
-@benchmark("Null Source (Complex)", "blocks.null_source")
+@benchmark("Zero Source (Complex)", "blocks.null_source")
 def test_null_source_complex():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_gr_complex)
@@ -54,7 +54,7 @@ def test_null_source_complex():
 
     return top, probe
 
-@benchmark("Null Source (Real)", "blocks.null_source")
+@benchmark("Zero Source (Real)", "blocks.null_source")
 def test_null_source_real():
     top = gr.top_block()
     src = blocks.null_source(gr.sizeof_float)

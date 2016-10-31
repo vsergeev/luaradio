@@ -3,7 +3,8 @@ return {
     CompositeBlock = require('radio.core.composite').CompositeBlock,
 
     -- Source Blocks
-    NullSource = require('radio.blocks.sources.null'),
+    ZeroSource = require('radio.blocks.sources.zero'),
+    NullSource = require('radio.blocks.sources.zero'),
     IQFileSource = require('radio.blocks.sources.iqfile'),
     RealFileSource = require('radio.blocks.sources.realfile'),
     WAVFileSource = require('radio.blocks.sources.wavfile'),

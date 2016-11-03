@@ -24,7 +24,7 @@
 -- local src = radio.SoapySDRSource("driver=rtlsdr", 91.1e6, 1e6)
 --
 -- -- Source samples from an Airspy at 15 MHz sampled at 6 MHz, with 10 dB overall gain
--- local src = radio.SoapySDRSource("driver=airspy", 6e6, {gain = 10})
+-- local src = radio.SoapySDRSource("driver=airspy", 15e6, 6e6, {gain = 10})
 --
 -- -- Source samples from a LimeSDR at 915 MHz sampled at 10 MHz,
 -- -- with 20 dB overall gain and 4 MHz baseband bandwidth

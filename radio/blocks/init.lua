@@ -17,6 +17,7 @@ return {
     SDRplaySource = require('radio.blocks.sources.sdrplay'),
     PulseAudioSource = require('radio.blocks.sources.pulseaudio'),
     SoapySDRSource = require('radio.blocks.sources.soapysdr'),
+    UHDSource = require('radio.blocks.sources.uhd'),
 
     -- Sink Blocks
     IQFileSink = require('radio.blocks.sinks.iqfile'),

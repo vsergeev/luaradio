@@ -90,6 +90,7 @@ return {
     --- Miscellaneous
     DelayBlock = require('radio.blocks.signal.delay'),
     ThrottleBlock = require('radio.blocks.signal.throttle'),
+    NopBlock = require('radio.blocks.signal.nop'),
     DeinterleaveBlock = require('radio.blocks.signal.deinterleave'),
     InterleaveBlock = require('radio.blocks.signal.interleave'),
 

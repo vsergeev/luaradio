@@ -1,3 +1,24 @@
+* v0.5.0 - 11/21/2016
+    * Block additions
+        * UHDSource
+        * UHDSink
+        * NopSink
+        * NopBlock
+    * Block changes
+        * Fix ThrottleBlock implementation with adaptive delay.
+        * Fix error reporting during initialization in PulseAudioSource and
+          PulseAudioSink.
+        * Fix settings table argument in SoapySDRSource and SoapySDRSink.
+        * Rename NullSource to ZeroSource.
+    * Core changes
+        * Add time_us() helper to platform module.
+    * Documentation changes
+        * Fix minor typos in a few docstrings.
+        * Improve wording in several documents.
+        * Update supported hardware document with USRP support.
+    * Contributors
+        * Daniel Von Fange - 22932b1
+
 * v0.4.0 - 08/31/2016
     * Block additions
         * HackRFSink

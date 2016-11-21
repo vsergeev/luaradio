@@ -27,7 +27,7 @@ Radio](docs/comparison-gnuradio.html).
 ## Example
 
 <p align="center">
-<i>Mono Wideband FM Broadcast Radio Receiver</i>
+<i>Wideband FM Broadcast Radio Receiver</i>
 </p>
 
 <p align="center">

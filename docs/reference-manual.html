@@ -30,7 +30,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.4.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -73,7 +73,7 @@
 <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.4.0</code></a>
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.0</code></a>
   </p>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Reference Manual</a></span>
@@ -87,7 +87,7 @@
         <div class="reference-manual">
   <h1 id="luaradio-reference-manual">LuaRadio Reference Manual</h1>
 
-  <p>Generated from LuaRadio <code class="highlighter-rouge">v0.4.0</code>.</p>
+  <p>Generated from LuaRadio <code class="highlighter-rouge">v0.5.0</code>.</p>
 
   <h2 id="table-of-contents">Table of contents</h2>
 
@@ -111,7 +111,6 @@
             <li><a href="#airspysource">AirspySource</a></li>
             <li><a href="#hackrfsource">HackRFSource</a></li>
             <li><a href="#iqfilesource">IQFileSource</a></li>
-            <li><a href="#nullsource">NullSource</a></li>
             <li><a href="#pulseaudiosource">PulseAudioSource</a></li>
             <li><a href="#rawfilesource">RawFileSource</a></li>
             <li><a href="#realfilesource">RealFileSource</a></li>
@@ -119,8 +118,10 @@
             <li><a href="#sdrplaysource">SDRplaySource</a></li>
             <li><a href="#signalsource">SignalSource</a></li>
             <li><a href="#soapysdrsource">SoapySDRSource</a></li>
+            <li><a href="#uhdsource">UHDSource</a></li>
             <li><a href="#uniformrandomsource">UniformRandomSource</a></li>
             <li><a href="#wavfilesource">WAVFileSource</a></li>
+            <li><a href="#zerosource">ZeroSource</a></li>
           </ul>
         </li>
         <li><a href="#sinks">Sinks</a>
@@ -133,12 +134,14 @@
             <li><a href="#hackrfsink">HackRFSink</a></li>
             <li><a href="#iqfilesink">IQFileSink</a></li>
             <li><a href="#jsonsink">JSONSink</a></li>
+            <li><a href="#nopsink">NopSink</a></li>
             <li><a href="#portaudiosink">PortAudioSink</a></li>
             <li><a href="#printsink">PrintSink</a></li>
             <li><a href="#pulseaudiosink">PulseAudioSink</a></li>
             <li><a href="#rawfilesink">RawFileSink</a></li>
             <li><a href="#realfilesink">RealFileSink</a></li>
             <li><a href="#soapysdrsink">SoapySDRSink</a></li>
+            <li><a href="#uhdsink">UHDSink</a></li>
             <li><a href="#wavfilesink">WAVFileSink</a></li>
           </ul>
         </li>
@@ -224,6 +227,7 @@
             <li><a href="#deinterleaveblock">DeinterleaveBlock</a></li>
             <li><a href="#delayblock">DelayBlock</a></li>
             <li><a href="#interleaveblock">InterleaveBlock</a></li>
+            <li><a href="#nopblock">NopBlock</a></li>
             <li><a href="#throttleblock">ThrottleBlock</a></li>
           </ul>
         </li>
@@ -345,7 +349,7 @@
   <h2 id="running">Running</h2>
 
   <p>LuaRadio scripts can be run with the <code class="highlighter-rouge">luaradio</code> runner, or directly with
-<code class="highlighter-rouge">luajit</code>, if the <code class="highlighter-rouge">radio</code> package is in installed in your Lua path.</p>
+<code class="highlighter-rouge">luajit</code>, if the <code class="highlighter-rouge">radio</code> package is installed in your Lua path.</p>
 
   <h3 id="luaradio-runner"><code class="highlighter-rouge">luaradio</code> runner</h3>
 
@@ -626,7 +630,8 @@ libairspy library. The Airspy R2 and Airspy Mini dongles are supported.</p>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AirspySource</span><span class="p">(</span><span class="mf">135e6</span><span class="p">,</span> <span class="mf">6e6</span><span class="p">)</span>
 
 <span class="c1">-- Source samples from 91.1 MHz sampled at 3 MHz, with custom gain settings</span>
-<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AirspySource</span><span class="p">(</span><span class="mi">91</span><span class="p">.</span><span class="mf">1e6</span><span class="p">,</span> <span class="mf">3e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain_mode</span> <span class="o">=</span> <span class="s2">"custom"</span><span class="p">,</span> <span class="n">lna_gain</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">mixer_gain</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vga_gain</span> <span class="o">=</span> <span class="mi">6</span><span class="p">})</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AirspySource</span><span class="p">(</span><span class="mi">91</span><span class="p">.</span><span class="mf">1e6</span><span class="p">,</span> <span class="mf">3e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain_mode</span> <span class="o">=</span> <span class="s2">"custom"</span><span class="p">,</span> <span class="n">lna_gain</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+                                             <span class="n">mixer_gain</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">vga_gain</span> <span class="o">=</span> <span class="mi">6</span><span class="p">})</span>
 
 <span class="c1">-- Source samples from 91.1 MHz sampled at 2.5 MHz, with linearity gain mode</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AirspySource</span><span class="p">(</span><span class="mi">91</span><span class="p">.</span><span class="mf">1e6</span><span class="p">,</span> <span class="mi">2</span><span class="p">.</span><span class="mf">5e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain_mode</span> <span class="o">=</span> <span class="s2">"linearity"</span><span class="p">,</span> <span class="n">linearity_gain</span> <span class="o">=</span> <span class="mi">8</span><span class="p">})</span>
@@ -733,41 +738,6 @@ component.</p>
   <hr />
 
   <div class="block">
-    <h4 id="nullsource">NullSource</h4>
-
-    <p>Source a zero-valued signal of the specified data type.</p>
-
-    <h5 id="radionullsourcedatatype-rate"><code class="highlighter-rouge">radio.NullSource(data_type, rate)</code></h5>
-
-    <h6 id="arguments-4">Arguments</h6>
-
-    <ul>
-      <li><code class="highlighter-rouge">data_type</code> (<em>type</em>): LuaRadio data type</li>
-      <li><code class="highlighter-rouge">rate</code> (<em>number</em>): Sample rate in Hz</li>
-    </ul>
-
-    <h6 id="type-signatures-3">Type Signatures</h6>
-
-    <ul>
-      <li>❑➔ <code class="highlighter-rouge">out</code> <em>data_type</em></li>
-    </ul>
-
-    <h6 id="example-9">Example</h6>
-
-    <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source a zero complex-valued signal sampled at 1 MHz</span>
-<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">NullSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span>
-
-<span class="c1">-- Source a zero real-valued signal sampled at 500 kHz</span>
-<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">NullSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">,</span> <span class="mf">500e3</span><span class="p">)</span>
-
-<span class="c1">-- Source a zero bit stream sampled at 2 kHz</span>
-<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">NullSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">,</span> <span class="mf">2e3</span><span class="p">)</span>
-</code></pre>
-    </div>
-  </div>
-  <hr />
-
-  <div class="block">
     <h4 id="pulseaudiosource">PulseAudioSource</h4>
 
     <p>Source one or more real-valued signals from the system’s audio device with
@@ -775,21 +745,21 @@ PulseAudio. This source requires PulseAudio.</p>
 
     <h5 id="radiopulseaudiosourcenumchannels-rate"><code class="highlighter-rouge">radio.PulseAudioSource(num_channels, rate)</code></h5>
 
-    <h6 id="arguments-5">Arguments</h6>
+    <h6 id="arguments-4">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_channels</code> (<em>int</em>): Number of channels (e.g. 1 for mono, 2 for stereo)</li>
       <li><code class="highlighter-rouge">rate</code> (<em>int</em>): Sample rate in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-4">Type Signatures</h6>
+    <h6 id="type-signatures-3">Type Signatures</h6>
 
     <ul>
       <li>❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li>❑➔ <code class="highlighter-rouge">out1</code> <em>Float32</em>, <code class="highlighter-rouge">out2</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-10">Example</h6>
+    <h6 id="example-9">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source one channel (mono) audio sampled at 44100 Hz</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">PulseAudioSource</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">44100</span><span class="p">)</span>
@@ -816,7 +786,7 @@ serializing data types across a pipe or other file descriptor based IPC.</p>
 
     <h5 id="radiorawfilesourcefile-datatype-rate-repeatoneoffalse"><code class="highlighter-rouge">radio.RawFileSource(file, data_type, rate[, repeat_on_eof=false])</code></h5>
 
-    <h6 id="arguments-6">Arguments</h6>
+    <h6 id="arguments-5">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
@@ -825,13 +795,13 @@ serializing data types across a pipe or other file descriptor based IPC.</p>
       <li><code class="highlighter-rouge">repeat_on_eof</code> (<em>bool</em>): Repeat on end of file</li>
     </ul>
 
-    <h6 id="type-signatures-5">Type Signatures</h6>
+    <h6 id="type-signatures-4">Type Signatures</h6>
 
     <ul>
       <li>❑➔ <code class="highlighter-rouge">out</code> <em>data_type</em></li>
     </ul>
 
-    <h6 id="example-11">Example</h6>
+    <h6 id="example-10">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source ComplexFloat32 samples sampled at 1 MHz from a file descriptor</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RawFileSource</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span>
@@ -853,7 +823,7 @@ endianness. This is the real-valued counterpart of
 
     <h5 id="radiorealfilesourcefile-format-rate-repeatoneoffalse"><code class="highlighter-rouge">radio.RealFileSource(file, format, rate[, repeat_on_eof=false])</code></h5>
 
-    <h6 id="arguments-7">Arguments</h6>
+    <h6 id="arguments-6">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
@@ -865,13 +835,13 @@ endianness. This is the real-valued counterpart of
       <li><code class="highlighter-rouge">repeat_on_eof</code> (<em>bool</em>): Repeat on end of file</li>
     </ul>
 
-    <h6 id="type-signatures-6">Type Signatures</h6>
+    <h6 id="type-signatures-5">Type Signatures</h6>
 
     <ul>
       <li>❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-12">Example</h6>
+    <h6 id="example-11">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source signed 8-bit real samples from a file sampled at 1 MHz</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RealFileSource</span><span class="p">(</span><span class="s1">'samples.s8.real'</span><span class="p">,</span> <span class="s1">'s8'</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span>
@@ -894,7 +864,7 @@ the librtlsdr library.</p>
 
     <h5 id="radiortlsdrsourcefrequency-rate-options"><code class="highlighter-rouge">radio.RtlSdrSource(frequency, rate[, options={}])</code></h5>
 
-    <h6 id="arguments-8">Arguments</h6>
+    <h6 id="arguments-7">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">frequency</code> (<em>number</em>): Tuning frequency in Hz</li>
@@ -909,13 +879,13 @@ the librtlsdr library.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-7">Type Signatures</h6>
+    <h6 id="type-signatures-6">Type Signatures</h6>
 
     <ul>
       <li>❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-13">Example</h6>
+    <h6 id="example-12">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source samples from 162.400 MHz sampled at 1 MHz, with autogain enabled</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RtlSdrSource</span><span class="p">(</span><span class="mi">162</span><span class="p">.</span><span class="mf">400e6</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">,</span> <span class="p">{</span><span class="n">autogain</span> <span class="o">=</span> <span class="kc">true</span><span class="p">})</span>
@@ -938,7 +908,7 @@ libmirsdrapi-rsp library.</p>
 
     <h5 id="radiosdrplaysourcefrequency-rate-options"><code class="highlighter-rouge">radio.SDRplaySource(frequency, rate[, options={}])</code></h5>
 
-    <h6 id="arguments-9">Arguments</h6>
+    <h6 id="arguments-8">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">frequency</code> (<em>number</em>): Tuning frequency in Hz</li>
@@ -952,13 +922,13 @@ libmirsdrapi-rsp library.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-8">Type Signatures</h6>
+    <h6 id="type-signatures-7">Type Signatures</h6>
 
     <ul>
       <li>❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-14">Example</h6>
+    <h6 id="example-13">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source samples from 91.1 MHz sampled at 2 MHz</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SDRplaySource</span><span class="p">(</span><span class="mi">91</span><span class="p">.</span><span class="mf">1e6</span><span class="p">,</span> <span class="mf">2e6</span><span class="p">)</span>
@@ -983,7 +953,7 @@ other waveform types generate a real-valued signal.</p>
 
     <h5 id="radiosignalsourcesignal-frequency-rate-options"><code class="highlighter-rouge">radio.SignalSource(signal, frequency, rate[, options={}])</code></h5>
 
-    <h6 id="arguments-10">Arguments</h6>
+    <h6 id="arguments-9">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">signal</code> (<em>string</em>): Waveform type, either “exponential”, “cosine”, “sine”,
@@ -999,14 +969,14 @@ other waveform types generate a real-valued signal.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-9">Type Signatures</h6>
+    <h6 id="type-signatures-8">Type Signatures</h6>
 
     <ul>
       <li>❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li>❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-15">Example</h6>
+    <h6 id="example-14">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source a 250 kHz complex exponential sampled at 2 MHz</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">,</span> <span class="mf">2e6</span><span class="p">)</span>
@@ -1029,7 +999,7 @@ other waveform types generate a real-valued signal.</p>
 
     <h5 id="radiosoapysdrsourcedriver-frequency-rate-options"><code class="highlighter-rouge">radio.SoapySDRSource(driver, frequency, rate[, options={}])</code></h5>
 
-    <h6 id="arguments-11">Arguments</h6>
+    <h6 id="arguments-10">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">driver</code> (<em>string|table</em>): Driver string or key-value table</li>
@@ -1049,19 +1019,19 @@ other waveform types generate a real-valued signal.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-10">Type Signatures</h6>
+    <h6 id="type-signatures-9">Type Signatures</h6>
 
     <ul>
       <li>❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-16">Example</h6>
+    <h6 id="example-15">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source samples from an RTL-SDR at 91.1 MHz sampled at 1 MHz</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SoapySDRSource</span><span class="p">(</span><span class="s2">"driver=rtlsdr"</span><span class="p">,</span> <span class="mi">91</span><span class="p">.</span><span class="mf">1e6</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span>
 
 <span class="c1">-- Source samples from an Airspy at 15 MHz sampled at 6 MHz, with 10 dB overall gain</span>
-<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SoapySDRSource</span><span class="p">(</span><span class="s2">"driver=airspy"</span><span class="p">,</span> <span class="mf">6e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain</span> <span class="o">=</span> <span class="mi">10</span><span class="p">})</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SoapySDRSource</span><span class="p">(</span><span class="s2">"driver=airspy"</span><span class="p">,</span> <span class="mf">15e6</span><span class="p">,</span> <span class="mf">6e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain</span> <span class="o">=</span> <span class="mi">10</span><span class="p">})</span>
 
 <span class="c1">-- Source samples from a LimeSDR at 915 MHz sampled at 10 MHz,</span>
 <span class="c1">-- with 20 dB overall gain and 4 MHz baseband bandwidth</span>
@@ -1070,6 +1040,55 @@ other waveform types generate a real-valued signal.</p>
 <span class="c1">-- Source samples from a HackRF at 144.390 MHz sampled at 8 MHz,</span>
 <span class="c1">-- with 2.5 MHz baseband bandwidth</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SoapySDRSource</span><span class="p">(</span><span class="s2">"driver=hackrf"</span><span class="p">,</span> <span class="mi">144</span><span class="p">.</span><span class="mf">390e6</span><span class="p">,</span> <span class="mf">8e6</span><span class="p">,</span> <span class="p">{</span><span class="n">bandwidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">.</span><span class="mf">5e6</span><span class="p">})</span>
+</code></pre>
+    </div>
+  </div>
+  <hr />
+
+  <div class="block">
+    <h4 id="uhdsource">UHDSource</h4>
+
+    <p>Source a complex-valued signal from a USRP. This source requires the libuhd
+library.</p>
+
+    <h5 id="radiouhdsourcedeviceaddress-frequency-rate-options"><code class="highlighter-rouge">radio.UHDSource(device_address, frequency, rate[, options={}])</code></h5>
+
+    <h6 id="arguments-11">Arguments</h6>
+
+    <ul>
+      <li><code class="highlighter-rouge">device_address</code> (<em>string</em>): Device address string</li>
+      <li><code class="highlighter-rouge">frequency</code> (<em>number</em>): Tuning frequency in Hz</li>
+      <li><code class="highlighter-rouge">rate</code> (<em>number</em>): Sample rate in Hz</li>
+      <li><code class="highlighter-rouge">options</code> (<em>table</em>): Additional options, specifying:
+        <ul>
+          <li><code class="highlighter-rouge">channel</code> (int, default 0)</li>
+          <li><code class="highlighter-rouge">gain</code> (number in dB, overall gain, default 15.0 dB)</li>
+          <li><code class="highlighter-rouge">bandwidth</code> (number in Hz)</li>
+          <li><code class="highlighter-rouge">antenna</code> (string)</li>
+          <li><code class="highlighter-rouge">autogain</code> (bool)</li>
+          <li><code class="highlighter-rouge">gains</code> (table, gain element name to value in dB)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h6 id="type-signatures-10">Type Signatures</h6>
+
+    <ul>
+      <li>❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
+    </ul>
+
+    <h6 id="example-16">Example</h6>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source samples from a B200 at 91.1 MHz sampled at 2 MHz</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">UHDSource</span><span class="p">(</span><span class="s2">"type=b200"</span><span class="p">,</span> <span class="mi">91</span><span class="p">.</span><span class="mf">1e6</span><span class="p">,</span> <span class="mf">2e6</span><span class="p">)</span>
+
+<span class="c1">-- Source samples from a B200 at 915 MHz sampled at 10 MHz, with 20 dB</span>
+<span class="c1">-- overall gain</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">UHDSource</span><span class="p">(</span><span class="s2">"type=b200"</span><span class="p">,</span> <span class="mf">915e6</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain</span> <span class="o">=</span> <span class="mi">20</span><span class="p">})</span>
+
+<span class="c1">-- Source samples from a B200 at 144.390 MHz sampled at 8 MHz, with 2.5 MHz</span>
+<span class="c1">-- baseband bandwidth</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">UHDSource</span><span class="p">(</span><span class="s2">"type=b200"</span><span class="p">,</span> <span class="mi">144</span><span class="p">.</span><span class="mf">390e6</span><span class="p">,</span> <span class="mf">8e6</span><span class="p">,</span> <span class="p">{</span><span class="n">bandwidth</span> <span class="o">=</span> <span class="mi">2</span><span class="p">.</span><span class="mf">5e6</span><span class="p">})</span>
 </code></pre>
     </div>
   </div>
@@ -1164,6 +1183,41 @@ integer.</p>
   </div>
   <hr />
 
+  <div class="block">
+    <h4 id="zerosource">ZeroSource</h4>
+
+    <p>Source a zero-valued signal of the specified data type.</p>
+
+    <h5 id="radiozerosourcedatatype-rate"><code class="highlighter-rouge">radio.ZeroSource(data_type, rate)</code></h5>
+
+    <h6 id="arguments-14">Arguments</h6>
+
+    <ul>
+      <li><code class="highlighter-rouge">data_type</code> (<em>type</em>): LuaRadio data type</li>
+      <li><code class="highlighter-rouge">rate</code> (<em>number</em>): Sample rate in Hz</li>
+    </ul>
+
+    <h6 id="type-signatures-13">Type Signatures</h6>
+
+    <ul>
+      <li>❑➔ <code class="highlighter-rouge">out</code> <em>data_type</em></li>
+    </ul>
+
+    <h6 id="example-19">Example</h6>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Source a zero complex-valued signal sampled at 1 MHz</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ZeroSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span>
+
+<span class="c1">-- Source a zero real-valued signal sampled at 500 kHz</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ZeroSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">,</span> <span class="mf">500e3</span><span class="p">)</span>
+
+<span class="c1">-- Source a zero bit stream sampled at 2 kHz</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ZeroSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">,</span> <span class="mf">2e3</span><span class="p">)</span>
+</code></pre>
+    </div>
+  </div>
+  <hr />
+
   <h3 id="sinks">Sinks</h3>
 
   <div class="block">
@@ -1180,20 +1234,20 @@ integer.</p>
 
     <h5 id="radiobenchmarksinkfileiostderr-usejsonfalse"><code class="highlighter-rouge">radio.BenchmarkSink([file=io.stderr, use_json=false])</code></h5>
 
-    <h6 id="arguments-14">Arguments</h6>
+    <h6 id="arguments-15">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
       <li><code class="highlighter-rouge">use_json</code> (<em>bool</em>): Serialize aggregate results in JSON on termination</li>
     </ul>
 
-    <h6 id="type-signatures-13">Type Signatures</h6>
+    <h6 id="type-signatures-14">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>any</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-19">Example</h6>
+    <h6 id="example-20">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Benchmark a source, writing periodic results to stderr</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BenchmarkSink</span><span class="p">()</span>
@@ -1216,7 +1270,7 @@ as it does not skip any samples, or it may otherwise throttle a flow graph.</p>
 
     <h5 id="radiognuplotplotsinknumsamples-title-options"><code class="highlighter-rouge">radio.GnuplotPlotSink(num_samples[, title="", options={}])</code></h5>
 
-    <h6 id="arguments-15">Arguments</h6>
+    <h6 id="arguments-16">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_samples</code> (<em>int</em>): Number of samples to plot</li>
@@ -1233,13 +1287,13 @@ as it does not skip any samples, or it may otherwise throttle a flow graph.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-14">Type Signatures</h6>
+    <h6 id="type-signatures-15">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-20">Example</h6>
+    <h6 id="example-21">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Plot a 1 kHz cosine sampled at 250 kHz</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
@@ -1260,7 +1314,7 @@ Bartlett’s or Welch’s method of averaging periodograms.</p>
 
     <h5 id="radiognuplotspectrumsinknumsamples1024-title-options"><code class="highlighter-rouge">radio.GnuplotSpectrumSink([num_samples=1024, title="", options={}])</code></h5>
 
-    <h6 id="arguments-16">Arguments</h6>
+    <h6 id="arguments-17">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_samples</code> (<em>int</em>): Number of samples in periodogram</li>
@@ -1283,17 +1337,17 @@ Bartlett’s or Welch’s method of averaging periodograms.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-15">Type Signatures</h6>
+    <h6 id="type-signatures-16">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑</li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-21">Example</h6>
+    <h6 id="example-22">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Plot the spectrum of a 1 kHz complex exponential sampled at 250 kHz</span>
-<span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">throttle</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">()</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>
@@ -1314,7 +1368,7 @@ with very low sample rates, or it may otherwise throttle a flow graph.</p>
 
     <h5 id="radiognuplotwaterfallsinknumsamples1024-title-options"><code class="highlighter-rouge">radio.GnuplotWaterfallSink([num_samples=1024, title="", options={}])</code></h5>
 
-    <h6 id="arguments-17">Arguments</h6>
+    <h6 id="arguments-18">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_samples</code> (<em>int</em>): Number of samples in periodogram</li>
@@ -1339,14 +1393,14 @@ with very low sample rates, or it may otherwise throttle a flow graph.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-16">Type Signatures</h6>
+    <h6 id="type-signatures-17">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑</li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-22">Example</h6>
+    <h6 id="example-23">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Plot the waterfall of a 1 kHz complex exponential sampled at 250 kHz</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
@@ -1368,7 +1422,7 @@ does not skip any samples, or it may otherwise throttle a flow graph.</p>
 
     <h5 id="radiognuplotxyplotsinknumsamples-title-options"><code class="highlighter-rouge">radio.GnuplotXYPlotSink(num_samples[, title="", options={}])</code></h5>
 
-    <h6 id="arguments-18">Arguments</h6>
+    <h6 id="arguments-19">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_samples</code> (<em>int</em>): Number of samples to plot</li>
@@ -1388,14 +1442,14 @@ does not skip any samples, or it may otherwise throttle a flow graph.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-17">Type Signatures</h6>
+    <h6 id="type-signatures-18">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">x</code> <em>Float32</em>, <code class="highlighter-rouge">y</code> <em>Float32</em> ➔❑</li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-23">Example</h6>
+    <h6 id="example-24">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Plot a 1 kHz complex exponential sampled at 250 kHz</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
@@ -1420,7 +1474,7 @@ libhackrf library.</p>
 
     <h5 id="radiohackrfsinkfrequency-options"><code class="highlighter-rouge">radio.HackRFSink(frequency[, options={}])</code></h5>
 
-    <h6 id="arguments-19">Arguments</h6>
+    <h6 id="arguments-20">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">frequency</code> (<em>number</em>): Tuning frequency in Hz</li>
@@ -1434,13 +1488,13 @@ libhackrf library.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-18">Type Signatures</h6>
+    <h6 id="type-signatures-19">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-24">Example</h6>
+    <h6 id="example-25">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink samples to 146 MHz</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">HackRFSink</span><span class="p">(</span><span class="mf">146e6</span><span class="p">)</span>
@@ -1468,7 +1522,7 @@ component.</p>
 
     <h5 id="radioiqfilesinkfile-format"><code class="highlighter-rouge">radio.IQFileSink(file, format)</code></h5>
 
-    <h6 id="arguments-20">Arguments</h6>
+    <h6 id="arguments-21">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
@@ -1478,13 +1532,13 @@ component.</p>
                      “s32be”, “f32le”, “f32be”, “f64le”, “f64be”.</li>
     </ul>
 
-    <h6 id="type-signatures-19">Type Signatures</h6>
+    <h6 id="type-signatures-20">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-25">Example</h6>
+    <h6 id="example-26">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink signed 8-bit IQ samples to a file</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">IQFileSink</span><span class="p">(</span><span class="s1">'samples.s8.iq'</span><span class="p">,</span> <span class="s1">'s8'</span><span class="p">)</span>
@@ -1508,19 +1562,19 @@ implements <code class="highlighter-rouge">to_json()</code>.</p>
 
     <h5 id="radiojsonsinkfileiostdout"><code class="highlighter-rouge">radio.JSONSink([file=io.stdout])</code></h5>
 
-    <h6 id="arguments-21">Arguments</h6>
+    <h6 id="arguments-22">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
     </ul>
 
-    <h6 id="type-signatures-20">Type Signatures</h6>
+    <h6 id="type-signatures-21">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>supported</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-26">Example</h6>
+    <h6 id="example-27">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink JSON serialized samples to stdout</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">JSONSink</span><span class="p">()</span>
@@ -1535,6 +1589,28 @@ implements <code class="highlighter-rouge">to_json()</code>.</p>
   <hr />
 
   <div class="block">
+    <h4 id="nopsink">NopSink</h4>
+
+    <p>Sink a signal and do nothing. This sink accepts any data type.</p>
+
+    <h5 id="radionopsink"><code class="highlighter-rouge">radio.NopSink()</code></h5>
+
+    <h6 id="type-signatures-22">Type Signatures</h6>
+
+    <ul>
+      <li><code class="highlighter-rouge">in</code> <em>any</em> ➔❑</li>
+    </ul>
+
+    <h6 id="example-28">Example</h6>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">NopSink</span><span class="p">()</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>
+</code></pre>
+    </div>
+  </div>
+  <hr />
+
+  <div class="block">
     <h4 id="portaudiosink">PortAudioSink</h4>
 
     <p>Sink one or more real-valued signals to the system’s audio device with
@@ -1542,20 +1618,20 @@ PortAudio. This sink requires the PortAudio library.</p>
 
     <h5 id="radioportaudiosinknumchannels"><code class="highlighter-rouge">radio.PortAudioSink(num_channels)</code></h5>
 
-    <h6 id="arguments-22">Arguments</h6>
+    <h6 id="arguments-23">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_channels</code> (<em>int</em>): Number of channels (e.g. 1 for mono, 2 for stereo)</li>
     </ul>
 
-    <h6 id="type-signatures-21">Type Signatures</h6>
+    <h6 id="type-signatures-23">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑</li>
       <li><code class="highlighter-rouge">in1</code> <em>Float32</em>, <code class="highlighter-rouge">in2</code> <em>Float32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-27">Example</h6>
+    <h6 id="example-29">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink to one channel (mono) audio</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">PortAudioSink</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -1579,19 +1655,19 @@ implements <code class="highlighter-rouge">__tostring()</code>.</p>
 
     <h5 id="radioprintsinkfileiostdout"><code class="highlighter-rouge">radio.PrintSink([file=io.stdout])</code></h5>
 
-    <h6 id="arguments-23">Arguments</h6>
+    <h6 id="arguments-24">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
     </ul>
 
-    <h6 id="type-signatures-22">Type Signatures</h6>
+    <h6 id="type-signatures-24">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>supported</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-28">Example</h6>
+    <h6 id="example-30">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink string formatted samples to stdout</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">PrintSink</span><span class="p">()</span>
@@ -1609,20 +1685,20 @@ PulseAudio. This sink requires PulseAudio.</p>
 
     <h5 id="radiopulseaudiosinknumchannels"><code class="highlighter-rouge">radio.PulseAudioSink(num_channels)</code></h5>
 
-    <h6 id="arguments-24">Arguments</h6>
+    <h6 id="arguments-25">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_channels</code> (<em>int</em>): Number of channels (e.g. 1 for mono, 2 for stereo)</li>
     </ul>
 
-    <h6 id="type-signatures-23">Type Signatures</h6>
+    <h6 id="type-signatures-25">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑</li>
       <li><code class="highlighter-rouge">in1</code> <em>Float32</em>, <code class="highlighter-rouge">in2</code> <em>Float32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-29">Example</h6>
+    <h6 id="example-31">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink to one channel (mono) audio</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">PulseAudioSink</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -1647,19 +1723,19 @@ across a pipe or other file descriptor based IPC.</p>
 
     <h5 id="radiorawfilesinkfile"><code class="highlighter-rouge">radio.RawFileSink(file)</code></h5>
 
-    <h6 id="arguments-25">Arguments</h6>
+    <h6 id="arguments-26">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
     </ul>
 
-    <h6 id="type-signatures-24">Type Signatures</h6>
+    <h6 id="type-signatures-26">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>any</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-30">Example</h6>
+    <h6 id="example-32">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink raw samples to a file</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RawFileSink</span><span class="p">(</span><span class="s1">'samples.raw'</span><span class="p">)</span>
@@ -1683,7 +1759,7 @@ endianness. This is the real-valued counterpart of
 
     <h5 id="radiorealfilesinkfile-format"><code class="highlighter-rouge">radio.RealFileSink(file, format)</code></h5>
 
-    <h6 id="arguments-26">Arguments</h6>
+    <h6 id="arguments-27">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
@@ -1693,13 +1769,13 @@ endianness. This is the real-valued counterpart of
                      “s32be”, “f32le”, “f32be”, “f64le”, “f64be”.</li>
     </ul>
 
-    <h6 id="type-signatures-25">Type Signatures</h6>
+    <h6 id="type-signatures-27">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-31">Example</h6>
+    <h6 id="example-33">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink signed 8-bit real samples to a file</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RealFileSink</span><span class="p">(</span><span class="s1">'samples.s8.real'</span><span class="p">,</span> <span class="s1">'s8'</span><span class="p">)</span>
@@ -1722,7 +1798,7 @@ endianness. This is the real-valued counterpart of
 
     <h5 id="radiosoapysdrsinkdriver-frequency-options"><code class="highlighter-rouge">radio.SoapySDRSink(driver, frequency[, options={}])</code></h5>
 
-    <h6 id="arguments-27">Arguments</h6>
+    <h6 id="arguments-28">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">driver</code> (<em>string|table</em>): Driver string or key-value table</li>
@@ -1741,19 +1817,61 @@ endianness. This is the real-valued counterpart of
       </li>
     </ul>
 
-    <h6 id="type-signatures-26">Type Signatures</h6>
+    <h6 id="type-signatures-28">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-32">Example</h6>
+    <h6 id="example-34">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink samples to a HackRF at 433.92 MHz</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SoapySDRSink</span><span class="p">(</span><span class="s2">"driver=hackrf"</span><span class="p">,</span> <span class="mi">433</span><span class="p">.</span><span class="mf">92e6</span><span class="p">)</span>
 
 <span class="c1">-- Sink samples to a LimeSDR at 915 MHz, with 10 dB overall gain and 5 MHz baseband bandwidth</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SoapySDRSink</span><span class="p">(</span><span class="s2">"driver=limesdr"</span><span class="p">,</span> <span class="mf">915e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">5e6</span><span class="p">})</span>
+</code></pre>
+    </div>
+  </div>
+  <hr />
+
+  <div class="block">
+    <h4 id="uhdsink">UHDSink</h4>
+
+    <p>Sink a complex-valued signal to a USRP. This source requires the libuhd
+library.</p>
+
+    <h5 id="radiouhdsinkdeviceaddress-frequency-options"><code class="highlighter-rouge">radio.UHDSink(device_address, frequency[, options={}])</code></h5>
+
+    <h6 id="arguments-29">Arguments</h6>
+
+    <ul>
+      <li><code class="highlighter-rouge">device_address</code> (<em>string</em>): Device address string</li>
+      <li><code class="highlighter-rouge">frequency</code> (<em>number</em>): Tuning frequency in Hz</li>
+      <li><code class="highlighter-rouge">options</code> (<em>table</em>): Additional options, specifying:
+        <ul>
+          <li><code class="highlighter-rouge">channel</code> (int, default 0)</li>
+          <li><code class="highlighter-rouge">gain</code> (number in dB, overall gain, default 0.0 dB)</li>
+          <li><code class="highlighter-rouge">bandwidth</code> (number in Hz)</li>
+          <li><code class="highlighter-rouge">antenna</code> (string)</li>
+          <li><code class="highlighter-rouge">gains</code> (table, gain element name to value in dB)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h6 id="type-signatures-29">Type Signatures</h6>
+
+    <ul>
+      <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑</li>
+    </ul>
+
+    <h6 id="example-35">Example</h6>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink samples to a B200 at 433.92 MHz</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">UHDSink</span><span class="p">(</span><span class="s2">"type=b200"</span><span class="p">,</span> <span class="mi">433</span><span class="p">.</span><span class="mf">92e6</span><span class="p">)</span>
+
+<span class="c1">-- Sink samples to a B200 at 915 MHz, with 10 dB overall gain and 5 MHz baseband bandwidth</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">UHDSink</span><span class="p">(</span><span class="s2">"type=b200"</span><span class="p">,</span> <span class="mf">915e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">5e6</span><span class="p">})</span>
 </code></pre>
     </div>
   </div>
@@ -1768,7 +1886,7 @@ integer.</p>
 
     <h5 id="radiowavfilesinkfile-numchannels-bitspersample16"><code class="highlighter-rouge">radio.WAVFileSink(file, num_channels[, bits_per_sample=16])</code></h5>
 
-    <h6 id="arguments-28">Arguments</h6>
+    <h6 id="arguments-30">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">file</code> (<em>string|file|int</em>): Filename, file object, or file descriptor</li>
@@ -1776,14 +1894,14 @@ integer.</p>
       <li><code class="highlighter-rouge">bits_per_sample</code> (<em>int</em>): Bits per sample, choice of 8, 16, or 32</li>
     </ul>
 
-    <h6 id="type-signatures-27">Type Signatures</h6>
+    <h6 id="type-signatures-30">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑</li>
       <li><code class="highlighter-rouge">in1</code> <em>Float32</em>, <code class="highlighter-rouge">in2</code> <em>Float32</em> ➔❑</li>
     </ul>
 
-    <h6 id="example-33">Example</h6>
+    <h6 id="example-36">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Sink to a one channel WAV file</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">WAVFileSink</span><span class="p">(</span><span class="s1">'test.wav'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -1810,7 +1928,7 @@ filter generated by the window design method.</p>
 
     <h5 id="radiobandpassfilterblocknumtaps-cutoffs-nyquistnil-windowhamming"><code class="highlighter-rouge">radio.BandpassFilterBlock(num_taps, cutoffs[, nyquist=nil, window='hamming'])</code></h5>
 
-    <h6 id="arguments-29">Arguments</h6>
+    <h6 id="arguments-31">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_taps</code> (<em>int</em>): Number of FIR taps, must be odd</li>
@@ -1820,14 +1938,14 @@ filter generated by the window design method.</p>
       <li><code class="highlighter-rouge">window</code> (<em>string</em>): Window type</li>
     </ul>
 
-    <h6 id="type-signatures-28">Type Signatures</h6>
+    <h6 id="type-signatures-31">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-34">Example</h6>
+    <h6 id="example-37">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Bandpass filter, 128 taps, 18 kHz to 20 kHz</span>
 <span class="kd">local</span> <span class="n">bpf</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BandpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">{</span><span class="mf">18e3</span><span class="p">,</span> <span class="mf">20e3</span><span class="p">})</span>
@@ -1846,7 +1964,7 @@ filter generated by the window design method.</p>
 
     <h5 id="radiobandstopfilterblocknumtaps-cutoffs-nyquistnil-windowhamming"><code class="highlighter-rouge">radio.BandstopFilterBlock(num_taps, cutoffs[, nyquist=nil, window='hamming'])</code></h5>
 
-    <h6 id="arguments-30">Arguments</h6>
+    <h6 id="arguments-32">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_taps</code> (<em>int</em>): Number of FIR taps, must be odd</li>
@@ -1856,14 +1974,14 @@ filter generated by the window design method.</p>
       <li><code class="highlighter-rouge">window</code> (<em>string</em>): Window type</li>
     </ul>
 
-    <h6 id="type-signatures-29">Type Signatures</h6>
+    <h6 id="type-signatures-32">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-35">Example</h6>
+    <h6 id="example-38">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Bandstop filter, 128 taps, 18 kHz to 20 kHz</span>
 <span class="kd">local</span> <span class="n">bpf</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BandstopFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">{</span><span class="mf">18e3</span><span class="p">,</span> <span class="mf">20e3</span><span class="p">})</span>
@@ -1883,7 +2001,7 @@ frequency domain.</p>
 
     <h5 id="radiocomplexbandpassfilterblocknumtaps-cutoffs-nyquistnil-windowhamming"><code class="highlighter-rouge">radio.ComplexBandpassFilterBlock(num_taps, cutoffs[, nyquist=nil, window='hamming'])</code></h5>
 
-    <h6 id="arguments-31">Arguments</h6>
+    <h6 id="arguments-33">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_taps</code> (<em>int</em>): Number of FIR taps, must be odd</li>
@@ -1893,13 +2011,13 @@ frequency domain.</p>
       <li><code class="highlighter-rouge">window</code> (<em>string</em>): Window type</li>
     </ul>
 
-    <h6 id="type-signatures-30">Type Signatures</h6>
+    <h6 id="type-signatures-33">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-36">Example</h6>
+    <h6 id="example-39">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Complex bandpass filter, 128 taps, 18 kHz to 20 kHz</span>
 <span class="kd">local</span> <span class="n">bpf1</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BandpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">{</span><span class="mf">18e3</span><span class="p">,</span> <span class="mf">20e3</span><span class="p">})</span>
@@ -1922,7 +2040,7 @@ frequency domain.</p>
 
     <h5 id="radiocomplexbandstopfilterblocknumtaps-cutoffs-nyquistnil-windowhamming"><code class="highlighter-rouge">radio.ComplexBandstopFilterBlock(num_taps, cutoffs[, nyquist=nil, window='hamming'])</code></h5>
 
-    <h6 id="arguments-32">Arguments</h6>
+    <h6 id="arguments-34">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_taps</code> (<em>int</em>): Number of FIR taps, must be odd</li>
@@ -1932,13 +2050,13 @@ frequency domain.</p>
       <li><code class="highlighter-rouge">window</code> (<em>string</em>): Window type</li>
     </ul>
 
-    <h6 id="type-signatures-31">Type Signatures</h6>
+    <h6 id="type-signatures-34">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-37">Example</h6>
+    <h6 id="example-40">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Complex bandstop filter, 128 taps, 18 kHz to 20 kHz</span>
 <span class="kd">local</span> <span class="n">bpf1</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BandstopFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="p">{</span><span class="mf">18e3</span><span class="p">,</span> <span class="mf">20e3</span><span class="p">})</span>
@@ -1959,9 +2077,9 @@ frequency domain.</p>
 
     <script type="math/tex; mode=display">y[n] = b_0 x[n] + b_1 x[n-1] + ... + b_N x[n-N]</script>
 
-    <h5 id="radiofirfilterblocktaps-useffttrue"><code class="highlighter-rouge">radio.FIRFilterBlock(taps[, use_fft=true])</code></h5>
+    <h5 id="radiofirfilterblocktaps-usefft"><code class="highlighter-rouge">radio.FIRFilterBlock(taps[, use_fft])</code></h5>
 
-    <h6 id="arguments-33">Arguments</h6>
+    <h6 id="arguments-35">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">taps</code> (<em>array|vector</em>): Real-valued taps specified with a number array or
@@ -1969,17 +2087,17 @@ frequency domain.</p>
                          with a ComplexFloat32 vector</li>
       <li><code class="highlighter-rouge">use_fft</code> (<em>bool</em>): Use FFT overlap-save convolution. Defaults to true
                          when acceleration is available and taps length is
-                         greater than 16.</li>
+                         greater than 16</li>
     </ul>
 
-    <h6 id="type-signatures-32">Type Signatures</h6>
+    <h6 id="type-signatures-35">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-38">Example</h6>
+    <h6 id="example-41">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Moving average FIR filter with 5 real taps</span>
 <span class="kd">local</span> <span class="n">filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FIRFilterBlock</span><span class="p">({</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">})</span>
@@ -2006,20 +2124,20 @@ single-pole low-pass IIR filter.</p>
 
     <h5 id="radiofmdeemphasisfilterblocktau"><code class="highlighter-rouge">radio.FMDeemphasisFilterBlock(tau)</code></h5>
 
-    <h6 id="arguments-34">Arguments</h6>
+    <h6 id="arguments-36">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">tau</code> (<em>number</em>): Time constant of filter</li>
     </ul>
 
-    <h6 id="type-signatures-33">Type Signatures</h6>
+    <h6 id="type-signatures-36">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-39">Example</h6>
+    <h6 id="example-42">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- FM de-emphasis filter with 75uS time constant for the Americas</span>
 <span class="kd">local</span> <span class="n">fmdeemph</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FMDeemphasisFilterBlock</span><span class="p">(</span><span class="mf">75e-6</span><span class="p">)</span>
@@ -2038,20 +2156,20 @@ single-pole high-pass IIR filter.</p>
 
     <h5 id="radiofmpreemphasisfilterblocktau"><code class="highlighter-rouge">radio.FMPreemphasisFilterBlock(tau)</code></h5>
 
-    <h6 id="arguments-35">Arguments</h6>
+    <h6 id="arguments-37">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">tau</code> (<em>number</em>): Time constant of filter</li>
     </ul>
 
-    <h6 id="type-signatures-34">Type Signatures</h6>
+    <h6 id="type-signatures-37">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-40">Example</h6>
+    <h6 id="example-43">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- FM pre-emphasis filter with 75uS time constant for the Americas</span>
 <span class="kd">local</span> <span class="n">fmpreemph</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FMPreemphasisFilterBlock</span><span class="p">(</span><span class="mf">75e-6</span><span class="p">)</span>
@@ -2070,7 +2188,7 @@ filter generated by the window design method.</p>
 
     <h5 id="radiohighpassfilterblocknumtaps-cutoff-nyquistnil-windowhamming"><code class="highlighter-rouge">radio.HighpassFilterBlock(num_taps, cutoff[, nyquist=nil, window='hamming'])</code></h5>
 
-    <h6 id="arguments-36">Arguments</h6>
+    <h6 id="arguments-38">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_taps</code> (<em>int</em>): Number of FIR taps, must be odd</li>
@@ -2080,14 +2198,14 @@ filter generated by the window design method.</p>
       <li><code class="highlighter-rouge">window</code> (<em>string</em>): Window type</li>
     </ul>
 
-    <h6 id="type-signatures-35">Type Signatures</h6>
+    <h6 id="type-signatures-38">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-41">Example</h6>
+    <h6 id="example-44">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Highpass filter, 128 taps, 18 kHz</span>
 <span class="kd">local</span> <span class="n">hpf</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">HighpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mf">18e3</span><span class="p">)</span>
@@ -2108,7 +2226,7 @@ filter generated by the window design method.</p>
 
     <h5 id="radioiirfilterblockbtaps-ataps"><code class="highlighter-rouge">radio.IIRFilterBlock(b_taps, a_taps)</code></h5>
 
-    <h6 id="arguments-37">Arguments</h6>
+    <h6 id="arguments-39">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">b_taps</code> (<em>array|vector</em>): Real-valued feedforward taps specified with a
@@ -2118,14 +2236,14 @@ filter generated by the window design method.</p>
                            least length 1</li>
     </ul>
 
-    <h6 id="type-signatures-36">Type Signatures</h6>
+    <h6 id="type-signatures-39">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-42">Example</h6>
+    <h6 id="example-45">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- 2nd order Butterworth IIR filter, Wn=0.1</span>
 <span class="kd">local</span> <span class="n">filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">IIRFilterBlock</span><span class="p">({</span><span class="mi">0</span><span class="p">.</span><span class="mi">02008337</span><span class="p">,</span>  <span class="mi">0</span><span class="p">.</span><span class="mi">04016673</span><span class="p">,</span>  <span class="mi">0</span><span class="p">.</span><span class="mi">02008337</span><span class="p">},</span>
@@ -2150,7 +2268,7 @@ filter generated by the window design method.</p>
 
     <h5 id="radiolowpassfilterblocknumtaps-cutoff-nyquistnil-windowhamming"><code class="highlighter-rouge">radio.LowpassFilterBlock(num_taps, cutoff[, nyquist=nil, window='hamming'])</code></h5>
 
-    <h6 id="arguments-38">Arguments</h6>
+    <h6 id="arguments-40">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_taps</code> (<em>int</em>): Number of FIR taps</li>
@@ -2160,14 +2278,14 @@ filter generated by the window design method.</p>
       <li><code class="highlighter-rouge">window</code> (<em>string</em>): Window type</li>
     </ul>
 
-    <h6 id="type-signatures-37">Type Signatures</h6>
+    <h6 id="type-signatures-40">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-43">Example</h6>
+    <h6 id="example-46">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Lowpass filter, 128 taps, 18 kHz</span>
 <span class="kd">local</span> <span class="n">lpf</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">LowpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mf">18e3</span><span class="p">)</span>
@@ -2186,7 +2304,7 @@ raised cosine filter.</p>
 
     <h5 id="radiorootraisedcosinefilterblocknumtaps-beta-symbolrate"><code class="highlighter-rouge">radio.RootRaisedCosineFilterBlock(num_taps, beta, symbol_rate)</code></h5>
 
-    <h6 id="arguments-39">Arguments</h6>
+    <h6 id="arguments-41">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_taps</code> (<em>int</em>): Number of FIR taps, must be odd</li>
@@ -2194,14 +2312,14 @@ raised cosine filter.</p>
       <li><code class="highlighter-rouge">symbol_rate</code> (<em>number</em>): Symbol rate in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-38">Type Signatures</h6>
+    <h6 id="type-signatures-41">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-44">Example</h6>
+    <h6 id="example-47">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Root raised cosine filter with 101 taps, 1.0 beta, 1187.5 symbol rate</span>
 <span class="kd">local</span> <span class="n">rrcfilter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RootRaisedCosineFilterBlock</span><span class="p">(</span><span class="mi">101</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1187</span><span class="p">.</span><span class="mi">5</span><span class="p">)</span>
@@ -2224,20 +2342,20 @@ filter.</p>
 
     <h5 id="radiosinglepolehighpassfilterblockcutoff"><code class="highlighter-rouge">radio.SinglepoleHighpassFilterBlock(cutoff)</code></h5>
 
-    <h6 id="arguments-40">Arguments</h6>
+    <h6 id="arguments-42">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">cutoff</code> (<em>number</em>): Cutoff frequency in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-39">Type Signatures</h6>
+    <h6 id="type-signatures-42">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-45">Example</h6>
+    <h6 id="example-48">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Single-pole highpass filter with 100 Hz cutoff</span>
 <span class="kd">local</span> <span class="n">hpf</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SinglepoleHighpassFilterBlock</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
@@ -2260,20 +2378,20 @@ filter.</p>
 
     <h5 id="radiosinglepolelowpassfilterblockcutoff"><code class="highlighter-rouge">radio.SinglepoleLowpassFilterBlock(cutoff)</code></h5>
 
-    <h6 id="arguments-41">Arguments</h6>
+    <h6 id="arguments-43">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">cutoff</code> (<em>number</em>): Cutoff frequency in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-40">Type Signatures</h6>
+    <h6 id="type-signatures-43">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-46">Example</h6>
+    <h6 id="example-49">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Single-pole lowpass filter with 100 kHz cutoff</span>
 <span class="kd">local</span> <span class="n">lpf</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SinglepoleLowpassFilterBlock</span><span class="p">(</span><span class="mf">100e3</span><span class="p">)</span>
@@ -2293,13 +2411,13 @@ filter.</p>
 
     <h5 id="radioabsolutevalueblock"><code class="highlighter-rouge">radio.AbsoluteValueBlock()</code></h5>
 
-    <h6 id="type-signatures-41">Type Signatures</h6>
+    <h6 id="type-signatures-44">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-47">Example</h6>
+    <h6 id="example-50">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">abs</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AbsoluteValueBlock</span><span class="p">()</span>
 </code></pre>
@@ -2316,14 +2434,14 @@ filter.</p>
 
     <h5 id="radioaddblock"><code class="highlighter-rouge">radio.AddBlock()</code></h5>
 
-    <h6 id="type-signatures-42">Type Signatures</h6>
+    <h6 id="type-signatures-45">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in1</code> <em>ComplexFloat32</em>, <code class="highlighter-rouge">in2</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in1</code> <em>Float32</em>, <code class="highlighter-rouge">in2</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-48">Example</h6>
+    <h6 id="example-51">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">summer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AddBlock</span><span class="p">()</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">summer</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
@@ -2344,20 +2462,20 @@ complex-valued constant to a complex-valued signal.</p>
 
     <h5 id="radioaddconstantblockconstant"><code class="highlighter-rouge">radio.AddConstantBlock(constant)</code></h5>
 
-    <h6 id="arguments-42">Arguments</h6>
+    <h6 id="arguments-44">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">constant</code> (<em>number|Float32|ComplexFloat32</em>): Constant</li>
     </ul>
 
-    <h6 id="type-signatures-43">Type Signatures</h6>
+    <h6 id="type-signatures-46">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-49">Example</h6>
+    <h6 id="example-52">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Add a number (Float32) constant</span>
 <span class="kd">local</span> <span class="n">addconstant</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AddConstantBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span>
@@ -2381,13 +2499,13 @@ complex-valued constant to a complex-valued signal.</p>
 
     <h5 id="radiocomplexconjugateblock"><code class="highlighter-rouge">radio.ComplexConjugateBlock()</code></h5>
 
-    <h6 id="type-signatures-44">Type Signatures</h6>
+    <h6 id="type-signatures-47">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-50">Example</h6>
+    <h6 id="example-53">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">conj</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexConjugateBlock</span><span class="p">()</span>
 </code></pre>
@@ -2406,13 +2524,13 @@ complex-valued constant to a complex-valued signal.</p>
 
     <h5 id="radiocomplexmagnitudeblock"><code class="highlighter-rouge">radio.ComplexMagnitudeBlock()</code></h5>
 
-    <h6 id="type-signatures-45">Type Signatures</h6>
+    <h6 id="type-signatures-48">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-51">Example</h6>
+    <h6 id="example-54">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexMagnitudeBlock</span><span class="p">()</span>
 </code></pre>
@@ -2431,13 +2549,13 @@ complex-valued constant to a complex-valued signal.</p>
 
     <h5 id="radiocomplexphaseblock"><code class="highlighter-rouge">radio.ComplexPhaseBlock()</code></h5>
 
-    <h6 id="type-signatures-46">Type Signatures</h6>
+    <h6 id="type-signatures-49">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-52">Example</h6>
+    <h6 id="example-55">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">phase</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexPhaseBlock</span><span class="p">()</span>
 </code></pre>
@@ -2454,14 +2572,14 @@ complex-valued constant to a complex-valued signal.</p>
 
     <h5 id="radiomultiplyblock"><code class="highlighter-rouge">radio.MultiplyBlock()</code></h5>
 
-    <h6 id="type-signatures-47">Type Signatures</h6>
+    <h6 id="type-signatures-50">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in1</code> <em>ComplexFloat32</em>, <code class="highlighter-rouge">in2</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in1</code> <em>Float32</em>, <code class="highlighter-rouge">in2</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-53">Example</h6>
+    <h6 id="example-56">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">multiplier</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultipyBlock</span><span class="p">()</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
@@ -2482,13 +2600,13 @@ complex-valued signal.</p>
 
     <h5 id="radiomultiplyconjugateblock"><code class="highlighter-rouge">radio.MultiplyConjugateBlock()</code></h5>
 
-    <h6 id="type-signatures-48">Type Signatures</h6>
+    <h6 id="type-signatures-51">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in1</code> <em>ComplexFloat32</em>, <code class="highlighter-rouge">in2</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-54">Example</h6>
+    <h6 id="example-57">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">multiplier</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultipyConjugateBlock</span><span class="p">()</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">multiplier</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
@@ -2509,20 +2627,20 @@ multiply a complex-valued signal by a complex-valued constant.</p>
 
     <h5 id="radiomultiplyconstantblockconstant"><code class="highlighter-rouge">radio.MultiplyConstantBlock(constant)</code></h5>
 
-    <h6 id="arguments-43">Arguments</h6>
+    <h6 id="arguments-45">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">constant</code> (<em>number|Float32|ComplexFloat32</em>): Constant</li>
     </ul>
 
-    <h6 id="type-signatures-49">Type Signatures</h6>
+    <h6 id="type-signatures-52">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-55">Example</h6>
+    <h6 id="example-58">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Multiply by number (Float32) constant</span>
 <span class="kd">local</span> <span class="n">gain</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultiplyConstantBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">.</span><span class="mi">0</span><span class="p">)</span>
@@ -2547,14 +2665,14 @@ multiply a complex-valued signal by a complex-valued constant.</p>
 
     <h5 id="radiosubtractblock"><code class="highlighter-rouge">radio.SubtractBlock()</code></h5>
 
-    <h6 id="type-signatures-50">Type Signatures</h6>
+    <h6 id="type-signatures-53">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in1</code> <em>ComplexFloat32</em>, <code class="highlighter-rouge">in2</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in1</code> <em>Float32</em>, <code class="highlighter-rouge">in2</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-56">Example</h6>
+    <h6 id="example-59">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">subtractor</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SubtractBlock</span><span class="p">()</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">subtractor</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
@@ -2582,7 +2700,7 @@ symmetric attack and decay dynamics.</p>
 
     <h5 id="radioagcblockmode-target-35-threshold-75-options"><code class="highlighter-rouge">radio.AGCBlock(mode[, target=-35, threshold=-75, options={}])</code></h5>
 
-    <h6 id="arguments-44">Arguments</h6>
+    <h6 id="arguments-46">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">mode</code> (<em>string</em>): Mode, choice of “fast”, “slow”, “custom”</li>
@@ -2597,14 +2715,14 @@ symmetric attack and decay dynamics.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-51">Type Signatures</h6>
+    <h6 id="type-signatures-54">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-57">Example</h6>
+    <h6 id="example-60">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Automatic gain control with fast gain</span>
 <span class="kd">local</span> <span class="n">agc</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AGCBlock</span><span class="p">(</span><span class="s1">'fast'</span><span class="p">)</span>
@@ -2629,21 +2747,21 @@ y[n] = \begin{cases} x[n] & \text{if } P_\text{average}(x[n]) > P_\text{threshol
 
     <h5 id="radiopowersquelchblockthreshold-tau0001"><code class="highlighter-rouge">radio.PowerSquelchBlock(threshold[, tau=0.001])</code></h5>
 
-    <h6 id="arguments-45">Arguments</h6>
+    <h6 id="arguments-47">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">threshold</code> (<em>number</em>): Power threshold in dBFS</li>
       <li><code class="highlighter-rouge">tau</code> (<em>number</em>): Time constant of moving average filter in seconds</li>
     </ul>
 
-    <h6 id="type-signatures-52">Type Signatures</h6>
+    <h6 id="type-signatures-55">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-58">Example</h6>
+    <h6 id="example-61">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Squelch at -40 dBFS power</span>
 <span class="kd">local</span> <span class="n">squelch</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">PowerSquelchBlock</span><span class="p">(</span><span class="o">-</span><span class="mi">40</span><span class="p">)</span>
@@ -2668,20 +2786,20 @@ filtering.</p>
 
     <h5 id="radiodownsamplerblockfactor"><code class="highlighter-rouge">radio.DownsamplerBlock(factor)</code></h5>
 
-    <h6 id="arguments-46">Arguments</h6>
+    <h6 id="arguments-48">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">factor</code> (<em>int</em>): Downsampling factor M</li>
     </ul>
 
-    <h6 id="type-signatures-53">Type Signatures</h6>
+    <h6 id="type-signatures-56">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-59">Example</h6>
+    <h6 id="example-62">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Downsample by 5</span>
 <span class="kd">local</span> <span class="n">downsampler</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DownsamplerBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -2705,20 +2823,20 @@ scaling and anti-alias filtering.</p>
 
     <h5 id="radioupsamplerblockfactor"><code class="highlighter-rouge">radio.UpsamplerBlock(factor)</code></h5>
 
-    <h6 id="arguments-47">Arguments</h6>
+    <h6 id="arguments-49">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">factor</code> (<em>int</em>): Upsampling factor L</li>
     </ul>
 
-    <h6 id="type-signatures-54">Type Signatures</h6>
+    <h6 id="type-signatures-57">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-60">Example</h6>
+    <h6 id="example-63">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Upsample by 5</span>
 <span class="kd">local</span> <span class="n">upsampler</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">UpsamplerBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -2738,7 +2856,7 @@ blocks in the flow graph by a factor of M.</p>
 
     <h5 id="radiodecimatorblockdecimation-options"><code class="highlighter-rouge">radio.DecimatorBlock(decimation[, options={}])</code></h5>
 
-    <h6 id="arguments-48">Arguments</h6>
+    <h6 id="arguments-50">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">decimation</code> (<em>int</em>): Downsampling factor M</li>
@@ -2750,14 +2868,14 @@ blocks in the flow graph by a factor of M.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-55">Type Signatures</h6>
+    <h6 id="type-signatures-58">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-61">Example</h6>
+    <h6 id="example-64">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Decimate by 5</span>
 <span class="kd">local</span> <span class="n">decimator</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DecimatorBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -2780,7 +2898,7 @@ y'[n] = \begin{cases} Lx[n/L] & \text{for integer } n/L \\ 0 & \text{otherwise} 
 
     <h5 id="radiointerpolatorblockinterpolation-options"><code class="highlighter-rouge">radio.InterpolatorBlock(interpolation[, options={}])</code></h5>
 
-    <h6 id="arguments-49">Arguments</h6>
+    <h6 id="arguments-51">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">interpolation</code> (<em>int</em>): Upsampling factor L</li>
@@ -2792,14 +2910,14 @@ y'[n] = \begin{cases} Lx[n/L] & \text{for integer } n/L \\ 0 & \text{otherwise} 
       </li>
     </ul>
 
-    <h6 id="type-signatures-56">Type Signatures</h6>
+    <h6 id="type-signatures-59">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-62">Example</h6>
+    <h6 id="example-65">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Interpolate by 5</span>
 <span class="kd">local</span> <span class="n">interpolator</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">InterpolatorBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -2819,7 +2937,7 @@ downstream blocks in the flow graph by a factor of L/M.</p>
 
     <h5 id="radiorationalresamplerblockinterpolation-decimation-options"><code class="highlighter-rouge">radio.RationalResamplerBlock(interpolation, decimation[, options={}])</code></h5>
 
-    <h6 id="arguments-50">Arguments</h6>
+    <h6 id="arguments-52">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">interpolation</code> (<em>int</em>): Upsampling factor L</li>
@@ -2832,14 +2950,14 @@ downstream blocks in the flow graph by a factor of L/M.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-57">Type Signatures</h6>
+    <h6 id="type-signatures-60">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-63">Example</h6>
+    <h6 id="example-66">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Resample by 5/3</span>
 <span class="kd">local</span> <span class="n">resampler</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RationalResamplerBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
@@ -2860,19 +2978,19 @@ downstream blocks in the flow graph by a factor of L/M.</p>
 
     <h5 id="radiofrequencytranslatorblockoffset"><code class="highlighter-rouge">radio.FrequencyTranslatorBlock(offset)</code></h5>
 
-    <h6 id="arguments-51">Arguments</h6>
+    <h6 id="arguments-53">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">offset</code> (<em>number</em>): Translation offset in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-58">Type Signatures</h6>
+    <h6 id="type-signatures-61">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-64">Example</h6>
+    <h6 id="example-67">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Frequency translate -200 kHz</span>
 <span class="kd">local</span> <span class="n">translator</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyTranslatorBlock</span><span class="p">(</span><span class="o">-</span><span class="mf">200e3</span><span class="p">)</span>
@@ -2891,20 +3009,20 @@ windowed FIR approximation of the IIR Hilbert transform filter.</p>
 
     <h5 id="radiohilberttransformblocknumtaps-windowhamming"><code class="highlighter-rouge">radio.HilbertTransformBlock(num_taps[, window='hamming'])</code></h5>
 
-    <h6 id="arguments-52">Arguments</h6>
+    <h6 id="arguments-54">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_taps</code> (<em>number</em>): Number of FIR taps, must be odd</li>
       <li><code class="highlighter-rouge">window</code> (<em>string</em>): Window type</li>
     </ul>
 
-    <h6 id="type-signatures-59">Type Signatures</h6>
+    <h6 id="type-signatures-62">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-65">Example</h6>
+    <h6 id="example-68">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Hilbert transform with 129 taps</span>
 <span class="kd">local</span> <span class="n">ht</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">HilbertTransformBlock</span><span class="p">(</span><span class="mi">129</span><span class="p">)</span>
@@ -2927,7 +3045,7 @@ them.</p>
 
     <h5 id="radiotunerblockoffset-bandwidth-decimation-options"><code class="highlighter-rouge">radio.TunerBlock(offset, bandwidth, decimation[, options={}])</code></h5>
 
-    <h6 id="arguments-53">Arguments</h6>
+    <h6 id="arguments-55">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">offset</code> (<em>number</em>): Translation offset in Hz</li>
@@ -2941,13 +3059,13 @@ them.</p>
       </li>
     </ul>
 
-    <h6 id="type-signatures-60">Type Signatures</h6>
+    <h6 id="type-signatures-63">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-66">Example</h6>
+    <h6 id="example-69">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Translate -100 kHz, filter 12 kHz, and decimate by 5</span>
 <span class="kd">local</span> <span class="n">tuner</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">TunerBlock</span><span class="p">(</span><span class="o">-</span><span class="mf">100e3</span><span class="p">,</span> <span class="mf">12e3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
@@ -2968,7 +3086,7 @@ reference signal.</p>
 
     <h5 id="radiopllblockloopbandwidth-frequencymin-frequencymax-multiplier10"><code class="highlighter-rouge">radio.PLLBlock(loop_bandwidth, frequency_min, frequency_max[, multiplier=1.0])</code></h5>
 
-    <h6 id="arguments-54">Arguments</h6>
+    <h6 id="arguments-56">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">loop_bandwidth</code> (<em>number</em>): Loop bandwidth in Hz</li>
@@ -2977,13 +3095,13 @@ reference signal.</p>
       <li><code class="highlighter-rouge">multiplier</code> (<em>number</em>): Multiplier, can be fractional</li>
     </ul>
 
-    <h6 id="type-signatures-61">Type Signatures</h6>
+    <h6 id="type-signatures-64">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em>, <code class="highlighter-rouge">error</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-67">Example</h6>
+    <h6 id="example-70">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- PLL with 1 kHz loop bandwidth, 18 kHz - 21 kHz capture range, 3 multiplier</span>
 <span class="kd">local</span> <span class="n">pll</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">PLLBlock</span><span class="p">(</span><span class="mf">1e3</span><span class="p">,</span> <span class="mf">18e3</span><span class="p">,</span> <span class="mf">21e3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
@@ -3006,20 +3124,20 @@ This clock signal can then be used to sample the data signal with a
 
     <h5 id="radiozerocrossingclockrecoveryblockbaudrate-threshold00"><code class="highlighter-rouge">radio.ZeroCrossingClockRecoveryBlock(baudrate[, threshold=0.0])</code></h5>
 
-    <h6 id="arguments-55">Arguments</h6>
+    <h6 id="arguments-57">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">baudrate</code> (<em>number</em>): Baudrate in symbols per second</li>
       <li><code class="highlighter-rouge">threshold</code> (<em>number</em>): Zero-crossing threshold</li>
     </ul>
 
-    <h6 id="type-signatures-62">Type Signatures</h6>
+    <h6 id="type-signatures-65">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-68">Example</h6>
+    <h6 id="example-71">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Zero-crossing clock recovery of 1200 baudrate data signal</span>
 <span class="kd">local</span> <span class="n">clock_recoverer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ZeroCrossingClockRecoveryBlock</span><span class="p">(</span><span class="mi">1200</span><span class="p">)</span>
@@ -3044,7 +3162,7 @@ against a moving average of the phase angle.</p>
 
     <h5 id="radiobinaryphasecorrectorblocknumsamples-sampleinterval32"><code class="highlighter-rouge">radio.BinaryPhaseCorrectorBlock(num_samples[, sample_interval=32])</code></h5>
 
-    <h6 id="arguments-56">Arguments</h6>
+    <h6 id="arguments-58">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_samples</code> (<em>int</em>): Number of samples in phase angle moving average</li>
@@ -3052,13 +3170,13 @@ against a moving average of the phase angle.</p>
                                    measurements</li>
     </ul>
 
-    <h6 id="type-signatures-63">Type Signatures</h6>
+    <h6 id="type-signatures-66">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-69">Example</h6>
+    <h6 id="example-72">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Binary phase corrector with a 3000 sample moving average</span>
 <span class="kd">local</span> <span class="n">phase_corrector</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BinaryPhaseCorrector</span><span class="p">(</span><span class="mi">3000</span><span class="p">)</span>
@@ -3076,19 +3194,19 @@ against a moving average of the phase angle.</p>
 
     <h5 id="radiodifferentialdecoderblockinvertfalse"><code class="highlighter-rouge">radio.DifferentialDecoderBlock([invert=false])</code></h5>
 
-    <h6 id="arguments-57">Arguments</h6>
+    <h6 id="arguments-59">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">invert</code> (<em>bool</em>): Invert the output.</li>
     </ul>
 
-    <h6 id="type-signatures-64">Type Signatures</h6>
+    <h6 id="type-signatures-67">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Bit</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Bit</em></li>
     </ul>
 
-    <h6 id="example-70">Example</h6>
+    <h6 id="example-73">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">diff_decoder</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DifferentialDecoderBlock</span><span class="p">()</span>
 </code></pre>
@@ -3106,19 +3224,19 @@ y[n] = \begin{cases} 0 & \text{for }\{0, 1\} \\ 1 & \text{for }\{1, 0\} \\ \text
 
     <h5 id="radiomanchesterdecoderblockinvertfalse"><code class="highlighter-rouge">radio.ManchesterDecoderBlock([invert=false])</code></h5>
 
-    <h6 id="arguments-58">Arguments</h6>
+    <h6 id="arguments-60">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">invert</code> (<em>bool</em>): Invert the output.</li>
     </ul>
 
-    <h6 id="type-signatures-65">Type Signatures</h6>
+    <h6 id="type-signatures-68">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Bit</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Bit</em></li>
     </ul>
 
-    <h6 id="example-71">Example</h6>
+    <h6 id="example-74">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">manchester_decoder</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ManchesterDecoderBlock</span><span class="p">()</span>
 </code></pre>
@@ -3137,14 +3255,14 @@ y[n] = x_{data}[m] \,\text{ when }\, \begin{align}&x_{clk}[m] > 0 \\ &x_{clk}[m-
 
     <h5 id="radiosamplerblock"><code class="highlighter-rouge">radio.SamplerBlock()</code></h5>
 
-    <h6 id="type-signatures-66">Type Signatures</h6>
+    <h6 id="type-signatures-69">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">data</code> <em>ComplexFloat32</em>, <code class="highlighter-rouge">clock</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
       <li><code class="highlighter-rouge">data</code> <em>Float32</em>, <code class="highlighter-rouge">clock</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-72">Example</h6>
+    <h6 id="example-75">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">sampler</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SamplerBlock</span><span class="p">()</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">data_src</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">sampler</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">)</span>
@@ -3165,19 +3283,19 @@ y[n] = \begin{cases} 1 & \text{if } x[n] > \text{threshold} \\ 0 & \text{if } x[
 
     <h5 id="radioslicerblockthreshold00"><code class="highlighter-rouge">radio.SlicerBlock([threshold=0.0])</code></h5>
 
-    <h6 id="arguments-59">Arguments</h6>
+    <h6 id="arguments-61">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">threshold</code> (<em>number</em>): Threshold</li>
     </ul>
 
-    <h6 id="type-signatures-67">Type Signatures</h6>
+    <h6 id="type-signatures-70">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Bit</em></li>
     </ul>
 
-    <h6 id="example-73">Example</h6>
+    <h6 id="example-76">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Slice at default threshold 0.0</span>
 <span class="kd">local</span> <span class="n">slicer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SlicerBlock</span><span class="p">()</span>
@@ -3200,13 +3318,13 @@ y[n] = \begin{cases} 1 & \text{if } x[n] > \text{threshold} \\ 0 & \text{if } x[
 
     <h5 id="radiocomplextofloatblock"><code class="highlighter-rouge">radio.ComplexToFloatBlock()</code></h5>
 
-    <h6 id="type-signatures-68">Type Signatures</h6>
+    <h6 id="type-signatures-71">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">real</code> <em>Float32</em>, <code class="highlighter-rouge">imag</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-74">Example</h6>
+    <h6 id="example-77">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">complextofloat</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexToFloatBlock</span><span class="p">()</span>
 </code></pre>
@@ -3223,13 +3341,13 @@ y[n] = \begin{cases} 1 & \text{if } x[n] > \text{threshold} \\ 0 & \text{if } x[
 
     <h5 id="radiocomplextoimagblock"><code class="highlighter-rouge">radio.ComplexToImagBlock()</code></h5>
 
-    <h6 id="type-signatures-69">Type Signatures</h6>
+    <h6 id="type-signatures-72">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-75">Example</h6>
+    <h6 id="example-78">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">complextoimag</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexToImagBlock</span><span class="p">()</span>
 </code></pre>
@@ -3246,13 +3364,13 @@ y[n] = \begin{cases} 1 & \text{if } x[n] > \text{threshold} \\ 0 & \text{if } x[
 
     <h5 id="radiocomplextorealblock"><code class="highlighter-rouge">radio.ComplexToRealBlock()</code></h5>
 
-    <h6 id="type-signatures-70">Type Signatures</h6>
+    <h6 id="type-signatures-73">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-76">Example</h6>
+    <h6 id="example-79">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">complextoreal</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexToRealBlock</span><span class="p">()</span>
 </code></pre>
@@ -3270,13 +3388,13 @@ complex-valued signal.</p>
 
     <h5 id="radiofloattocomplexblock"><code class="highlighter-rouge">radio.FloatToComplexBlock()</code></h5>
 
-    <h6 id="type-signatures-71">Type Signatures</h6>
+    <h6 id="type-signatures-74">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">real</code> <em>Float32</em>, <code class="highlighter-rouge">imag</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-77">Example</h6>
+    <h6 id="example-80">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">floattocomplex</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FloatToComplexBlock</span><span class="p">()</span>
 </code></pre>
@@ -3294,13 +3412,13 @@ imaginary part.</p>
 
     <h5 id="radiorealtocomplexblock"><code class="highlighter-rouge">radio.RealToComplexBlock()</code></h5>
 
-    <h6 id="type-signatures-72">Type Signatures</h6>
+    <h6 id="type-signatures-75">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-78">Example</h6>
+    <h6 id="example-81">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">realtocomplex</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RealToComplexBlock</span><span class="p">()</span>
 </code></pre>
@@ -3319,20 +3437,20 @@ imaginary part.</p>
 
     <h5 id="radiodeinterleaveblocknumchannels2"><code class="highlighter-rouge">radio.DeinterleaveBlock([num_channels=2])</code></h5>
 
-    <h6 id="arguments-60">Arguments</h6>
+    <h6 id="arguments-62">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_channels</code> (<em>int</em>): Number of channels</li>
     </ul>
 
-    <h6 id="type-signatures-73">Type Signatures</h6>
+    <h6 id="type-signatures-76">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out1</code> <em>Float32</em>, <code class="highlighter-rouge">out2</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out1</code> <em>ComplexFloat32</em>, <code class="highlighter-rouge">out2</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-79">Example</h6>
+    <h6 id="example-82">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Deinterleave two channels</span>
 <span class="kd">local</span> <span class="n">deinterleaver</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DeinterleaveBlock</span><span class="p">()</span>
@@ -3353,13 +3471,13 @@ imaginary part.</p>
 
     <h5 id="radiodelayblocknumsamples"><code class="highlighter-rouge">radio.DelayBlock(num_samples)</code></h5>
 
-    <h6 id="arguments-61">Arguments</h6>
+    <h6 id="arguments-63">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_samples</code> (<em>int</em>): Number of samples to delay</li>
     </ul>
 
-    <h6 id="type-signatures-74">Type Signatures</h6>
+    <h6 id="type-signatures-77">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
@@ -3368,7 +3486,7 @@ imaginary part.</p>
       <li><code class="highlighter-rouge">in</code> <em>Bit</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Bit</em></li>
     </ul>
 
-    <h6 id="example-80">Example</h6>
+    <h6 id="example-83">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Delay by 128 samples</span>
 <span class="kd">local</span> <span class="n">delay</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DelayBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
@@ -3386,26 +3504,50 @@ imaginary part.</p>
 
     <h5 id="radiointerleaveblocknumchannels2"><code class="highlighter-rouge">radio.InterleaveBlock([num_channels=2])</code></h5>
 
-    <h6 id="arguments-62">Arguments</h6>
+    <h6 id="arguments-64">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num_channels</code> (<em>int</em>): Number of channels</li>
     </ul>
 
-    <h6 id="type-signatures-75">Type Signatures</h6>
+    <h6 id="type-signatures-78">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in1</code> <em>Float32</em>, <code class="highlighter-rouge">in2</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
       <li><code class="highlighter-rouge">in1</code> <em>ComplexFloat32</em>, <code class="highlighter-rouge">in2</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-81">Example</h6>
+    <h6 id="example-84">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Interleave two channels</span>
 <span class="kd">local</span> <span class="n">interleaver</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">InterleaveBlock</span><span class="p">()</span>
 
 <span class="c1">-- Interleave four channels</span>
 <span class="kd">local</span> <span class="n">interleaver</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">InterleaveBlock</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</code></pre>
+    </div>
+  </div>
+  <hr />
+
+  <div class="block">
+    <h4 id="nopblock">NopBlock</h4>
+
+    <p>Pass a signal through, performing no operation.</p>
+
+    <script type="math/tex; mode=display">y[n] = x[n]</script>
+
+    <h5 id="radionopblock"><code class="highlighter-rouge">radio.NopBlock()</code></h5>
+
+    <h6 id="type-signatures-79">Type Signatures</h6>
+
+    <ul>
+      <li><code class="highlighter-rouge">in</code> <em>any</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>copy</em></li>
+    </ul>
+
+    <h6 id="example-85">Example</h6>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">nop</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">NopBlock</span><span class="p">()</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">nop</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>
 </code></pre>
     </div>
   </div>
@@ -3420,13 +3562,13 @@ imaginary part.</p>
 
     <h5 id="radiothrottleblock"><code class="highlighter-rouge">radio.ThrottleBlock()</code></h5>
 
-    <h6 id="type-signatures-76">Type Signatures</h6>
+    <h6 id="type-signatures-80">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>any</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>copy</em></li>
     </ul>
 
-    <h6 id="example-82">Example</h6>
+    <h6 id="example-86">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">throttle</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">()</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>
@@ -3447,20 +3589,20 @@ modulated complex-valued signal.</p>
 
     <h5 id="radiossbmodulatorsideband-bandwidth3e3"><code class="highlighter-rouge">radio.SSBModulator(sideband[, bandwidth=3e3])</code></h5>
 
-    <h6 id="arguments-63">Arguments</h6>
+    <h6 id="arguments-65">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">sideband</code> (<em>string</em>): Sideband, choice of “lsb” or “usb”.</li>
       <li><code class="highlighter-rouge">bandwidth</code> (<em>number</em>): Bandwidth in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-77">Type Signatures</h6>
+    <h6 id="type-signatures-81">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Float32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>ComplexFloat32</em></li>
     </ul>
 
-    <h6 id="example-83">Example</h6>
+    <h6 id="example-87">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- SSB LSB modulator with 3 kHz bandwidth</span>
 <span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SSBModulator</span><span class="p">(</span><span class="s2">"lsb"</span><span class="p">,</span> <span class="mf">3e3</span><span class="p">)</span>
@@ -3481,19 +3623,19 @@ frequency demodulation.</p>
 
     <h5 id="radiofrequencydiscriminatorblockmodulationindex"><code class="highlighter-rouge">radio.FrequencyDiscriminatorBlock(modulation_index)</code></h5>
 
-    <h6 id="arguments-64">Arguments</h6>
+    <h6 id="arguments-66">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">modulation_index</code> (<em>number</em>): Modulation index (Carrier Deviation / Maximum Modulation Frequency)</li>
     </ul>
 
-    <h6 id="type-signatures-78">Type Signatures</h6>
+    <h6 id="type-signatures-82">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-84">Example</h6>
+    <h6 id="example-88">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Frequency discriminator with modulation index 1.25</span>
 <span class="kd">local</span> <span class="n">fm_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyDiscriminatorBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">25</span><span class="p">)</span>
@@ -3512,19 +3654,19 @@ signal with an envelope detector.</p>
 
     <h5 id="radioamenvelopedemodulatorbandwidth5e3"><code class="highlighter-rouge">radio.AMEnvelopeDemodulator([bandwidth=5e3])</code></h5>
 
-    <h6 id="arguments-65">Arguments</h6>
+    <h6 id="arguments-67">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">bandwidth</code> (<em>number</em>): Bandwidth in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-79">Type Signatures</h6>
+    <h6 id="type-signatures-83">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-85">Example</h6>
+    <h6 id="example-89">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- AM demodulator with 5 kHz bandwidth</span>
 <span class="kd">local</span> <span class="n">demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AMEnvelopeDemodulator</span><span class="p">(</span><span class="mf">5e3</span><span class="p">)</span>
@@ -3544,20 +3686,20 @@ intermediate frequency.</p>
 
     <h5 id="radioamsynchronousdemodulatorifreq-bandwidth5e3"><code class="highlighter-rouge">radio.AMSynchronousDemodulator(ifreq[, bandwidth=5e3])</code></h5>
 
-    <h6 id="arguments-66">Arguments</h6>
+    <h6 id="arguments-68">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">ifreq</code> (<em>number</em>): Intermediate frequency in Hz</li>
       <li><code class="highlighter-rouge">bandwidth</code> (<em>number</em>): Bandwidth in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-80">Type Signatures</h6>
+    <h6 id="type-signatures-84">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-86">Example</h6>
+    <h6 id="example-90">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- AM demodulator with 100 kHz IF, 5 kHz bandwidth</span>
 <span class="kd">local</span> <span class="n">demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AMSynchronousDemodulator</span><span class="p">(</span><span class="mf">100e3</span><span class="p">,</span> <span class="mf">5e3</span><span class="p">)</span>
@@ -3578,20 +3720,20 @@ bandwidth with a cutoff frequency calculated by Carson’s rule.</p>
 
     <h5 id="radionbfmdemodulatordeviation5e3-bandwidth4e3"><code class="highlighter-rouge">radio.NBFMDemodulator([deviation=5e3, bandwidth=4e3])</code></h5>
 
-    <h6 id="arguments-67">Arguments</h6>
+    <h6 id="arguments-69">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">deviation</code> (<em>number</em>): Deviation in Hz</li>
       <li><code class="highlighter-rouge">bandwidth</code> (<em>number</em>): Bandwidth in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-81">Type Signatures</h6>
+    <h6 id="type-signatures-85">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-87">Example</h6>
+    <h6 id="example-91">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- NBFM demodulator with 5 kHz deviation and 4 kHz bandwidth</span>
 <span class="kd">local</span> <span class="n">demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">NBFMDemodulator</span><span class="p">(</span><span class="mf">5e3</span><span class="p">,</span> <span class="mf">4e3</span><span class="p">)</span>
@@ -3610,20 +3752,20 @@ signal.</p>
 
     <h5 id="radiossbdemodulatorsideband-bandwidth3e3"><code class="highlighter-rouge">radio.SSBDemodulator(sideband[, bandwidth=3e3])</code></h5>
 
-    <h6 id="arguments-68">Arguments</h6>
+    <h6 id="arguments-70">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">sideband</code> (<em>string</em>): Sideband, choice of “lsb” or “usb”.</li>
       <li><code class="highlighter-rouge">bandwidth</code> (<em>number</em>): Bandwidth in Hz</li>
     </ul>
 
-    <h6 id="type-signatures-82">Type Signatures</h6>
+    <h6 id="type-signatures-86">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-88">Example</h6>
+    <h6 id="example-92">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- SSB LSB demodulator with 3 kHz bandwidth</span>
 <span class="kd">local</span> <span class="n">demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SSBDemodulator</span><span class="p">(</span><span class="s2">"lsb"</span><span class="p">,</span> <span class="mf">3e3</span><span class="p">)</span>
@@ -3642,19 +3784,19 @@ signal into the real-valued mono channel (L+R) signal.</p>
 
     <h5 id="radiowbfmmonodemodulatortau75e-6"><code class="highlighter-rouge">radio.WBFMMonoDemodulator([tau=75e-6])</code></h5>
 
-    <h6 id="arguments-69">Arguments</h6>
+    <h6 id="arguments-71">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">tau</code> (<em>number</em>): FM de-emphasis time constant</li>
     </ul>
 
-    <h6 id="type-signatures-83">Type Signatures</h6>
+    <h6 id="type-signatures-87">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-89">Example</h6>
+    <h6 id="example-93">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">WBFMMonoDemodulator</span><span class="p">()</span>
 </code></pre>
@@ -3672,19 +3814,19 @@ signal into the real-valued stereo channel (L and R) signals.</p>
 
     <h5 id="radiowbfmstereodemodulatortau75e-6"><code class="highlighter-rouge">radio.WBFMStereoDemodulator([tau=75e-6])</code></h5>
 
-    <h6 id="arguments-70">Arguments</h6>
+    <h6 id="arguments-72">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">tau</code> (<em>number</em>): FM de-emphasis time constant</li>
     </ul>
 
-    <h6 id="type-signatures-84">Type Signatures</h6>
+    <h6 id="type-signatures-88">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">left</code> <em>Float32</em>, <code class="highlighter-rouge">right</code> <em>Float32</em></li>
     </ul>
 
-    <h6 id="example-90">Example</h6>
+    <h6 id="example-94">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">WBFMStereoDemodulator</span><span class="p">()</span>
 </code></pre>
@@ -3701,13 +3843,13 @@ signal into the real-valued stereo channel (L and R) signals.</p>
 
     <h5 id="radioax25framerblock"><code class="highlighter-rouge">radio.AX25FramerBlock()</code></h5>
 
-    <h6 id="type-signatures-85">Type Signatures</h6>
+    <h6 id="type-signatures-89">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Bit</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>AX25FrameType</em></li>
     </ul>
 
-    <h6 id="example-91">Example</h6>
+    <h6 id="example-95">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">framer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AX25FramerBlock</span><span class="p">()</span>
 </code></pre>
@@ -3737,7 +3879,7 @@ signal into the real-valued stereo channel (L and R) signals.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-71">Arguments</h6>
+    <h6 id="arguments-73">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">addresses</code> (<em>array</em>): Array of addresses, each a table with key <code class="highlighter-rouge">callsign</code>
@@ -3759,7 +3901,7 @@ strings, numeric strings, or both.</p>
 
     <h5 id="radiopocsagdecoderblockmodealphanumeric"><code class="highlighter-rouge">radio.POCSAGDecoderBlock([mode='alphanumeric'])</code></h5>
 
-    <h6 id="arguments-72">Arguments</h6>
+    <h6 id="arguments-74">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">mode</code> (<em>string</em>): Decoding mode, choice of
@@ -3767,13 +3909,13 @@ strings, numeric strings, or both.</p>
                                        “both”.</li>
     </ul>
 
-    <h6 id="type-signatures-86">Type Signatures</h6>
+    <h6 id="type-signatures-90">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>POCSAGFrameType</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>POCSAGMessageType</em></li>
     </ul>
 
-    <h6 id="example-92">Example</h6>
+    <h6 id="example-96">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">decoder</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">POCSAGDecoderBlock</span><span class="p">()</span>
 </code></pre>
@@ -3797,7 +3939,7 @@ strings, numeric strings, or both.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-73">Arguments</h6>
+    <h6 id="arguments-75">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">address</code> (<em>int</em>): Address bits, 21-bits wide</li>
@@ -3818,13 +3960,13 @@ so a POCSAG transmission of several batches may yield several frames.</p>
 
     <h5 id="radiopocsagframerblock"><code class="highlighter-rouge">radio.POCSAGFramerBlock()</code></h5>
 
-    <h6 id="type-signatures-87">Type Signatures</h6>
+    <h6 id="type-signatures-91">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Bit</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>POCSAGFrameType</em></li>
     </ul>
 
-    <h6 id="example-93">Example</h6>
+    <h6 id="example-97">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">framer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">POCSAGFramerBlock</span><span class="p">()</span>
 </code></pre>
@@ -3847,7 +3989,7 @@ so a POCSAG transmission of several batches may yield several frames.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-74">Arguments</h6>
+    <h6 id="arguments-76">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">address</code> (<em>int</em>): Address bits, 21-bits wide</li>
@@ -3866,13 +4008,13 @@ supported data payloads are basic tuning, radiotext, and datetime.</p>
 
     <h5 id="radiordsdecoderblock"><code class="highlighter-rouge">radio.RDSDecoderBlock()</code></h5>
 
-    <h6 id="type-signatures-88">Type Signatures</h6>
+    <h6 id="type-signatures-92">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>RDSFrameType</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>RDSPacketType</em></li>
     </ul>
 
-    <h6 id="example-94">Example</h6>
+    <h6 id="example-98">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">decoder</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RDSDecoderBlock</span><span class="p">()</span>
 </code></pre>
@@ -3947,7 +4089,7 @@ supported data payloads are basic tuning, radiotext, and datetime.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-75">Arguments</h6>
+    <h6 id="arguments-77">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">header</code> (<em>table</em>): Header table, as outlined above</li>
@@ -3965,13 +4107,13 @@ into frames.</p>
 
     <h5 id="radiordsframerblock"><code class="highlighter-rouge">radio.RDSFramerBlock()</code></h5>
 
-    <h6 id="type-signatures-89">Type Signatures</h6>
+    <h6 id="type-signatures-93">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Bit</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>RDSFrameType</em></li>
     </ul>
 
-    <h6 id="example-95">Example</h6>
+    <h6 id="example-99">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">framer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RDSFramerBlock</span><span class="p">()</span>
 </code></pre>
@@ -3992,7 +4134,7 @@ into frames.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-76">Arguments</h6>
+    <h6 id="arguments-78">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">data</code> (<em>table</em>): Array of four data words, e.g. <code class="highlighter-rouge"><span class="p">{</span><span class="err">{0x3aab,</span><span class="w"> </span><span class="err">0x02c9,</span><span class="w"> </span><span class="err">0x0608,</span><span class="w"> </span><span class="err">0x6469</span><span class="p">}</span><span class="err">}</span></code></li>
@@ -4008,13 +4150,13 @@ into frames.</p>
 
     <h5 id="radiovaricodedecoderblock"><code class="highlighter-rouge">radio.VaricodeDecoderBlock()</code></h5>
 
-    <h6 id="type-signatures-90">Type Signatures</h6>
+    <h6 id="type-signatures-94">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>Bit</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Byte</em></li>
     </ul>
 
-    <h6 id="example-96">Example</h6>
+    <h6 id="example-100">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">decoder</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">VaricodeDecoderBlock</span><span class="p">()</span>
 </code></pre>
@@ -4032,13 +4174,13 @@ AFSK modulated complex-valued signal.</p>
 
     <h5 id="radioax25receiver"><code class="highlighter-rouge">radio.AX25Receiver()</code></h5>
 
-    <h6 id="type-signatures-91">Type Signatures</h6>
+    <h6 id="type-signatures-95">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>AX25FrameType</em></li>
     </ul>
 
-    <h6 id="example-97">Example</h6>
+    <h6 id="example-101">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">receiver</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">AX25Receiver</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">JSONSink</span><span class="p">()</span>
@@ -4056,13 +4198,13 @@ signal.</p>
 
     <h5 id="radiobpsk31receiver"><code class="highlighter-rouge">radio.BPSK31Receiver()</code></h5>
 
-    <h6 id="type-signatures-92">Type Signatures</h6>
+    <h6 id="type-signatures-96">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>Byte</em></li>
     </ul>
 
-    <h6 id="example-98">Example</h6>
+    <h6 id="example-102">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">receiver</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BPSK31Receiver</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RawFileSink</span><span class="p">(</span><span class="nb">io.stdout</span><span class="p">)</span>
@@ -4080,13 +4222,13 @@ modulated complex-valued signal.</p>
 
     <h5 id="radiopocsagreceiver"><code class="highlighter-rouge">radio.POCSAGReceiver()</code></h5>
 
-    <h6 id="type-signatures-93">Type Signatures</h6>
+    <h6 id="type-signatures-97">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>POCSAGMessageType</em></li>
     </ul>
 
-    <h6 id="example-99">Example</h6>
+    <h6 id="example-103">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">receiver</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">POCSAGReceiver</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">JSONSink</span><span class="p">()</span>
@@ -4104,13 +4246,13 @@ modulated complex-valued signal.</p>
 
     <h5 id="radiordsreceiver"><code class="highlighter-rouge">radio.RDSReceiver()</code></h5>
 
-    <h6 id="type-signatures-94">Type Signatures</h6>
+    <h6 id="type-signatures-98">Type Signatures</h6>
 
     <ul>
       <li><code class="highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="highlighter-rouge">out</code> <em>RDSFrameType</em></li>
     </ul>
 
-    <h6 id="example-100">Example</h6>
+    <h6 id="example-104">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">receiver</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RDSReceiver</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">decoder</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RDSDecoderBlock</span><span class="p">()</span>
@@ -4207,7 +4349,7 @@ modulated complex-valued signal.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-77">Arguments</h6>
+    <h6 id="arguments-79">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">real</code> (<em>float</em>): Initial real part</li>
@@ -4218,7 +4360,7 @@ modulated complex-valued signal.</p>
 
     <p>Construct a zero-initialized ComplexFloat32 vector.</p>
 
-    <h6 id="arguments-78">Arguments</h6>
+    <h6 id="arguments-80">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
@@ -4230,7 +4372,7 @@ modulated complex-valued signal.</p>
       <li>ComplexFloat32 vector (<em>Vector</em>)</li>
     </ul>
 
-    <h6 id="example-101">Example</h6>
+    <h6 id="example-105">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 </code></pre>
@@ -4240,7 +4382,7 @@ modulated complex-valued signal.</p>
 
     <p>Construct a ComplexFloat32 vector initialized from an array.</p>
 
-    <h6 id="arguments-79">Arguments</h6>
+    <h6 id="arguments-81">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
@@ -4252,7 +4394,7 @@ modulated complex-valued signal.</p>
       <li>ComplexFloat32 vector (<em>Vector</em>)</li>
     </ul>
 
-    <h6 id="example-102">Example</h6>
+    <h6 id="example-106">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({{</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="p">},</span> <span class="p">{</span><span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">.</span><span class="mi">0</span><span class="p">}})</span>
 </code></pre>
@@ -4262,7 +4404,7 @@ modulated complex-valued signal.</p>
 
     <p>Add two ComplexFloat32s.</p>
 
-    <h6 id="arguments-80">Arguments</h6>
+    <h6 id="arguments-82">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Operand</li>
@@ -4278,7 +4420,7 @@ modulated complex-valued signal.</p>
 
     <p>Subtract two ComplexFloat32s.</p>
 
-    <h6 id="arguments-81">Arguments</h6>
+    <h6 id="arguments-83">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Operand</li>
@@ -4294,7 +4436,7 @@ modulated complex-valued signal.</p>
 
     <p>Multiply two ComplexFloat32s.</p>
 
-    <h6 id="arguments-82">Arguments</h6>
+    <h6 id="arguments-84">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Operand</li>
@@ -4310,7 +4452,7 @@ modulated complex-valued signal.</p>
 
     <p>Divide two ComplexFloat32s.</p>
 
-    <h6 id="arguments-83">Arguments</h6>
+    <h6 id="arguments-85">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Operand</li>
@@ -4326,7 +4468,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two ComplexFloat32s for equality.</p>
 
-    <h6 id="arguments-84">Arguments</h6>
+    <h6 id="arguments-86">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Other ComplexFloat32</li>
@@ -4342,7 +4484,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two ComplexFloat32s for less than.</p>
 
-    <h6 id="arguments-85">Arguments</h6>
+    <h6 id="arguments-87">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Other ComplexFloat32</li>
@@ -4358,7 +4500,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two ComplexFloat32s for less than or equal.</p>
 
-    <h6 id="arguments-86">Arguments</h6>
+    <h6 id="arguments-88">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Other ComplexFloat32</li>
@@ -4374,7 +4516,7 @@ modulated complex-valued signal.</p>
 
     <p>Multiply a ComplexFloat32 by a scalar.</p>
 
-    <h6 id="arguments-87">Arguments</h6>
+    <h6 id="arguments-89">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>number</em>): Scalar</li>
@@ -4390,7 +4532,7 @@ modulated complex-valued signal.</p>
 
     <p>Divide a ComplexFloat32 by a scalar.</p>
 
-    <h6 id="arguments-88">Arguments</h6>
+    <h6 id="arguments-90">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>number</em>): Scalar</li>
@@ -4439,7 +4581,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two ComplexFloat32s for approximate equality within the specified epsilon.</p>
 
-    <h6 id="arguments-89">Arguments</h6>
+    <h6 id="arguments-91">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">x</code> (<em>ComplexFloat32</em>): First ComplexFloat32</li>
@@ -4463,7 +4605,7 @@ modulated complex-valued signal.</p>
       <li>String representation (<em>string</em>)</li>
     </ul>
 
-    <h6 id="example-103">Example</h6>
+    <h6 id="example-107">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="c1">--&gt; ComplexFloat32&lt;real=0, imag=0&gt;</span>
@@ -4486,7 +4628,7 @@ modulated complex-valued signal.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-90">Arguments</h6>
+    <h6 id="arguments-92">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">value</code> (<em>float</em>): Initial value</li>
@@ -4496,7 +4638,7 @@ modulated complex-valued signal.</p>
 
     <p>Construct a zero-initialized Float32 vector.</p>
 
-    <h6 id="arguments-91">Arguments</h6>
+    <h6 id="arguments-93">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
@@ -4508,7 +4650,7 @@ modulated complex-valued signal.</p>
       <li>Float32 vector (<em>Vector</em>)</li>
     </ul>
 
-    <h6 id="example-104">Example</h6>
+    <h6 id="example-108">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 </code></pre>
@@ -4518,7 +4660,7 @@ modulated complex-valued signal.</p>
 
     <p>Construct a Float32 vector initialized from an array.</p>
 
-    <h6 id="arguments-92">Arguments</h6>
+    <h6 id="arguments-94">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
@@ -4530,7 +4672,7 @@ modulated complex-valued signal.</p>
       <li>Float32 vector (<em>Vector</em>)</li>
     </ul>
 
-    <h6 id="example-105">Example</h6>
+    <h6 id="example-109">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">.</span><span class="mi">0</span><span class="p">})</span>
 </code></pre>
@@ -4540,7 +4682,7 @@ modulated complex-valued signal.</p>
 
     <p>Add two Float32s.</p>
 
-    <h6 id="arguments-93">Arguments</h6>
+    <h6 id="arguments-95">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Float32</em>): Operand</li>
@@ -4556,7 +4698,7 @@ modulated complex-valued signal.</p>
 
     <p>Subtract two Float32s.</p>
 
-    <h6 id="arguments-94">Arguments</h6>
+    <h6 id="arguments-96">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Float32</em>): Operand</li>
@@ -4572,7 +4714,7 @@ modulated complex-valued signal.</p>
 
     <p>Multiply two Float32s.</p>
 
-    <h6 id="arguments-95">Arguments</h6>
+    <h6 id="arguments-97">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Float32</em>): Operand</li>
@@ -4588,7 +4730,7 @@ modulated complex-valued signal.</p>
 
     <p>Divide two Float32s.</p>
 
-    <h6 id="arguments-96">Arguments</h6>
+    <h6 id="arguments-98">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Float32</em>): Operand</li>
@@ -4604,7 +4746,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two Float32s for equality.</p>
 
-    <h6 id="arguments-97">Arguments</h6>
+    <h6 id="arguments-99">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Float32</em>): Other Float32</li>
@@ -4620,7 +4762,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two Float32s for less than.</p>
 
-    <h6 id="arguments-98">Arguments</h6>
+    <h6 id="arguments-100">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Float32</em>): Other Float32</li>
@@ -4636,7 +4778,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two Float32s for less than or equal.</p>
 
-    <h6 id="arguments-99">Arguments</h6>
+    <h6 id="arguments-101">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Float32</em>): Other Float32</li>
@@ -4652,7 +4794,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two Float32s for approximate equality within the specified epsilon.</p>
 
-    <h6 id="arguments-100">Arguments</h6>
+    <h6 id="arguments-102">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">x</code> (<em>Float32</em>): First Float32</li>
@@ -4676,7 +4818,7 @@ modulated complex-valued signal.</p>
       <li>String representation (<em>string</em>)</li>
     </ul>
 
-    <h6 id="example-106">Example</h6>
+    <h6 id="example-110">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="c1">--&gt; Float32&lt;value=0&gt;</span>
@@ -4699,7 +4841,7 @@ modulated complex-valued signal.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-101">Arguments</h6>
+    <h6 id="arguments-103">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">value</code> (<em>int</em>): Initial value</li>
@@ -4709,7 +4851,7 @@ modulated complex-valued signal.</p>
 
     <p>Construct a zero-initialized Bit vector.</p>
 
-    <h6 id="arguments-102">Arguments</h6>
+    <h6 id="arguments-104">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
@@ -4721,7 +4863,7 @@ modulated complex-valued signal.</p>
       <li>Bit vector (<em>Vector</em>)</li>
     </ul>
 
-    <h6 id="example-107">Example</h6>
+    <h6 id="example-111">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 </code></pre>
@@ -4731,7 +4873,7 @@ modulated complex-valued signal.</p>
 
     <p>Construct a Bit vector initialized from an array.</p>
 
-    <h6 id="arguments-103">Arguments</h6>
+    <h6 id="arguments-105">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
@@ -4743,7 +4885,7 @@ modulated complex-valued signal.</p>
       <li>Bit vector (<em>Vector</em>)</li>
     </ul>
 
-    <h6 id="example-108">Example</h6>
+    <h6 id="example-112">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">})</span>
 </code></pre>
@@ -4753,7 +4895,7 @@ modulated complex-valued signal.</p>
 
     <p>Bitwise-AND two Bits.</p>
 
-    <h6 id="arguments-104">Arguments</h6>
+    <h6 id="arguments-106">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
@@ -4769,7 +4911,7 @@ modulated complex-valued signal.</p>
 
     <p>Bitwise-OR two Bits.</p>
 
-    <h6 id="arguments-105">Arguments</h6>
+    <h6 id="arguments-107">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
@@ -4785,7 +4927,7 @@ modulated complex-valued signal.</p>
 
     <p>Bitwise-XOR two Bits.</p>
 
-    <h6 id="arguments-106">Arguments</h6>
+    <h6 id="arguments-108">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
@@ -4811,7 +4953,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two Bits for equality.</p>
 
-    <h6 id="arguments-107">Arguments</h6>
+    <h6 id="arguments-109">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Other bit</li>
@@ -4833,7 +4975,7 @@ modulated complex-valued signal.</p>
       <li>String representation (<em>string</em>)</li>
     </ul>
 
-    <h6 id="example-109">Example</h6>
+    <h6 id="example-113">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="c1">--&gt; Bit&lt;value=0&gt;</span>
@@ -4844,7 +4986,7 @@ modulated complex-valued signal.</p>
 
     <p>Convert a Bit vector to a number.</p>
 
-    <h6 id="arguments-108">Arguments</h6>
+    <h6 id="arguments-110">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">vec</code> (<em>Vector</em>): Bit vector</li>
@@ -4859,7 +5001,7 @@ modulated complex-valued signal.</p>
       <li>Extracted number (<em>number</em>)</li>
     </ul>
 
-    <h6 id="example-110">Example</h6>
+    <h6 id="example-114">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">})</span>
 <span class="nb">assert</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Bit</span><span class="p">.</span><span class="n">tonumber</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">)</span>
@@ -4885,7 +5027,7 @@ modulated complex-valued signal.</p>
 </code></pre>
     </div>
 
-    <h6 id="arguments-109">Arguments</h6>
+    <h6 id="arguments-111">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">value</code> (<em>int</em>): Initial value</li>
@@ -4895,7 +5037,7 @@ modulated complex-valued signal.</p>
 
     <p>Construct a zero-initialized Byte vector.</p>
 
-    <h6 id="arguments-110">Arguments</h6>
+    <h6 id="arguments-112">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
@@ -4907,7 +5049,7 @@ modulated complex-valued signal.</p>
       <li>Byte vector (<em>Vector</em>)</li>
     </ul>
 
-    <h6 id="example-111">Example</h6>
+    <h6 id="example-115">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Byte</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 </code></pre>
@@ -4917,7 +5059,7 @@ modulated complex-valued signal.</p>
 
     <p>Construct a Byte vector initialized from an array.</p>
 
-    <h6 id="arguments-111">Arguments</h6>
+    <h6 id="arguments-113">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
@@ -4929,7 +5071,7 @@ modulated complex-valued signal.</p>
       <li>Byte vector (<em>Vector</em>)</li>
     </ul>
 
-    <h6 id="example-112">Example</h6>
+    <h6 id="example-116">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Byte</span><span class="p">.</span><span class="n">vector_from_array</span><span class="p">({</span><span class="mh">0xde</span><span class="p">,</span> <span class="mh">0xad</span><span class="p">,</span> <span class="mh">0xbe</span><span class="p">,</span> <span class="mh">0xef</span><span class="p">})</span>
 </code></pre>
@@ -4939,7 +5081,7 @@ modulated complex-valued signal.</p>
 
     <p>Add two Bytes.</p>
 
-    <h6 id="arguments-112">Arguments</h6>
+    <h6 id="arguments-114">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
@@ -4955,7 +5097,7 @@ modulated complex-valued signal.</p>
 
     <p>Subtract two Bytes.</p>
 
-    <h6 id="arguments-113">Arguments</h6>
+    <h6 id="arguments-115">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
@@ -4971,7 +5113,7 @@ modulated complex-valued signal.</p>
 
     <p>Multiply two Bytes.</p>
 
-    <h6 id="arguments-114">Arguments</h6>
+    <h6 id="arguments-116">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
@@ -4987,7 +5129,7 @@ modulated complex-valued signal.</p>
 
     <p>Divide two Bytes.</p>
 
-    <h6 id="arguments-115">Arguments</h6>
+    <h6 id="arguments-117">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
@@ -5003,7 +5145,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two Bytes for equality.</p>
 
-    <h6 id="arguments-116">Arguments</h6>
+    <h6 id="arguments-118">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Other byte</li>
@@ -5019,7 +5161,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two Bytes for less than.</p>
 
-    <h6 id="arguments-117">Arguments</h6>
+    <h6 id="arguments-119">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Other byte</li>
@@ -5035,7 +5177,7 @@ modulated complex-valued signal.</p>
 
     <p>Compare two Bytes for less than or equal.</p>
 
-    <h6 id="arguments-118">Arguments</h6>
+    <h6 id="arguments-120">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>Bit</em>): Other byte</li>
@@ -5057,7 +5199,7 @@ modulated complex-valued signal.</p>
       <li>String representation (<em>string</em>)</li>
     </ul>
 
-    <h6 id="example-113">Example</h6>
+    <h6 id="example-117">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">x</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Byte</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="c1">--&gt; Byte&lt;value=0&gt;</span>
@@ -5081,7 +5223,7 @@ modulated complex-valued signal.</p>
     <p>Construct a new data type based on a C structure type. The data type will be
 serializable between blocks in a flow graph.</p>
 
-    <h6 id="arguments-119">Arguments</h6>
+    <h6 id="arguments-121">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">ctype</code> (<em>string|ctype</em>): C type</li>
@@ -5098,7 +5240,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Construct a new instance of this type.</p>
 
-    <h6 id="arguments-120">Arguments</h6>
+    <h6 id="arguments-122">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">...</code>: Arguments</li>
@@ -5108,7 +5250,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Construct a zero-initialized vector of this type.</p>
 
-    <h6 id="arguments-121">Arguments</h6>
+    <h6 id="arguments-123">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
@@ -5124,7 +5266,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Construct a vector of this type initialized from an array.</p>
 
-    <h6 id="arguments-122">Arguments</h6>
+    <h6 id="arguments-124">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
@@ -5140,7 +5282,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Compare two instances of this type.</p>
 
-    <h6 id="arguments-123">Arguments</h6>
+    <h6 id="arguments-125">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>CStructType</em>): Other instance</li>
@@ -5169,7 +5311,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>The <code class="highlighter-rouge">new()</code> constructor must be provided by the implementation.</p>
 
-    <h6 id="arguments-124">Arguments</h6>
+    <h6 id="arguments-126">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">methods</code> (<em>table</em>): Table of methods and metamethods</li>
@@ -5185,7 +5327,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Construct a vector of this type.</p>
 
-    <h6 id="arguments-125">Arguments</h6>
+    <h6 id="arguments-127">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
@@ -5201,7 +5343,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Construct a vector of this type initialized from an array.</p>
 
-    <h6 id="arguments-126">Arguments</h6>
+    <h6 id="arguments-128">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
@@ -5237,7 +5379,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Deserialize an instance of this type with MessagePack.</p>
 
-    <h6 id="arguments-127">Arguments</h6>
+    <h6 id="arguments-129">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">str</code> (<em>string</em>): MessagePack serialized object</li>
@@ -5253,7 +5395,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Deserialize an instance of this type with JSON.</p>
 
-    <h6 id="arguments-128">Arguments</h6>
+    <h6 id="arguments-130">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">str</code> (<em>string</em>): JSON serialized object</li>
@@ -5279,7 +5421,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>A dynamic array of a C structure type.</p>
 
-    <h6 id="arguments-129">Arguments</h6>
+    <h6 id="arguments-131">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">ctype</code> (<em>ctype</em>): C type</li>
@@ -5290,7 +5432,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Compare two vectors for equality.</p>
 
-    <h6 id="arguments-130">Arguments</h6>
+    <h6 id="arguments-132">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">other</code> (<em>vector</em>): Other vector</li>
@@ -5316,7 +5458,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Resize the vector.</p>
 
-    <h6 id="arguments-131">Arguments</h6>
+    <h6 id="arguments-133">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num</code> (<em>int</em>): New length</li>
@@ -5332,7 +5474,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Append an element to the vector.</p>
 
-    <h6 id="arguments-132">Arguments</h6>
+    <h6 id="arguments-134">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">elem</code>: Element</li>
@@ -5354,7 +5496,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>A dynamic array of a Lua object type.</p>
 
-    <h6 id="arguments-133">Arguments</h6>
+    <h6 id="arguments-135">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">type</code> (<em>type</em>): Lua class</li>
@@ -5375,7 +5517,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Resize the vector.</p>
 
-    <h6 id="arguments-134">Arguments</h6>
+    <h6 id="arguments-136">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">num</code> (<em>int</em>): New length</li>
@@ -5391,7 +5533,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Append an element to the vector.</p>
 
-    <h6 id="arguments-135">Arguments</h6>
+    <h6 id="arguments-137">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">elem</code>: Element</li>
@@ -5418,14 +5560,14 @@ serializable between blocks in a flow graph.</p>
     <p>Block input port descriptor. This contains the name and data type of a block
 input port.</p>
 
-    <h6 id="arguments-136">Arguments</h6>
+    <h6 id="arguments-138">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">name</code> (<em>string</em>): Name</li>
       <li><code class="highlighter-rouge">data_type</code> (<em>type|function</em>): Data type, e.g. <code class="highlighter-rouge">radio.types.ComplexFloat32</code>, or a function predicate</li>
     </ul>
 
-    <h6 id="example-114">Example</h6>
+    <h6 id="example-118">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in1"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">),</span>
                 <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in2"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)}</span>
@@ -5446,14 +5588,14 @@ input port.</p>
     <p>Block output port descriptor. This contains the name and data type of
 a block output port.</p>
 
-    <h6 id="arguments-137">Arguments</h6>
+    <h6 id="arguments-139">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">name</code> (<em>string</em>): Name</li>
       <li><code class="highlighter-rouge">data_type</code> (<em>type</em>): Data type, e.g. <code class="highlighter-rouge">radio.types.ComplexFloat32</code></li>
     </ul>
 
-    <h6 id="example-115">Example</h6>
+    <h6 id="example-119">Example</h6>
 
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span>
 <span class="kd">local</span> <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">)}</span>
@@ -5476,7 +5618,7 @@ a block output port.</p>
 
     <p>Add a type signature.</p>
 
-    <h6 id="arguments-138">Arguments</h6>
+    <h6 id="arguments-140">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">inputs</code> (<em>array</em>): Input ports, array of <code class="highlighter-rouge">radio.block.Input</code> instances</li>
@@ -5504,7 +5646,7 @@ a block output port.</p>
 
     <p>Differentiate this block to a type signature.</p>
 
-    <h6 id="arguments-139">Arguments</h6>
+    <h6 id="arguments-141">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">input_data_types</code> (<em>array</em>): Array of input data types</li>
@@ -5520,7 +5662,7 @@ a block output port.</p>
 
     <p>Get the differentiated input data type.</p>
 
-    <h6 id="arguments-140">Arguments</h6>
+    <h6 id="arguments-142">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">index</code> (<em>int</em>): Index of input, starting at 1</li>
@@ -5542,7 +5684,7 @@ a block output port.</p>
 
     <p>Get the differentiated output data type.</p>
 
-    <h6 id="arguments-141">Arguments</h6>
+    <h6 id="arguments-143">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">index</code> (<em>int</em>): Index of output, starting at 1</li>
@@ -5610,14 +5752,14 @@ a block output port.</p>
 
     <p>Block class factory.</p>
 
-    <h6 id="arguments-142">Arguments</h6>
+    <h6 id="arguments-144">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">name</code> (<em>string</em>): Block name</li>
       <li><code class="highlighter-rouge">parent_class</code> (<em>class</em>): Inherited parent class</li>
     </ul>
 
-    <h6 id="example-116">Example</h6>
+    <h6 id="example-120">Example</h6>
     <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">MyBlock</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">factory</span><span class="p">(</span><span class="s2">"MyBlock"</span><span class="p">)</span>
 
 <span class="k">function</span> <span class="nf">MyBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
@@ -5657,7 +5799,7 @@ a block output port.</p>
 
     <p>Debug print.</p>
 
-    <h6 id="arguments-143">Arguments</h6>
+    <h6 id="arguments-145">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">s</code> (<em>string</em>): String to print</li>
@@ -5671,7 +5813,7 @@ a block output port.</p>
 
     <p>Debug formatted print.</p>
 
-    <h6 id="arguments-144">Arguments</h6>
+    <h6 id="arguments-146">Arguments</h6>
 
     <ul>
       <li><code class="highlighter-rouge">...</code>: Format string and arguments</li>

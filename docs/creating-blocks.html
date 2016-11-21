@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.4.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -71,7 +71,7 @@
 <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.4.0</code></a>
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.0</code></a>
   </p>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Creating Blocks</a></span>
@@ -777,7 +777,7 @@ rough performance benchmark of a block.</p>
 
 <div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
 
-<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">NullSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ZeroSource</span><span class="p">(</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">multiply</span> <span class="o">=</span> <span class="n">MultiplyBlock</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">sink</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">BenchmarkSink</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">top</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">()</span>
@@ -790,15 +790,15 @@ rough performance benchmark of a block.</p>
 </div>
 
 <p>In this flow graph, the multiply block inputs are fed by a
-<a href="reference-manual.html#nullsource"><code class="highlighter-rouge">NullSource</code></a>, which sources zero-valued
+<a href="reference-manual.html#zerosource"><code class="highlighter-rouge">ZeroSource</code></a>, which sources zero-valued
 samples, and the multiply block output is connected to a <code class="highlighter-rouge">BenchmarkSink</code>, which
 counts received samples over time. The <code class="highlighter-rouge">BenchmarkSink</code> periodically reports the
 average rate of samples consumed.</p>
 
 <p>The <code class="highlighter-rouge">BenchmarkSink</code> is technically benchmarking the entire flow graph,
-including the <code class="highlighter-rouge">NullSource</code> and the framework’s overhead of serializing samples
+including the <code class="highlighter-rouge">ZeroSource</code> and the framework’s overhead of serializing samples
 between blocks. However, in this case, the <code class="highlighter-rouge">MultiplyBlock</code> is the computational
-limiting factor by several orders of magnitude, so the overhead of <code class="highlighter-rouge">NullSource</code>
+limiting factor by several orders of magnitude, so the overhead of <code class="highlighter-rouge">ZeroSource</code>
 and the framework is relatively insignificant, and the resulting rate
 corresponds roughly to that of the <code class="highlighter-rouge">MultiplyBlock</code>. Other situations may
 require a different strategy for benchmarking (see caveats below).</p>
@@ -825,7 +825,7 @@ larger flow graph.  Nonetheless, the <code class="highlighter-rouge">BenchmarkSi
 whether or not a block will be a real-time bottleneck to an upstream block of a
 particular rate, e.g. an SDR source at 2 MS/s.</p>
 
-<p>It’s also important to point out that while the <code class="highlighter-rouge">NullSource</code> is applicable to
+<p>It’s also important to point out that while the <code class="highlighter-rouge">ZeroSource</code> is applicable to
 many signal processing blocks, which will perform their computation regardless
 of if the samples are all zero-valued, it might not be the appropriate stimulus
 for blocks that have value-dependent code paths. In those cases, a random
@@ -1154,7 +1154,7 @@ associated with the type.</p>
 
 <p>The type will automatically inherit <code class="highlighter-rouge">.vector()</code> and <code class="highlighter-rouge">.vector_from_array()</code>
 static methods, so that vectors of the type can be created by blocks, as well
-as internal serialization methods so that the framework can serialize the type
+as internal serialization methods, so that the framework can serialize the type
 between blocks. See the <a href="reference-manual.html#cstructtype">LuaRadio Reference
 Manual</a> for more inherited methods of
 <code class="highlighter-rouge">CStruct</code> types.</p>
@@ -1248,7 +1248,7 @@ factory function.</p>
 
 <p>The type will automatically inherit <code class="highlighter-rouge">.vector()</code> and <code class="highlighter-rouge">.vector_from_array()</code>
 static methods, so that vectors of the type can be created by blocks, as well
-as internal serialization methods so that the framework can serialize the type
+as internal serialization methods, so that the framework can serialize the type
 between blocks.  In addition, the type will inherit the <code class="highlighter-rouge">.to_json()</code> method to
 form a JSON representation, enabling the type to be used with the
 <a href="reference-manual.html#jsonsink"><code class="highlighter-rouge">JSONSink</code></a>. See the <a href="reference-manual.html#objecttype">LuaRadio Reference

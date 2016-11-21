@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.4.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -71,7 +71,7 @@
 <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.4.0</code></a>
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.0</code></a>
   </p>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Supported Hardware</a></span>
@@ -98,12 +98,7 @@ high speed interfaces.</p>
   <li><a href="http://airspy.com/">Airspy R2 and Mini</a> with <a href="reference-manual.html#airspysource"><code class="highlighter-rouge">AirspySource</code></a> via <a href="https://github.com/airspy/host">libairspy</a></li>
   <li><a href="https://greatscottgadgets.com/hackrf/">HackRF One</a> with <a href="reference-manual.html#hackrfsource"><code class="highlighter-rouge">HackRFSource</code></a> via <a href="https://github.com/mossmann/hackrf">libhackrf</a></li>
   <li><a href="http://sdrplay.com/">SDRplay RSP</a> with <a href="reference-manual.html#sdrplaysource"><code class="highlighter-rouge">SDRplaySource</code></a> via <a href="http://sdrplay.com/linux.html">libmirsdrapi-rsp</a></li>
-</ul>
-
-<p>Coming soon:</p>
-
-<ul>
-  <li><a href="http://nuand.com/">BladeRF</a> with <a href="https://github.com/vsergeev/luaradio/issues/19"><code class="highlighter-rouge">BladeRFSource</code></a> via <a href="https://github.com/Nuand/bladeRF">libbladerf</a></li>
+  <li><a href="https://www.ettus.com/">USRP</a> with <a href="reference-manual.html#uhdsource"><code class="highlighter-rouge">UHDSource</code></a> via <a href="https://github.com/EttusResearch/uhd">libuhd</a></li>
 </ul>
 
 <h3 id="sinks">Sinks</h3>
@@ -111,12 +106,7 @@ high speed interfaces.</p>
 <ul>
   <li><a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a> with <a href="reference-manual.html#soapysdrsink"><code class="highlighter-rouge">SoapySDRSink</code></a> via <a href="https://github.com/pothosware/SoapySDR">libSoapySDR</a></li>
   <li><a href="https://greatscottgadgets.com/hackrf/">HackRF One</a> with <a href="reference-manual.html#hackrfsink"><code class="highlighter-rouge">HackRFSink</code></a> via <a href="https://github.com/mossmann/hackrf">libhackrf</a></li>
-</ul>
-
-<p>Coming soon:</p>
-
-<ul>
-  <li><a href="http://nuand.com/">BladeRF</a> with <code class="highlighter-rouge">BladeRFSink</code> via <a href="https://github.com/Nuand/bladeRF">libbladerf</a></li>
+  <li><a href="https://www.ettus.com/">USRP</a> with <a href="reference-manual.html#uhdsink"><code class="highlighter-rouge">UHDSink</code></a> via <a href="https://github.com/EttusResearch/uhd">libuhd</a></li>
 </ul>
 
 <h2 id="sound-card-sdr-sources-and-sinks">Sound card SDR Sources and Sinks</h2>
@@ -142,8 +132,8 @@ demodulated audio signals through sound card mono channels.</p>
 <h2 id="file-sources-and-sinks">File Sources and Sinks</h2>
 
 <p>File sources and sinks source and sink samples with ordinary files. They can
-indirectly support SDR hardware by reading or writing a named pipe, linked to
-an external utility that interfaces with the SDR hardware.</p>
+indirectly support SDR hardware by reading/writing a named pipe shared with an
+external utility that interfaces with the SDR hardware.</p>
 
 <h3 id="sources-2">Sources</h3>
 

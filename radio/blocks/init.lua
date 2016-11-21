@@ -36,6 +36,7 @@ return {
     HackRFSink = require('radio.blocks.sinks.hackrf'),
     SoapySDRSink = require('radio.blocks.sinks.soapysdr'),
     NopSink = require('radio.blocks.sinks.nop'),
+    UHDSink = require('radio.blocks.sinks.uhd'),
 
     -- Signal Blocks
     --- Filtering

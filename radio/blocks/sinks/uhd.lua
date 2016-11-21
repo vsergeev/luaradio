@@ -1,33 +1,26 @@
 ---
--- Source a complex-valued signal from a USRP. This source requires the libuhd
+-- Sink a complex-valued signal to a USRP. This source requires the libuhd
 -- library.
 --
--- @category Sources
--- @block UHDSource
+-- @category Sinks
+-- @block UHDSink
 -- @tparam string device_address Device address string
 -- @tparam number frequency Tuning frequency in Hz
--- @tparam number rate Sample rate in Hz
 -- @tparam[opt={}] table options Additional options, specifying:
 --      * `channel` (int, default 0)
---      * `gain` (number in dB, overall gain, default 15.0 dB)
+--      * `gain` (number in dB, overall gain, default 0.0 dB)
 --      * `bandwidth` (number in Hz)
 --      * `antenna` (string)
---      * `autogain` (bool)
 --      * `gains` (table, gain element name to value in dB)
 --
--- @signature > out:ComplexFloat32
+-- @signature in:ComplexFloat32 >
 --
 -- @usage
--- -- Source samples from a B200 at 91.1 MHz sampled at 2 MHz
--- local src = radio.UHDSource("type=b200", 91.1e6, 2e6)
+-- -- Sink samples to a B200 at 433.92 MHz
+-- local src = radio.UHDSink("type=b200", 433.92e6)
 --
--- -- Source samples from a B200 at 915 MHz sampled at 10 MHz, with 20 dB
--- -- overall gain
--- local src = radio.UHDSource("type=b200", 915e6, 10e6, {gain = 20})
---
--- -- Source samples from a B200 at 144.390 MHz sampled at 8 MHz, with 2.5 MHz
--- -- baseband bandwidth
--- local src = radio.UHDSource("type=b200", 144.390e6, 8e6, {bandwidth = 2.5e6})
+-- -- Sink samples to a B200 at 915 MHz, with 10 dB overall gain and 5 MHz baseband bandwidth
+-- local src = radio.UHDSink("type=b200", 915e6, {gain = 10, bandwidth = 5e6})
 
 local ffi = require('ffi')
 
@@ -35,31 +28,25 @@ local block = require('radio.core.block')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
 
-local UHDSource = block.factory("UHDSource")
+local UHDSink = block.factory("UHDSink")
 
-function UHDSource:instantiate(device_address, frequency, rate, options)
+function UHDSink:instantiate(device_address, frequency, options)
     self.device_address = assert(device_address, "Missing argument #1 (device_address)")
     self.frequency = assert(frequency, "Missing argument #1 (frequency)")
-    self.rate = assert(rate, "Missing argument #2 (rate)")
 
     assert(type(device_address) == "string", "Invalid argument #1 (device_address), should be string.")
 
     self.options = options or {}
     self.channel = self.options.channel or 0
-    self.gain = self.options.gain or 15.0
+    self.gain = self.options.gain or 0.0
     self.bandwidth = self.options.bandwidth
     self.antenna = self.options.antenna
     self.gains = self.options.gains
-    self.autogain = self.options.autogain
 
-    self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {})
 end
 
-function UHDSource:get_rate()
-    return self.rate
-end
-
-if not package.loaded['radio.blocks.sinks.uhd'] then
+if not package.loaded['radio.blocks.sources.uhd'] then
 	ffi.cdef[[
 	    /* Opaque handles */
 	    typedef struct uhd_usrp* uhd_usrp_handle;
@@ -234,14 +221,14 @@ if not package.loaded['radio.blocks.sinks.uhd'] then
 end
 local libuhd_available, libuhd
 
-function UHDSource:initialize()
+function UHDSink:initialize()
     -- Load UHD library here, because it writes some version information to
     -- stdout
     libuhd_available, libuhd = pcall(ffi.load, "libuhd")
 
     -- Check library is available
     if not libuhd_available then
-        error("UHDSource: libuhd not found. Is libuhd installed?")
+        error("UHDSink: libuhd not found. Is libuhd installed?")
     end
 end
 
@@ -270,41 +257,28 @@ local function uhd_code_strerror(code)
     return uhd_error_codes[tonumber(code)] or "Unknown"
 end
 
-local function rx_metadata_code_strerror(code)
-    local rx_metadata_error_codes = {
-        [ffi.C.UHD_RX_METADATA_ERROR_CODE_NONE] = "UHD_RX_METADATA_ERROR_CODE_NONE",
-        [ffi.C.UHD_RX_METADATA_ERROR_CODE_TIMEOUT] = "UHD_RX_METADATA_ERROR_CODE_TIMEOUT",
-        [ffi.C.UHD_RX_METADATA_ERROR_CODE_LATE_COMMAND] = "UHD_RX_METADATA_ERROR_CODE_LATE_COMMAND",
-        [ffi.C.UHD_RX_METADATA_ERROR_CODE_BROKEN_CHAIN] = "UHD_RX_METADATA_ERROR_CODE_BROKEN_CHAIN",
-        [ffi.C.UHD_RX_METADATA_ERROR_CODE_OVERFLOW] = "UHD_RX_METADATA_ERROR_CODE_OVERFLOW",
-        [ffi.C.UHD_RX_METADATA_ERROR_CODE_ALIGNMENT] = "UHD_RX_METADATA_ERROR_CODE_ALIGNMENT",
-        [ffi.C.UHD_RX_METADATA_ERROR_CODE_BAD_PACKET] = "UHD_RX_METADATA_ERROR_CODE_BAD_PACKET",
-    }
-    return rx_metadata_error_codes[tonumber(code)] or "Unknown"
-end
-
 local function uhd_last_strerror(usrp_handle)
     local errmsg = ffi.new("char[512]")
     ffi.C.uhd_usrp_last_error(usrp_handle, errmsg, ffi.sizeof(errmsg))
     return ffi.string(errmsg)
 end
 
-local function rx_streamer_last_strerror(rx_streamer_handle)
+local function tx_streamer_last_strerror(tx_streamer_handle)
     local errmsg = ffi.new("char[512]")
-    ffi.C.uhd_rx_streamer_last_error(rx_streamer_handle, errmsg, ffi.sizeof(errmsg))
+    ffi.C.uhd_tx_streamer_last_error(tx_streamer_handle, errmsg, ffi.sizeof(errmsg))
     return ffi.string(errmsg)
 end
 
-function UHDSource:debug_dump_usrp(usrp_handle)
+function UHDSink:debug_dump_usrp(usrp_handle)
     local ret
 
     -- Number of channels
     local num_channels = ffi.new("size_t[1]")
-    ret = libuhd.uhd_usrp_get_rx_num_channels(usrp_handle, num_channels)
+    ret = libuhd.uhd_usrp_get_tx_num_channels(usrp_handle, num_channels)
     if ret ~= 0 then
-        error("uhd_usrp_get_rx_num_channels(): " .. uhd_last_strerror(usrp_handle))
+        error("uhd_usrp_get_tx_num_channels(): " .. uhd_last_strerror(usrp_handle))
     end
-    debug.printf("[UHDSource] Number of RX channels: %u\n", tonumber(num_channels[0]))
+    debug.printf("[UHDSink] Number of TX channels: %u\n", tonumber(num_channels[0]))
 
     -- Helper functions to construct and access metarange objects
     local function uhd_meta_range_new()
@@ -366,74 +340,74 @@ function UHDSource:debug_dump_usrp(usrp_handle)
     end
 
     for channel=0, tonumber(num_channels[0])-1 do
-        debug.printf("[UHDSource] RX Channel %d\n", channel)
+        debug.printf("[UHDSink] TX Channel %d\n", channel)
 
         -- Supported sample rates
         local rates_range = uhd_meta_range_new()
-        ret = libuhd.uhd_usrp_get_rx_rates(usrp_handle, channel, rates_range[0])
+        ret = libuhd.uhd_usrp_get_tx_rates(usrp_handle, channel, rates_range[0])
         if ret ~= 0 then
-            error("uhd_usrp_get_rx_rates(): " .. uhd_last_strerror(usrp_handle))
+            error("uhd_usrp_get_tx_rates(): " .. uhd_last_strerror(usrp_handle))
         end
-        debug.printf("[UHDSource]     Sample rate:      %f - %f Hz\n", uhd_meta_range_start(rates_range[0]), uhd_meta_range_stop(rates_range[0]))
+        debug.printf("[UHDSink]     Sample rate:      %f - %f Hz\n", uhd_meta_range_start(rates_range[0]), uhd_meta_range_stop(rates_range[0]))
 
         -- Center frequency range
         local freq_range = uhd_meta_range_new()
-        ret = libuhd.uhd_usrp_get_rx_freq_range(usrp_handle, channel, freq_range[0])
+        ret = libuhd.uhd_usrp_get_tx_freq_range(usrp_handle, channel, freq_range[0])
         if ret ~= 0 then
-            error("uhd_usrp_get_rx_freq_range(): " .. uhd_last_strerror(usrp_handle))
+            error("uhd_usrp_get_tx_freq_range(): " .. uhd_last_strerror(usrp_handle))
         end
-        debug.printf("[UHDSource]     Center frequency: %f - %f Hz\n", uhd_meta_range_start(freq_range[0]), uhd_meta_range_stop(freq_range[0]))
+        debug.printf("[UHDSink]     Center frequency: %f - %f Hz\n", uhd_meta_range_start(freq_range[0]), uhd_meta_range_stop(freq_range[0]))
 
         -- Bandwidth ranges
         local bandwidth_range = uhd_meta_range_new()
-        ret = libuhd.uhd_usrp_get_rx_bandwidth_range(usrp_handle, channel, bandwidth_range[0])
+        ret = libuhd.uhd_usrp_get_tx_bandwidth_range(usrp_handle, channel, bandwidth_range[0])
         if ret ~= 0 then
-            error("uhd_usrp_get_rx_bandwidth_range(): " .. uhd_last_strerror(usrp_handle))
+            error("uhd_usrp_get_tx_bandwidth_range(): " .. uhd_last_strerror(usrp_handle))
         end
-        debug.printf("[UHDSource]     Bandwidth:        %f - %f Hz\n", uhd_meta_range_start(bandwidth_range[0]), uhd_meta_range_stop(bandwidth_range[0]))
+        debug.printf("[UHDSink]     Bandwidth:        %f - %f Hz\n", uhd_meta_range_start(bandwidth_range[0]), uhd_meta_range_stop(bandwidth_range[0]))
 
         -- Overall gain range
         local gain_range = uhd_meta_range_new()
-        ret = libuhd.uhd_usrp_get_rx_gain_range(usrp_handle, "", channel, gain_range[0])
+        ret = libuhd.uhd_usrp_get_tx_gain_range(usrp_handle, "", channel, gain_range[0])
         if ret ~= 0 then
-            error("uhd_usrp_get_rx_gain_range(): " .. uhd_last_strerror(usrp_handle))
+            error("uhd_usrp_get_tx_gain_range(): " .. uhd_last_strerror(usrp_handle))
         end
-        debug.printf("[UHDSource]     Overall gain:     %f - %f dB\n", uhd_meta_range_start(gain_range[0]), uhd_meta_range_stop(gain_range[0]))
+        debug.printf("[UHDSink]     Overall gain:     %f - %f dB\n", uhd_meta_range_start(gain_range[0]), uhd_meta_range_stop(gain_range[0]))
 
         -- Gain element ranges
-        debug.printf("[UHDSource]     Gain elements:\n")
+        debug.printf("[UHDSink]     Gain elements:\n")
         local gain_names_vector = uhd_string_vector_new()
-        ret = libuhd.uhd_usrp_get_rx_gain_names(usrp_handle, channel, gain_names_vector)
+        ret = libuhd.uhd_usrp_get_tx_gain_names(usrp_handle, channel, gain_names_vector)
         if ret ~= 0 then
-            error("uhd_usrp_get_rx_gain_names(): " .. uhd_last_strerror(usrp_handle))
+            error("uhd_usrp_get_tx_gain_names(): " .. uhd_last_strerror(usrp_handle))
         end
 
         local gain_names = uhd_string_vector_to_array(gain_names_vector[0])
         for _, gain_name in ipairs(gain_names) do
             local gain_range = uhd_meta_range_new()
-            ret = libuhd.uhd_usrp_get_rx_gain_range(usrp_handle, gain_name, channel, gain_range[0])
+            ret = libuhd.uhd_usrp_get_tx_gain_range(usrp_handle, gain_name, channel, gain_range[0])
             if ret ~= 0 then
-                error("uhd_usrp_get_rx_gain_range(): " .. uhd_last_strerror(usrp_handle))
+                error("uhd_usrp_get_tx_gain_range(): " .. uhd_last_strerror(usrp_handle))
             end
-            debug.printf("[UHDSource]         %-8s      %f - %f dB\n", gain_name, uhd_meta_range_start(gain_range[0]), uhd_meta_range_stop(gain_range[0]))
+            debug.printf("[UHDSink]         %-8s      %f - %f dB\n", gain_name, uhd_meta_range_start(gain_range[0]), uhd_meta_range_stop(gain_range[0]))
         end
 
         -- Antennas
-        debug.printf("[UHDSource]     Antennas:\n")
+        debug.printf("[UHDSink]     Antennas:\n")
         local antennas_vector = uhd_string_vector_new()
-        ret = libuhd.uhd_usrp_get_rx_antennas(usrp_handle, channel, antennas_vector)
+        ret = libuhd.uhd_usrp_get_tx_antennas(usrp_handle, channel, antennas_vector)
         if ret ~= 0 then
-            error("uhd_usrp_get_rx_antennas(): " .. uhd_last_strerror(usrp_handle))
+            error("uhd_usrp_get_tx_antennas(): " .. uhd_last_strerror(usrp_handle))
         end
 
         local antennas = uhd_string_vector_to_array(antennas_vector[0])
         for _, antenna in ipairs(antennas) do
-            debug.printf("[UHDSource]         %s\n", antenna)
+            debug.printf("[UHDSink]         %s\n", antenna)
         end
     end
 end
 
-function UHDSource:initialize_uhd()
+function UHDSink:initialize_uhd()
     local ret
 
     -- Dump version info
@@ -449,21 +423,21 @@ function UHDSource:initialize_uhd()
     end
     self.usrp_handle = ffi.gc(self.usrp_handle, libuhd.uhd_usrp_free)
 
-    -- Create RX streamer handle
-    self.rx_streamer_handle = ffi.new("uhd_rx_streamer_handle[1]")
-    ret = libuhd.uhd_rx_streamer_make(self.rx_streamer_handle)
+    -- Create TX streamer handle
+    self.tx_streamer_handle = ffi.new("uhd_tx_streamer_handle[1]")
+    ret = libuhd.uhd_tx_streamer_make(self.tx_streamer_handle)
     if ret ~= 0 then
-        error("uhd_rx_streamer_make(): " .. uhd_code_strerror(ret))
+        error("uhd_tx_streamer_make(): " .. uhd_code_strerror(ret))
     end
-    self.rx_streamer_handle = ffi.gc(self.rx_streamer_handle, libuhd.uhd_rx_streamer_free)
+    self.tx_streamer_handle = ffi.gc(self.tx_streamer_handle, libuhd.uhd_tx_streamer_free)
 
-    -- Create RX metadata handle
-    self.rx_metadata_handle = ffi.new("uhd_rx_metadata_handle[1]")
-    ret = libuhd.uhd_rx_metadata_make(self.rx_metadata_handle)
+    -- Create TX metadata handle
+    self.tx_metadata_handle = ffi.new("uhd_tx_metadata_handle[1]")
+    ret = libuhd.uhd_tx_metadata_make(self.tx_metadata_handle, false, 0.0, 0.1, true, false)
     if ret ~= 0 then
-        error("uhd_rx_metadata_make(): " .. uhd_code_strerror(ret))
+        error("uhd_tx_metadata_make(): " .. uhd_code_strerror(ret))
     end
-    self.rx_metadata_handle = ffi.gc(self.rx_metadata_handle, libuhd.uhd_rx_metadata_make)
+    self.tx_metadata_handle = ffi.gc(self.tx_metadata_handle, libuhd.uhd_tx_metadata_make)
 
     -- (Debug) Dump USRP info
     if debug.enabled then
@@ -472,81 +446,73 @@ function UHDSource:initialize_uhd()
 
     -- Set antenna (if specified)
     if self.antenna then
-        ret = libuhd.uhd_usrp_set_rx_antenna(self.usrp_handle[0], self.antenna, self.channel)
+        ret = libuhd.uhd_usrp_set_tx_antenna(self.usrp_handle[0], self.antenna, self.channel)
         if ret ~= 0 then
-            error("uhd_usrp_set_rx_antenna(): " .. uhd_last_strerror(self.usrp_handle))
+            error("uhd_usrp_set_tx_antenna(): " .. uhd_last_strerror(self.usrp_handle))
         end
     end
 
     -- Set rate
-    ret = libuhd.uhd_usrp_set_rx_rate(self.usrp_handle[0], self.rate, self.channel)
+    ret = libuhd.uhd_usrp_set_tx_rate(self.usrp_handle[0], self:get_rate(), self.channel)
     if ret ~= 0 then
-        error("uhd_usrp_set_rx_rate(): " .. uhd_last_strerror(self.usrp_handle))
+        error("uhd_usrp_set_tx_rate(): " .. uhd_last_strerror(self.usrp_handle))
     end
 
     -- (Debug) Report actual rate
     if debug.enabled then
         local actual_rate = ffi.new("double[1]")
-        ret = libuhd.uhd_usrp_get_rx_rate(self.usrp_handle[0], self.channel, actual_rate)
+        ret = libuhd.uhd_usrp_get_tx_rate(self.usrp_handle[0], self.channel, actual_rate)
         if ret ~= 0 then
-            error("uhd_usrp_get_rx_rate(): " .. uhd_last_strerror(self.usrp_handle))
+            error("uhd_usrp_get_tx_rate(): " .. uhd_last_strerror(self.usrp_handle))
         end
 
-        debug.printf("[UHDSource] Requested rate: %f Hz, Actual rate: %f Hz\n", self.rate, actual_rate[0])
+        debug.printf("[UHDSink] Requested rate: %f Hz, Actual rate: %f Hz\n", self:get_rate(), actual_rate[0])
     end
 
     if self.bandwidth then
         -- Set bandwidth
-        ret = libuhd.uhd_usrp_set_rx_bandwidth(self.usrp_handle[0], self.bandwidth, self.channel)
+        ret = libuhd.uhd_usrp_set_tx_bandwidth(self.usrp_handle[0], self.bandwidth, self.channel)
         if ret ~= 0 then
-            error("uhd_usrp_set_rx_bandwidth(): " .. uhd_last_strerror(self.usrp_handle))
+            error("uhd_usrp_set_tx_bandwidth(): " .. uhd_last_strerror(self.usrp_handle))
         end
 
         -- (Debug) Report actual bandwidth
         if debug.enabled then
             local actual_bandwidth = ffi.new("double[1]")
-            ret = libuhd.uhd_usrp_get_rx_bandwidth(self.usrp_handle[0], self.channel, actual_bandwidth)
+            ret = libuhd.uhd_usrp_get_tx_bandwidth(self.usrp_handle[0], self.channel, actual_bandwidth)
             if ret ~= 0 then
-                error("uhd_usrp_get_rx_bandwidth(): " .. uhd_last_strerror(self.usrp_handle))
+                error("uhd_usrp_get_tx_bandwidth(): " .. uhd_last_strerror(self.usrp_handle))
             end
 
-            debug.printf("[UHDSource] Requested bandwidth: %f Hz, Actual bandwidth: %f Hz\n", self.bandwidth, actual_bandwidth[0])
-        end
-    end
-
-    -- Set autogain (if specified)
-    if self.autogain ~= nil then
-        ret = libuhd.uhd_usrp_set_rx_agc(self.usrp_handle[0], self.autogain, self.channel)
-        if ret ~= 0 then
-            error("uhd_usrp_set_rx_agc(): " .. uhd_last_strerror(self.usrp_handle))
+            debug.printf("[UHDSink] Requested bandwidth: %f Hz, Actual bandwidth: %f Hz\n", self.bandwidth, actual_bandwidth[0])
         end
     end
 
     -- Set gain (if specified)
     if self.gain then
-        ret = libuhd.uhd_usrp_set_rx_gain(self.usrp_handle[0], self.gain, self.channel, "")
+        ret = libuhd.uhd_usrp_set_tx_gain(self.usrp_handle[0], self.gain, self.channel, "")
         if ret ~= 0 then
-            error("uhd_usrp_set_rx_gain(): " .. uhd_last_strerror(self.usrp_handle))
+            error("uhd_usrp_set_tx_gain(): " .. uhd_last_strerror(self.usrp_handle))
         end
 
         -- (Debug) Report actual gain
         if debug.enabled then
             local actual_gain = ffi.new("double[1]")
-            ret = libuhd.uhd_usrp_get_rx_gain(self.usrp_handle[0], self.channel, "", actual_gain)
+            ret = libuhd.uhd_usrp_get_tx_gain(self.usrp_handle[0], self.channel, "", actual_gain)
             if ret ~= 0 then
-                error("uhd_usrp_get_rx_gain(): " .. uhd_last_strerror(self.usrp_handle))
+                error("uhd_usrp_get_tx_gain(): " .. uhd_last_strerror(self.usrp_handle))
             end
 
-            debug.printf("[UHDSource] Requested gain: %f dB, Actual gain: %f dB\n", self.gain, actual_gain[0])
+            debug.printf("[UHDSink] Requested gain: %f dB, Actual gain: %f dB\n", self.gain, actual_gain[0])
         end
     end
 
     -- Set gains (if specified)
     if self.gains then
         for name, value in pairs(self.gains) do
-            ret = libuhd.uhd_usrp_set_rx_gain(self.usrp_handle[0], value, self.channel, name)
+            ret = libuhd.uhd_usrp_set_tx_gain(self.usrp_handle[0], value, self.channel, name)
             if ret ~= 0 then
-                error("uhd_usrp_set_rx_gain(): " .. uhd_last_strerror(self.usrp_handle))
+                error("uhd_usrp_set_tx_gain(): " .. uhd_last_strerror(self.usrp_handle))
             end
         end
     end
@@ -559,23 +525,23 @@ function UHDSource:initialize_uhd()
     tune_request.rf_freq_policy = ffi.C.UHD_TUNE_REQUEST_POLICY_AUTO
     tune_request.dsp_freq_policy = ffi.C.UHD_TUNE_REQUEST_POLICY_AUTO
 
-    ret = libuhd.uhd_usrp_set_rx_freq(self.usrp_handle[0], tune_request, self.channel, tune_result)
+    ret = libuhd.uhd_usrp_set_tx_freq(self.usrp_handle[0], tune_request, self.channel, tune_result)
     if ret ~= 0 then
-        error("uhd_usrp_set_rx_freq(): " .. uhd_last_strerror(self.usrp_handle))
+        error("uhd_usrp_set_tx_freq(): " .. uhd_last_strerror(self.usrp_handle))
     end
 
     -- (Debug) Report actual frequency
     if debug.enabled then
         local actual_freq = ffi.new("double[1]")
-        ret = libuhd.uhd_usrp_get_rx_freq(self.usrp_handle[0], self.channel, actual_freq)
+        ret = libuhd.uhd_usrp_get_tx_freq(self.usrp_handle[0], self.channel, actual_freq)
         if ret ~= 0 then
-            error("uhd_usrp_get_rx_freq(): " .. uhd_last_strerror(self.usrp_handle))
+            error("uhd_usrp_get_tx_freq(): " .. uhd_last_strerror(self.usrp_handle))
         end
 
-        debug.printf("[UHDSource] Requested frequency: %f Hz, Actual frequency: %f Hz\n", self.frequency, actual_freq[0])
+        debug.printf("[UHDSink] Requested frequency: %f Hz, Actual frequency: %f Hz\n", self.frequency, actual_freq[0])
     end
 
-    -- Setup RX streamer
+    -- Setup TX streamer
 	local cpu_format = ffi.new("char[8]", "fc32")
 	local otw_format = ffi.new("char[8]", "sc16")
 	local extra_args = ffi.new("char[8]", "")
@@ -587,60 +553,32 @@ function UHDSource:initialize_uhd()
     stream_args.channel_list = channel_list
     stream_args.n_channels = 1
 
-    ret = libuhd.uhd_usrp_get_rx_stream(self.usrp_handle[0], stream_args, self.rx_streamer_handle[0])
+    ret = libuhd.uhd_usrp_get_tx_stream(self.usrp_handle[0], stream_args, self.tx_streamer_handle[0])
     if ret ~= 0 then
-        error("uhd_usrp_get_rx_stream(): " .. uhd_last_strerror(self.usrp_handle))
-    end
-
-    -- Create raw sample buffer
-    self.chunk_size = ffi.new("size_t[1]")
-    ret = libuhd.uhd_rx_streamer_max_num_samps(self.rx_streamer_handle[0], self.chunk_size)
-    if ret ~= 0 then
-        error("uhd_rx_streamer_max_num_samps(): " .. rx_streamer_last_strerror(self.rx_streamer_handle))
-    end
-
-    self.chunk_size = tonumber(self.chunk_size[0])
-    self.out = types.ComplexFloat32.vector(self.chunk_size)
-
-    -- Start streaming
-    local stream_cmd = ffi.new("uhd_stream_cmd_t")
-    stream_cmd.stream_mode = ffi.C.UHD_STREAM_MODE_START_CONTINUOUS
-    stream_cmd.num_samps = 0
-    stream_cmd.stream_now = true
-
-    ret = libuhd.uhd_rx_streamer_issue_stream_cmd(self.rx_streamer_handle[0], stream_cmd)
-    if ret ~= 0 then
-        error("uhd_rx_streamer_issue_stream_cmd(): " .. rx_streamer_last_strerror(self.rx_streamer_handle))
+        error("uhd_usrp_get_tx_stream(): " .. uhd_last_strerror(self.usrp_handle))
     end
 
     -- Mark ourselves initialized
     self.initialized = true
 end
 
-function UHDSource:process()
+function UHDSink:process(x)
     if not self.initialized then
         -- Initialize the USRP in our own running process
         self:initialize_uhd()
     end
 
-    -- Read into out
-    local buffs, num_samples = ffi.new("void * [1]", {self.out.data}), ffi.new("size_t[1]")
-    local ret = libuhd.uhd_rx_streamer_recv(self.rx_streamer_handle[0], buffs, self.chunk_size, self.rx_metadata_handle, 3.0, false, num_samples)
-    if ret ~= 0 then
-        error("uhd_rx_streamer_recv(): " .. rx_streamer_last_strerror(self.rx_streamer_handle))
-    end
-
-    -- Check error code in metadata
-    local error_code = ffi.new("uhd_rx_metadata_error_code_t[1]")
-    libuhd.uhd_rx_metadata_error_code(self.rx_metadata_handle[0], error_code)
-    if tonumber(error_code[0]) ~= 0 then
-        error("uhd_rx_streamer_recv(): " .. rx_metadata_code_strerror(error_code[0]))
-    end
-
-    -- Resize output vector with samples read
-    self.out:resize(tonumber(num_samples[0]))
-
-    return self.out
+	-- Write vector to stream
+    local buffs, num_samples = ffi.new("const void * [1]", {x.data}), ffi.new("size_t[1]")
+	local len = 0
+	while len < x.length do
+		buffs[0] = x.data + len
+		local ret = libuhd.uhd_tx_streamer_send(self.tx_streamer_handle[0], buffs, x.length - len, self.tx_metadata_handle, 3.0, num_samples)
+    	if ret ~= 0 then
+    	    error("uhd_tx_streamer_send(): " .. tx_streamer_last_strerror(self.tx_streamer_handle))
+    	end
+		len = len + tonumber(num_samples[0])
+	end
 end
 
-return UHDSource
+return UHDSink

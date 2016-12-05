@@ -20,10 +20,10 @@
 --
 -- @usage
 -- -- Sink samples to a HackRF at 433.92 MHz
--- local src = radio.SoapySDRSink("driver=hackrf", 433.92e6)
+-- local snk = radio.SoapySDRSink("driver=hackrf", 433.92e6)
 --
 -- -- Sink samples to a LimeSDR at 915 MHz, with 10 dB overall gain and 5 MHz baseband bandwidth
--- local src = radio.SoapySDRSink("driver=limesdr", 915e6, {gain = 10, bandwidth = 5e6})
+-- local snk = radio.SoapySDRSink("driver=limesdr", 915e6, {gain = 10, bandwidth = 5e6})
 
 local ffi = require('ffi')
 

@@ -1,5 +1,5 @@
 ---
--- Sink a complex-valued signal to a USRP. This source requires the libuhd
+-- Sink a complex-valued signal to a USRP. This sink requires the libuhd
 -- library.
 --
 -- @category Sinks
@@ -17,10 +17,10 @@
 --
 -- @usage
 -- -- Sink samples to a B200 at 433.92 MHz
--- local src = radio.UHDSink("type=b200", 433.92e6)
+-- local snk = radio.UHDSink("type=b200", 433.92e6)
 --
 -- -- Sink samples to a B200 at 915 MHz, with 10 dB overall gain and 5 MHz baseband bandwidth
--- local src = radio.UHDSink("type=b200", 915e6, {gain = 10, bandwidth = 5e6})
+-- local snk = radio.UHDSink("type=b200", 915e6, {gain = 10, bandwidth = 5e6})
 
 local ffi = require('ffi')
 

@@ -1042,12 +1042,14 @@ lower frequency bands.
 There are several SDR receivers on the market with better performance and
 higher sample rates than the RTL-SDR:
 
-* [Airspy Mini](http://airspy.com/airspy-mini/) — 3 or 6 MSPS sample rate, 24
-  to 1800 MHz tuning range, 12-bit ADC, $99 USD
-* [SDRplay RSP](http://www.sdrplay.com/) — 2 to 10.66 MSPS sample rate, 0.1 to
-  2000 MHz tuning range, 12-bit ADC, $149 USD
+* [Airspy Mini](http://airspy.com/airspy-mini/) — 3, 6, or 10 MSPS sample rate,
+  24 to 1800 MHz tuning range, 12-bit ADC, $99 USD
 * [Airspy R2](http://airspy.com/airspy-r2/) — 2.5 or 10 MSPS sample rate, 24 to
-  1800 MHz tuning range, 12-bit ADC, $199 USD
+  1800 MHz tuning range, 12-bit ADC, $169 USD
+* [SDRplay RSP1](http://www.sdrplay.com/rsp1/) — 2 to 10.66 MSPS sample rate,
+  100 kHZ to 2000 MHz tuning range, 12-bit ADC, $99 USD
+* [SDRplay RSP2](http://www.sdrplay.com/rsp2/) — 2 to 10.66 MSPS sample rate,
+  10 kHz to 2000 MHz tuning range, 12-bit ADC, $169 USD
 
 There are also many SDR transceivers on the market. Note that transmitting with
 an SDR with the intent of high power radiation (i.e. not testing locally or

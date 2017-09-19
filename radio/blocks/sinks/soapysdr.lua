@@ -157,7 +157,7 @@ if not package.loaded['radio.blocks.sources.soapysdr'] then
         int SoapySDRDevice_readStreamStatus(SoapySDRDevice *device, SoapySDRStream *stream, size_t *chanMask, int *flags, long long *timeNs, const long timeoutUs);
     ]]
 end
-local libsoapysdr_available, libsoapysdr = pcall(ffi.load, "libSoapySDR")
+local libsoapysdr_available, libsoapysdr = pcall(ffi.load, "libSoapySDR", true)
 
 function SoapySDRSink:initialize()
     -- Check library is available

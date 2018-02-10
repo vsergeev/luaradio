@@ -7,6 +7,8 @@
 -- @tparam number frequency Tuning frequency in Hz
 -- @tparam number rate Sample rate in Hz
 -- @tparam[opt={}] table options Additional options, specifying:
+--                         * `biastee` (bool, default false)
+--                         * `bandwidth` (number, default equal to sample rate)
 --                         * `autogain` (bool, default false)
 --                         * `rf_gain` (number, default closest supported to 10.0 dB)
 --                         * `freq_correction` PPM (number, default 0.0)
@@ -39,6 +41,8 @@ function RtlSdrSource:instantiate(frequency, rate, options)
     self.rate = assert(rate, "Missing argument #2 (rate)")
 
     self.options = options or {}
+    self.biastee = self.options.biastee or false
+    self.bandwidth = self.options.bandwidth or 0.0
     self.autogain = self.options.autogain or false
     self.rf_gain = self.options.rf_gain or nil
     self.freq_correction = self.options.freq_correction or 0.0
@@ -65,6 +69,8 @@ ffi.cdef[[
     int rtlsdr_set_tuner_if_gain(rtlsdr_dev_t *dev, int stage, int gain);
     int rtlsdr_set_freq_correction(rtlsdr_dev_t *dev, int ppm);
     int rtlsdr_get_tuner_gains(rtlsdr_dev_t *dev, int *gains);
+    int rtlsdr_set_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw);
+    int rtlsdr_set_bias_tee(rtlsdr_dev_t *dev, int on);
 
     int rtlsdr_reset_buffer(rtlsdr_dev_t *dev);
 
@@ -90,6 +96,15 @@ function RtlSdrSource:initialize_rtlsdr()
     ret = librtlsdr.rtlsdr_open(self.dev, self.device_index)
     if ret ~= 0 then
         error("rtlsdr_open(): " .. tostring(ret))
+    end
+
+    -- Turn on bias tee if required, ignore if not required
+    if self.biastee then
+        -- Turn on bias tee
+        ret = librtlsdr.rtlsdr_set_bias_tee(self.dev[0], 1)
+        if ret ~= 0 then
+            error("rtlsdr_set_bias_tee(): " .. tostring(ret))
+        end
     end
 
     -- Pick a default gain value if one wasn't specified
@@ -169,6 +184,12 @@ function RtlSdrSource:initialize_rtlsdr()
         error("rtlsdr_set_sample_rate(): " .. tostring(ret))
     end
 
+    -- Set bandwidth
+    ret = librtlsdr.rtlsdr_set_tuner_bandwidth(self.dev[0], self.bandwidth)
+    if ret ~= 0 then
+        error("rtlsdr_set_tuner_bandwidth(): " .. tostring(ret))
+    end
+
     -- Reset endpoint buffer
     ret = librtlsdr.rtlsdr_reset_buffer(self.dev[0])
     if ret ~= 0 then
@@ -228,6 +249,15 @@ function RtlSdrSource:run()
     ret = librtlsdr.rtlsdr_read_async(self.dev[0], read_callback_factory(self.outputs[1].pipes), nil, 0, 32768)
     if ret ~= 0 then
         error("rtlsdr_read_async(): " .. tostring(ret))
+    end
+
+    -- Turn off bias tee if it was enabled, ignore if not required
+    if self.biastee then
+        -- Turn off bias tee
+        ret = librtlsdr.rtlsdr_set_bias_tee(self.dev[0], 0)
+        if ret ~= 0 then
+            error("rtlsdr_set_bias_tee(): " .. tostring(ret))
+        end
     end
 
     -- Close rtlsdr

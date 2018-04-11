@@ -20,10 +20,10 @@ install:
     - make
     - sudo make install
     - cd ../
-    - sudo apt-get install libboost1.48-all-dev libboost-program-options1.48.0
+    - sudo apt-get install libboost1.54-all-dev libboost-program-options1.54.0 python-mako
     - git clone https://github.com/gnuradio/volk.git
     - cd volk/
-    - git checkout v1.2.2
+    - git checkout v1.4
     - mkdir build
     - cd build
     - cmake ..

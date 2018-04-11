@@ -7,7 +7,7 @@ install:
     - sudo luarocks install busted
     - git clone https://github.com/LuaJIT/LuaJIT.git
     - cd LuaJIT
-    - git checkout v2.0.4
+    - git checkout v2.0.5
     - make
     - sudo make install
     - cd ../

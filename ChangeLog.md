@@ -1,3 +1,18 @@
+* v0.5.1 - 09/03/2018
+    * Block changes
+        * Fix symbol issue with libSoapySDR library load on Mac OS X in
+          SoapySDRSource and SoapySDRSink.
+        * Add biastee and bandwidth options to RtlSdrSource.
+    * Documentation changes
+        * Fix minor typos in a few docstrings.
+        * Fix source in flow graph for benchmark example.
+        * Rewrite reference manual generator in Python.
+        * Update docstrings for new reference manual generator.
+    * Contributors
+        * Ralf Biedert (@ralfbiedert) - 49d66027
+        * Ralf Biedert (@ralfbiedert) - 824057ba
+        * Phil (@philharrisathome) - 68d6a838
+
 * v0.5.0 - 11/21/2016
     * Block additions
         * UHDSource

@@ -1,7 +1,7 @@
 ---
 -- CStruct data type base class.
+--
 -- @datatype CStructType
--- @classmod CStructType
 
 local ffi = require('ffi')
 
@@ -18,8 +18,7 @@ ffi.cdef[[
 -- Construct a new data type based on a C structure type. The data type will be
 -- serializable between blocks in a flow graph.
 --
--- @static
--- @function factory
+-- @function CStructType.factory
 -- @tparam string|ctype ctype C type
 -- @tparam[opt={}] table methods Table of methods and metamethods
 -- @treturn class Data type
@@ -84,7 +83,7 @@ function CStructType.factory(ctype, methods)
     ---
     -- Serialize a CStructType vector into a buffer.
     --
-    -- @local
+    -- @internal
     -- @function CStructType.serialize
     -- @tparam Vector vec Vector
     -- @treturn cdata Buffer
@@ -96,7 +95,7 @@ function CStructType.factory(ctype, methods)
     ---
     -- Deserialize a buffer into a CStructType read-only vector.
     --
-    -- @local
+    -- @internal
     -- @function CStructType.deserialize
     -- @tparam cdata buf Buffer
     -- @tparam int size Size
@@ -108,7 +107,7 @@ function CStructType.factory(ctype, methods)
     ---
     -- Partially deserialize a buffer into a CStructType read-only vector.
     --
-    -- @local
+    -- @internal
     -- @function CStructType.deserialize
     -- @tparam cdata buf Buffer
     -- @tparam int count Count of elements
@@ -121,7 +120,7 @@ function CStructType.factory(ctype, methods)
     ---
     -- Deserialize count of CStructType elements in a buffer.
     --
-    -- @local
+    -- @internal
     -- @function CStructType.deserialize
     -- @tparam cdata buf Buffer
     -- @tparam int size Size

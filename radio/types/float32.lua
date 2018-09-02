@@ -25,7 +25,6 @@ local mt = {}
 ---
 -- Construct a zero-initialized Float32 vector.
 --
--- @static
 -- @function Float32.vector
 -- @tparam int num Number of elements in the vector
 -- @treturn Vector Float32 vector
@@ -36,7 +35,6 @@ local mt = {}
 ---
 -- Construct a Float32 vector initialized from an array.
 --
--- @static
 -- @function Float32.vector_from_array
 -- @tparam array arr Array with element initializers
 -- @treturn Vector Float32 vector
@@ -47,6 +45,7 @@ local mt = {}
 ---
 -- Add two Float32s.
 --
+-- @function Float32:__add
 -- @tparam Float32 other Operand
 -- @treturn Float32 Result
 function mt:__add(other)
@@ -56,6 +55,7 @@ end
 ---
 -- Subtract two Float32s.
 --
+-- @function Float32:__sub
 -- @tparam Float32 other Operand
 -- @treturn Float32 Result
 function mt:__sub(other)
@@ -65,6 +65,7 @@ end
 ---
 -- Multiply two Float32s.
 --
+-- @function Float32:__mul
 -- @tparam Float32 other Operand
 -- @treturn Float32 Result
 function mt:__mul(other)
@@ -74,6 +75,7 @@ end
 ---
 -- Divide two Float32s.
 --
+-- @function Float32:__div
 -- @tparam Float32 other Operand
 -- @treturn Float32 Result
 function mt:__div(other)
@@ -83,6 +85,7 @@ end
 ---
 -- Compare two Float32s for equality.
 --
+-- @function Float32:__eq
 -- @tparam Float32 other Other Float32
 -- @treturn bool Result
 function mt:__eq(other)
@@ -92,6 +95,7 @@ end
 ---
 -- Compare two Float32s for less than.
 --
+-- @function Float32:__lt
 -- @tparam Float32 other Other Float32
 -- @treturn bool Result
 function mt:__lt(other)
@@ -101,6 +105,7 @@ end
 ---
 -- Compare two Float32s for less than or equal.
 --
+-- @function Float32:__le
 -- @tparam Float32 other Other Float32
 -- @treturn bool Result
 function mt:__le(other)
@@ -110,7 +115,7 @@ end
 ---
 -- Compare two Float32s for approximate equality within the specified epsilon.
 --
--- @static
+-- @function Float32.approx_equal
 -- @tparam Float32 x First Float32
 -- @tparam Float32 y Second Float32
 -- @tparam number epsilon Epsilon
@@ -122,6 +127,7 @@ end
 ---
 -- Get a string representation.
 --
+-- @function Float32:__tostring
 -- @treturn string String representation
 -- @usage
 -- local x = radio.types.Float32()

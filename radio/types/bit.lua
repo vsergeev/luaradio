@@ -26,7 +26,6 @@ local mt = {}
 ---
 -- Construct a zero-initialized Bit vector.
 --
--- @static
 -- @function Bit.vector
 -- @tparam int num Number of elements in the vector
 -- @treturn Vector Bit vector
@@ -37,7 +36,6 @@ local mt = {}
 ---
 -- Construct a Bit vector initialized from an array.
 --
--- @static
 -- @function Bit.vector_from_array
 -- @tparam array arr Array with element initializers
 -- @treturn Vector Bit vector
@@ -48,6 +46,7 @@ local mt = {}
 ---
 -- Bitwise-AND two Bits.
 --
+-- @function Bit:band
 -- @tparam Bit other Operand
 -- @treturn Bit Result
 function mt:band(other)
@@ -57,6 +56,7 @@ end
 ---
 -- Bitwise-OR two Bits.
 --
+-- @function Bit:bor
 -- @tparam Bit other Operand
 -- @treturn Bit Result
 function mt:bor(other)
@@ -66,6 +66,7 @@ end
 ---
 -- Bitwise-XOR two Bits.
 --
+-- @function Bit:bxor
 -- @tparam Bit other Operand
 -- @treturn Bit Result
 function mt:bxor(other)
@@ -75,6 +76,7 @@ end
 ---
 -- Bitwise-NOT a Bit.
 --
+-- @function Bit:bnot
 -- @treturn Bit Result
 function mt:bnot()
     return self.new(bit.band(bit.bnot(self.value), 0x1))
@@ -83,6 +85,7 @@ end
 ---
 -- Compare two Bits for equality.
 --
+-- @function Bit:__eq
 -- @tparam Bit other Other bit
 -- @treturn bool Result
 function mt:__eq(other)
@@ -92,6 +95,7 @@ end
 ---
 -- Get a string representation.
 --
+-- @function Bit:__tostring
 -- @treturn string String representation
 -- @usage
 -- local x = radio.types.Bit()
@@ -103,7 +107,7 @@ end
 ---
 -- Convert a Bit vector to a number.
 --
--- @static
+-- @function Bit.tonumber
 -- @tparam Vector vec Bit vector
 -- @tparam[opt=0] int offset Offset
 -- @tparam[opt=0] int length Length

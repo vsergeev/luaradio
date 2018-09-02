@@ -1,7 +1,7 @@
 ---
 -- Object data type base class.
+--
 -- @datatype ObjectType
--- @classmod ObjectType
 
 local ffi = require('ffi')
 local msgpack = require('radio.thirdparty.MessagePack')
@@ -19,7 +19,7 @@ local ObjectType = class.factory()
 --
 -- The `new()` constructor must be provided by the implementation.
 --
--- @static
+-- @function ObjectType.factory
 -- @tparam[opt={}] table methods Table of methods and metamethods
 -- @treturn class Data type
 function ObjectType.factory(methods)
@@ -98,7 +98,7 @@ function ObjectType.factory(methods)
     ---
     -- Serialize a ObjectType vector into a buffer.
     --
-    -- @local
+    -- @internal
     -- @function ObjectType.serialize
     -- @tparam Vector vec Vector
     -- @treturn cdata Buffer
@@ -128,7 +128,7 @@ function ObjectType.factory(methods)
     ---
     -- Deserialize a buffer into a ObjectType read-only vector.
     --
-    -- @local
+    -- @internal
     -- @function ObjectType.deserialize
     -- @tparam cdata buf Buffer
     -- @tparam int size Size
@@ -142,7 +142,7 @@ function ObjectType.factory(methods)
     ---
     -- Partially deserialize a buffer into a ObjectType read-only vector.
     --
-    -- @local
+    -- @internal
     -- @function ObjectType.deserialize
     -- @tparam cdata buf Buffer
     -- @tparam int count Count of elements
@@ -174,7 +174,7 @@ function ObjectType.factory(methods)
     ---
     -- Deserialize count of ObjectType elements in a buffer.
     --
-    -- @local
+    -- @internal
     -- @function ObjectType.deserialize
     -- @tparam cdata buf Buffer
     -- @tparam int size Size

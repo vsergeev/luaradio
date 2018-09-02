@@ -33,7 +33,6 @@ local mt = {}
 ---
 -- Construct a zero-initialized ComplexFloat32 vector.
 --
--- @static
 -- @function ComplexFloat32.vector
 -- @tparam int num Number of elements in the vector
 -- @treturn Vector ComplexFloat32 vector
@@ -44,7 +43,6 @@ local mt = {}
 ---
 -- Construct a ComplexFloat32 vector initialized from an array.
 --
--- @static
 -- @function ComplexFloat32.vector_from_array
 -- @tparam array arr Array with element initializers
 -- @treturn Vector ComplexFloat32 vector
@@ -55,6 +53,7 @@ local mt = {}
 ---
 -- Add two ComplexFloat32s.
 --
+-- @function ComplexFloat32:__add
 -- @tparam ComplexFloat32 other Operand
 -- @treturn ComplexFloat32 Result
 function mt:__add(other)
@@ -64,6 +63,7 @@ end
 ---
 -- Subtract two ComplexFloat32s.
 --
+-- @function ComplexFloat32:__sub
 -- @tparam ComplexFloat32 other Operand
 -- @treturn ComplexFloat32 Result
 function mt:__sub(other)
@@ -73,6 +73,7 @@ end
 ---
 -- Multiply two ComplexFloat32s.
 --
+-- @function ComplexFloat32:__mul
 -- @tparam ComplexFloat32 other Operand
 -- @treturn ComplexFloat32 Result
 function mt:__mul(other)
@@ -82,6 +83,7 @@ end
 ---
 -- Divide two ComplexFloat32s.
 --
+-- @function ComplexFloat32:__div
 -- @tparam ComplexFloat32 other Operand
 -- @treturn ComplexFloat32 Result
 function mt:__div(other)
@@ -93,6 +95,7 @@ end
 ---
 -- Compare two ComplexFloat32s for equality.
 --
+-- @function ComplexFloat32:__eq
 -- @tparam ComplexFloat32 other Other ComplexFloat32
 -- @treturn bool Result
 function mt:__eq(other)
@@ -102,6 +105,7 @@ end
 ---
 -- Compare two ComplexFloat32s for less than.
 --
+-- @function ComplexFloat32:__lt
 -- @tparam ComplexFloat32 other Other ComplexFloat32
 -- @treturn bool Result
 function mt:__lt(other)
@@ -110,6 +114,8 @@ end
 
 ---
 -- Compare two ComplexFloat32s for less than or equal.
+--
+-- @function ComplexFloat32:__le
 -- @tparam ComplexFloat32 other Other ComplexFloat32
 -- @treturn bool Result
 function mt:__le(other)
@@ -119,6 +125,7 @@ end
 ---
 -- Multiply a ComplexFloat32 by a scalar.
 --
+-- @function ComplexFloat32:scalar_mul
 -- @tparam number other Scalar
 -- @treturn ComplexFloat32 Result
 function mt:scalar_mul(other)
@@ -128,6 +135,7 @@ end
 ---
 -- Divide a ComplexFloat32 by a scalar.
 --
+-- @function ComplexFloat32:scalar_div
 -- @tparam number other Scalar
 -- @treturn ComplexFloat32 Result
 function mt:scalar_div(other)
@@ -135,35 +143,42 @@ function mt:scalar_div(other)
 end
 
 ---
--- Compute the complex argument, in interval $$ (-\pi, \pi] $$. $$ \angle z =
--- \text{atan2}(\text{Im}(z), \text{Re}(z)) $$
+-- Compute the complex argument, in interval $$ (-\pi, \pi] $$.
 --
+-- $$ \angle z = \text{atan2}(\text{Im}(z), \text{Re}(z)) $$
+--
+-- @function ComplexFloat32:arg
 -- @treturn number Result
 function mt:arg()
     return ffi.C.atan2f(self.imag, self.real)
 end
 
 ---
--- Compute the complex magnitude. $$ |z| = \sqrt{\text{Re}(z)^2 +
--- \text{Im}(z)^2} $$
+-- Compute the complex magnitude.
 --
+-- $$ |z| = \sqrt{\text{Re}(z)^2 + \text{Im}(z)^2} $$
+--
+-- @function ComplexFloat32:abs
 -- @treturn number Result
 function mt:abs()
     return ffi.C.sqrtf(self.real*self.real + self.imag*self.imag)
 end
 
 ---
--- Compute the complex magnitude squared. $$ |z|^2 = \text{Re}(z)^2 +
--- \text{Im}(z)^2 $$
+-- Compute the complex magnitude squared.
 --
+-- $$ |z|^2 = \text{Re}(z)^2 + \text{Im}(z)^2 $$
+--
+-- @function ComplexFloat32:abs_squared
 -- @treturn number Result
 function mt:abs_squared()
     return self.real*self.real + self.imag*self.imag
 end
 
---
+---
 -- Get the complex conjugate.
 --
+-- @function ComplexFloat32:conj
 -- @treturn ComplexFloat32 Result
 function mt:conj()
     return self.new(self.real, -self.imag)
@@ -172,7 +187,7 @@ end
 ---
 -- Compare two ComplexFloat32s for approximate equality within the specified epsilon.
 --
--- @static
+-- @function ComplexFloat32.approx_equal
 -- @tparam ComplexFloat32 x First ComplexFloat32
 -- @tparam ComplexFloat32 y Second ComplexFloat32
 -- @tparam number epsilon Epsilon
@@ -184,6 +199,7 @@ end
 ---
 -- Get a string representation.
 --
+-- @function ComplexFloat32:__tostring
 -- @treturn string String representation
 -- @usage
 -- local x = radio.types.ComplexFloat32()

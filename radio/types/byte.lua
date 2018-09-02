@@ -25,7 +25,6 @@ local mt = {}
 ---
 -- Construct a zero-initialized Byte vector.
 --
--- @static
 -- @function Byte.vector
 -- @tparam int num Number of elements in the vector
 -- @treturn Vector Byte vector
@@ -36,7 +35,6 @@ local mt = {}
 ---
 -- Construct a Byte vector initialized from an array.
 --
--- @static
 -- @function Byte.vector_from_array
 -- @tparam array arr Array with element initializers
 -- @treturn Vector Byte vector
@@ -47,6 +45,7 @@ local mt = {}
 ---
 -- Add two Bytes.
 --
+-- @function Byte:__add
 -- @tparam Bit other Operand
 -- @treturn Byte Result
 function mt:__add(other)
@@ -56,6 +55,7 @@ end
 ---
 -- Subtract two Bytes.
 --
+-- @function Byte:__sub
 -- @tparam Bit other Operand
 -- @treturn Byte Result
 function mt:__sub(other)
@@ -65,6 +65,7 @@ end
 ---
 -- Multiply two Bytes.
 --
+-- @function Byte:__mul
 -- @tparam Bit other Operand
 -- @treturn Byte Result
 function mt:__mul(other)
@@ -74,6 +75,7 @@ end
 ---
 -- Divide two Bytes.
 --
+-- @function Byte:__div
 -- @tparam Bit other Operand
 -- @treturn Byte Result
 function mt:__div(other)
@@ -83,6 +85,7 @@ end
 ---
 -- Compare two Bytes for equality.
 --
+-- @function Byte:__eq
 -- @tparam Bit other Other byte
 -- @treturn bool Result
 function mt:__eq(other)
@@ -92,6 +95,7 @@ end
 ---
 -- Compare two Bytes for less than.
 --
+-- @function Byte:__lt
 -- @tparam Bit other Other byte
 -- @treturn bool Result
 function mt:__lt(other)
@@ -101,6 +105,7 @@ end
 ---
 -- Compare two Bytes for less than or equal.
 --
+-- @function Byte:__le
 -- @tparam Bit other Other byte
 -- @treturn bool Result
 function mt:__le(other)
@@ -110,6 +115,7 @@ end
 ---
 -- Get a string representation.
 --
+-- @function Byte:__tostring
 -- @treturn string String representation
 -- @usage
 -- local x = radio.types.Byte()

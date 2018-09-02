@@ -1,3 +1,8 @@
+---
+-- FIR filter generation functions.
+--
+-- @module radio.blocks.signal.filter_utils
+
 local math = require('math')
 
 local window_utils = require('radio.blocks.signal.window_utils')
@@ -8,7 +13,8 @@ local window_utils = require('radio.blocks.signal.window_utils')
 ---
 -- Generate the shifted, truncated coefficients of an ideal low-pass filter.
 --
--- @local
+-- @internal
+-- @function fir_lowpass
 -- @tparam int num_taps Number of taps
 -- @tparam number cutoff Normalized cutoff frequency
 -- @treturn array Shifted impulse response taps
@@ -29,7 +35,8 @@ end
 ---
 -- Generate the shifted, truncated coefficients of an ideal high-pass filter.
 --
--- @local
+-- @internal
+-- @function fir_highpass
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam number cutoff Normalized cutoff frequency
 -- @treturn array Shifted impulse response taps
@@ -52,7 +59,8 @@ end
 ---
 -- Generate the shifted, truncated coefficients of an ideal band-pass filter.
 --
--- @local
+-- @internal
+-- @function fir_bandpass
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam {number,number} cutoffs Normalized cutoff frequencies
 -- @treturn array Shifted impulse response taps
@@ -76,7 +84,8 @@ end
 ---
 -- Generate the shifted, truncated coefficients of an ideal band-stop filter.
 --
--- @local
+-- @internal
+-- @function fir_bandstop
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam {number,number} cutoffs Normalized cutoff frequencies
 -- @treturn array Shifted impulse response taps
@@ -103,7 +112,8 @@ end
 ---
 -- Apply window to and normalize magnitude of finite impulse response taps.
 --
--- @local
+-- @internal
+-- @function firwin
 -- @tparam array h Impulse response taps
 -- @tparam[opt='hamming'] string window_type Window function type
 -- @tparam number scale_freq Normalized frequency to scale to unity magnitude
@@ -133,7 +143,8 @@ end
 ---
 -- Generate FIR low-pass filter taps by the window design method.
 --
--- @local
+-- @internal
+-- @function firwin_lowpass
 -- @tparam int num_taps Number of taps
 -- @tparam number cutoff Normalized cutoff frequency
 -- @tparam[opt='hamming'] string window_type Window function type
@@ -148,7 +159,8 @@ end
 ---
 -- Generate FIR high-pass filter taps by the window design method.
 --
--- @local
+-- @internal
+-- @function firwin_highpass
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam number cutoff Normalized cutoff frequency
 -- @tparam[opt='hamming'] string window_type Window function type
@@ -163,7 +175,8 @@ end
 ---
 -- Generate FIR band-pass filter taps by the window design method.
 --
--- @local
+-- @internal
+-- @function firwin_bandpass
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam {number,number} cutoffs Normalized cutoff frequencies
 -- @tparam[opt='hamming'] string window_type Window function type
@@ -178,7 +191,8 @@ end
 ---
 -- Generate FIR band-stop filter taps by the window design method.
 --
--- @local
+-- @internal
+-- @function firwin_bandstop
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam {number,number} cutoffs Normalized cutoff frequencies
 -- @tparam[opt='hamming'] string window_type Window function type
@@ -196,7 +210,8 @@ end
 -- Apply window to and normalize magnitude of complex finite impulse response
 -- taps.
 --
--- @local
+-- @internal
+-- @function complex_firwin
 -- @tparam array h Complex impulse response taps
 -- @tparam number scale_freq Normalized center frequency of filter
 -- @tparam[opt='hamming'] string window_type Window function type
@@ -236,7 +251,8 @@ end
 ---
 -- Generate FIR complex band-pass filter taps by the window design method.
 --
--- @local
+-- @internal
+-- @function firwin_complex_bandpass
 -- @tparam int num_taps Number of taps
 -- @tparam {number,number} cutoffs Normalized cutoff frequencies, can be
 --                                 positive or negative
@@ -252,7 +268,8 @@ end
 ---
 -- Generate FIR complex band-stop filter taps by the window design method.
 --
--- @local
+-- @internal
+-- @function firwin_complex_bandstop
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam {number,number} cutoffs Normalized cutoff frequencies, can be
 --                                 positive or negative
@@ -274,7 +291,8 @@ end
 -- Generate an FIR approximation of a root-raised cosine filter, normalized to
 -- unity gain at DC.
 --
--- @local
+-- @internal
+-- @function fir_root_raised_cosine
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam number sample_rate Sample rate in Hz
 -- @tparam number beta Roll-off factor
@@ -324,7 +342,8 @@ end
 ---
 -- Generate a windowed FIR approximation of the discrete Hilbert transform.
 --
--- @local
+-- @internal
+-- @function fir_hilbert_transform
 -- @tparam int num_taps Number of taps, must be odd
 -- @tparam[opt='hamming'] string window_type Window function type
 -- @treturn array Filter taps

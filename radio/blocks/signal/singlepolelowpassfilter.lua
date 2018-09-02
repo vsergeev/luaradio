@@ -3,7 +3,9 @@
 -- filter.
 --
 -- $$ H(s) = \frac{1}{\tau s + 1} $$
+--
 -- $$ H(z) = \frac{1}{1 + 2\tau f_s} \frac{1 + z^{-1}}{1 + (\frac{1 - 2\tau f_s}{1 + 2\tau f_s}) z^{-1}} $$
+--
 -- $$ y[n] = \frac{1}{1 + 2\tau f_s} \; x[n] + \frac{1}{1 + 2\tau f_s} \; x[n-1] - \frac{1 - 2\tau f_s}{1 + 2\tau f_s} \; y[n-1] $$
 --
 -- @category Filtering

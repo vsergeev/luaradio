@@ -2,6 +2,7 @@
 -- Filter a complex or real valued signal with an FIR filter.
 --
 -- $$ y[n] = (x * h)[n] $$
+--
 -- $$ y[n] = b_0 x[n] + b_1 x[n-1] + ... + b_N x[n-N] $$
 --
 -- @category Filtering
@@ -9,9 +10,9 @@
 -- @tparam array|vector taps Real-valued taps specified with a number array or
 --                           a Float32 vector, or complex-valued taps specified
 --                           with a ComplexFloat32 vector
--- @tparam[opt] bool use_fft Use FFT overlap-save convolution. Defaults to true
---                           when acceleration is available and taps length is
---                           greater than 16
+-- @tparam[opt=true] bool use_fft Use FFT overlap-save convolution. Defaults to true
+--                                when acceleration is available and taps length is
+--                                greater than 16
 --
 -- @signature in:ComplexFloat32 > out:ComplexFloat32
 -- @signature in:Float32 > out:Float32

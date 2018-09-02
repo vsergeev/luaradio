@@ -1,3 +1,8 @@
+---
+-- DFT, IDFT, PSD, and fftshift implementations.
+--
+-- @module radio.blocks.signal.spectrum_utils
+
 local ffi = require('ffi')
 local math = require('math')
 
@@ -13,8 +18,8 @@ local window_utils = require('radio.blocks.signal.window_utils')
 ---
 -- Discrete Fourier Transform class.
 --
--- @local
--- @type DFT
+-- @internal
+-- @class DFT
 -- @tparam vector input_samples ComplexFloat32 or Float32 vector of input samples
 -- @tparam vector output_samples ComplexFloat32 vector of output transformed samples
 local DFT = class.factory()
@@ -54,7 +59,7 @@ end
 ---
 -- Compute the discrete fourier transform.
 --
--- @local
+-- @internal
 -- @function DFT:compute
 
 --------------------------------------------------------------------------------
@@ -258,8 +263,8 @@ end
 ---
 -- Inverse Discrete Fourier Transform class.
 --
--- @local
--- @type IDFT
+-- @internal
+-- @class IDFT
 -- @tparam vector input_samples ComplexFloat32 vector of input DFT samples
 -- @tparam vector output_samples ComplexFloat32 or Float32 vector of output samples
 local IDFT = class.factory()
@@ -299,8 +304,8 @@ end
 ---
 -- Compute the inverse discrete fourier transform.
 --
--- @local
--- @function DFT:compute
+-- @internal
+-- @function IDFT:compute
 
 --------------------------------------------------------------------------------
 -- IDFT implementations
@@ -529,8 +534,8 @@ end
 ---
 -- Power Spectral Density class.
 --
--- @local
--- @type PSD
+-- @internal
+-- @class PSD
 -- @tparam vector input_samples ComplexFloat32 or Float32 vector of input samples
 -- @tparam vector output_samples Float32 vector of output power spectral density samples
 -- @tparam[opt='hamming'] string window_type Window type
@@ -580,8 +585,8 @@ end
 ---
 -- Compute the power spectral density.
 --
--- @local
--- @function DFT:compute
+-- @internal
+-- @function PSD:compute
 
 --------------------------------------------------------------------------------
 -- PSD implementations
@@ -665,7 +670,8 @@ end
 ---
 -- Shift frequency components into negative, zero, positive frequency order.
 --
--- @local
+-- @internal
+-- @function fftshift
 -- @tparam vector samples ComplexFloat32 or Float32 vector of samples
 local function fftshift(samples)
     local offset = samples.length/2

@@ -2,6 +2,7 @@
 -- Filter a complex or real valued signal with an IIR filter.
 --
 -- $$ y[n] = (x * h)[n] $$
+--
 -- $$ \begin{align} y[n] = &\frac{1}{a_0}(b_0 x[n] + b_1 x[n-1] + ... + b_N x[n-N] \\ - &a_1 y[n-1] - a_2 y[n-2] - ... - a_M x[n-M])\end{align} $$
 --
 -- @category Filtering

@@ -2,6 +2,7 @@
 -- Compute the argument (phase) of a complex-valued signal.
 --
 -- $$ y[n] = \text{arg}(x[n]) $$
+--
 -- $$ y[n] = \text{atan2}(\text{Im}(x[n]), \text{Re}(x[n])) $$
 --
 -- @category Math Operations

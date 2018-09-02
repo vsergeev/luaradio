@@ -1,3 +1,8 @@
+---
+-- Window generation function.
+--
+-- @module radio.blocks.signal.window_utils
+
 local math = require('math')
 
 -- Window functions.
@@ -24,7 +29,8 @@ local window_functions = {
 ---
 -- Generate a window.
 --
--- @local
+-- @internal
+-- @function window
 -- @tparam int M Window length
 -- @tparam string window_type Window function, choice of "rectangular",
 --                            "hamming", "hanning", "bartlett", "blackman".

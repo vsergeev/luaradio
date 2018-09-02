@@ -1,7 +1,7 @@
 ---
 -- Support classes for creating blocks.
 --
--- @module radio.core.block
+-- @module radio.block
 
 local class = require('radio.core.class')
 local pipe = require('radio.core.pipe')
@@ -11,7 +11,7 @@ local util = require('radio.core.util')
 -- Block input port descriptor. This contains the name and data type of a block
 -- input port.
 --
--- @type Input
+-- @class Input
 -- @tparam string name Name
 -- @tparam type|function data_type Data type, e.g. `radio.types.ComplexFloat32`, or a function predicate
 -- @usage
@@ -33,7 +33,7 @@ end
 -- Block output port descriptor. This contains the name and data type of
 -- a block output port.
 --
--- @type Output
+-- @class Output
 -- @tparam string name Name
 -- @tparam type data_type Data type, e.g. `radio.types.ComplexFloat32`
 -- @usage
@@ -53,12 +53,13 @@ end
 ---
 -- Block base class.
 --
--- @type Block
+-- @class Block
 local Block = class.factory()
 
 ---
 -- Add a type signature.
 --
+-- @function Block:add_type_signature
 -- @tparam array inputs Input ports, array of `radio.block.Input` instances
 -- @tparam array outputs Output ports, array of `radio.block.Output` instances
 -- @tparam[opt=nil] function process_func Optional process function for this
@@ -128,6 +129,7 @@ end
 ---
 -- Differentiate this block to a type signature.
 --
+-- @function Block:differentiate
 -- @tparam array input_data_types Array of input data types
 -- @raise No compatible type signatures found error.
 function Block:differentiate(input_data_types)
@@ -171,6 +173,7 @@ end
 ---
 -- Get the differentiated input data type.
 --
+-- @function Block:get_input_type
 -- @tparam[opt=1] int index Index of input, starting at 1
 -- @treturn array Array of data types
 -- @raise Block not yet differentiated error.
@@ -185,6 +188,7 @@ end
 ---
 -- Get the differentiated output data type.
 --
+-- @function Block:get_output_type
 -- @tparam[opt=1] int index Index of output, starting at 1
 -- @treturn data_type Data type
 -- @raise Block not yet differentiated error.
@@ -199,6 +203,7 @@ end
 ---
 -- Get the block rate.
 --
+-- @function Block:get_rate
 -- @treturn number Block rate in samples per second
 -- @raise Block not yet differentiated error.
 function Block:get_rate()
@@ -212,6 +217,8 @@ end
 
 ---
 -- Get a string representation with the block name and port connectivity.
+--
+-- @function Block:__tostring
 -- @treturn string String representation
 function Block:__tostring()
     local s = self.name .. "\n"
@@ -255,24 +262,32 @@ end
 
 ---
 -- Instantiate hook, default no-op implementation.
+--
+-- @function Block:instantiate
 function Block:instantiate()
     -- No operation
 end
 
 ---
 -- Initialize hook, default no-op implementation.
+--
+-- @function Block:initialize
 function Block:initialize()
     -- No operation
 end
 
 ---
 -- Process hook, default implementation raises a not implemented error.
+--
+-- @function Block:process
 function Block:process(...)
     error("process() not implemented")
 end
 
 ---
 -- Cleanup hook, default no-op implementation.
+--
+-- @function Block:cleanup
 function Block:cleanup()
     -- No operation
 end
@@ -280,7 +295,8 @@ end
 ---
 -- Run block once.
 --
--- @local
+-- @internal
+-- @function Block:run_once
 -- @treturn bool New samples produced
 function Block:run_once()
     local data_out
@@ -345,7 +361,8 @@ end
 ---
 -- Run block until inputs reach EOF, then call cleanup().
 --
--- @local
+-- @internal
+-- @function Block:run
 function Block:run()
     if #self.inputs == 0 then
         -- No inputs (source)
@@ -421,9 +438,6 @@ function Block:run()
     -- Clean up
     self:cleanup()
 end
-
----
--- @section end
 
 ---
 -- Block class factory.

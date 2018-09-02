@@ -1,3 +1,8 @@
+---
+-- Object oriented class creation and instance testing.
+--
+-- @module radio.class
+
 local ffi = require('ffi')
 
 ---
@@ -6,7 +11,8 @@ local ffi = require('ffi')
 -- This factory attaches a __call metamethod to the class, which wraps the
 -- .new() static method, so the class can be instantiated by calling its name.
 --
--- @local
+-- @internal
+-- @function factory
 -- @tparam[opt=nil] class Class to inherit
 -- @treturn class Class
 local function factory(cls)
@@ -35,8 +41,9 @@ end
 ---
 -- Test if an object is an instance of the specified class.
 --
--- @local
--- @tparam obj Object
+-- @internal
+-- @function isinstanceof
+-- @param obj Object
 -- @tparam class|cdata|string Class, ctype, or type string
 -- @treturn bool Result
 local function isinstanceof(obj, cls)

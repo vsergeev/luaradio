@@ -1,5 +1,7 @@
 ---
--- @module radio.core.composite
+-- Hierarchical and top-level block composition.
+--
+-- @module radio.composite
 
 local ffi = require('ffi')
 local string = require('string')
@@ -16,7 +18,7 @@ local debug = require('radio.core.debug')
 -- Create a block to hold a flow graph composition, for either top-level or
 -- hierarchical purposes. Top-level blocks may be run with the `run()` method.
 --
--- @type CompositeBlock
+-- @class CompositeBlock
 local CompositeBlock = block.factory("CompositeBlock")
 
 function CompositeBlock:instantiate()
@@ -84,6 +86,7 @@ end
 -- end
 -- ```
 --
+-- @function CompositeBlock:connect
 -- @param ... Blocks [and ports] to connect
 -- @treturn CompositeBlock self
 -- @raise Output port of block not found error.
@@ -439,6 +442,7 @@ end
 -- Run a top-level block. This is equivalent to calling `start()` followed by
 -- `wait()` on the top-level block.
 --
+-- @function CompositeBlock:run
 -- @treturn CompositeBlock self
 -- @raise Block already running error.
 -- @raise Block input port unconnected error.
@@ -458,6 +462,7 @@ end
 ---
 -- Start a top-level block.
 --
+-- @function CompositeBlock:start
 -- @treturn CompositeBlock self
 -- @raise Block already running error.
 -- @raise Block input port unconnected error.
@@ -686,6 +691,7 @@ end
 ---
 -- Get the status of a top-level block.
 --
+-- @function CompositeBlock:status
 -- @treturn table Status information with fields: `running` (bool).
 -- @usage
 -- if top:status().running then
@@ -715,6 +721,7 @@ end
 ---
 -- Stop a top-level block and wait until it has finished.
 --
+-- @function CompositeBlock:stop
 -- @usage
 -- -- Start a top-level block
 -- top:start()
@@ -743,6 +750,7 @@ end
 -- Wait for a top-level block to finish, either by natural termination or by
 -- `SIGINT`.
 --
+-- @function CompositeBlock:wait
 -- @usage
 -- -- Start a top-level block
 -- top:start()

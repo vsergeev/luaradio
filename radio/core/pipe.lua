@@ -1,3 +1,8 @@
+---
+-- Pipe I/O handling.
+--
+-- @module radio.pipe
+
 local ffi = require('ffi')
 local math = require('math')
 
@@ -7,8 +12,8 @@ local platform = require('radio.core.platform')
 ---
 -- Input port of a pipe. These are created in Block's add_type_signature().
 --
--- @local
--- @type
+-- @internal
+-- @class
 -- @tparam Block owner Block owner
 -- @tparam string name Input name
 local PipeInput = class.factory()
@@ -25,7 +30,8 @@ end
 ---
 -- Close input end of associated pipe.
 --
--- @local
+-- @internal
+-- @function PipeInput:close
 function PipeInput:close()
     self.pipe:close_input()
 end
@@ -33,7 +39,8 @@ end
 ---
 -- Get input file descriptors of associated pipe.
 --
--- @local
+-- @internal
+-- @function PipeInput:filenos
 -- @treturn array Array of file descriptors
 function PipeInput:filenos()
     return {self.pipe:fileno_input()}
@@ -42,8 +49,8 @@ end
 ---
 -- Output port of a pipe. These are created in Block's add_type_signature().
 --
--- @local
--- @type
+-- @internal
+-- @class
 -- @tparam Block owner Block owner
 -- @tparam string name Output name
 local PipeOutput = class.factory()
@@ -60,7 +67,8 @@ end
 ---
 -- Close output end of associated pipe.
 --
--- @local
+-- @internal
+-- @function PipeInput:close
 function PipeOutput:close()
     for i=1, #self.pipes do
         self.pipes[i]:close_output()
@@ -70,7 +78,8 @@ end
 ---
 -- Get output file descriptors of associated pipe.
 --
--- @local
+-- @internal
+-- @function PipeInput:filenos
 -- @treturn array Array of file descriptors
 function PipeOutput:filenos()
     local fds = {}
@@ -84,8 +93,8 @@ end
 -- Aliased input port of a pipe. These alias PipeInput objects, and are created
 -- in CompositeBlock's add_type_signature().
 --
--- @local
--- @type
+-- @internal
+-- @class
 -- @tparam Block owner Block owner
 -- @tparam string name Output name
 local AliasedPipeInput = class.factory()
@@ -102,8 +111,8 @@ end
 -- Aliased output port of a pipe. These alias PipeOutput objects, and are
 -- created in CompositeBlock's add_type_signature().
 --
--- @local
--- @type
+-- @internal
+-- @class
 -- @tparam Block owner Block owner
 -- @tparam string name Output name
 local AliasedPipeOutput = class.factory()
@@ -120,8 +129,8 @@ end
 -- Pipe. This class implements the serialization/deserialization of sample
 -- vectors between blocks.
 --
--- @local
--- @type
+-- @internal
+-- @class
 -- @tparam PipeOutput pipe_output Pipe output port
 -- @tparam PipeInput pipe_input Pipe input port
 local Pipe = class.factory()
@@ -136,7 +145,8 @@ end
 ---
 -- Get sample rate of pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:get_rate
 -- @treturn number Sample rate
 function Pipe:get_rate()
     return self.pipe_output.owner:get_rate()
@@ -145,7 +155,8 @@ end
 ---
 -- Get data type of pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:get_data_type
 -- @treturn data_type Data type
 function Pipe:get_data_type()
     return self.pipe_output.data_type
@@ -166,7 +177,8 @@ ssize_t write(int fd, const void *buf, size_t count);
 ---
 -- Initialize the pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:initialize
 function Pipe:initialize()
     -- Look up our data type
     self.data_type = self:get_data_type()
@@ -190,7 +202,8 @@ end
 ---
 -- Update the Pipe's internal read buffer.
 --
--- @local
+-- @internal
+-- @function Pipe:_read_buffer_update
 function Pipe:_read_buffer_update()
     -- Shift unread samples down to beginning of buffer
     local unread_length = self._buf_size - self._buf_read_offset
@@ -214,7 +227,8 @@ end
 ---
 -- Get the Pipe's internal read buffer's element count.
 --
--- @local
+-- @internal
+-- @function Pipe:_read_buffer_count
 -- @treturn int Count
 function Pipe:_read_buffer_count()
     -- Return nil on EOF
@@ -229,7 +243,8 @@ end
 ---
 -- Test if the Pipe's internal read buffer is full.
 --
--- @local
+-- @internal
+-- @function Pipe:_read_buffer_full
 -- @treturn bool Full
 function Pipe:_read_buffer_full()
     -- Return full status of read buffer
@@ -239,7 +254,8 @@ end
 ---
 -- Deserialize elements from the Pipe's internal read buffer into a vector.
 --
--- @local
+-- @internal
+-- @function Pipe:_read_buffer_deserialize
 -- @tparam int num Number of elements to deserialize
 -- @treturn Vector Vector
 function Pipe:_read_buffer_deserialize(num)
@@ -262,7 +278,8 @@ end
 ---
 -- Read a sample vector from the Pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:read
 -- @treturn Vector|nil Sample vector or nil on EOF
 function Pipe:read()
     -- Update our read buffer
@@ -282,7 +299,8 @@ end
 ---
 -- Write a sample vector to the Pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:write
 -- @tparam Vector vec Sample vector
 function Pipe:write(vec)
     -- Get vector serialized buffer and size
@@ -306,7 +324,8 @@ end
 ---
 -- Close the input end of the pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:close_input
 function Pipe:close_input()
     if self._rfd then
         if ffi.C.close(self._rfd) ~= 0 then
@@ -319,7 +338,8 @@ end
 ---
 -- Close the output end of the pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:close_output
 function Pipe:close_output()
     if self._wfd then
         if ffi.C.close(self._wfd) ~= 0 then
@@ -332,7 +352,8 @@ end
 ---
 -- Get the file descriptor of the input end of the Pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:fileno_input
 -- @treturn int File descriptor
 function Pipe:fileno_input()
     return self._rfd
@@ -341,7 +362,8 @@ end
 ---
 -- Get the file descriptor of the output end of the Pipe.
 --
--- @local
+-- @internal
+-- @function Pipe:fileno_output
 -- @treturn int File descriptor
 function Pipe:fileno_output()
     return self._wfd
@@ -368,7 +390,8 @@ local POLL_READ_EVENTS = bit.bor(ffi.C.POLLIN, ffi.C.POLLHUP)
 -- Read synchronously from a set of pipe. The vectors returned
 -- will all be of the same length.
 --
--- @local
+-- @internal
+-- @function read_synchronous
 -- @tparam array pipes Array of Pipe objects
 -- @treturn array|nil Array of sample vectors or nil on EOF
 local function read_synchronous(pipes)

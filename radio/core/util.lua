@@ -1,7 +1,13 @@
 ---
+-- Table and array utility functions.
+--
+-- @module radio.util
+
+---
 -- Get the length of a table.
 --
--- @local
+-- @internal
+-- @function table_length
 -- @tparam table table Table
 -- @treturn int Length
 local function table_length(table)
@@ -15,7 +21,8 @@ end
 ---
 -- Make a shallow clone of a table.
 --
--- @local
+-- @internal
+-- @function table_copy
 -- @tparam table table Table
 -- @treturn table Cloned table
 local function table_copy(table)
@@ -29,7 +36,8 @@ end
 ---
 -- Test if elem exists in array.
 --
--- @local
+-- @internal
+-- @function array_exists
 -- @tparam array array Array
 -- @tparam object elem Element
 -- @treturn bool Result
@@ -45,7 +53,8 @@ end
 ---
 -- Find first element in array that satisfies predicate or return nil.
 --
--- @local
+-- @internal
+-- @function array_search
 -- @tparam array array Array
 -- @tparam function predicate Predicate function
 -- @return Element or nil
@@ -61,7 +70,8 @@ end
 ---
 -- Test if all elements in array satisfy predicate.
 --
--- @local
+-- @internal
+-- @function array_all
 -- @tparam array array Array
 -- @tparam function predicate Predicate function
 -- @treturn bool Result
@@ -77,7 +87,8 @@ end
 ---
 -- Test if two arrays are equal in length and element equality.
 --
--- @local
+-- @internal
+-- @function array_equals
 -- @tparam array a Array
 -- @tparam array b Array
 -- @treturn bool Result
@@ -98,7 +109,8 @@ end
 ---
 -- Find elem in array or return nil.
 --
--- @local
+-- @internal
+-- @function array_find
 -- @tparam array array Array
 -- @tparam object elem Element
 -- @treturn bool Result

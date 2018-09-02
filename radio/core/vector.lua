@@ -1,7 +1,7 @@
 ---
 -- Vector classes.
 --
--- @module radio.core.vector
+-- @module radio.vector
 
 local ffi = require('ffi')
 
@@ -16,7 +16,7 @@ ffi.cdef[[
 ---
 -- A dynamic array of a C structure type.
 --
--- @type Vector
+-- @class Vector
 -- @tparam ctype ctype C type
 -- @tparam[opt=0] int num Length
 local Vector = class.factory()
@@ -44,8 +44,8 @@ end
 ---
 -- Read-only vector constructor for an existing buffer.
 --
--- @constructor
--- @local
+-- @internal
+-- @function Vector.cast
 -- @tparam ctype ctype C data type
 -- @tparam cdata buf Buffer
 -- @tparam int size Buffer size
@@ -72,6 +72,7 @@ end
 ---
 -- Compare two vectors for equality.
 --
+-- @function Vector:__eq
 -- @tparam vector other Other vector
 -- @treturn bool Result
 function Vector:__eq(other)
@@ -91,6 +92,7 @@ end
 ---
 -- Get a string representation.
 --
+-- @function Vector:__tostring
 -- @treturn string String representation
 function Vector:__tostring()
     local strs = {}
@@ -105,6 +107,7 @@ end
 ---
 -- Resize the vector.
 --
+-- @function Vector:resize
 -- @tparam int num New length
 -- @treturn Vector self
 function Vector:resize(num)
@@ -140,6 +143,7 @@ end
 ---
 -- Append an element to the vector.
 --
+-- @function Vector:append
 -- @param elem Element
 -- @treturn Vector self
 function Vector:append(elem)
@@ -152,7 +156,7 @@ end
 ---
 -- A dynamic array of a Lua object type.
 --
--- @type ObjectVector
+-- @class ObjectVector
 -- @tparam type type Lua class
 -- @tparam[opt=0] int num Length
 local ObjectVector = class.factory()
@@ -175,6 +179,7 @@ end
 ---
 -- Get a string representation.
 --
+-- @function ObjectVector:__tostring
 -- @treturn string String representation
 function ObjectVector:__tostring()
     local strs = {}
@@ -189,6 +194,7 @@ end
 ---
 -- Resize the vector.
 --
+-- @function ObjectVector:resize
 -- @tparam int num New length
 -- @treturn Vector self
 function ObjectVector:resize(num)
@@ -205,6 +211,7 @@ end
 ---
 -- Append an element to the vector.
 --
+-- @function ObjectVector:append
 -- @param elem Element
 -- @treturn Vector self
 function ObjectVector:append(elem)

@@ -1,10 +1,16 @@
+---
+-- Helper and wrapper functions for unit testing blocks against test vectors.
+--
+-- @module tests.jigs
+
 local assert = require('luassert')
 local busted = require('busted')
 
 ---
 -- Compare two objects for approximately equality.
 --
--- @local
+-- @internal
+-- @function assert_approx_equal
 -- @tparam object x Expected object
 -- @tparam object y Actual object
 -- @tparam number epsilon Epsilon for comparison
@@ -22,7 +28,8 @@ end
 ---
 -- Compare two vectors.
 --
--- @local
+-- @internal
+-- @function assert_vector_equal
 -- @tparam object x Expected vector
 -- @tparam object y Actual vector
 -- @tparam number epsilon Epsilon for comparison
@@ -38,7 +45,8 @@ end
 ---
 -- Test a block against a set of test vectors.
 --
--- @local
+-- @internal
+-- @function TestBlock
 -- @tparam class block_class Block class to test
 -- @tparam array vectors Array of vectors, each vector is a table with
 --                       `desc`, `args`, `inputs`, `outputs` keys.
@@ -144,7 +152,8 @@ end
 ---
 -- Test a source block against a set of test vectors.
 --
--- @local
+-- @internal
+-- @function TestSourceBlock
 -- @tparam class block_class Block class to test
 -- @tparam array vectors Array of vectors, each vector is a table with
 --                       `desc`, `args`, `outputs` keys.
@@ -214,7 +223,8 @@ end
 ---
 -- Test a composite block against a set of test vectors.
 --
--- @local
+-- @internal
+-- @function TestCompositeBlock
 -- @tparam class block_class Block class to test
 -- @tparam array vectors Array of vectors, each vector is a table with
 --                       `desc`, `args`, `inputs`, `outputs` keys.

@@ -1,3 +1,8 @@
+---
+-- Temporary file backed buffer with a file I/O interface for unit testing.
+--
+-- @module tests.buffer
+
 local ffi = require('ffi')
 
 ffi.cdef[[
@@ -21,7 +26,8 @@ ffi.cdef[[
 ---
 -- Create a buffer backed by a temporary file.
 --
--- @local
+-- @internal
+-- @function open
 -- @tparam[opt=""] string str Initial data
 -- @treturn int File descriptor of file
 local function open(str)
@@ -62,7 +68,8 @@ end
 ---
 -- Read from buffer.
 --
--- @local
+-- @internal
+-- @function read
 -- @tparam int fd File descriptor of buffer
 -- @tparam int count Number of bytes to read
 -- @treturn string Data read
@@ -80,7 +87,8 @@ end
 ---
 -- Write to buffer.
 --
--- @local
+-- @internal
+-- @function write
 -- @tparam int fd File descriptor of buffer
 -- @tparam string str Data to write
 local function write(fd, str)
@@ -93,7 +101,8 @@ end
 ---
 -- Rewind buffer.
 --
--- @local
+-- @internal
+-- @function rewind
 -- @tparam int fd File descriptor of buffer
 local function rewind(fd)
     if ffi.C.lseek(fd, 0, ffi.C.SEEK_SET) ~= 0 then
@@ -104,7 +113,8 @@ end
 ---
 -- Close buffer.
 --
--- @local
+-- @internal
+-- @function close
 -- @tparam int fd File descriptor of buffer
 local function close(fd)
     if ffi.C.close(fd) ~= 0 then

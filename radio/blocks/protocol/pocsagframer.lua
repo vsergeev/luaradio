@@ -22,8 +22,6 @@
 -- }
 -- ```
 --
--- @type POCSAGFrameType
--- @category Protocol
 -- @datatype POCSAGFramerBlock.POCSAGFrameType
 -- @tparam int address Address bits, 21-bits wide
 -- @tparam int func Function bits, 2-bits wide

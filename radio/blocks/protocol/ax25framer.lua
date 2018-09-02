@@ -27,8 +27,6 @@
 -- }
 -- ```
 --
--- @type AX25FrameType
--- @category Protocol
 -- @datatype AX25FramerBlock.AX25FrameType
 -- @tparam array addresses Array of addresses, each a table with key `callsign`
 --                         containing a 6-character string callsign and key

@@ -25,8 +25,6 @@
 -- }
 -- ```
 --
--- @type POCSAGMessageType
--- @category Protocol
 -- @datatype POCSAGDecoderBlock.POCSAGMessageType
 -- @tparam int address Address bits, 21-bits wide
 -- @tparam int func Function bits, 2-bits wide

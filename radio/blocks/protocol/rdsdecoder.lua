@@ -73,8 +73,6 @@
 -- }
 -- ```
 --
--- @type RDSPacketType
--- @category Protocol
 -- @datatype RDSDecoderBlock.RDSPacketType
 -- @tparam table header Header table, as outlined above
 -- @tparam table data Data payload table, as outlined above

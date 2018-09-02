@@ -19,8 +19,6 @@
 -- } rds_frame_t;
 -- ```
 --
--- @type RDSFrameType
--- @category Protocol
 -- @datatype RDSFramerBlock.RDSFrameType
 -- @tparam table data Array of four data words, e.g. `{{0x3aab, 0x02c9, 0x0608, 0x6469}}`
 

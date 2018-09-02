@@ -1,203 +1,7 @@
-{%
-
-local git_version = io.popen("git describe --abbrev --always --tags"):read()
-
-local block_categories = {"Sources", "Sinks", "Filtering", "Math Operations", "Level Control", "Sample Rate Manipulation", "Spectrum Manipulation", "Carrier and Clock Recovery", "Digital", "Type Conversion", "Miscellaneous", "Modulation", "Demodulation", "Protocol", "Receivers"}
-
-local block_macro = [[
-{% if os.getenv("REFMAN_DIVS") then %}
-<div class="block">
-{% end %]]..[[}
-#### {*block.name*}
-
-{* block.description *}
-
-##### `radio.{*block.name*}({*block.args_string*})`
-
-{% if #block.args > 0 then %]]..[[}
-###### Arguments
-
-{% for _, arg in ipairs(block.args) do %]]..[[}
-* `{*arg.name*}` (*{* string.gsub(arg.type, "|", "\\|") *}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
-{% end %]]..[[}
-
-{% end %]]..[[}
-###### Type Signatures
-
-{% for _, signature in ipairs(block.signatures) do
-    local inputs = {}
-    for _, input in ipairs(signature.inputs) do
-        inputs[#inputs + 1] = string.format("`%s` *%s*", input.name, input.type)
-    end
-    local outputs = {}
-    for _, output in ipairs(signature.outputs) do
-        outputs[#outputs + 1] = string.format("`%s` *%s*", output.name, output.type)
-    end
-    inputs = table.concat(inputs, ", ")
-    outputs = table.concat(outputs, ", ")
-%]]..[[}
-{% if #inputs > 0 and #outputs > 0 then %]]..[[}
-* {*inputs*} ➔❑➔ {*outputs*}
-{% elseif #inputs == 0 and #outputs > 0 then %]]..[[}
-* ❑➔ {*outputs*}
-{% elseif #inputs > 0 and #outputs == 0 then %]]..[[}
-* {*inputs*} ➔❑
-{% end %]]..[[}
-{% end %]]..[[}
-
-###### Example
-
-``` lua
-{*block.example*}
-```
-{% if os.getenv("REFMAN_DIVS") then %}
-</div>
-{% end %]]..[[}
---------------------------------------------------------------------------------
-]]
-
-local class_macro = [[
-{% if os.getenv("REFMAN_DIVS") then %}
-<div class="class">
-{% end %]]..[[}
-#### {*class.name*}
-
-##### `{*namespace*}{*class.name*}({*class.args_string*})`
-
-{*class.description*}
-
-{% if #class.args > 0 then %]]..[[}
-###### Arguments
-
-{% for _, arg in ipairs(class.args) do %]]..[[}
-* `{*arg.name*}` (*{* string.gsub(arg.type, "|", "\\|") *}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
-{% end %]]..[[}
-
-{% end %]]..[[}
-{% if class.example then %]]..[[}
-###### Example
-
-``` lua
-{*class.example*}
-```
-
-{% end %]]..[[}
-{% if #class.methods > 0 then %]]..[[}
-{% for _, method in ipairs(class.methods) do %]]..[[}
-##### `{*method.name*}({*method.args_string*})`
-
-{* method.desc *}
-
-    {% if #method.args > 0 then %]]..[[}
-###### Arguments
-
-{% for _, arg in ipairs(method.args) do %]]..[[}
-{% if arg.type then %]]..[[}
-* `{*arg.name*}` (*{* string.gsub(arg.type, "|", "\\|") *}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
-{% else %]]..[[}
-* `{*arg.name*}`: {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
-{% end %]]..[[}
-{% end %]]..[[}
-
-    {% end
-    if #method.returns > 0 then %]]..[[}
-###### Returns
-
-{% for _, ret in ipairs(method.returns) do %]]..[[}
-* {*ret.desc*} (*{*ret.type*}*)
-{% end %]]..[[}
-
-    {% end
-    if method.raises then %]]..[[}
-###### Raises
-
-{% for _, raise in ipairs(method.raises) do %]]..[[}
-* {*raise*}
-{% end %]]..[[}
-
-    {% end
-    if method.example then %]]..[[}
-###### Example
-
-``` lua
-{*method.example*}
-```
-
-{% end %]]..[[}
-{% end %]]..[[}
-{% end %]]..[[}
-{% if os.getenv("REFMAN_DIVS") then %}
-</div>
-{% end %]]..[[}
---------------------------------------------------------------------------------
-]]
-
-local function_macro = [[
-{% if os.getenv("REFMAN_DIVS") then %}
-<div class="function">
-{% end %]]..[[}
-##### `{* namespace *}{*func.name*}({*func.args_string*})`
-
-{*func.desc*}
-
-{% if #func.args > 0 then %]]..[[}
-###### Arguments
-
-{% for _, arg in ipairs(func.args) do %]]..[[}
-{% if arg.type then %]]..[[}
-* `{*arg.name*}` (*{* string.gsub(arg.type, "|", "\\|") *}*): {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
-{% else %]]..[[}
-* `{*arg.name*}`: {* string.gsub(arg.desc, "%s+%* ", "\n    * ") *}
-{% end %]]..[[}
-{% end %]]..[[}
-
-{% end
-if #func.returns > 0 then %]]..[[}
-###### Returns
-
-{% for _, ret in ipairs(func.returns) do %]]..[[}
-* {*ret.desc*} (*{*ret.type*}*)
-{% end %]]..[[}
-
-{% end
-if func.raises then %]]..[[}
-###### Raises
-
-{% for _, raise in ipairs(func.raises) do %]]..[[}
-* {*raise*}
-{% end %]]..[[}
-
-{% end
-if func.example then %]]..[[}
-###### Example
-``` lua
-{*func.example*}
-```
-
-{% end %]]..[[}
-{% if os.getenv("REFMAN_DIVS") then %}
-</div>
-{% end %]]..[[}
---------------------------------------------------------------------------------
-]]
-
-local field_macro = [[
-{% if os.getenv("REFMAN_DIVS") then %}
-<div class="field">
-{% end %]]..[[}
-##### `{* namespace *}{* field.name *}`
-
-*{*field.type*}*: {*field.desc*}
-
-{% if os.getenv("REFMAN_DIVS") then %}
-</div>
-{% end %]]..[[}
---------------------------------------------------------------------------------
-]]
-%}
+<%namespace file="refman.template.utils.mako" name="utils" />\
 # LuaRadio Reference Manual
 
-Generated from LuaRadio `{* git_version *}`.
+Generated from LuaRadio `${utils.attr.git_version}`.
 
 ## Table of contents
 
@@ -208,12 +12,15 @@ Generated from LuaRadio `{* git_version *}`.
 * [Blocks](#blocks)
     * [Composition](#composition)
         * [CompositeBlock](#compositeblock)
-{% for _, category in ipairs(block_categories) do %}
-    * [{* category *}](#{* string.gsub(string.lower(category), " ", "-") *})
-{%  for _, item in ipairs(Blocks[category]) do %}
-        * [{* item.info.name *}](#{* string.gsub(string.lower(item.info.name), "%.", "") *})
-{%  end
-end %}
+% for category in utils.attr.block_categories:
+    * [${category}](#${category.replace(" ", "-").lower()})
+%   for block in blocks[category]:
+        * [${block.name}](#${block.name.lower()})
+%     for child in block.children:
+        * [${child.name}](#${child.name.replace(".", "").lower()})
+%     endfor
+%   endfor
+% endfor
 * [Infrastructure](#infrastructure)
     * [Package](#package)
     * [Basic Types](#basic-types)
@@ -343,79 +150,46 @@ $ LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_FFTW3F=1 lu
 
 ### Composition
 
-{* template.compile(class_macro){class = Modules['radio.composite'][1].info, namespace = "radio."} *}
+${utils.render(modules['radio.composite'].children[0], namespace="radio.")}
+% for category in utils.attr.block_categories:
 
-{% for _, category in ipairs(block_categories) do %}
-### {* category *}
+### ${category}
 
-{%  for _, item in ipairs(Blocks[category]) do %}
-{% if item.type == "block" then %}
-{* template.compile(block_macro){block = item.info} *}
-{% elseif item.type == "type" then %}
-{* template.compile(class_macro){class = item.info, namespace = "radio."} *}
-{% end %}
-{% end %}
-
-{% end %}
+%   for block in blocks[category]:
+${utils.render(block, namespace="radio.")}
+%   endfor
+% endfor
 
 ## Infrastructure
 
 ### Package
 
-{* Modules["radio"].description *}
-
-{% for _, item in ipairs(Modules["radio"]) do %}
-{* template.compile(field_macro){field = item.info, namespace = "radio."} *}
-{% end %}
+${utils.render(modules['radio'])}
 
 ### Basic Types
 
-{* template.compile(class_macro){class = lookup("radio.types", "class", "ComplexFloat32"), namespace = "radio.types."} *}
-{* template.compile(class_macro){class = lookup("radio.types", "class", "Float32"), namespace = "radio.types."} *}
-{* template.compile(class_macro){class = lookup("radio.types", "class", "Bit"), namespace = "radio.types."} *}
-{* template.compile(class_macro){class = lookup("radio.types", "class", "Byte"), namespace = "radio.types."} *}
+${utils.render(datatypes['ComplexFloat32'], namespace="radio.types.")}
+${utils.render(datatypes['Float32'], namespace="radio.types.")}
+${utils.render(datatypes['Bit'], namespace="radio.types.")}
+${utils.render(datatypes['Byte'], namespace="radio.types.")}
 
 ### Type Factories
 
-{* template.compile(class_macro){class = lookup("radio.types", "class", "CStructType"), namespace = "radio.types."} *}
-{* template.compile(class_macro){class = lookup("radio.types", "class", "ObjectType"), namespace = "radio.types."} *}
+${utils.render(datatypes['CStructType'], namespace="radio.types.")}
+${utils.render(datatypes['ObjectType'], namespace="radio.types.")}
 
 ### Vector
 
-{* Modules["radio.vector"].description *}
-
-{* template.compile(class_macro){class = lookup("radio.vector", "class", "Vector"), namespace = "radio.vector."} *}
-{* template.compile(class_macro){class = lookup("radio.vector", "class", "ObjectVector"), namespace = "radio.vector."} *}
+${utils.render(modules['radio.vector'])}
 
 ### Block
 
-{* Modules["radio.block"].description *}
-
-{* template.compile(class_macro){class = lookup("radio.block", "class", "Input"), namespace = "radio.block."} *}
-{* template.compile(class_macro){class = lookup("radio.block", "class", "Output"), namespace = "radio.block."} *}
-{* template.compile(class_macro){class = lookup("radio.block", "class", "Block"), namespace = "radio.block."} *}
-{* template.compile(function_macro){func = lookup("radio.block", "function", "factory"), namespace = "radio.block."} *}
+${utils.render(modules['radio.block'])}
 
 ### Debug
 
-{* Modules["radio.debug"].description *}
-
-{% for _, item in ipairs(Modules["radio.debug"]) do
-if item.type == "field" then %}
-{* template.compile(field_macro){field = item.info, namespace = "radio.debug."} *}
-{% end
-end %}
-{% for _, item in ipairs(Modules["radio.debug"]) do
-if item.type == "function" then %}
-{* template.compile(function_macro){func = item.info, namespace = "radio.debug."} *}
-{% end
-end %}
+${utils.render(modules['radio.debug'])}
 
 ### Platform
 
-{* Modules["radio.platform"].description *}
-
-{% for _, item in ipairs(Modules["radio.platform"]) do %}
-{* template.compile(field_macro){field = item.info, namespace = "radio.platform."} *}
-{% end %}
-
+${utils.render(modules['radio.platform'])}

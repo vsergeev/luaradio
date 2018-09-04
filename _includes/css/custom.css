@@ -84,16 +84,11 @@ body {
 }
 
 .scroll-toc div.toc div.js-toc {
-  overflow-y: auto;
+  overflow: auto;
   white-space: nowrap;
 }
 
-.scroll-toc div.toc div.js-toc::-webkit-scrollbar {
-  display: none;
-}
-
 .scroll-toc div.toc>ul {
-  overflow: hidden;
   position: relative;
 }
 

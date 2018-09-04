@@ -11,7 +11,7 @@
   
   <meta name="author" content="Vanya A. Sergeev" />
   <meta name="description" content="LuaRadio" />
-  <link rel="canonical" href="http://luaradio.io/docs/embedding-luaradio.html" />
+  <link rel="canonical" href="http://0.0.0.0:4000/docs/embedding-luaradio.html" />
   <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 
   <link rel="stylesheet" href="../assets/css/all.css">
@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.1</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -68,11 +68,14 @@
     <a style="font-size: 1.4rem;" href="mailto:v@sergeev.io"><i class="fa fa-envelope-o" aria-hidden="true"></i> v@sergeev.io</a>
   </p>
 </nav>
-<nav class="scroll-toc">
-  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-  <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.0</code></a>
-  </p>
+
+        <nav class="scroll-toc">
+  <div class="toc-header">
+    <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+    <p align="center">
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.1</code></a>
+    </p>
+  </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Embedding LuaRadio</a></span>
     <div class="js-toc">
@@ -142,7 +145,7 @@ interface provides for creating a LuaRadio context, loading a script with a
 top-level flow graph, and the basic control functions of the top-level flow
 graph (start, status, wait, stop).</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="cm">/* Create a new LuaRadio context. */</span>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cm">/* Create a new LuaRadio context. */</span>
 <span class="n">luaradio_t</span> <span class="o">*</span><span class="n">luaradio_new</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
 <span class="cm">/* Load a script that returns a LuaRadio flow graph. */</span>
@@ -273,7 +276,7 @@ script.</p>
 
 <p>This example demonstrates basic use of the C API.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 #include &lt;unistd.h&gt;
 </span>
@@ -380,7 +383,7 @@ decodes it and sets the system time and date to it.</p>
 <p>This example demonstrates how to serialize samples from a LuaRadio flow graph
 to an application.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="cp">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 #include &lt;stdint.h&gt;
 #include &lt;unistd.h&gt;

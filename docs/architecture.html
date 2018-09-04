@@ -11,7 +11,7 @@
   
   <meta name="author" content="Vanya A. Sergeev" />
   <meta name="description" content="LuaRadio" />
-  <link rel="canonical" href="http://luaradio.io/docs/architecture.html" />
+  <link rel="canonical" href="http://0.0.0.0:4000/docs/architecture.html" />
   <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 
   <link rel="stylesheet" href="../assets/css/all.css">
@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.1</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -68,11 +68,14 @@
     <a style="font-size: 1.4rem;" href="mailto:v@sergeev.io"><i class="fa fa-envelope-o" aria-hidden="true"></i> v@sergeev.io</a>
   </p>
 </nav>
-<nav class="scroll-toc">
-  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-  <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.0</code></a>
-  </p>
+
+        <nav class="scroll-toc">
+  <div class="toc-header">
+    <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+    <p align="center">
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.1</code></a>
+    </p>
+  </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Architecture</a></span>
     <div class="js-toc">
@@ -248,7 +251,7 @@ and <a href="reference-manual.html#byte"><code class="highlighter-rouge">Byte</c
 
 <p>They are backed by the following C structure types:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+<div class="language-c highlighter-rouge"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
     <span class="kt">float</span> <span class="n">real</span><span class="p">;</span>
     <span class="kt">float</span> <span class="n">imag</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">complex_float32_t</span><span class="p">;</span>
@@ -297,7 +300,7 @@ their inputs as vectors, and return their outputs as vectors.</p>
 <code class="highlighter-rouge">.vector(num)</code> for a zero-initialized vector, or <code class="highlighter-rouge">.vector_from_array(arr)</code> for
 a vector initialized from a Lua array. For example:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="c1">-- ComplexFloat32 vector of length 16</span>
+<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="c1">-- ComplexFloat32 vector of length 16</span>
 <span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
 
 <span class="c1">-- Byte vector of length 10</span>
@@ -310,7 +313,7 @@ a vector initialized from a Lua array. For example:</p>
 
 <p>Vectors can be resized and appended to:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Byte</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">vec</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Byte</span><span class="p">.</span><span class="n">vector</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 10</span>
 
 <span class="n">vec</span><span class="p">:</span><span class="n">resize</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
@@ -400,7 +403,7 @@ input port descriptors, followed by an array of output port descriptors. Each
 port descriptor specifies a name and a data type. For example, an <code class="highlighter-rouge">AddBlock</code>
 that supports both complex-valued and real-valued inputs would register:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">function</span> <span class="nf">AddBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">()</span>
+<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="k">function</span> <span class="nf">AddBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">()</span>
     <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">}),</span>
                             <span class="p">{</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Output</span><span class="p">(</span><span class="s2">"out"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">Float32</span><span class="p">)})</span>
     <span class="n">self</span><span class="p">:</span><span class="n">add_type_signature</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">block</span><span class="p">.</span><span class="n">Input</span><span class="p">(</span><span class="s2">"in"</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">}),</span>
@@ -481,7 +484,7 @@ ambiguity.</p>
 <p>After differentiation, the block’s output types are well defined, and can then
 be used in the differentiation of downstream blocks.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">multiply</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultiplyBlock</span><span class="p">()</span>
+<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">multiply</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultiplyBlock</span><span class="p">()</span>
 
 <span class="c1">-- Differentiate into the complex-valued flavor of MultiplyBlock</span>
 <span class="n">multiply</span><span class="p">:</span><span class="n">differentiate</span><span class="p">({</span><span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">,</span> <span class="n">radio</span><span class="p">.</span><span class="n">types</span><span class="p">.</span><span class="n">ComplexFloat32</span><span class="p">})</span>
@@ -538,7 +541,7 @@ block’s inputs.</p>
 
 <p>For example, the process method for adding two inputs might look like:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">function</span> <span class="nf">AddBlock</span><span class="p">:</span><span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="k">function</span> <span class="nf">AddBlock</span><span class="p">:</span><span class="n">process</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="kd">local</span> <span class="n">out</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">out</span><span class="p">:</span><span class="n">resize</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">length</span><span class="o">-</span><span class="mi">1</span> <span class="k">do</span>

@@ -875,8 +875,16 @@ body {
 
 .scroll-toc {
   visibility: hidden;
-  width: 20.9%; max-width: 242px; /* synced to skeleton.css */
   height: 0;
+}
+
+.scroll-toc div.toc-header {
+  width: 75%;
+  max-width: 242px;
+  border-bottom: dotted #ddd;
+  border-width: 1px 0;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (min-width: 550px) {
@@ -884,22 +892,36 @@ body {
   .is-position-fixed {
     visibility: visible;
     position: fixed !important;
-    top: 1.7rem;
     height: 100%;
+    top: 1.7rem;
+    left: 1.7rem;
+    max-width: 15%;
   }
 }
 
 @media (min-width: 750px) {
   .is-position-fixed {
     top: 3.2rem;
+    left: 3.2rem;
+    max-width: 20%;
+  }
+}
+
+@media (min-width: 1000px) {
+  .is-position-fixed {
+    max-width: 25%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .is-position-fixed {
+    left: 12.5%;
   }
 }
 
 /* Scroll support */
 
 .scroll-toc div.toc {
-  border-top: dotted #ddd;
-  border-width: 1px 0;
   padding-top: 1.1rem;
   padding-bottom: 0.5rem;
 }
@@ -914,16 +936,11 @@ body {
 }
 
 .scroll-toc div.toc div.js-toc {
-  overflow-y: auto;
+  overflow: auto;
   white-space: nowrap;
 }
 
-.scroll-toc div.toc div.js-toc::-webkit-scrollbar {
-  display: none;
-}
-
 .scroll-toc div.toc>ul {
-  overflow: hidden;
   position: relative;
 }
 

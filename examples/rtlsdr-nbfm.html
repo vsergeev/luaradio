@@ -11,7 +11,7 @@
   
   <meta name="author" content="Vanya A. Sergeev" />
   <meta name="description" content="LuaRadio" />
-  <link rel="canonical" href="http://luaradio.io/examples/rtlsdr-nbfm.html" />
+  <link rel="canonical" href="http://0.0.0.0:4000/examples/rtlsdr-nbfm.html" />
   <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 
   <link rel="stylesheet" href="../assets/css/all.css">
@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.1</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -68,11 +68,14 @@
     <a style="font-size: 1.4rem;" href="mailto:v@sergeev.io"><i class="fa fa-envelope-o" aria-hidden="true"></i> v@sergeev.io</a>
   </p>
 </nav>
-<nav class="scroll-toc">
-  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-  <p align="center">
-    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.0</code></a>
-  </p>
+
+        <nav class="scroll-toc">
+  <div class="toc-header">
+    <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+    <p align="center">
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.1</code></a>
+    </p>
+  </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">NBFM Receiver Example</a></span>
     <div class="js-toc">
@@ -82,7 +85,7 @@
 
       </div>
       <div class="nine columns content">
-        <h1 id="rtlsdrnbfmluahttpsgithubcomvsergeevluaradioblobmasterexamplesrtlsdrnbfmlua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_nbfm.lua"><code class="highlighter-rouge">rtlsdr_nbfm.lua</code></a></h1>
+        <h1 id="rtlsdr_nbfmlua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_nbfm.lua"><code class="highlighter-rouge">rtlsdr_nbfm.lua</code></a></h1>
 
 <p>This example is a Narrowband FM radio receiver. It can be used to listen to
 <a href="https://en.wikipedia.org/wiki/NOAA_Weather_Radio">NOAA weather radio</a> in the
@@ -108,7 +111,7 @@ block.</p>
 
 <h5 id="source">Source</h5>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="o">#</span><span class="n">arg</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">then</span>
     <span class="nb">io.stderr</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">"Usage: "</span> <span class="o">..</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">..</span> <span class="s2">" &lt;frequency&gt;\n"</span><span class="p">)</span>

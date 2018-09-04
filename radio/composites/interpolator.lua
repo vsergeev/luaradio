@@ -4,6 +4,7 @@
 -- blocks in the flow graph by a factor of L.
 --
 -- $$ y'[n] = \begin{cases} Lx[n/L] & \text{for integer } n/L \\ 0 & \text{otherwise} \end{cases} $$
+--
 -- $$ y[n] = (y' * h_{lpf})[n] $$
 --
 -- @category Sample Rate Manipulation

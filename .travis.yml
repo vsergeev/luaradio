@@ -21,7 +21,7 @@ install:
     - make
     - sudo make install
     - cd ../
-    - sudo apt-get install libboost1.54-all-dev libboost-program-options1.54.0 python-mako
+    - sudo apt-get install libboost-all-dev python-mako
     - git clone https://github.com/gnuradio/volk.git
     - cd volk/
     - git checkout v1.4

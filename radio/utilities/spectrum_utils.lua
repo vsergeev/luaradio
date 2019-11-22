@@ -9,7 +9,7 @@ local math = require('math')
 local platform = require('radio.core.platform')
 local class = require('radio.core.class')
 local types = require('radio.types')
-local window_utils = require('radio.blocks.signal.window_utils')
+local window_utils = require('radio.utilities.window_utils')
 
 --------------------------------------------------------------------------------
 -- DFT

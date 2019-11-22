@@ -1,8 +1,8 @@
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-local window_utils = require('radio.blocks.signal.window_utils')
-local test_vectors = require('tests.blocks.signal.window_utils_vectors')
+local window_utils = require('radio.utilities.window_utils')
+local test_vectors = require('tests.utilities.window_utils_vectors')
 
 describe("window_utils", function ()
     it("test rectangular window", function ()

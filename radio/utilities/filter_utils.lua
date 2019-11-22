@@ -5,7 +5,7 @@
 
 local math = require('math')
 
-local window_utils = require('radio.blocks.signal.window_utils')
+local window_utils = require('radio.utilities.window_utils')
 
 -- Causal FIR filters computed from truncations of ideal IIR filters
 -- See http://www.labbookpages.co.uk/audio/firWindowing.html for derivations.

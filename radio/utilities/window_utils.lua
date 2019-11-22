@@ -1,7 +1,7 @@
 ---
 -- Window generation function.
 --
--- @module radio.blocks.signal.window_utils
+-- @module radio.utilities.window_utils
 
 local math = require('math')
 

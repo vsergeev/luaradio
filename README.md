@@ -127,6 +127,7 @@ LuaRadio documentation is contained in the [docs](docs) folder.
 * [radio/](radio) - Radio package
     * [core/](radio/core) - Core framework
     * [types/](radio/types) - Basic types
+    * [utilities/](radio/utilities) - Utility classes and functions
     * [blocks/](radio/blocks) - Blocks
         * [sources/](radio/blocks/sources) - Sources
         * [sinks/](radio/blocks/sinks) - Sinks

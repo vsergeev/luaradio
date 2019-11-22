@@ -1,8 +1,8 @@
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-local filter_utils = require('radio.blocks.signal.filter_utils')
-local test_vectors = require('tests.blocks.signal.filter_utils_vectors')
+local filter_utils = require('radio.utilities.filter_utils')
+local test_vectors = require('tests.utilities.filter_utils_vectors')
 
 describe("filter_utils", function ()
     it("test firwin functions", function ()

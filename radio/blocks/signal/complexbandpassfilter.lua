@@ -26,7 +26,7 @@ local ffi = require('ffi')
 
 local block = require('radio.core.block')
 local types = require('radio.types')
-local filter_utils = require('radio.blocks.signal.filter_utils')
+local filter_utils = require('radio.utilities.filter_utils')
 
 local FIRFilterBlock = require('radio.blocks.signal.firfilter')
 

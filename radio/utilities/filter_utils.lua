@@ -1,7 +1,7 @@
 ---
 -- FIR filter generation functions.
 --
--- @module radio.blocks.signal.filter_utils
+-- @module radio.utilities.filter_utils
 
 local math = require('math')
 

@@ -92,4 +92,4 @@ def generate():
 
     lines.append("return M")
 
-    return RawSpec("tests/blocks/signal/filter_utils_vectors.lua", "\n".join(lines))
+    return RawSpec("tests/utilities/filter_utils_vectors.lua", "\n".join(lines))

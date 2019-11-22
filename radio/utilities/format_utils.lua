@@ -1,7 +1,7 @@
 ---
 -- Binary sample format conversion structures and tables.
 --
--- @module radio.blocks.sources.format_utils
+-- @module radio.utilities.format_utils
 
 local ffi = require('ffi')
 

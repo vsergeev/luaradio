@@ -31,7 +31,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local vector = require('radio.core.vector')
 local types = require('radio.types')
-local format_utils = require('radio.blocks.sources.format_utils')
+local format_utils = require('radio.utilities.format_utils')
 
 local RealFileSource = block.factory("RealFileSource")
 

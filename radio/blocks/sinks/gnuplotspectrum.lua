@@ -36,7 +36,7 @@ local math = require('math')
 
 local block = require('radio.core.block')
 local types = require('radio.types')
-local spectrum_utils = require('radio.blocks.signal.spectrum_utils')
+local spectrum_utils = require('radio.utilities.spectrum_utils')
 
 local GnuplotSpectrumSink = block.factory("GnuplotSpectrumSink")
 

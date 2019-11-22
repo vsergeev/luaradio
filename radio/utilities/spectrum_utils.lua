@@ -1,7 +1,7 @@
 ---
 -- DFT, IDFT, PSD, and fftshift implementations.
 --
--- @module radio.blocks.signal.spectrum_utils
+-- @module radio.utilities.spectrum_utils
 
 local ffi = require('ffi')
 local math = require('math')

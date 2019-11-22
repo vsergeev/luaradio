@@ -36,7 +36,7 @@ local block = require('radio.core.block')
 local class = require('radio.core.class')
 local vector = require('radio.core.vector')
 local types = require('radio.types')
-local spectrum_utils = require('radio.blocks.signal.spectrum_utils')
+local spectrum_utils = require('radio.utilities.spectrum_utils')
 
 local FIRFilterBlock = block.factory("FIRFilterBlock")
 

@@ -1,8 +1,8 @@
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-local spectrum_utils = require('radio.blocks.signal.spectrum_utils')
-local test_vectors = require('tests.blocks.signal.spectrum_utils_vectors')
+local spectrum_utils = require('radio.utilities.spectrum_utils')
+local test_vectors = require('tests.utilities.spectrum_utils_vectors')
 
 describe("spectrum_utils", function ()
     -- Wrapper for using DFT class

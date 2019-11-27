@@ -53,10 +53,6 @@ if platform.os == "Linux" then
         platform.cpu_model = f:read("*all"):match("model name%s*:%s*([^\n]*)")
         f:close()
     end
-    -- Signal definitions
-    ffi.cdef("enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 17 };")
-    -- sigprocmask() definitions
-    ffi.cdef("enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 2 };")
 elseif platform.os == "BSD" then
     -- Look up page size (_SC_PAGESIZE)
     platform.page_size = tonumber(ffi.C.sysconf(47))
@@ -68,10 +64,6 @@ elseif platform.os == "BSD" then
     if ffi.C.sysctlbyname("hw.model", buf, sz, nil, 0) == 0 then
         platform.cpu_model = ffi.string(buf, sz[0])
     end
-    -- Signal definitions
-    ffi.cdef("enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };")
-    -- sigprocmask() definitions
-    ffi.cdef("enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };")
 elseif platform.os == "OSX" then
     -- Look up page size (_SC_PAGESIZE)
     platform.page_size = tonumber(ffi.C.sysconf(29))
@@ -83,10 +75,23 @@ elseif platform.os == "OSX" then
     if ffi.C.sysctlbyname("hw.model", buf, sz, nil, 0) == 0 then
         platform.cpu_model = ffi.string(buf, sz[0])
     end
-    -- Signal definitions
-    ffi.cdef("enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };")
-    -- sigprocmask() definitions
-    ffi.cdef("enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };")
+end
+
+-- Platform specific constants
+if platform.os == "Linux" then
+    ffi.cdef[[
+        /* Signal definitions */
+        enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 17 };
+        /* sigprocmask() definitions */
+        enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 2 };
+    ]]
+elseif platform.os == "BSD" or platform.os == "OSX" then
+    ffi.cdef[[
+        /* Signal definitions */
+        enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };
+        /* sigprocmask() definitions */
+        enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };
+    ]]
 end
 
 -- POSIX ssize_t definition

@@ -328,30 +328,6 @@ end
 -- Execution
 
 ffi.cdef[[
-    /* Process handling */
-    typedef int pid_t;
-    enum { WNOHANG = 1 };
-    pid_t fork(void);
-    pid_t getpid(void);
-    pid_t waitpid(pid_t pid, int *status, int options);
-    int kill(pid_t pid, int sig);
-
-    /* sigset handling */
-    typedef struct { uint8_t set[128]; } sigset_t;
-    int sigemptyset(sigset_t *set);
-    int sigfillset(sigset_t *set);
-    int sigaddset(sigset_t *set, int signum);
-    int sigdelset(sigset_t *set, int signum);
-    int sigismember(const sigset_t *set, int signum);
-
-    /* Signal handling */
-    enum { SIG_IGN = 1 };
-    typedef void (*sighandler_t)(int);
-    sighandler_t signal(int signum, sighandler_t handler);
-    int sigwait(const sigset_t *set, int *sig);
-    int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
-    int sigpending(sigset_t *set);
-
     /* File descriptor table size */
     int getdtablesize(void);
 

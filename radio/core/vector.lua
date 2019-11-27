@@ -8,11 +8,6 @@ local ffi = require('ffi')
 local class = require('radio.core.class')
 local platform = require('radio.core.platform')
 
-ffi.cdef[[
-    void *memset(void *s, int c, size_t n);
-    void *memcpy(void *dest, const void *src, size_t n);
-]]
-
 ---
 -- A dynamic array of a C structure type.
 --
@@ -34,7 +29,7 @@ function Vector.new(ctype, num)
     self.size = self.length*ffi.sizeof(ctype)
     -- Allocate and zero buffer
     self._buffer = platform.alloc(self.size)
-    ffi.C.memset(self._buffer, 0, self.size)
+    ffi.fill(self._buffer, self.size)
     -- Cast buffer to data type pointer
     self.data = ffi.cast(ffi.typeof("$ *", ctype), self._buffer)
 
@@ -124,11 +119,11 @@ function Vector:resize(num)
     local bufsize = capacity*ffi.sizeof(self.data_type)
     -- Allocate and zero buffer
     local buf = platform.alloc(bufsize)
-    ffi.C.memset(buf, 0, bufsize)
+    ffi.fill(buf, bufsize)
     -- Cast buffer to data type pointer
     local ptr = ffi.cast(ffi.typeof("$ *", self.data_type), buf)
     -- Copy old data
-    ffi.C.memcpy(buf, self._buffer, math.min(self.size, num*ffi.sizeof(self.data_type)))
+    ffi.copy(buf, self._buffer, math.min(self.size, num*ffi.sizeof(self.data_type)))
 
     -- Update state
     self.data = ptr

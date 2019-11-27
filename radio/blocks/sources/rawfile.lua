@@ -48,20 +48,6 @@ function RawFileSource:get_rate()
     return self.rate
 end
 
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
-    void rewind(FILE *stream);
-    int feof(FILE *stream);
-    int ferror(FILE *stream);
-    int fclose(FILE *stream);
-
-    void *memmove(void *dest, const void *src, size_t n);
-]]
-
 function RawFileSource:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "rb")

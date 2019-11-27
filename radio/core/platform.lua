@@ -83,6 +83,28 @@ ffi.cdef[[
     int close(int fildes);
 ]]
 
+-- POSIX File Stream I/O
+ffi.cdef[[
+    /* fseek() whence values */
+    enum {SEEK_SET = 0, SEEK_CUR = 1, SEEK_END = 2};
+
+    typedef struct FILE FILE;
+
+    FILE *fopen(const char *path, const char *mode);
+    FILE *fdopen(int fd, const char *mode);
+    int fileno(FILE *stream);
+    int feof(FILE *stream);
+    int ferror(FILE *stream);
+    int fclose(FILE *stream);
+
+    void rewind(FILE *stream);
+    int fseek(FILE *stream, long offset, int whence);
+
+    size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
+    int fflush(FILE *stream);
+]]
+
 -- POSIX Process Handling
 ffi.cdef[[
     /* waitpid() options */

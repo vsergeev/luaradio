@@ -38,15 +38,6 @@ function RawFileSink:instantiate(file)
     self:add_type_signature({block.Input("in", function (type) return true end)}, {})
 end
 
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    int fileno(FILE *stream);
-    ssize_t write(int fd, const void *buf, size_t count);
-    int fclose(FILE *stream);
-]]
-
 function RawFileSink:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "wb")

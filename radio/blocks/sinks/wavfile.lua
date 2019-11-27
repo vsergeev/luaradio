@@ -56,19 +56,6 @@ ffi.cdef[[
     } wave_subchunk2_header_t;
 ]]
 
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
-    void rewind(FILE *stream);
-    int fseek(FILE *stream, long offset, int whence);
-    enum {SEEK_SET = 0, SEEK_CUR = 1, SEEK_END = 2};
-    int fclose(FILE *stream);
-    int fflush(FILE *stream);
-]]
-
 local wave_formats = {
     [8]     = format_utils.formats.u8,
     [16]    = format_utils.formats.s16le,

@@ -61,16 +61,6 @@ local function normalize(amount)
     end
 end
 
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
-    int fclose(FILE *stream);
-    int fflush(FILE *stream);
-]]
-
 function BenchmarkSink:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "w")

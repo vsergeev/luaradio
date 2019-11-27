@@ -33,16 +33,6 @@ local format_utils = require('radio.utilities.format_utils')
 
 local RealFileSink = block.factory("RealFileSink")
 
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
-    int fclose(FILE *stream);
-    int fflush(FILE *stream);
-]]
-
 function RealFileSink:instantiate(file, format)
     if type(file) == "string" then
         self.filename = file

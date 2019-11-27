@@ -34,16 +34,6 @@ function PrintSink:instantiate(file)
     self:add_type_signature({block.Input("in", function (type) return type.__tostring ~= nil end)}, {})
 end
 
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
-    int fclose(FILE *stream);
-    int fflush(FILE *stream);
-]]
-
 function PrintSink:initialize()
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "wb")

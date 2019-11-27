@@ -35,18 +35,6 @@ local format_utils = require('radio.utilities.format_utils')
 
 local IQFileSource = block.factory("IQFileSource")
 
--- File I/O
-ffi.cdef[[
-    typedef struct FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    FILE *fdopen(int fd, const char *mode);
-    size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
-    void rewind(FILE *stream);
-    int feof(FILE *stream);
-    int ferror(FILE *stream);
-    int fclose(FILE *stream);
-]]
-
 function IQFileSource:instantiate(file, format, rate, repeat_on_eof)
     if type(file) == "string" then
         self.filename = file

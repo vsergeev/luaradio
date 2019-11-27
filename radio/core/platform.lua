@@ -16,6 +16,59 @@
 local os = require('os')
 local ffi = require('ffi')
 
+-- Platform specific constants
+if ffi.os == "Linux" then
+    ffi.cdef[[
+        /* Signal definitions */
+        enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 17 };
+        /* sigprocmask() definitions */
+        enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 2 };
+    ]]
+elseif ffi.os == "BSD" or ffi.os == "OSX" then
+    ffi.cdef[[
+        /* Signal definitions */
+        enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };
+        /* sigprocmask() definitions */
+        enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };
+    ]]
+end
+
+-- POSIX ssize_t definition
+ffi.cdef[[
+    typedef intptr_t ssize_t;
+]]
+
+-- POSIX Error Formatting
+ffi.cdef[[
+    char *strerror(int errnum);
+]]
+
+-- POSIX Aligned Memory Allocator
+ffi.cdef[[
+    int posix_memalign(void **memptr, size_t alignment, size_t size);
+    void free(void *ptr);
+]]
+
+-- POSIX sysconf()
+ffi.cdef[[
+    long sysconf(int name);
+]]
+
+-- POSIX Time
+ffi.cdef[[
+    /* clock_gettime() clock ids */
+    enum { CLOCK_REALTIME = 0 };
+
+    typedef long int time_t;
+    typedef int clockid_t;
+
+    struct timespec {
+        time_t tv_sec;
+        long tv_nsec;
+    };
+    int clock_gettime(clockid_t clk_id, struct timespec *tp);
+]]
+
 local function getenv_flag(name)
     local value = string.lower(os.getenv(name) or "")
     return (value == "1" or value == "y" or value == "true" or value == "yes")
@@ -35,11 +88,6 @@ local platform = {
     },
     libs = {},
 }
-
--- POSIX sysconf()
-ffi.cdef[[
-    long sysconf(int name);
-]]
 
 -- Platform specific lookups
 if platform.os == "Linux" then
@@ -77,35 +125,7 @@ elseif platform.os == "OSX" then
     end
 end
 
--- Platform specific constants
-if platform.os == "Linux" then
-    ffi.cdef[[
-        /* Signal definitions */
-        enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 17 };
-        /* sigprocmask() definitions */
-        enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 2 };
-    ]]
-elseif platform.os == "BSD" or platform.os == "OSX" then
-    ffi.cdef[[
-        /* Signal definitions */
-        enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };
-        /* sigprocmask() definitions */
-        enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };
-    ]]
-end
-
--- POSIX ssize_t definition
-ffi.cdef[[
-    typedef intptr_t ssize_t;
-]]
-
--- POSIX Aligned memory allocator
-ffi.cdef[[
-    int posix_memalign(void **memptr, size_t alignment, size_t size);
-    void free(void *ptr);
-    char *strerror(int errnum);
-]]
-
+-- Platform aligned allocator
 platform.alloc = function (size)
     local ptr = ffi.new("void *[1]")
     if ffi.C.posix_memalign(ptr, platform.page_size, size) ~= 0 then
@@ -114,20 +134,7 @@ platform.alloc = function (size)
     return ffi.gc(ptr[0], ffi.C.free)
 end
 
-
--- Time
-ffi.cdef[[
-    enum { CLOCK_REALTIME = 0 };
-    typedef long int time_t;
-    typedef int clockid_t;
-
-    struct timespec {
-        time_t tv_sec;
-        long tv_nsec;
-    };
-    int clock_gettime(clockid_t clk_id, struct timespec *tp);
-]]
-
+-- Platform timestamp
 platform.time_us = function ()
     local tp = ffi.new("struct timespec")
     if ffi.C.clock_gettime(ffi.C.CLOCK_REALTIME, tp) ~= 0 then
@@ -135,7 +142,6 @@ platform.time_us = function ()
     end
     return tonumber(tp.tv_sec) + (tonumber(tp.tv_nsec) / 1e9)
 end
-
 
 -- Load libraries
 for _, name in ipairs({"liquid", "volk", "fftw3f"}) do

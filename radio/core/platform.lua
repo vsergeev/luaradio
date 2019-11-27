@@ -27,6 +27,8 @@ if ffi.os == "Linux" then
         enum { AF_UNSPEC = 0, AF_UNIX = 1, AF_INET = 2, AF_INET6 = 10 };
         /* socket() types */
         enum { SOCK_STREAM = 1, SOCK_DGRAM = 2 };
+        /* open() and fcntl() file access mode flags */
+        enum { O_NONBLOCK = 0x800 };
         /* errno values */
         enum { ENOENT = 2, EPIPE = 32, ECONNRESET = 104, ECONNREFUSED = 111, EINPROGRESS = 115 };
     ]]
@@ -40,6 +42,8 @@ elseif ffi.os == "BSD" or ffi.os == "OSX" then
         enum { AF_UNSPEC = 0, AF_UNIX = 1, AF_INET = 2, AF_INET6 = 28 };
         /* socket() types */
         enum { SOCK_STREAM = 1, SOCK_DGRAM = 2 };
+        /* open() and fcntl() file access mode flags */
+        enum { O_NONBLOCK = 0x0004 };
         /* errno values */
         enum { ENOENT = 2, EPIPE = 32, ECONNRESET = 54, ECONNREFUSED = 61, EINPROGRESS = 36 };
     ]]
@@ -71,6 +75,9 @@ elseif ffi.os == "BSD" or ffi.os == "OSX" then
 end
 
 ffi.cdef[[
+    /* fcntl() commands */
+    enum { F_GETFL = 3, F_SETFL = 4 };
+
     /* poll() events */
     enum { POLLIN = 0x1, POLLOUT = 0x4, POLLHUP = 0x10 };
 
@@ -82,6 +89,8 @@ ffi.cdef[[
         short events;
         short revents;
     };
+
+    int fcntl(int fildes, int cmd, ...);
 
     int poll(struct pollfd fds[], nfds_t nfds, int timeout);
 

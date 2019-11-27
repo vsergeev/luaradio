@@ -23,6 +23,12 @@ if ffi.os == "Linux" then
         enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 17 };
         /* sigprocmask() definitions */
         enum { SIG_BLOCK = 0, SIG_UNBLOCK = 1, SIG_SETMASK = 2 };
+        /* socket() address families */
+        enum { AF_UNSPEC = 0, AF_UNIX = 1, AF_INET = 2, AF_INET6 = 10 };
+        /* socket() types */
+        enum { SOCK_STREAM = 1, SOCK_DGRAM = 2 };
+        /* errno values */
+        enum { ENOENT = 2, EPIPE = 32, ECONNRESET = 104, ECONNREFUSED = 111, EINPROGRESS = 115 };
     ]]
 elseif ffi.os == "BSD" or ffi.os == "OSX" then
     ffi.cdef[[
@@ -30,13 +36,14 @@ elseif ffi.os == "BSD" or ffi.os == "OSX" then
         enum { SIGINT = 2, SIGPIPE = 13, SIGALRM = 14, SIGTERM = 15, SIGCHLD = 20 };
         /* sigprocmask() definitions */
         enum { SIG_BLOCK = 1, SIG_UNBLOCK = 2, SIG_SETMASK = 3 };
+        /* socket() address families */
+        enum { AF_UNSPEC = 0, AF_UNIX = 1, AF_INET = 2, AF_INET6 = 28 };
+        /* socket() types */
+        enum { SOCK_STREAM = 1, SOCK_DGRAM = 2 };
+        /* errno values */
+        enum { ENOENT = 2, EPIPE = 32, ECONNRESET = 54, ECONNREFUSED = 61, EINPROGRESS = 36 };
     ]]
 end
-
--- POSIX ssize_t definition
-ffi.cdef[[
-    typedef intptr_t ssize_t;
-]]
 
 -- POSIX Error Formatting
 ffi.cdef[[
@@ -47,6 +54,33 @@ ffi.cdef[[
 ffi.cdef[[
     int posix_memalign(void **memptr, size_t alignment, size_t size);
     void free(void *ptr);
+]]
+
+-- POSIX File Descriptor I/O
+if ffi.os == "Linux" then
+    ffi.cdef("typedef unsigned long int nfds_t;")
+elseif ffi.os == "BSD" or ffi.os == "OSX" then
+    ffi.cdef("typedef unsigned int nfds_t;")
+end
+
+ffi.cdef[[
+    /* poll() events */
+    enum { POLLIN = 0x1, POLLOUT = 0x4, POLLHUP = 0x10 };
+
+    typedef intptr_t ssize_t;
+
+    struct pollfd {
+        int fd;
+        short events;
+        short revents;
+    };
+
+    int poll(struct pollfd fds[], nfds_t nfds, int timeout);
+
+    ssize_t read(int fd, void *buf, size_t count);
+    ssize_t write(int fd, const void *buf, size_t count);
+
+    int close(int fildes);
 ]]
 
 -- POSIX sysconf()

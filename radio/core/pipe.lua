@@ -163,15 +163,7 @@ function Pipe:get_data_type()
 end
 
 ffi.cdef[[
-enum { AF_UNIX = 1 };
-enum { SOCK_STREAM = 1 };
-int socketpair(int domain, int type, int protocol, int socket_vector[2]);
-int close(int fildes);
-
-enum { EPIPE = 32, ECONNRESET = 104 };
-
-ssize_t read(int fd, void *buf, size_t count);
-ssize_t write(int fd, const void *buf, size_t count);
+    int socketpair(int domain, int type, int protocol, int socket_vector[2]);
 ]]
 
 ---
@@ -370,19 +362,6 @@ function Pipe:fileno_output()
 end
 
 -- Helper function to read synchronously from a set of pipes
-
-ffi.cdef[[
-struct pollfd {
-    int fd;
-    short events;
-    short revents;
-};
-typedef unsigned long int nfds_t;
-
-enum { POLLIN = 0x1, POLLOUT = 0x4, POLLHUP = 0x10 };
-
-int poll(struct pollfd fds[], nfds_t nfds, int timeout);
-]]
 
 local POLL_READ_EVENTS = bit.bor(ffi.C.POLLIN, ffi.C.POLLHUP)
 

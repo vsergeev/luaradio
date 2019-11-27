@@ -220,7 +220,7 @@ local function write_callback_factory(fd)
                 return -1
             elseif bytes_read == 0 then
                 -- Zero out remainder of vec
-                ffi.C.memset(ffi.cast("uint8_t *", vec.data) + total_bytes_read, 0, vec.size - total_bytes_read)
+                ffi.fill(ffi.cast("uint8_t *", vec.data) + total_bytes_read, vec.size - total_bytes_read)
                 break
             end
             total_bytes_read = total_bytes_read + bytes_read

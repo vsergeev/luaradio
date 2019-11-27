@@ -27,6 +27,10 @@ if ffi.os == "Linux" then
         enum { AF_UNSPEC = 0, AF_UNIX = 1, AF_INET = 2, AF_INET6 = 10 };
         /* socket() types */
         enum { SOCK_STREAM = 1, SOCK_DGRAM = 2 };
+        /* getsockopt()/setsockopt() levels */
+        enum { SOL_SOCKET = 1 };
+        /* getsockopt()/setsockopt() option names */
+        enum { SO_REUSEADDR = 2, SO_ERROR = 4 };
         /* open() and fcntl() file access mode flags */
         enum { O_NONBLOCK = 0x800 };
         /* errno values */
@@ -42,6 +46,10 @@ elseif ffi.os == "BSD" or ffi.os == "OSX" then
         enum { AF_UNSPEC = 0, AF_UNIX = 1, AF_INET = 2, AF_INET6 = 28 };
         /* socket() types */
         enum { SOCK_STREAM = 1, SOCK_DGRAM = 2 };
+        /* getsockopt()/setsockopt() levels */
+        enum { SOL_SOCKET = 0xffff };
+        /* getsockopt()/setsockopt() option names */
+        enum { SO_REUSEADDR = 0x0004, SO_ERROR = 0x1007 };
         /* open() and fcntl() file access mode flags */
         enum { O_NONBLOCK = 0x0004 };
         /* errno values */

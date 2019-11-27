@@ -31,6 +31,8 @@ if ffi.os == "Linux" then
         enum { SOL_SOCKET = 1 };
         /* getsockopt()/setsockopt() option names */
         enum { SO_REUSEADDR = 2, SO_ERROR = 4 };
+        /* send() flags */
+        enum { MSG_NOSIGNAL = 0x4000 };
         /* open() and fcntl() file access mode flags */
         enum { O_NONBLOCK = 0x800 };
         /* errno values */
@@ -50,6 +52,8 @@ elseif ffi.os == "BSD" or ffi.os == "OSX" then
         enum { SOL_SOCKET = 0xffff };
         /* getsockopt()/setsockopt() option names */
         enum { SO_REUSEADDR = 0x0004, SO_ERROR = 0x1007 };
+        /* send() flags */
+        enum { MSG_NOSIGNAL = 0x20000 };
         /* open() and fcntl() file access mode flags */
         enum { O_NONBLOCK = 0x0004 };
         /* errno values */

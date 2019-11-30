@@ -140,12 +140,10 @@ function PulseAudioSource:process()
     end
 
     -- Read from our PulseAudio connection
-    print('before')
     local ret = libpulse.pa_simple_read(self.pa_conn, self.interleaved_samples.data, self.interleaved_samples.size, error_code)
     if ret < 0 then
         error("pa_simple_read(): " .. ffi.string(libpulse.pa_strerror(error_code[0])))
     end
-    print('after')
 
     if self.num_channels == 1 then
         return self.interleaved_samples

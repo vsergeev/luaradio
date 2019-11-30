@@ -27,6 +27,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local vector = require('radio.core.vector')
 local types = require('radio.types')
 local format_utils = require('radio.blocks.sources.format_utils')
 
@@ -70,30 +71,33 @@ function IQFileSink:initialize()
         end
     end
 
+    -- Allocate raw samples vector
+    self.raw_samples = vector.Vector(self.format.complex_ctype)
+
     -- Register open file
     self.files[self.file] = true
 end
 
 function IQFileSink:process(x)
-    -- Allocate buffer for binary samples
-    local raw_samples = ffi.new(ffi.typeof("$ [?]", self.format.complex_ctype), x.length)
+    -- Resize raw samples vector
+    self.raw_samples:resize(x.length)
 
     -- Convert ComplexFloat32 samples to raw samples
     for i = 0, x.length-1 do
-        raw_samples[i].real.value = (x.data[i].real*self.format.scale) + self.format.offset
-        raw_samples[i].imag.value = (x.data[i].imag*self.format.scale) + self.format.offset
+        self.raw_samples.data[i].real.value = (x.data[i].real*self.format.scale) + self.format.offset
+        self.raw_samples.data[i].imag.value = (x.data[i].imag*self.format.scale) + self.format.offset
     end
 
     -- Perform byte swap for endianness if needed
     if self.format.swap then
         for i = 0, x.length-1 do
-            format_utils.swap_bytes(raw_samples[i].real)
-            format_utils.swap_bytes(raw_samples[i].imag)
+            format_utils.swap_bytes(self.raw_samples.data[i].real)
+            format_utils.swap_bytes(self.raw_samples.data[i].imag)
         end
     end
 
     -- Write to file
-    local num_samples = ffi.C.fwrite(raw_samples, ffi.sizeof(self.format.complex_ctype), x.length, self.file)
+    local num_samples = ffi.C.fwrite(self.raw_samples.data, ffi.sizeof(self.format.complex_ctype), x.length, self.file)
     if num_samples ~= x.length then
         error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end

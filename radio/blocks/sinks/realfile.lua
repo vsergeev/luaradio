@@ -27,6 +27,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local vector = require('radio.core.vector')
 local types = require('radio.types')
 local format_utils = require('radio.blocks.sources.format_utils')
 
@@ -69,28 +70,31 @@ function RealFileSink:initialize()
         end
     end
 
+    -- Allocate raw samples vector
+    self.raw_samples = vector.Vector(self.format.real_ctype)
+
     -- Register open file
     self.files[self.file] = true
 end
 
 function RealFileSink:process(x)
-    -- Allocate buffer for binary samples
-    local raw_samples = ffi.new(ffi.typeof("$ [?]", self.format.real_ctype), x.length)
+    -- Resize raw samples vector
+    self.raw_samples:resize(x.length)
 
     -- Convert Float32 samples to raw samples
     for i = 0, x.length-1 do
-        raw_samples[i].value = (x.data[i].value*self.format.scale) + self.format.offset
+        self.raw_samples.data[i].value = (x.data[i].value*self.format.scale) + self.format.offset
     end
 
     -- Perform byte swap for endianness if needed
     if self.format.swap then
         for i = 0, x.length-1 do
-            format_utils.swap_bytes(raw_samples[i])
+            format_utils.swap_bytes(self.raw_samples.data[i])
         end
     end
 
     -- Write to file
-    local num_samples = ffi.C.fwrite(raw_samples, ffi.sizeof(self.format.real_ctype), x.length, self.file)
+    local num_samples = ffi.C.fwrite(self.raw_samples.data, ffi.sizeof(self.format.real_ctype), x.length, self.file)
     if num_samples ~= x.length then
         error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end

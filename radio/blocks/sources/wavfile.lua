@@ -28,6 +28,7 @@ local ffi = require('ffi')
 local block = require('radio.core.block')
 local vector = require('radio.core.vector')
 local types = require('radio.types')
+local format_utils = require('radio.blocks.sources.format_utils')
 
 local WAVFileSource = block.factory("WAVFileSource")
 
@@ -54,18 +55,6 @@ ffi.cdef[[
         char id[4];
         uint32_t size;
     } wave_subchunk2_header_t;
-
-    typedef struct {
-        uint8_t value;
-    } wave_sample_u8_t;
-
-    typedef struct {
-        union { uint8_t bytes[2]; int16_t value; };
-    } wave_sample_s16_t;
-
-    typedef struct {
-        union { uint8_t bytes[4]; int32_t value; };
-    } wave_sample_s32_t;
 ]]
 
 -- File I/O
@@ -79,6 +68,12 @@ ffi.cdef[[
     int ferror(FILE *stream);
     int fclose(FILE *stream);
 ]]
+
+local wave_formats = {
+    [8]     = format_utils.formats.u8,
+    [16]    = format_utils.formats.s16le,
+    [32]    = format_utils.formats.s32le,
+}
 
 function WAVFileSource:instantiate(file, num_channels, repeat_on_eof)
     if type(file) == "string" then
@@ -143,12 +138,6 @@ end
 -- Initialization
 
 function WAVFileSource:initialize()
-    local supported_formats = {
-        [8]     = {ctype = "wave_sample_u8_t",  swap = false,           offset = 127.5, scale = 1.0/127.5},
-        [16]    = {ctype = "wave_sample_s16_t", swap = ffi.abi("be"),   offset = 0,     scale = 1.0/32767.5},
-        [32]    = {ctype = "wave_sample_s32_t", swap = ffi.abi("be"),   offset = 0,     scale = 1.0/2147483647.5},
-    }
-
     if self.filename then
         self.file = ffi.C.fopen(self.filename, "rb")
         if self.file == nil then
@@ -200,7 +189,7 @@ function WAVFileSource:initialize()
     if self.wave_subchunk1_header.num_channels ~= self.num_channels then
         error(string.format("Block number of channels (%d) does not match WAV file number of channels (%d).", self.num_channels, self.wave_subchunk1_header.num_channels))
     end
-    if supported_formats[self.wave_subchunk1_header.bits_per_sample] == nil then
+    if wave_formats[self.wave_subchunk1_header.bits_per_sample] == nil then
         error(string.format("Unsupported WAV file: unsupported bits per sample %d.", self.wave_subchunk1_header.bits_per_sample))
     end
 
@@ -211,23 +200,16 @@ function WAVFileSource:initialize()
 
     -- Pull out sample rate and format
     self.rate = self.wave_subchunk1_header.sample_rate
-    self.format = supported_formats[self.wave_subchunk1_header.bits_per_sample]
+    self.format = wave_formats[self.wave_subchunk1_header.bits_per_sample]
 
     -- Register open file
     self.files[self.file] = true
 
     -- Create sample vectors
-    self.raw_samples = vector.Vector(ffi.typeof(self.format.ctype), self.chunk_size)
+    self.raw_samples = vector.Vector(self.format.real_ctype, self.chunk_size)
     self.out = {}
     for i = 1, self.num_channels do
         self.out[i] = types.Float32.vector()
-    end
-end
-
-local function swap_bytes(x)
-    local len = ffi.sizeof(x.bytes)
-    for i = 0, (len/2)-1 do
-        x.bytes[i], x.bytes[len-i-1] = x.bytes[len-i-1], x.bytes[i]
     end
 end
 
@@ -255,7 +237,7 @@ function WAVFileSource:process()
     -- Perform byte swap for endianness if needed
     if self.format.swap then
         for i = 0, num_samples-1 do
-            swap_bytes(self.raw_samples.data[i])
+            format_utils.swap_bytes(self.raw_samples.data[i])
         end
     end
 
@@ -267,7 +249,7 @@ function WAVFileSource:process()
     -- Convert raw samples to float32 samples for each channel
     for i = 0, (num_samples/self.num_channels)-1 do
         for j = 1, self.num_channels do
-            self.out[j].data[i].value = (self.raw_samples.data[i*self.num_channels + (j-1)].value - self.format.offset)*self.format.scale
+            self.out[j].data[i].value = (self.raw_samples.data[i*self.num_channels + (j-1)].value - self.format.offset)/self.format.scale
         end
     end
 

@@ -25,6 +25,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local vector = require('radio.core.vector')
 local types = require('radio.types')
 local format_utils = require('radio.blocks.sources.format_utils')
 
@@ -171,6 +172,9 @@ function WAVFileSink:initialize()
         error("fseek(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 
+    -- Allocate raw samples vector
+    self.raw_samples = vector.Vector(self.format.real_ctype)
+
     -- Register open file
     self.files[self.file] = true
 end
@@ -181,25 +185,25 @@ function WAVFileSink:process(...)
 
     self.count = self.count + samples[1].length
 
-    -- Allocate buffer for binary samples
-    local raw_samples = ffi.new(ffi.typeof("$ [?]", self.format.real_ctype), num_samples_per_channel * self.num_channels)
+    -- Resize raw samples vector
+    self.raw_samples:resize(num_samples_per_channel * self.num_channels)
 
     -- Convert float32 samples to raw samples
     for i = 0, num_samples_per_channel-1 do
         for j = 1, self.num_channels do
-            raw_samples[i*self.num_channels + (j-1)].value = (samples[j].data[i].value*self.format.scale) + self.format.offset
+            self.raw_samples.data[i*self.num_channels + (j-1)].value = (samples[j].data[i].value*self.format.scale) + self.format.offset
         end
     end
 
     -- Perform byte swap for endianness if needed
     if self.format.swap then
         for i = 0, (self.num_channels*num_samples_per_channel)-1 do
-            format_utils.swap_bytes(raw_samples[i])
+            format_utils.swap_bytes(self.raw_samples.data[i])
         end
     end
 
     -- Write to file
-    local num_samples = ffi.C.fwrite(raw_samples, ffi.sizeof(self.format.real_ctype), num_samples_per_channel * self.num_channels, self.file)
+    local num_samples = ffi.C.fwrite(self.raw_samples.data, ffi.sizeof(self.format.real_ctype), num_samples_per_channel * self.num_channels, self.file)
     if num_samples ~= num_samples_per_channel * self.num_channels then
         error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end

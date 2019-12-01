@@ -26,6 +26,7 @@ local ffi = require('ffi')
 
 local block = require('radio.core.block')
 local types = require('radio.types')
+local format_utils = require('radio.blocks.sources.format_utils')
 
 local WAVFileSink = block.factory("WAVFileSink")
 
@@ -52,18 +53,6 @@ ffi.cdef[[
         char id[4];
         uint32_t size;
     } wave_subchunk2_header_t;
-
-    typedef struct {
-        uint8_t value;
-    } wave_sample_u8_t;
-
-    typedef struct {
-        union { uint8_t bytes[2]; int16_t value; };
-    } wave_sample_s16_t;
-
-    typedef struct {
-        union { uint8_t bytes[4]; int32_t value; };
-    } wave_sample_s32_t;
 ]]
 
 -- File I/O
@@ -79,18 +68,13 @@ ffi.cdef[[
     int fflush(FILE *stream);
 ]]
 
+local wave_formats = {
+    [8]     = format_utils.formats.u8,
+    [16]    = format_utils.formats.s16le,
+    [32]    = format_utils.formats.s32le,
+}
+
 function WAVFileSink:instantiate(file, num_channels, bits_per_sample)
-    local supported_formats = {
-        [8]     = {ctype = "wave_sample_u8_t",  swap = false,           offset = 127.5, scale = 127.5},
-        [16]    = {ctype = "wave_sample_s16_t", swap = ffi.abi("be"),   offset = 0,     scale = 32767.5},
-        [32]    = {ctype = "wave_sample_s32_t", swap = ffi.abi("be"),   offset = 0,     scale = 2147483647.5},
-    }
-
-    assert(ffi.sizeof("riff_header_t") == 12)
-    assert(ffi.sizeof("wave_subchunk1_header_t") == 24)
-    assert(ffi.sizeof("wave_subchunk2_header_t") == 8)
-    assert(ffi.sizeof("wave_sample_s16_t") == 2)
-
     if type(file) == "string" then
         self.filename = file
     elseif type(file) == "number" then
@@ -101,7 +85,7 @@ function WAVFileSink:instantiate(file, num_channels, bits_per_sample)
 
     self.num_channels = assert(num_channels, "Missing argument #2 (num_channels)")
     self.bits_per_sample = bits_per_sample or 16
-    self.format = assert(supported_formats[self.bits_per_sample], string.format("Unsupported bits per sample (%s)", tostring(bits_per_sample)))
+    self.format = assert(wave_formats[self.bits_per_sample], string.format("Unsupported bits per sample (%s)", tostring(bits_per_sample)))
 
     self.num_samples = 0
     self.count = 0
@@ -191,14 +175,6 @@ function WAVFileSink:initialize()
     self.files[self.file] = true
 end
 
-local function swap_bytes(x)
-    local len = ffi.sizeof(x.bytes)
-
-    for i = 0, (len/2)-1 do
-        x.bytes[i], x.bytes[len-i-1] = x.bytes[len-i-1], x.bytes[i]
-    end
-end
-
 function WAVFileSink:process(...)
     local samples = {...}
     local num_samples_per_channel = samples[1].length
@@ -206,7 +182,7 @@ function WAVFileSink:process(...)
     self.count = self.count + samples[1].length
 
     -- Allocate buffer for binary samples
-    local raw_samples = ffi.new(self.format.ctype .. "[?]", num_samples_per_channel * self.num_channels)
+    local raw_samples = ffi.new(ffi.typeof("$ [?]", self.format.real_ctype), num_samples_per_channel * self.num_channels)
 
     -- Convert float32 samples to raw samples
     for i = 0, num_samples_per_channel-1 do
@@ -218,12 +194,12 @@ function WAVFileSink:process(...)
     -- Perform byte swap for endianness if needed
     if self.format.swap then
         for i = 0, (self.num_channels*num_samples_per_channel)-1 do
-            swap_bytes(raw_samples[i])
+            format_utils.swap_bytes(raw_samples[i])
         end
     end
 
     -- Write to file
-    local num_samples = ffi.C.fwrite(raw_samples, ffi.sizeof(self.format.ctype), num_samples_per_channel * self.num_channels, self.file)
+    local num_samples = ffi.C.fwrite(raw_samples, ffi.sizeof(self.format.real_ctype), num_samples_per_channel * self.num_channels, self.file)
     if num_samples ~= num_samples_per_channel * self.num_channels then
         error("fwrite(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end

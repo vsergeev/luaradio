@@ -167,6 +167,9 @@ function ObjectVector.new(type, num)
     self.size = 0
     -- Data array
     self.data = {}
+    for i = 0, self.length-1 do
+        self.data[i] = type()
+    end
 
     return self
 end

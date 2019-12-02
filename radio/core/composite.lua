@@ -662,6 +662,9 @@ function CompositeBlock:_reap()
     if ffi.C.sigprocmask(ffi.C.SIG_UNBLOCK, sigset, nil) ~= 0 then
         error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
+
+    -- Mark ourselves as not running
+    self._running = false
 end
 
 ---
@@ -687,9 +690,6 @@ function CompositeBlock:status()
 
     -- Reap child processes
     self:_reap()
-
-    -- Mark ourselves as not running
-    self._running = false
 
     return {running = false}
 end
@@ -717,9 +717,6 @@ function CompositeBlock:stop()
 
     -- Reap child processes
     self:_reap()
-
-    -- Mark ourselves as not running
-    self._running = false
 end
 
 ---
@@ -759,9 +756,6 @@ function CompositeBlock:wait()
 
         -- Reap child processes
         self:_reap()
-
-        -- Mark ourselves as not running
-        self._running = false
     end
 end
 

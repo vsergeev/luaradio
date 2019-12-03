@@ -158,7 +158,7 @@ function POCSAGFramerBlock:process(x)
             -- Calculate the maximum number of bits we can shift
             local n = math.min(POCSAG_BATCH_LENGTH - self.buffer_length, x.length-i)
 
-            ffi.C.memcpy(self.buffer.data[self.buffer_length], x.data[i], n*ffi.sizeof(self.buffer.data[0]))
+            ffi.copy(self.buffer.data[self.buffer_length], x.data[i], n*ffi.sizeof(self.buffer.data[0]))
             i, self.buffer_length = i + n, self.buffer_length + n
         end
 

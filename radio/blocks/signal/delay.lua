@@ -42,7 +42,6 @@ end
 
 ffi.cdef[[
 void *memcpy(void *dest, const void *src, size_t n);
-void *memmove(void *dest, const void *src, size_t n);
 ]]
 
 function DelayBlock:process(x)

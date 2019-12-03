@@ -40,10 +40,6 @@ function BinaryPhaseCorrectorBlock:initialize()
     self.out = types.ComplexFloat32.vector()
 end
 
-ffi.cdef[[
-void *memmove(void *dest, const void *src, size_t n);
-]]
-
 function BinaryPhaseCorrectorBlock:process(x)
     local out = self.out:resize(x.length)
 

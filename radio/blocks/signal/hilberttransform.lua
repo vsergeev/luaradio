@@ -36,10 +36,6 @@ function HilbertTransformBlock:instantiate(num_taps, window)
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.ComplexFloat32)})
 end
 
-ffi.cdef[[
-void *memmove(void *dest, const void *src, size_t n);
-]]
-
 if platform.features.liquid then
 
     ffi.cdef[[

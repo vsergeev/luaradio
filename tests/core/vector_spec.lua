@@ -10,10 +10,6 @@ describe("vector", function ()
     } elem_t;
     ]]
 
-    ffi.cdef[[
-    int memcmp(const void *s1, const void *s2, size_t n);
-    ]]
-
     it("constructor", function ()
         -- Vector of 0
         local v = Vector(ffi.typeof("elem_t"), 0)

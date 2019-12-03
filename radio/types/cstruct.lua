@@ -10,10 +10,6 @@ local Vector = require('radio.core.vector').Vector
 
 local CStructType = class.factory()
 
-ffi.cdef[[
-    int memcmp(const void *s1, const void *s2, size_t n);
-]]
-
 ---
 -- Construct a new data type based on a C structure type. The data type will be
 -- serializable between blocks in a flow graph.

@@ -110,10 +110,6 @@ if platform.features.liquid then
 
 else
 
-    ffi.cdef[[
-    void *memmove(void *dest, const void *src, size_t n);
-    ]]
-
     function IIRFilterBlock:initialize()
         local data_type = self:get_input_type()
 

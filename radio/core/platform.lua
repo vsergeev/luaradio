@@ -56,6 +56,12 @@ ffi.cdef[[
     void free(void *ptr);
 ]]
 
+-- POSIX String Functions
+ffi.cdef[[
+    void *memmove(void *dest, const void *src, size_t n);
+    int memcmp(const void *s1, const void *s2, size_t n);
+]]
+
 -- POSIX File Descriptor I/O
 if ffi.os == "Linux" then
     ffi.cdef("typedef unsigned long int nfds_t;")

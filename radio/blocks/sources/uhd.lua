@@ -285,13 +285,13 @@ end
 
 local function uhd_last_strerror(usrp_handle)
     local errmsg = ffi.new("char[512]")
-    ffi.C.uhd_usrp_last_error(usrp_handle, errmsg, ffi.sizeof(errmsg))
+    libuhd.uhd_usrp_last_error(usrp_handle, errmsg, ffi.sizeof(errmsg))
     return ffi.string(errmsg)
 end
 
 local function rx_streamer_last_strerror(rx_streamer_handle)
     local errmsg = ffi.new("char[512]")
-    ffi.C.uhd_rx_streamer_last_error(rx_streamer_handle, errmsg, ffi.sizeof(errmsg))
+    libuhd.uhd_rx_streamer_last_error(rx_streamer_handle, errmsg, ffi.sizeof(errmsg))
     return ffi.string(errmsg)
 end
 

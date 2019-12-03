@@ -165,6 +165,8 @@ ffi.cdef[[
         long tv_nsec;
     };
     int clock_gettime(clockid_t clk_id, struct timespec *tp);
+
+    int usleep(unsigned int usec);
 ]]
 
 local function getenv_flag(name)

@@ -49,10 +49,6 @@ function ThrottleBlock:initialize()
     self.data_out = self:get_input_type().vector(self.chunk_size)
 end
 
-ffi.cdef[[
-    int usleep(unsigned int usec);
-]]
-
 function ThrottleBlock:run()
     local data_in_offset = 0
     local data_out_offset = 0

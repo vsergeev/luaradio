@@ -146,7 +146,7 @@ function RDSFramerBlock:process(x)
             -- Calculate the maximum number of bits we can shift from x
             local n = math.min(RDS_FRAME_LEN - self.rds_frame_length, x.length-i)
 
-            ffi.C.memcpy(self.rds_frame.data[self.rds_frame_length], x.data[i], n*ffi.sizeof(self.rds_frame.data[0]))
+            ffi.copy(self.rds_frame.data[self.rds_frame_length], x.data[i], n*ffi.sizeof(self.rds_frame.data[0]))
             i, self.rds_frame_length = i + n, self.rds_frame_length + n
         elseif self.rds_frame_length == RDS_FRAME_LEN then
             -- Shift frame buffer down by one bit

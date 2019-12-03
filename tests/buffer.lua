@@ -5,23 +5,7 @@
 
 local ffi = require('ffi')
 
-ffi.cdef[[
-    typedef struct _IO_FILE FILE;
-    FILE *fopen(const char *path, const char *mode);
-    int fileno(FILE *stream);
-    int unlink(const char *pathname);
-
-    typedef intptr_t ssize_t;
-    ssize_t write(int fd, const void *buf, size_t count);
-    ssize_t read(int fd, void *buf, size_t count);
-
-    typedef long int off_t;
-    off_t lseek(int fildes, off_t offset, int whence);
-
-    int close(int fd);
-
-    char *strerror(int errnum);
-]]
+local platform = require('radio.core.platform')
 
 ---
 -- Create a buffer backed by a temporary file.

@@ -74,6 +74,7 @@ ffi.cdef[[
     enum { POLLIN = 0x1, POLLOUT = 0x4, POLLHUP = 0x10 };
 
     typedef intptr_t ssize_t;
+    typedef long int off_t;
 
     struct pollfd {
         int fd;
@@ -85,8 +86,10 @@ ffi.cdef[[
 
     ssize_t read(int fd, void *buf, size_t count);
     ssize_t write(int fd, const void *buf, size_t count);
+    off_t lseek(int fildes, off_t offset, int whence);
 
     int close(int fildes);
+    int unlink(const char *pathname);
 ]]
 
 -- POSIX File Stream I/O

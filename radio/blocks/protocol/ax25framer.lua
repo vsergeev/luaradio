@@ -215,7 +215,7 @@ function AX25FramerBlock:process(x)
         if self.byte_buffer_length < 8 then
             local n = math.min(8 - self.byte_buffer_length, x.length - i)
 
-            ffi.C.memcpy(self.byte_buffer.data[self.byte_buffer_length], x.data[i], n*ffi.sizeof(self.byte_buffer.data[0]))
+            ffi.copy(self.byte_buffer.data[self.byte_buffer_length], x.data[i], n*ffi.sizeof(self.byte_buffer.data[0]))
             i, self.byte_buffer_length = i + n, self.byte_buffer_length + n
         end
 

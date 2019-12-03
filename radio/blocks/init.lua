@@ -41,6 +41,7 @@ return {
     NopSink = require('radio.blocks.sinks.nop'),
     UHDSink = require('radio.blocks.sinks.uhd'),
     NetworkClientSink = require('radio.blocks.sinks.networkclient'),
+    NetworkServerSink = require('radio.blocks.sinks.networkserver'),
 
     -- Signal Blocks
     --- Filtering

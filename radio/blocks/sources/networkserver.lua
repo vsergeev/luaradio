@@ -1,10 +1,12 @@
 ---
 -- Source a signal from a network server. The source supports TCP and UNIX
 -- socket transports. The samples are deserialized according to the specified
--- signedness, bit width, and endianness format.  Complex-valued signals will
--- be deinterleaved as real component followed by imaginary component.  C
--- structure types are deserialized raw with the "raw" format. Object types are
--- deserialized as newline delimited JSON with the "json" format.
+-- signedness, bit width, and endianness format.  Complex-valued signals are
+-- deinterleaved as real component followed by imaginary component.  C
+-- structure types may be deserialized raw with the "raw" format. Object types
+-- may be deserialized from newline delimited JSON with the "json" format.
+-- The source can be configured to automatically reconnect (default) or
+-- terminate on connection loss.
 --
 -- @category Sources
 -- @block NetworkServerSource

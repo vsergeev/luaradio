@@ -136,10 +136,6 @@ function GnuplotSpectrumSink:initialize_gnuplot()
     self.psd = spectrum_utils.PSD(self.state, self.state_psd, window_type, sample_rate, true)
 end
 
-ffi.cdef[[
-    void *memcpy(void *dest, const void *src, size_t n);
-]]
-
 function GnuplotSpectrumSink:process(x)
     -- This implements Bartlett's/Welch's method for power spectral density
     -- estimation. See https://en.wikipedia.org/wiki/Bartlett%27s_method and
@@ -153,7 +149,7 @@ function GnuplotSpectrumSink:process(x)
     while sample_index < x.length do
         -- Fill our state buffer
         local num = math.min(self.num_samples - self.state_index, x.length - sample_index)
-        ffi.C.memcpy(self.state.data + self.state_index, x.data + sample_index, num*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data + self.state_index, x.data + sample_index, num*ffi.sizeof(self.state.data[0]))
 
         -- Update indices
         self.state_index = self.state_index + num

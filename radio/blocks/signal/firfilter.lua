@@ -85,10 +85,6 @@ end
 -- Dot product implementation
 --------------------------------------------------------------------------------
 
-ffi.cdef[[
-void *memcpy(void *dest, const void *src, size_t n);
-]]
-
 if platform.features.volk then
 
     function FIRFilterBlock:initialize_dotprod()
@@ -120,7 +116,7 @@ if platform.features.volk then
         -- Adjust state vector length for the input
         self.state:resize(self.taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
@@ -138,7 +134,7 @@ if platform.features.volk then
         -- Adjust state vector length for the input
         self.state:resize(self.taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
@@ -156,7 +152,7 @@ if platform.features.volk then
         -- Adjust state vector length for the input
         self.state:resize(self.taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
@@ -253,7 +249,7 @@ else
         -- Adjust state vector length for the input
         self.state:resize(self.taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
@@ -274,7 +270,7 @@ else
         -- Adjust state vector length for the input
         self.state:resize(self.taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
@@ -295,7 +291,7 @@ else
         -- Adjust state vector length for the input
         self.state:resize(self.taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         for i = 0, x.length-1 do
             -- Inner product of state and taps
@@ -341,7 +337,7 @@ if platform.features.volk then
 
         -- Create zero-extended taps vector (length N)
         local taps_extended = self.taps.data_type.vector(N)
-        ffi.C.memcpy(taps_extended.data, self.taps.data, self.taps.size)
+        ffi.copy(taps_extended.data, self.taps.data, self.taps.size)
 
         -- Pre-compute zero-extended taps DFT (length N)
         self.taps_dft = types.ComplexFloat32.vector(N)
@@ -370,7 +366,7 @@ if platform.features.volk then
         while i < x.length do
             -- Shift input into our input block vector, up to block length
             local len = math.min(x.length - i, self.block_length - self.input_block_length)
-            ffi.C.memcpy(self.input_block.data + self.overlap_length + self.input_block_length, x.data + i, len*ffi.sizeof(self.input_block.data[0]))
+            ffi.copy(self.input_block.data + self.overlap_length + self.input_block_length, x.data + i, len*ffi.sizeof(self.input_block.data[0]))
             self.input_block_length = self.input_block_length + len
             i = i + len
 
@@ -389,11 +385,11 @@ if platform.features.volk then
             self.output_idft:compute()
 
             -- Copy output block samples to our output vector
-            ffi.C.memcpy(out.data + out_index, self.output_block.data + self.overlap_length, self.block_length*ffi.sizeof(out.data[0]))
+            ffi.copy(out.data + out_index, self.output_block.data + self.overlap_length, self.block_length*ffi.sizeof(out.data[0]))
             out_index = out_index + self.block_length
 
             -- Shift last M-1 samples of input block to the bottom
-            ffi.C.memcpy(self.input_block.data, self.input_block.data + (self.dft_length - self.overlap_length), self.overlap_length*ffi.sizeof(self.input_block.data[0]))
+            ffi.copy(self.input_block.data, self.input_block.data + (self.dft_length - self.overlap_length), self.overlap_length*ffi.sizeof(self.input_block.data[0]))
 
             self.input_block_length = 0
         end
@@ -427,7 +423,7 @@ else
 
         -- Create zero-extended taps vector (length N)
         local taps_extended = self.taps.data_type.vector(N)
-        ffi.C.memcpy(taps_extended.data, self.taps.data, self.taps.size)
+        ffi.copy(taps_extended.data, self.taps.data, self.taps.size)
 
         -- Pre-compute zero-extended taps DFT (length N)
         self.taps_dft = types.ComplexFloat32.vector(N)
@@ -456,7 +452,7 @@ else
         while i < x.length do
             -- Shift input into our input block vector, up to block length
             local len = math.min(x.length - i, self.block_length - self.input_block_length)
-            ffi.C.memcpy(self.input_block.data + self.overlap_length + self.input_block_length, x.data + i, len*ffi.sizeof(self.input_block.data[0]))
+            ffi.copy(self.input_block.data + self.overlap_length + self.input_block_length, x.data + i, len*ffi.sizeof(self.input_block.data[0]))
             self.input_block_length = self.input_block_length + len
             i = i + len
 
@@ -477,11 +473,11 @@ else
             self.output_idft:compute()
 
             -- Copy output block samples to our output vector
-            ffi.C.memcpy(out.data + out_index, self.output_block.data + self.overlap_length, self.block_length*ffi.sizeof(out.data[0]))
+            ffi.copy(out.data + out_index, self.output_block.data + self.overlap_length, self.block_length*ffi.sizeof(out.data[0]))
             out_index = out_index + self.block_length
 
             -- Shift last M-1 samples of input block to the bottom
-            ffi.C.memcpy(self.input_block.data, self.input_block.data + (self.dft_length - self.overlap_length), self.overlap_length*ffi.sizeof(self.input_block.data[0]))
+            ffi.copy(self.input_block.data, self.input_block.data + (self.dft_length - self.overlap_length), self.overlap_length*ffi.sizeof(self.input_block.data[0]))
 
             self.input_block_length = 0
         end

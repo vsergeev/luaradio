@@ -66,7 +66,7 @@ function ThrottleBlock:run()
         while data_in_offset < data_in.length do
             -- Shift from data_in to data_out vector
             local shift_length = math.min(self.chunk_size - data_out_offset, data_in.length - data_in_offset)
-            ffi.C.memcpy(self.data_out.data + data_out_offset, data_in.data + data_in_offset, shift_length*ffi.sizeof(self.data_out.data[0]))
+            ffi.copy(self.data_out.data + data_out_offset, data_in.data + data_in_offset, shift_length*ffi.sizeof(self.data_out.data[0]))
             data_out_offset = data_out_offset + shift_length
             data_in_offset = data_in_offset + shift_length
 

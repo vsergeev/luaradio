@@ -259,13 +259,13 @@ end
 
 local function uhd_last_strerror(usrp_handle)
     local errmsg = ffi.new("char[512]")
-    ffi.C.uhd_usrp_last_error(usrp_handle, errmsg, ffi.sizeof(errmsg))
+    libuhd.uhd_usrp_last_error(usrp_handle, errmsg, ffi.sizeof(errmsg))
     return ffi.string(errmsg)
 end
 
 local function tx_streamer_last_strerror(tx_streamer_handle)
     local errmsg = ffi.new("char[512]")
-    ffi.C.uhd_tx_streamer_last_error(tx_streamer_handle, errmsg, ffi.sizeof(errmsg))
+    libuhd.uhd_tx_streamer_last_error(tx_streamer_handle, errmsg, ffi.sizeof(errmsg))
     return ffi.string(errmsg)
 end
 

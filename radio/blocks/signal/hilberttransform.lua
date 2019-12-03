@@ -72,7 +72,7 @@ if platform.features.liquid then
         -- Adjust state vector length for the input
         self.state:resize(self.hilbert_taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.hilbert_taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.hilbert_taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         -- Compute output
         for i = 0, x.length-1 do
@@ -113,7 +113,7 @@ elseif platform.features.volk then
         -- Adjust state vector length for the input
         self.state:resize(self.hilbert_taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.hilbert_taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.hilbert_taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         -- Compute output
         for i = 0, x.length-1 do
@@ -149,7 +149,7 @@ else
         -- Adjust state vector length for the input
         self.state:resize(self.hilbert_taps.length - 1 + x.length)
         -- Shift input into state
-        ffi.C.memcpy(self.state.data[self.hilbert_taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
+        ffi.copy(self.state.data[self.hilbert_taps.length-1], x.data, x.length*ffi.sizeof(self.state.data[0]))
 
         -- Compute output
         for i = 0, x.length-1 do

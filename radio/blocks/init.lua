@@ -40,6 +40,7 @@ return {
     SoapySDRSink = require('radio.blocks.sinks.soapysdr'),
     NopSink = require('radio.blocks.sinks.nop'),
     UHDSink = require('radio.blocks.sinks.uhd'),
+    NetworkClientSink = require('radio.blocks.sinks.networkclient'),
 
     -- Signal Blocks
     --- Filtering

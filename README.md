@@ -1,4 +1,4 @@
-# LuaRadio [![Build Status](https://travis-ci.org/vsergeev/luaradio.svg?branch=master)](https://travis-ci.org/vsergeev/luaradio) [![GitHub release](https://img.shields.io/github/release/vsergeev/luaradio.svg?maxAge=7200)](https://github.com/vsergeev/luaradio) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/vsergeev/luaradio/blob/master/LICENSE) [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/luaradio/discuss)
+# LuaRadio [![Build Status](https://travis-ci.org/vsergeev/luaradio.svg?branch=master)](https://travis-ci.org/vsergeev/luaradio) [![GitHub release](https://img.shields.io/github/release/vsergeev/luaradio.svg?maxAge=7200)](https://github.com/vsergeev/luaradio) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/vsergeev/luaradio/blob/master/LICENSE)
 
 **LuaRadio** is a lightweight, embeddable flow graph signal processing
 framework for software-defined radio. It provides a suite of source, sink, and

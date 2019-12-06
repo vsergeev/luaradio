@@ -54,8 +54,13 @@ local function print_platform()
     lines[#lines + 1] = "features"
 
     local colorize = {[true] = "\x1b[1;32mtrue\x1b[0m", [false] = "\x1b[1;31mfalse\x1b[0m"}
-    for k,v in pairs(radio.platform.features) do
-        lines[#lines + 1] = string.format("    %-12s%s", k, colorize[v])
+    for feature,enabled in pairs(radio.platform.features) do
+        local version = radio.platform.versions[feature]
+        if version then
+            lines[#lines + 1] = string.format("    %-12s%s    %s", feature, colorize[enabled], version)
+        else
+            lines[#lines + 1] = string.format("    %-12s%s", feature, colorize[enabled])
+        end
     end
 
     print(table.concat(lines, "\n"))

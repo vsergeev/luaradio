@@ -21,7 +21,7 @@ def generate():
     out = (numpy.arctan2(numpy.imag(tmp), numpy.real(tmp)) / (2*numpy.pi*5.0)).astype(numpy.float32)
 
     # Decimate by 25
-    out = scipy.signal.decimate(out, 25, n=16 - 1, ftype='fir').astype(numpy.float32)
+    out = scipy.signal.decimate(out, 25, n=16 - 1, ftype='fir', zero_phase=False).astype(numpy.float32)
 
     lines = []
 

@@ -24,6 +24,7 @@ local radio = {
     platform = require('radio.core.platform'),
     class = require('radio.core.class'),
     block = require('radio.core.block'),
+    vector = require('radio.core.vector'),
     debug = require('radio.core.debug'),
 
     -- Types

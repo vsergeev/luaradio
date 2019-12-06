@@ -12,6 +12,9 @@
 -- @tfield bool features.liquid Liquid-dsp library found and enabled.
 -- @tfield bool features.volk VOLK library found and enabled.
 -- @tfield bool features.fftw3f FFTW3F library found and enabled.
+-- @tfield string versions.liquid Liquid-dsp library version.
+-- @tfield string versions.volk VOLK library version.
+-- @tfield string versions.fftw3f FFTW3F library version.
 
 local os = require('os')
 local ffi = require('ffi')
@@ -211,6 +214,7 @@ local platform = {
         volk = false,
         fftw3f = false,
     },
+    versions = {},
     libs = {},
 }
 
@@ -277,6 +281,28 @@ for _, name in ipairs({"liquid", "volk", "fftw3f"}) do
     end
 end
 
+-- Look up library versions
+if platform.features.liquid then
+    ffi.cdef[[
+        const char *liquid_libversion(void);
+    ]]
+    platform.versions.liquid = ffi.string(platform.libs.liquid.liquid_libversion())
+end
+if platform.features.volk then
+    ffi.cdef[[
+        const char *volk_version(void);
+        const char *volk_get_machine(void);
+    ]]
+    platform.versions.volk = string.format("%s (%s)", ffi.string(platform.libs.volk.volk_version()), ffi.string(platform.libs.volk.volk_get_machine()))
+end
+if platform.features.fftw3f then
+    ffi.cdef[[
+        const char fftwf_version[];
+    ]]
+    platform.versions.fftw3f = ffi.string(platform.libs.fftw3f.fftwf_version)
+end
+
+-- Warn if running without acceleration
 if not platform.features.liquid and not platform.features.volk then
     io.stderr:write("Warning: neither libliquid nor libvolk found. LuaRadio will run without acceleration.\n")
 end

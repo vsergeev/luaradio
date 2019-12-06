@@ -113,14 +113,14 @@ guidelines.
 
 LuaRadio documentation is contained in the [docs](docs) folder.
 
-* 0. [Reference Manual](docs/0.reference-manual.md)
-* 1. [Installation](docs/1.installation.md)
-* 2. [Getting Started](docs/2.getting-started.md)
-* 3. [Creating Blocks](docs/3.creating-blocks.md)
-* 4. [Embedding LuaRadio](docs/4.embedding-luaradio.md)
-* 5. [Architecture](docs/5.architecture.md)
-* 6. [Comparison to GNU Radio](docs/6.comparison-gnuradio.md)
-* 7. [Supported Hardware](docs/7.supported-hardware.md)
+0. [Reference Manual](docs/0.reference-manual.md)
+1. [Installation](docs/1.installation.md)
+2. [Getting Started](docs/2.getting-started.md)
+3. [Creating Blocks](docs/3.creating-blocks.md)
+4. [Embedding LuaRadio](docs/4.embedding-luaradio.md)
+5. [Architecture](docs/5.architecture.md)
+6. [Comparison to GNU Radio](docs/6.comparison-gnuradio.md)
+7. [Supported Hardware](docs/7.supported-hardware.md)
 
 ## Project Structure
 

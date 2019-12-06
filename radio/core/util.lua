@@ -1,7 +1,7 @@
 ---
 -- Table and array utility functions.
 --
--- @module radio.util
+-- @module radio.core.util
 
 ---
 -- Get the length of a table.

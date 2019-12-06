@@ -1,7 +1,7 @@
 ---
 -- Pipe I/O handling.
 --
--- @module radio.pipe
+-- @module radio.core.pipe
 
 local ffi = require('ffi')
 local math = require('math')

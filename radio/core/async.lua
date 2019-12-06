@@ -1,7 +1,7 @@
 ---
 -- Asynchronous callback shim.
 --
--- @module radio.async
+-- @module radio.core.async
 
 local ffi = require('ffi')
 

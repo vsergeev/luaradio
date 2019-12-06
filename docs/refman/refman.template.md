@@ -150,7 +150,7 @@ $ LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_FFTW3F=1 lu
 
 ### Composition
 
-${utils.render(modules['radio.composite'].children[0], namespace="radio.")}
+${utils.render(modules['radio.core.composite'].children[0], namespace="radio.")}
 % for category in utils.attr.block_categories:
 
 ### ${category}

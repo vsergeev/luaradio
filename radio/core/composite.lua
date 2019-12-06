@@ -1,7 +1,7 @@
 ---
 -- Hierarchical and top-level block composition.
 --
--- @module radio.composite
+-- @module radio.core.composite
 
 local ffi = require('ffi')
 local string = require('string')

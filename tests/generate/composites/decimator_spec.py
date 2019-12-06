@@ -5,7 +5,7 @@ from generate import *
 
 def generate():
     def process(factor, x):
-        out = scipy.signal.decimate(x, factor, n=128 - 1, ftype='fir')
+        out = scipy.signal.decimate(x, factor, n=128 - 1, ftype='fir', zero_phase=False)
         return [out.astype(type(x[0]))]
 
     vectors = []

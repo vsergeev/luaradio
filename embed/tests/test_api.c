@@ -8,8 +8,6 @@
 
 #include "test.h"
 
-#define abs(x) ((x > 0) ? x : -x)
-
 void test_context(void) {
     luaradio_t *radio;
 

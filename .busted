@@ -1,0 +1,10 @@
+return {
+    _all = {
+        lua = "luajit",
+        lpath = "./?/init.lua",
+        ["auto-insulate"] = false,
+    },
+    default = {
+        ROOT = {"tests"},
+    },
+}

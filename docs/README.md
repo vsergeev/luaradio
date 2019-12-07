@@ -7,4 +7,4 @@
 * 4. [Embedding LuaRadio](4.embedding-luaradio.md)
 * 5. [Architecture](5.architecture.md)
 * 6. [Comparison to GNU Radio](6.comparison-gnuradio.md)
-
+* 7. [Supported Hardware](7.supported-hardware.md)

@@ -38,12 +38,12 @@ script:
     - echo "assert(require('radio').platform.features.volk)" | ./luaradio -
     - echo "assert(require('radio').platform.features.liquid)" | ./luaradio -
     - echo "assert(require('radio').platform.features.fftw3f)" | ./luaradio -
-    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=0 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
-    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=1 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
-    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=0 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
-    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
-    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=0 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
-    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=1 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
-    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=0 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
-    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted --lua=luajit --no-auto-insulate --lpath="./?/init.lua" tests/
+    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=0 busted
+    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=1 busted
+    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=0 busted
+    - LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted
+    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=0 busted
+    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=1 busted
+    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=0 busted
+    - LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted
     - cd embed; make && make runtests

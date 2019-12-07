@@ -159,7 +159,7 @@ LuaRadio documentation is contained in the [docs](docs) folder.
 LuaRadio unit tests are run with [busted](http://olivinelabs.com/busted/):
 
 ```
-busted --lua=luajit --lpath="./?/init.lua" --no-auto-insulate tests/
+busted
 ```
 
 ## License

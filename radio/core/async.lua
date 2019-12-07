@@ -71,7 +71,7 @@ ffi.cdef[[
 --     print('bar')
 --     ffi.C.sleep(1)
 -- end
-function callback(callback_factory, ...)
+local function callback(callback_factory, ...)
     -- Create a new Lua state
     local L = ffi.gc(ffi.C.luaL_newstate(), ffi.C.lua_close)
     if L == nil then

@@ -3,11 +3,11 @@
 LuaRadio unit tests are run with [busted](http://olivinelabs.com/busted/):
 
 ```
-busted --lua=luajit --lpath="./?/init.lua" --no-auto-insulate tests/
+busted
 ```
 
 The unit tests can be run with various combinations of external libraries
-disabled, controlled by several environment variables. See the [Reference
+disabled, controlled by several environment variable flags. See the [Reference
 Manual](../docs/0.reference-manual.md#environment-variables) for more
 information.
 
@@ -15,8 +15,7 @@ For example, to run all unit tests with only pure Lua implementations and no
 external libraries:
 
 ```
-LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 \
-busted --lua=luajit --lpath="./?/init.lua" --no-auto-insulate tests/
+LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted
 ```
 
 Most block unit tests are code generated with Python 3, numpy, and scipy. The

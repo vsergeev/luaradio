@@ -1,6 +1,14 @@
 # Testing
 
-LuaRadio unit tests are run with [busted](http://olivinelabs.com/busted/):
+LuaRadio unit tests are run with [busted](http://olivinelabs.com/busted/).
+
+Install `busted` with [LuaRocks](https://luarocks.org/):
+
+```
+sudo luarocks --lua-version=5.1 install busted
+```
+
+Run unit tests:
 
 ```
 busted

@@ -2,7 +2,7 @@ local radio = require('radio')
 local jigs = require('tests.jigs')
 
 local window_utils = require('radio.utilities.window_utils')
-local test_vectors = require('tests.utilities.window_utils_vectors')
+local test_vectors = dofile('tests/utilities/window_utils_vectors.gen.lua')
 
 describe("window_utils", function ()
     it("test rectangular window", function ()

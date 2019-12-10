@@ -2,7 +2,7 @@ local radio = require('radio')
 local jigs = require('tests.jigs')
 
 local filter_utils = require('radio.utilities.filter_utils')
-local test_vectors = require('tests.utilities.filter_utils_vectors')
+local test_vectors = dofile('tests/utilities/filter_utils_vectors.gen.lua')
 
 describe("filter_utils", function ()
     it("test firwin functions", function ()

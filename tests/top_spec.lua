@@ -4,7 +4,7 @@ local radio = require('radio')
 local jigs = require('tests.jigs')
 local buffer = require('tests.buffer')
 
-local test_vectors = require('tests.top_vectors')
+local test_vectors = dofile('tests/top_vectors.gen.lua')
 
 ffi.cdef[[
 int pipe(int fildes[2]);

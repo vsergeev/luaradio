@@ -154,7 +154,7 @@ if __name__ == "__main__":
     modules = glob.glob(os.path.dirname(os.path.realpath(__file__)) + "/**/*.py", recursive=True)
     modules = [m[len(os.path.dirname(os.path.realpath(__file__)) + "/"):] for m in modules]
     modules = [m for m in modules if m != os.path.basename(__file__)]
-    modules = [(m, m.replace("/", ".").strip(".py"), m.replace(".py", ".lua")) for m in modules]
+    modules = [(m, m.replace("/", ".").strip(".py"), m.replace(".py", ".gen.lua")) for m in modules]
 
     # Run each unit test generator
     for (module_path, module_import, module_dest) in modules:

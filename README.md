@@ -149,7 +149,6 @@ LuaRadio documentation is contained in the [docs](docs) folder.
 * [docs/](docs) - Documentation
     * [refman/](docs/refman) - Reference manual generator
 * [tests/](tests) - Unit tests
-    * [generate/](tests/generate/) - Unit test code generators (Python 3)
 * [ChangeLog.md](ChangeLog.md) - Change Log
 * [README.md](README.md) - This README
 * [LICENSE](LICENSE) - MIT License

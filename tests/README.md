@@ -19,11 +19,12 @@ LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 \
 busted --lua=luajit --lpath="./?/init.lua" --no-auto-insulate tests/
 ```
 
-Many block unit tests are code generated with Python 3. The Python unit test
-code generators are available in the [generate](generate/) folder.
+Most block unit tests are code generated with Python 3, numpy, and scipy. The
+Python unit test code generators exist alongside the generated files: e.g.
+`blocks/signal/firfilter_spec.py` and `blocks/signal/firfilter_spec.gen.lua`.
 
-The code generated unit tests can be regenerated `tests/generate/generate.py`:
+The code generated unit tests can be regenerated with `generate.py`:
 
 ```
-python3 tests/generate/generate.py
+python3 generate.py
 ```

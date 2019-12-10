@@ -14,6 +14,8 @@ Run unit tests:
 busted
 ```
 
+## Disabling Libraries
+
 The unit tests can be run with various combinations of external libraries
 disabled, controlled by several environment variable flags. See the [Reference
 Manual](../docs/0.reference-manual.md#environment-variables) for more
@@ -25,6 +27,8 @@ external libraries:
 ```
 LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted
 ```
+
+## Code Generation
 
 Most block unit tests are code generated with Python 3, numpy, and scipy. The
 Python unit test code generators exist alongside the generated files: e.g.

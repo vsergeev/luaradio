@@ -31,6 +31,7 @@ def random_bit(n):
 # Test Vector serialization
 ################################################################################
 
+
 NUMPY_SERIALIZE_TYPE = {
     numpy.complex64: lambda x: "{%.*f, %.*f}" % (PRECISION, x.real, PRECISION, x.imag),
     numpy.float32: lambda x: "%.*f" % (PRECISION, x),
@@ -38,6 +39,7 @@ NUMPY_SERIALIZE_TYPE = {
     numpy.bool_: lambda x: "%d" % x,
     numpy.uint8: lambda x: "0x%02x" % x,
 }
+
 
 NUMPY_VECTOR_TYPE = {
     numpy.complex64: "radio.types.ComplexFloat32.vector_from_array({%s})",
@@ -70,11 +72,16 @@ def serialize(x):
 
 ################################################################################
 
+
 TestVector = collections.namedtuple('TestVector', ['args', 'inputs', 'outputs', 'desc'])
-BlockSpec = collections.namedtuple('BlockSpec', ['name', 'filename', 'vectors', 'epsilon'])
-SourceSpec = collections.namedtuple('SourceSpec', ['name', 'filename', 'vectors', 'epsilon'])
-CompositeSpec = collections.namedtuple('CompositeSpec', ['name', 'filename', 'vectors', 'epsilon'])
-RawSpec = collections.namedtuple('RawSpec', ['filename', 'content'])
+
+BlockSpec = collections.namedtuple('BlockSpec', ['name', 'vectors', 'epsilon'])
+
+SourceSpec = collections.namedtuple('SourceSpec', ['name', 'vectors', 'epsilon'])
+
+CompositeSpec = collections.namedtuple('CompositeSpec', ['name', 'vectors', 'epsilon'])
+
+RawSpec = collections.namedtuple('RawSpec', ['content'])
 
 spec_templates = {
     "BlockSpec":
@@ -109,7 +116,7 @@ spec_templates = {
 }
 
 
-def generate_spec(spec):
+def generate_spec(spec, dest):
     # We have to use spec.__class__.__name__ here because the spec namedtuple
     # is an instance of a different class in the unit test generator modules
     # (e.g. <class 'generate.BlockSpec'> instead of <class '__main__.BlockSpec'>)
@@ -125,8 +132,9 @@ def generate_spec(spec):
             serialized_vectors.append(spec_templates[vector.__class__.__name__] % (vector.desc, serialized_args, serialized_inputs, serialized_outputs))
         s = spec_templates[spec.__class__.__name__] % (spec.name, "".join(serialized_vectors), spec.epsilon)
 
-    with open(spec.filename, "w") as f:
+    with open(os.path.join("tests", dest), "w") as f:
         f.write(s)
+
 
 if __name__ == "__main__":
     # Disable bytecode generation to keep the repository clean
@@ -136,10 +144,10 @@ if __name__ == "__main__":
     modules = glob.glob(os.path.dirname(os.path.realpath(__file__)) + "/**/*.py", recursive=True)
     modules = [m[len(os.path.dirname(os.path.realpath(__file__)) + "/"):] for m in modules]
     modules = [m for m in modules if m != os.path.basename(__file__)]
-    modules = [m.replace("/", ".").strip(".py") for m in modules]
+    modules = [(m.replace("/", ".").strip(".py"), m.replace(".py", ".lua")) for m in modules]
 
     # Run each unit test generator
-    for module in modules:
-        print(module)
+    for (module_import, module_dest) in modules:
+        print("{:s} -> {:s}".format(module_import, module_dest))
         random.seed(1)
-        generate_spec(__import__(module, fromlist=['']).generate())
+        generate_spec(__import__(module_import, fromlist=['']).generate(), module_dest)

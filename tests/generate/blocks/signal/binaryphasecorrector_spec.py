@@ -27,4 +27,4 @@ def generate():
     vectors.append(TestVector([64, 7], [x], process(64, 7, x), "64 sample average, 7 sample interval, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     vectors.append(TestVector([100, 32], [x], process(100, 32, x), "100 sample average, 32 sample interval, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
 
-    return BlockSpec("BinaryPhaseCorrectorBlock", "tests/blocks/signal/binaryphasecorrector_spec.lua", vectors, 1e-6)
+    return BlockSpec("BinaryPhaseCorrectorBlock", vectors, 1e-6)

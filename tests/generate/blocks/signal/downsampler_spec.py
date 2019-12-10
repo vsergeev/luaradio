@@ -35,4 +35,4 @@ def generate():
     vectors.append(TestVector([256], [x], process(256, x), "256 Factor, 256 Float32 input, 1 Float32 output"))
     vectors.append(TestVector([257], [x], process(257, x), "256 Factor, 256 Float32 input, 0 Float32 output"))
 
-    return BlockSpec("DownsamplerBlock", "tests/blocks/signal/downsampler_spec.lua", vectors, 1e-6)
+    return BlockSpec("DownsamplerBlock", vectors, 1e-6)

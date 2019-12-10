@@ -20,4 +20,4 @@ def generate():
     vectors.append(TestVector([100], [x], process(100, x), "100 Sample Delay, 256 Float32 input, 356 Float32 output"))
     vectors.append(TestVector([307], [x], process(307, x), "307 Sample Delay, 256 Float32 input, 563 Float32 output"))
 
-    return BlockSpec("DelayBlock", "tests/blocks/signal/delay_spec.lua", vectors, 1e-6)
+    return BlockSpec("DelayBlock", vectors, 1e-6)

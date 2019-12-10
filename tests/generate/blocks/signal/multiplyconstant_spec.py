@@ -22,4 +22,4 @@ def generate():
     # Float32 vector times Float32 constant
     vectors.append(TestVector([numpy.float32(3.5)], [x], process(numpy.float32(3.5), x), "Float32 constant, 256 Float32 inputs, 256 Float32 output"))
 
-    return BlockSpec("MultiplyConstantBlock", "tests/blocks/signal/multiplyconstant_spec.lua", vectors, 1e-6)
+    return BlockSpec("MultiplyConstantBlock", vectors, 1e-6)

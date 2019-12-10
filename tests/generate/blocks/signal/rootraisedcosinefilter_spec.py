@@ -42,4 +42,4 @@ def generate():
     vectors.append(TestVector([101, 0.7, 1e-3], [x], process(101, 0.7, 1e-3, x), "101 taps, 0.7 beta, 1e-3 symbol rate, 256 Float32 input, 256 Float32 output"))
     vectors.append(TestVector([101, 1.0, 5e-3], [x], process(101, 1.0, 5e-3, x), "101 taps, 1.0 beta, 5e-3 symbol rate, 256 Float32 input, 256 Float32 output"))
 
-    return BlockSpec("RootRaisedCosineFilterBlock", "tests/blocks/signal/rootraisedcosinefilter_spec.lua", vectors, 1e-6)
+    return BlockSpec("RootRaisedCosineFilterBlock", vectors, 1e-6)

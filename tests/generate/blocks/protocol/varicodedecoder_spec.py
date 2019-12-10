@@ -18,4 +18,4 @@ def generate():
     vectors.append(TestVector([], [message2_bits], [message2], "Valid message with extra leading 0 bit"))
     vectors.append(TestVector([], [message3_bits], [message3], "Empty message"))
 
-    return BlockSpec("VaricodeDecoderBlock", "tests/blocks/protocol/varicodedecoder_spec.lua", vectors, 1e-6)
+    return BlockSpec("VaricodeDecoderBlock", vectors, 1e-6)

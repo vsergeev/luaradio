@@ -25,4 +25,4 @@ def generate():
     vectors.append(TestVector([False], [slipped_x], [x], "Non-inverted output with invalid first bit, 513 Bit input, 256 Bit output"))
     vectors.append(TestVector([True], [slipped_x], [numpy.invert(x)], "Inverted output with invalid first bit, 513 Bit input, 256 Bit output"))
 
-    return BlockSpec("ManchesterDecoderBlock", "tests/blocks/signal/manchesterdecoder_spec.lua", vectors, 1e-6)
+    return BlockSpec("ManchesterDecoderBlock", vectors, 1e-6)

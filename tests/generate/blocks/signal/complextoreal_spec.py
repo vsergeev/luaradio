@@ -8,4 +8,4 @@ def generate():
     x = random_complex64(256)
     vectors.append(TestVector([], [x], [numpy.real(x)], "256 ComplexFloat32 input, 256 Float32 output"))
 
-    return BlockSpec("ComplexToRealBlock", "tests/blocks/signal/complextoreal_spec.lua", vectors, 1e-6)
+    return BlockSpec("ComplexToRealBlock", vectors, 1e-6)

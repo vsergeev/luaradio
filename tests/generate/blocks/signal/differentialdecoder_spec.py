@@ -12,4 +12,4 @@ def generate():
     vectors.append(TestVector([False], [x], process(False, x), "Non-inverted output, 256 Bit input, 256 Bit output"))
     vectors.append(TestVector([True], [x], process(True, x), "Inverted output, 256 Bit input, 256 Bit output"))
 
-    return BlockSpec("DifferentialDecoderBlock", "tests/blocks/signal/differentialdecoder_spec.lua", vectors, 1e-6)
+    return BlockSpec("DifferentialDecoderBlock", vectors, 1e-6)

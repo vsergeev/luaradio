@@ -39,4 +39,4 @@ def generate():
 
     lines.append("return M")
 
-    return RawSpec("tests/top_vectors.lua", "\n".join(lines))
+    return RawSpec("\n".join(lines))

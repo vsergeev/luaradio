@@ -22,4 +22,4 @@ def generate():
     # Float32 vector plus Float32 constant
     vectors.append(TestVector([numpy.float32(3.5)], [x], process(numpy.float32(3.5), x), "Float32 constant, 256 Float32 inputs, 256 Float32 output"))
 
-    return BlockSpec("AddConstantBlock", "tests/blocks/signal/addconstant_spec.lua", vectors, 1e-6)
+    return BlockSpec("AddConstantBlock", vectors, 1e-6)

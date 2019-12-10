@@ -15,4 +15,4 @@ def generate():
     vectors.append(TestVector([5.0], [x], process(5.0, x), "5.0 Modulation Index, 256 ComplexFloat32 input, 256 Float32 output"))
     vectors.append(TestVector([10.0], [x], process(10.0, x), "10.0 Modulation Index, 256 ComplexFloat32 input, 256 Float32 output"))
 
-    return BlockSpec("FrequencyDiscriminatorBlock", "tests/blocks/signal/frequencydiscriminator_spec.lua", vectors, 1e-6)
+    return BlockSpec("FrequencyDiscriminatorBlock", vectors, 1e-6)

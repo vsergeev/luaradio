@@ -20,4 +20,4 @@ def generate():
     vectors.append(TestVector(['"both"'], [frame1], test_vector_wrapper([message1_both]), "Alphanumeric Message"))
     vectors.append(TestVector(['"numeric"'], [frame2], test_vector_wrapper([message2]), "Numeric Message"))
 
-    return BlockSpec("POCSAGDecoderBlock", "tests/blocks/protocol/pocsagdecoder_spec.lua", vectors, 1e-6)
+    return BlockSpec("POCSAGDecoderBlock", vectors, 1e-6)

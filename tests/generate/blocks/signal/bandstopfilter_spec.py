@@ -22,4 +22,4 @@ def generate():
     vectors.append(TestVector([129, [0.1, 0.3], 3.0, '"bartlett"'], [x], process(129, [0.1, 0.3], 3.0, "bartlett", x), "129 taps, {0.1, 0.3} cutoff, 3.0 nyquist, bartlett window, 256 Float32 input, 256 ComplexFloat32 output"))
     vectors.append(TestVector([129, [0.4, 0.6], 3.0, '"bartlett"'], [x], process(129, [0.4, 0.6], 3.0, "bartlett", x), "129 taps, {0.4, 0.6} cutoff, 3.0 nyquist, bartlett window, 256 Float32 input, 256 ComplexFloat32 output"))
 
-    return BlockSpec("BandstopFilterBlock", "tests/blocks/signal/bandstopfilter_spec.lua", vectors, 1e-6)
+    return BlockSpec("BandstopFilterBlock", vectors, 1e-6)

@@ -51,4 +51,4 @@ def generate():
             # Build test vector
             vectors.append(TestVector(["buffer.open(\"%s\")" % buf, num_channels, 44100], [], [expected_vector[:, i] for i in range(num_channels)], "bits per sample %d, num channels %d" % (bits_per_sample, num_channels)))
 
-    return SourceSpec("WAVFileSource", "tests/blocks/sources/wavfile_spec.lua", vectors, 1e-6)
+    return SourceSpec("WAVFileSource", vectors, 1e-6)

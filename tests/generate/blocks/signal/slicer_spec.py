@@ -13,4 +13,4 @@ def generate():
     vectors.append(TestVector([0.25], [x], process(0.25, x), "0.25 threshold, 256 Float32 input, 256 Bit output"))
     vectors.append(TestVector([-0.25], [x], process(-0.25, x), "-0.25 threshold, 256 Float32 input, 256 Bit output"))
 
-    return BlockSpec("SlicerBlock", "tests/blocks/signal/slicer_spec.lua", vectors, 1e-6)
+    return BlockSpec("SlicerBlock", vectors, 1e-6)

@@ -10,4 +10,4 @@ def generate():
     y = random_bit(256)
     vectors.append(TestVector([], [y], [y], "256 Bit input, 256 Bit output"))
 
-    return BlockSpec("NopBlock", "tests/blocks/signal/nop_spec.lua", vectors, 1e-6)
+    return BlockSpec("NopBlock", vectors, 1e-6)

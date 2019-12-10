@@ -19,4 +19,4 @@ def generate():
     x = random_complex64(256)
     vectors.append(TestVector([1e-2], [x], process(1e-2, x), "1e-2 cutoff, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
 
-    return BlockSpec("SinglepoleHighpassFilterBlock", "tests/blocks/signal/singlepolehighpassfilter_spec.lua", vectors, 1e-6)
+    return BlockSpec("SinglepoleHighpassFilterBlock", vectors, 1e-6)

@@ -23,4 +23,4 @@ def generate():
     vectors.append(TestVector([], [frame3], test_vector_wrapper([packet3]), "Datetime Frame"))
     vectors.append(TestVector([], [frame4], test_vector_wrapper([packet4]), "Other Frame"))
 
-    return BlockSpec("RDSDecoderBlock", "tests/blocks/protocol/rdsdecoder_spec.lua", vectors, 1e-6)
+    return BlockSpec("RDSDecoderBlock", vectors, 1e-6)

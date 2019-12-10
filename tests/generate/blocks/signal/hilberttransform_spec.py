@@ -34,4 +34,4 @@ def generate():
     vectors.append(TestVector([129], [x], process(129, x), "129 taps, 256 Float32 input, 256 ComplexFloat32 output"))
     vectors.append(TestVector([257], [x], process(257, x), "257 taps, 256 Float32 input, 256 ComplexFloat32 output"))
 
-    return BlockSpec("HilbertTransformBlock", "tests/blocks/signal/hilberttransform_spec.lua", vectors, 1e-6)
+    return BlockSpec("HilbertTransformBlock", vectors, 1e-6)

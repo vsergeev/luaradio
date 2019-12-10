@@ -24,4 +24,4 @@ def generate():
     data, clock = random_float32(256), random_float32(256)
     vectors.append(TestVector([], [data, clock], process(data, clock), "256 Float32 data, 256 Float32 clock, 256 Float32 output"))
 
-    return BlockSpec("SamplerBlock", "tests/blocks/signal/sampler_spec.lua", vectors, 1e-6)
+    return BlockSpec("SamplerBlock", vectors, 1e-6)

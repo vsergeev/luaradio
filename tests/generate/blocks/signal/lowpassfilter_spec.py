@@ -26,4 +26,4 @@ def generate():
     vectors.append(TestVector([128, 0.5, 3.0, '"bartlett"'], [x], process(128, 0.5, 3.0, "bartlett", x), "128 taps, 0.5 cutoff, 3.0 nyquist, bartlett window, 256 Float32 input, 256 Float32 output"))
     vectors.append(TestVector([128, 0.7, 3.0, '"bartlett"'], [x], process(128, 0.7, 3.0, "bartlett", x), "128 taps, 0.7 cutoff, 3.0 nyquist, bartlett window, 256 Float32 input, 256 Float32 output"))
 
-    return BlockSpec("LowpassFilterBlock", "tests/blocks/signal/lowpassfilter_spec.lua", vectors, 1e-6)
+    return BlockSpec("LowpassFilterBlock", vectors, 1e-6)

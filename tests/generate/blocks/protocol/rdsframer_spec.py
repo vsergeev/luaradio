@@ -38,4 +38,4 @@ def generate():
     x = numpy.hstack([frame1_bits, frame2_bits, frame3_bits])
     vectors.append(TestVector([], [x], test_vector_wrapper([frame1_object, frame2_object, frame3_object]), "Three contiguous frames"))
 
-    return BlockSpec("RDSFramerBlock", "tests/blocks/protocol/rdsframer_spec.lua", vectors, 1e-6)
+    return BlockSpec("RDSFramerBlock", vectors, 1e-6)

@@ -11,4 +11,4 @@ def generate():
     vectors.append(TestVector([0.4444, 0.0], [x], [clock], "0.4444 baudrate, 0.0 threshold"))
     vectors.append(TestVector([0.4444, 1.0], [x + 1.0], [clock], "0.4444 baudrate, 1.0 threshold"))
 
-    return BlockSpec("ZeroCrossingClockRecoveryBlock", "tests/blocks/signal/zerocrossingclockrecovery_spec.lua", vectors, 1e-6)
+    return BlockSpec("ZeroCrossingClockRecoveryBlock", vectors, 1e-6)

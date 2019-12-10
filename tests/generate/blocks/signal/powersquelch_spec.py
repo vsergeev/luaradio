@@ -17,4 +17,4 @@ def generate():
     vectors.append(TestVector([-30], [x], [numpy.array([0.0]*len(x), dtype=numpy.complex64)], "-40 dBFS complex exponential input, -30 dBFS squelch"))
     vectors.append(TestVector([-50], [x], [x], "-40 dBFS complex exponential input, -50 dBFS squelch"))
 
-    return BlockSpec("PowerSquelchBlock", "tests/blocks/signal/powersquelch_spec.lua", vectors, 1e-6)
+    return BlockSpec("PowerSquelchBlock", vectors, 1e-6)

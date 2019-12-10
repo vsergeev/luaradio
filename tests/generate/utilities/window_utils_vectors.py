@@ -26,4 +26,4 @@ def generate():
 
     lines.append("return M")
 
-    return RawSpec("tests/utilities/window_utils_vectors.lua", "\n".join(lines))
+    return RawSpec("\n".join(lines))

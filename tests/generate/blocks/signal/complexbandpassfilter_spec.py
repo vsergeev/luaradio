@@ -27,4 +27,4 @@ def generate():
     vectors.append(TestVector([129, [-0.1, -0.3], 3.0, '"bartlett"'], [x], process(129, [-0.1, -0.3], 3.0, "bartlett", x), "129 taps, {-0.1, -0.3} cutoff, 3.0 nyquist, bartlett window, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     vectors.append(TestVector([129, [-0.2, 0.2], 3.0, '"bartlett"'], [x], process(129, [-0.2, 0.2], 3.0, "bartlett", x), "129 taps, {-0.2, 0.2} cutoff, 3.0 nyquist, bartlett window, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
 
-    return BlockSpec("ComplexBandpassFilterBlock", "tests/blocks/signal/complexbandpassfilter_spec.lua", vectors, 1e-6)
+    return BlockSpec("ComplexBandpassFilterBlock", vectors, 1e-6)

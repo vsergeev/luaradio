@@ -29,4 +29,4 @@ def generate():
     b_taps, a_taps = gentaps(10)
     vectors.append(TestVector([b_taps, a_taps], [x], process(b_taps, a_taps, x), "10 Float32 b taps, 10 Float32 a taps, 256 Float32 input, 256 Float32 output"))
 
-    return BlockSpec("IIRFilterBlock", "tests/blocks/signal/iirfilter_spec.lua", vectors, 1e-6)
+    return BlockSpec("IIRFilterBlock", vectors, 1e-6)

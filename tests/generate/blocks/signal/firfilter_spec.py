@@ -55,4 +55,4 @@ def generate():
     vectors.append(TestVector([taps, False], [x], process(taps, x), "Dot product, 64 ComplexFloat32 tap, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     vectors.append(TestVector([taps, True], [x], [process(taps, x)[0][0:225]], "FFT, 64 ComplexFloat32 tap, 256 ComplexFloat32 input, 225 ComplexFloat32 output"))
 
-    return BlockSpec("FIRFilterBlock", "tests/blocks/signal/firfilter_spec.lua", vectors, 1e-6)
+    return BlockSpec("FIRFilterBlock", vectors, 1e-6)

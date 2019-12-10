@@ -44,4 +44,4 @@ def generate():
     x = numpy.hstack([random_bit(20), bytes_to_stuffed_bits(frame2_data), bytes_to_stuffed_bits(frame1_data), bytes_to_stuffed_bits(frame2_data), random_bit(20)])
     vectors.append(TestVector([], [x], test_vector_wrapper([frame2_object, frame1_object, frame2_object]), "Three back to back valid frames"))
 
-    return BlockSpec("AX25FramerBlock", "tests/blocks/protocol/ax25framer_spec.lua", vectors, 1e-6)
+    return BlockSpec("AX25FramerBlock", vectors, 1e-6)

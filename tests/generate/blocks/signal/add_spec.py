@@ -11,4 +11,4 @@ def generate():
     x, y = random_float32(256), random_float32(256)
     vectors.append(TestVector([], [x, y], [x + y], "2 256 Float32 inputs, 256 Float32 output"))
 
-    return BlockSpec("AddBlock", "tests/blocks/signal/add_spec.lua", vectors, 1e-6)
+    return BlockSpec("AddBlock", vectors, 1e-6)

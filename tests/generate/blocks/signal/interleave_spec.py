@@ -13,4 +13,4 @@ def generate():
     vectors.append(TestVector([2], [x, y], [numpy.ravel(numpy.column_stack((x, y)))], "Interleave 2 channels, ComplexFloat32 input"))
     vectors.append(TestVector([3], [x, y, z], [numpy.ravel(numpy.column_stack((x, y, z)))], "Interleave 3 channels, ComplexFloat32 input"))
 
-    return BlockSpec("InterleaveBlock", "tests/blocks/signal/interleave_spec.lua", vectors, 1e-6)
+    return BlockSpec("InterleaveBlock", vectors, 1e-6)

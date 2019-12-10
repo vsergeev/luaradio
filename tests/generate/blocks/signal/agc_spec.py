@@ -32,4 +32,4 @@ def generate():
     vectors.append(TestVector(['"fast"', -35, -75], [x], agc(-35, 0.1, 1.0, x), "-60 dBFS complex exponential input, -35 dBFS target, fast agc"))
     vectors.append(TestVector(['"slow"', -35, -75], [x], agc(-35, 3.0, 1.0, x), "-60 dBFS complex exponential input, -35 dBFS target, slow agc"))
 
-    return BlockSpec("AGCBlock", "tests/blocks/signal/agc_spec.lua", vectors, 1e-6)
+    return BlockSpec("AGCBlock", vectors, 1e-6)

@@ -142,7 +142,7 @@ def generate_spec(path, spec, dest):
             serialized_vectors.append(spec_templates[vector.__class__.__name__] % (vector.desc, serialized_args, serialized_inputs, serialized_outputs))
         s = spec_templates[spec.__class__.__name__] % (path, spec.name, "".join(serialized_vectors), spec.epsilon)
 
-    with open(os.path.join("tests", dest), "w") as f:
+    with open(dest, "w") as f:
         f.write(s)
 
 

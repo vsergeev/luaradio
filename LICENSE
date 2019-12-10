@@ -22,14 +22,14 @@ LuaRadio is licensed under the MIT license:
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 
-LuaRadio packages fperrad/lua-MessagePack v0.3.4 (https://github.com/fperrad/lua-MessagePack),
+LuaRadio packages fperrad/lua-MessagePack v0.5.2 (https://framagit.org/fperrad/lua-MessagePack),
 which is licensed under the MIT license:
 
     lua-MessagePack is licensed under the terms of the MIT/X11 license reproduced below.
     
     ===============================================================================
     
-    Copyright (C) 2012-2016 Francois Perrad.
+    Copyright (C) 2012-2019 Francois Perrad.
     
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

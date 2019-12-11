@@ -2,20 +2,25 @@ language: c
 
 sudo: required
 
+env:
+    global:
+        - LUAJIT_TAG="v2.0.5"
+        - LIQUID_TAG="v1.3.2"
+        - VOLK_TAG="f04a46f18308771b5ebf46292bf0fe6918578b35" # v2.0.0-4-gf04a46f, fixes AVX FMA rotator bug in v2.0
+
 install:
     - sudo apt-get install lua5.1 luarocks
     - sudo luarocks install busted
     - git clone https://github.com/LuaJIT/LuaJIT.git
     - cd LuaJIT
-    - git checkout v2.0.5
+    - git checkout $LUAJIT_TAG
     - make
     - sudo make install
     - cd ../
     - sudo apt-get install fftw3 fftw3-dev
     - git clone git://github.com/jgaeddert/liquid-dsp.git
     - cd liquid-dsp
-    - git checkout be509781421f7330ab2ddcba2ded4c8de13c3bb2
-    - sed -i 's/aclocal$/aclocal -I.\/scripts/' bootstrap.sh
+    - git checkout $LIQUID_TAG
     - ./bootstrap.sh
     - ./configure
     - make
@@ -24,7 +29,7 @@ install:
     - sudo apt-get install libboost-all-dev python-mako
     - git clone https://github.com/gnuradio/volk.git
     - cd volk/
-    - git checkout v1.4
+    - git checkout $VOLK_TAG
     - mkdir build
     - cd build
     - cmake ..

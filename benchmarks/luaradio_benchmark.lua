@@ -653,7 +653,8 @@ local benchmark_results = {
         page_size = radio.platform.page_size,
         cpu_count = radio.platform.cpu_count,
         cpu_model = radio.platform.cpu_model,
-        features = radio.platform.features
+        features = radio.platform.features,
+        versions = radio.platform.versions
     },
     parameters = {
         num_trials = BENCH_NUM_TRIALS,

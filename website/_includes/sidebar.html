@@ -1,0 +1,43 @@
+<nav class="menu">
+  <h1 class="title"><a href="{% base %}">{{ site.data.theme.name }}</a></h1>
+  <p align="center">
+      <a href="{{ site.data.theme.github_url }}"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="{{ site.data.theme.github_url }}/blob/master/ChangeLog.md"><code class="version">{{ site.data.theme.version }}</code></a>
+  </p>
+  <div class="toc">
+    <ul>
+        <li><a href="{% base %}/new-to-sdr.html">New to SDR?</a></li>
+        <li><a href="{% base %}/docs/">Documentation</a>
+            <ul>
+                <li><a href="{% base %}/docs/installation.html">Installation</a></li>
+                <li><a href="{% base %}/docs/getting-started.html">Getting Started</a></li>
+                <li><a href="{% base %}/docs/creating-blocks.html">Creating Blocks</a></li>
+                <li><a href="{% base %}/docs/embedding-luaradio.html">Embedding LuaRadio</a></li>
+                <li><a href="{% base %}/docs/architecture.html">Architecture</a></li>
+                <li><a href="{% base %}/docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
+                <li><a href="{% base %}/docs/supported-hardware.html">Supported Hardware</a></li>
+            </ul>
+        </li>
+        <li><a href="{% base %}/docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="{{ site.data.theme.github_url }}/wiki#project-roadmap">Project Roadmap</a></li>
+        <li><a href="{% base %}/examples/">Examples</a>
+            <ul>
+                <li><a href="{% base %}/examples/rtlsdr-wbfm-mono.html">WBFM Mono</a></li>
+                <li><a href="{% base %}/examples/rtlsdr-wbfm-stereo.html">WBFM Stereo</a></li>
+                <li><a href="{% base %}/examples/rtlsdr-nbfm.html">NBFM</a></li>
+                <li><a href="{% base %}/examples/rtlsdr-ax25.html">AX.25</a></li>
+                <li><a href="{% base %}/examples/rtlsdr-pocsag.html">POCSAG</a></li>
+                <li><a href="{% base %}/examples/rtlsdr-rds.html">RDS</a></li>
+                <li><a href="{% base %}/examples/rtlsdr-am-envelope.html">AM (Envelope)</a></li>
+                <li><a href="{% base %}/examples/rtlsdr-am-synchronous.html">AM (Synchronous)</a></li>
+                <li><a href="{% base %}/examples/rtlsdr-ssb.html">SSB</a></li>
+                <li><a href="{% base %}/examples/wavfile-ssb-modulator.html">WAV SSB Modulator</a></li>
+                <li><a href="{% base %}/examples/iqfile-converter.html">IQ File Converter</a></li>
+            </ul>
+        </li>
+        <li><a href="{% base %}/benchmarks.html">Benchmarks</a></li>
+    </ul>
+  </div>
+  <p align="center">
+    <a style="font-size: 1.4rem;" href="mailto:v@sergeev.io"><i class="fa fa-envelope-o" aria-hidden="true"></i> v@sergeev.io</a>
+  </p>
+</nav>

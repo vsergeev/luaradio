@@ -1,0 +1,11 @@
+# Theme customization - please change from the defaults!
+
+# Color for top bar, links, etc
+highlight_color: '#3498db'
+contrast_color: '#db3344'
+
+name: LuaRadio
+description: LuaRadio
+author: Vanya A. Sergeev
+github_url: https://github.com/vsergeev/luaradio
+version: v0.5.1

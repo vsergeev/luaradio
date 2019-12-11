@@ -1,0 +1,481 @@
+/* Top-level */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: white;
+  color: #222222;
+  margin: 0;
+  border-top: 7px solid {{ site.data.theme.highlight_color }};
+}
+
+/******************************************************************************/
+
+/* Scrolling Toc Container */
+
+.scroll-toc {
+  visibility: hidden;
+  height: 0;
+}
+
+.scroll-toc div.toc-header {
+  width: 75%;
+  max-width: 242px;
+  border-bottom: dotted #ddd;
+  border-width: 1px 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 550px) {
+  /* Only show scrolling toc in grid layout */
+  .is-position-fixed {
+    visibility: visible;
+    position: fixed !important;
+    height: 100%;
+    top: 1.7rem;
+    left: 1.7rem;
+    max-width: 15%;
+  }
+}
+
+@media (min-width: 750px) {
+  .is-position-fixed {
+    top: 3.2rem;
+    left: 3.2rem;
+    max-width: 20%;
+  }
+}
+
+@media (min-width: 1000px) {
+  .is-position-fixed {
+    max-width: 25%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .is-position-fixed {
+    left: 12.5%;
+  }
+}
+
+/* Scroll support */
+
+.scroll-toc div.toc {
+  padding-top: 1.1rem;
+  padding-bottom: 0.5rem;
+}
+
+@media (min-width: 550px) {
+  .scroll-toc div.toc {
+    height: 80%;
+  }
+  .scroll-toc div.toc div.js-toc {
+    max-height: 80%;
+  }
+}
+
+.scroll-toc div.toc div.js-toc {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.scroll-toc div.toc>ul {
+  position: relative;
+}
+
+/* Collapse support */
+
+.is-collapsible {
+  max-height: 1000px;
+  overflow: hidden;
+  transition: all 300ms ease-in-out;
+}
+
+.is-collapsed {
+  max-height: 0;
+}
+
+/* Toc List container inside Scrolling Toc */
+
+.toc-list {
+  margin: 0;
+  padding-left: 1.6rem;
+}
+
+.toc .toc-list ul li {
+  margin-top: 0.2rem;
+  margin-bottom: 0;
+}
+
+a.toc-link {
+  color: currentColor;
+  height: 100%;
+}
+
+.toc-link::before {
+  content: ' ';
+  margin-left: -1.2em;
+  float: left;
+}
+
+.is-active-link {
+  font-weight: 700
+}
+
+.is-active-link::before {
+  content: '\25ba';
+  color: {{ site.data.theme.highlight_color }};
+}
+
+/******************************************************************************/
+
+/* Block element margins */
+
+p, blockquote, ul, ol, dl, table, pre {
+  margin-top: 0;
+  margin-bottom: 1.6rem;
+}
+
+/* Lists */
+
+.content ul, .content ol {
+  padding-left: 3.2rem;
+}
+
+.content ul :first-child, .content ol :first-child {
+  margin-top: 0;
+}
+
+.content ul :last-child, .content ol :last-child {
+  margin-bottom: 0;
+}
+
+/* Headers */
+
+h1, h2, h3, h4, h5, h6 {
+  color: #181818;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 1.8rem;
+}
+
+h2, h3, h4, h5, h6 {
+  margin-top: 1.6rem;
+}
+
+h1 {
+  padding-bottom: 0.48rem;
+  font-size: 3.6rem;
+  line-height: 1.2;
+  border-bottom: 1px solid #eee;
+}
+
+h2 {
+  padding-bottom: 0.48rem;
+  font-size: 2.8rem;
+  line-height: 1.225;
+  border-bottom: 1px solid #eee;
+}
+
+h3 {
+  font-size: 2.4rem;
+  line-height: 1.43;
+}
+
+h4 {
+  font-size: 2.0rem;
+}
+
+h5 {
+  font-size: 1.6rem;
+}
+
+h6 {
+  font-size: 1.6rem;
+  color: #777;
+}
+
+/* Header Anchors
+ *
+ * http://ben.balter.com/2014/03/13/pages-anchor-links/
+ * https://byparker.com/blog/2014/header-anchor-links-in-vanilla-javascript-for-github-pages-and-jekyll/
+ */
+
+.header-link {
+  position: relative;
+  left: 0.8rem;
+  opacity: 0;
+  font-size: 1.28rem;
+
+  -webkit-transition: opacity 0.2s ease-in-out 0.1s;
+  -moz-transition: opacity 0.2s ease-in-out 0.1s;
+  -ms-transition: opacity 0.2s ease-in-out 0.1s;
+}
+
+h2:hover .header-link,
+h3:hover .header-link,
+h4:hover .header-link,
+h5:hover .header-link {
+  opacity: 1;
+}
+
+/* Links */
+
+a {
+  color: {{ site.data.theme.highlight_color }};
+  text-decoration: none;
+}
+
+a:hover {
+  color: {{ site.data.theme.highlight_color }};
+  text-decoration: underline;
+}
+
+a:visited {
+  color: {{ site.data.theme.highlight_color }};
+}
+
+/* Images */
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Figures */
+
+figure {
+  margin: 1.0rem 2.0rem 1.6rem 2.0rem;
+  display: inline-block;
+}
+
+figcaption {
+  font-style: italic;
+  text-align: center;
+}
+
+figure.float-right {
+  float: right;
+}
+
+figure.highlight {
+  margin: 0;
+}
+
+/* Code */
+
+code {
+  font-family: Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal, Consolas, Liberation Mono, DejaVu Sans Mono, Courier New, monospace;
+  background: #f8f8f8;
+  border: none;
+  line-height: 2.0rem;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+pre code {
+  font-family: Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal, Consolas, Liberation Mono, DejaVu Sans Mono, Courier New, monospace;
+  background: #f8f8f8;
+  color: #333;
+  border: none;
+  line-height: 2.0rem;
+  font-size: 1.2rem;
+  overflow: auto;
+  padding: 0rem 1.5rem;
+}
+
+/******************************************************************************/
+
+/* Benchmark platform information formatting */
+
+pre.benchmark-platform {
+  font-family: Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal, Consolas, Liberation Mono, DejaVu Sans Mono, Courier New, monospace;
+  padding-left: 1.0rem;
+}
+
+/******************************************************************************/
+
+/* Reference Manual formatting */
+
+.reference-manual hr {
+  margin-top: 2.0rem;
+  margin-bottom: 1.5rem;
+}
+
+.reference-manual h4 {
+  margin-bottom: 1.0rem;
+}
+
+.reference-manual h5 {
+  font-size: 1.8rem;
+  margin-top: 0;
+  padding-top: 0.25rem;
+  margin-bottom: 1.0rem;
+}
+
+.reference-manual .class p, .reference-manual .class ul, .reference-manual .class pre, .reference-manual .class h6,
+.reference-manual .block p, .reference-manual .block ul, .reference-manual .block pre, .reference-manual .block h6,
+.reference-manual .field p, .reference-manual .field ul, .reference-manual .field pre, .reference-manual .field h6,
+.reference-manual .function p, .reference-manual .function ul, .reference-manual .function pre, .reference-manual .function h6 {
+  margin-bottom: 0.75rem;
+  margin-left: 2.0rem;
+}
+
+.reference-manual .class h5 code {
+  margin-left: 0rem;
+}
+
+.reference-manual .block h5 code {
+  margin-left: 1.4rem;
+}
+
+.reference-manual h6 {
+  color: #999;
+  font-size: 1.5rem;
+  margin-top: 1.0rem;
+  margin-bottom: 0.8rem;
+}
+
+/******************************************************************************/
+
+/* Content Pane */
+
+.content {
+  min-height: 400px;
+}
+
+@media (min-width: 550px) {
+  .content {
+    padding-top: 35px;
+  }
+}
+
+.content img {
+  max-width: 100%;
+}
+
+/******************************************************************************/
+
+/* Sidebar Pane */
+
+.sidebar {
+  padding-top: 2.5rem;
+}
+
+@media (min-width: 550px) {
+  .sidebar {
+    padding-top: 2.0rem;
+  }
+}
+
+@media (min-width: 750px) {
+  .sidebar {
+    padding-top: 2.5rem;
+  }
+}
+
+/******************************************************************************/
+
+/* Navigation Formatting */
+
+.menu div.toc {
+  margin-bottom: 1.0rem;
+  border: dotted #ddd;
+  border-width: 1px 0;
+  padding-top: 0.9rem;
+  padding-bottom: 0.5rem;
+}
+
+nav .title {
+  text-align: center;
+}
+
+nav .title a {
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 800;
+}
+
+nav .title a:hover {
+  text-decoration: none;
+}
+
+nav .version {
+  color: {{ site.data.theme.highlight_color }};
+  background-color: white;
+  margin-left: 0.5rem;
+  font-size: 1.6rem;
+  letter-spacing: -0.075rem;
+}
+
+nav h1, nav h2, nav h5 {
+  text-align: center;
+  padding: 0;
+  margin-bottom: 1.0rem;
+  border-bottom: none;
+}
+
+nav h1 {
+  font-size: 3.2rem;
+}
+
+nav ul {
+  padding: 0;
+  margin-left: 1.6rem;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  list-style-type: none;
+}
+
+nav ul li {
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
+  line-height: 2.2rem;
+  font-size: 1.6rem;
+}
+
+nav ul ul {
+  margin-left: 2.0rem;
+  list-style-type: none;
+}
+
+nav ul ul li {
+  font-size: 1.4rem;
+}
+
+nav .toc a {
+  color: #222222;
+}
+
+nav .toc a:visited {
+  color: #222222;
+}
+
+/******************************************************************************/
+
+/* Footer Formatting */
+
+.footer {
+  width: 100%;
+  font-size: 80%;
+  color: #666;
+  border-top: 4px solid #eee;
+  overflow: hidden;
+}
+
+.disclaimer p {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  text-align: center;
+}

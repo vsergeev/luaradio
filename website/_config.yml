@@ -7,6 +7,6 @@ kramdown:
   syntax_highlighter: rouge
 
 host: 0.0.0.0
-url: http://luaradio.io
+url: https://luaradio.io
 lsi: false
 exclude: [CNAME, .gitignore, Gemfile, Gemfile.lock, _thumbnails]

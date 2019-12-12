@@ -52,5 +52,5 @@ def generate():
         for (frequency, amplitude, phase, offset) in ((50, 1.0, 0.0, 0.0), (100, 2.5, numpy.pi / 4, -0.5)):
             vectors.append(TestVector(["\"%s\"" % signal, frequency, 1e3, {'amplitude': amplitude, 'phase': phase, 'offset': offset}], [], process(signal, frequency, 1e3, amplitude, phase, offset), "%s frequency %d, sample rate 1000, ampltiude %.2f, phase %.4f, offset %.2f" % (signal, frequency, amplitude, phase, offset)))
 
-    # FIXME why does this need 5e-5 epsilon?
-    return SourceSpec("SignalSource", vectors, 5e-5)
+    # FIXME why does this need 2e-5 epsilon?
+    return SourceSpec("SignalSource", vectors, 2e-5)

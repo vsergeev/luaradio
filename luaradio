@@ -37,7 +37,7 @@ local function print_usage()
 end
 
 local function print_version()
-    local version = "LuaRadio %s - Vanya A. Sergeev. http://luaradio.io"
+    local version = "LuaRadio %s - Vanya A. Sergeev. https://luaradio.io"
 
     print(string.format(version, radio.version))
     os.exit(0)

@@ -14,5 +14,6 @@ def generate():
     vectors.append(TestVector([0.5], [x], process(0.5, x), "0.5 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
     vectors.append(TestVector([0.7], [x], process(0.7, x), "0.7 offset, 256 ComplexFloat32 input, 256 ComplexFloat32 output"))
 
-    # FIXME why does this need 2e-5 epsilon?
-    return BlockSpec("FrequencyTranslatorBlock", vectors, 2e-5)
+    # FIXME liquid-dsp implementation has less precision (5e-3)
+    # FIXME why does this need 1e-5 epsilon?
+    return BlockSpec("FrequencyTranslatorBlock", vectors, "(radio.platform.features.liquid and not radio.platform.features.volk) and 5e-3 or 1e-5")

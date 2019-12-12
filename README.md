@@ -149,7 +149,7 @@ LuaRadio documentation is contained in the [docs](docs) folder.
 * [docs/](docs) - Documentation
     * [refman/](docs/refman) - Reference manual generator
 * [tests/](tests) - Unit tests
-* [ChangeLog.md](ChangeLog.md) - Change Log
+* [CHANGELOG.md](CHANGELOG.md) - Change log
 * [README.md](README.md) - This README
 * [LICENSE](LICENSE) - MIT License
 * [luaradio](luaradio) - `luaradio` runner helper script executable

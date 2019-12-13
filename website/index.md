@@ -61,16 +61,16 @@ git clone https://github.com/vsergeev/luaradio.git
 ```
 $ cd luaradio
 $ ./luaradio --platform
-luajit          LuaJIT 2.0.4
+luajit          LuaJIT 2.0.5
 os              Linux
 arch            x64
 page size       4096
 cpu count       4
 cpu model       Intel(R) Core(TM) i5-4570T CPU @ 2.90GHz
 features
-    fftw3f      true
-    volk        true
-    liquid      true
+    fftw3f      true    fftw-3.3.8-sse2-avx
+    volk        true    2.0 (avx2_64_mmx_orc)
+    liquid      true    1.3.2
 $
 ```
 

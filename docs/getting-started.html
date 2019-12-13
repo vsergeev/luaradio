@@ -11,7 +11,7 @@
   
   <meta name="author" content="Vanya A. Sergeev" />
   <meta name="description" content="LuaRadio" />
-  <link rel="canonical" href="http://0.0.0.0:4000/docs/getting-started.html" />
+  <link rel="canonical" href="https://luaradio.io/docs/getting-started.html" />
   <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 
   <link rel="stylesheet" href="../assets/css/all.css">
@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -73,7 +73,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.0</code></a>
     </p>
   </div>
   <div class="toc">
@@ -167,7 +167,7 @@ blocks, and running a flow graph.</p>
 <img src="figures/flowgraph_mixer_example.png" />
 </p>
 
-<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
 
 <span class="c1">-- Blocks</span>
 <span class="kd">local</span> <span class="n">source1</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">125e3</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="c1">-- 125 kHz cosine source, sampled at 1 MHz</span>
@@ -184,14 +184,12 @@ blocks, and running a flow graph.</p>
 
 <span class="c1">-- Run it</span>
 <span class="n">top</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>Run the flow graph with the <code class="highlighter-rouge">luaradio</code> runner:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ./luaradio test.lua
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio test.lua
+</code></pre></div></div>
 
 <p>The flow graph can be terminated with Ctrl-C or <code class="highlighter-rouge">SIGINT</code>.</p>
 
@@ -212,23 +210,21 @@ produces the plot below:</p>
 
 <h3 id="explanation">Explanation</h3>
 
-<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
-</code></pre>
-</div>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+</code></pre></div></div>
 
 <p>The first line of the example imports the <code class="highlighter-rouge">radio</code> package under the local
 variable <code class="highlighter-rouge">radio</code>. This package exposes all LuaRadio blocks, as well the
 facilities to create custom blocks and types.</p>
 
-<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Blocks</span>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Blocks</span>
 <span class="kd">local</span> <span class="n">source1</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">125e3</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span> <span class="c1">-- 125 kHz cosine source, sampled at 1 MHz</span>
 <span class="kd">local</span> <span class="n">source2</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">75e3</span><span class="p">,</span> <span class="mf">1e6</span><span class="p">)</span>  <span class="c1">-- 75 kHz cosine source, sampled at 1 MHz</span>
 <span class="kd">local</span> <span class="n">mixer</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">MultiplyBlock</span><span class="p">()</span>                      <span class="c1">-- Multiply block</span>
 <span class="kd">local</span> <span class="n">throttle</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">()</span>                   <span class="c1">-- Throttle block</span>
 <span class="kd">local</span> <span class="n">sink</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">()</span>                 <span class="c1">-- Spectrum plotting sink</span>
 <span class="kd">local</span> <span class="n">top</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">CompositeBlock</span><span class="p">()</span>                       <span class="c1">-- Top-level block to contain the flow graph</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The blocks section lines instantiate each block of the flow graph. Note that
 sample rate parameters are only required for the source blocks; all other
@@ -242,12 +238,11 @@ graph that can be run, or for a hierarchical block — a composition of blocks
 abstracted into one block. In this example, we create a <code class="highlighter-rouge">CompositeBlock</code> to
 serve as a top-level block that contains a complete flow graph.</p>
 
-<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Connections</span>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Connections</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source1</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">mixer</span><span class="p">,</span> <span class="s1">'in1'</span><span class="p">)</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">source2</span><span class="p">,</span> <span class="s1">'out'</span><span class="p">,</span> <span class="n">mixer</span><span class="p">,</span> <span class="s1">'in2'</span><span class="p">)</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">mixer</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">sink</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The connections section lines specify the connections between blocks, inside
 the top-level block, which form the complete flow graph.</p>
@@ -265,10 +260,9 @@ and connect the first output to the first input of each adjacent block. This
 syntax is convenient for connecting chains of blocks that only have one input
 and output, which is most blocks.</p>
 
-<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="c1">-- Run it</span>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Run it</span>
 <span class="n">top</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The last line of the example runs the flow graph. This line will block until
 the flow graph terminates, either naturally by an exiting source, or forcibly
@@ -343,7 +337,7 @@ blocks and data types.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

@@ -11,7 +11,7 @@
   
   <meta name="author" content="Vanya A. Sergeev" />
   <meta name="description" content="LuaRadio" />
-  <link rel="canonical" href="http://0.0.0.0:4000/examples/rtlsdr-wbfm-mono.html" />
+  <link rel="canonical" href="https://luaradio.io/examples/rtlsdr-wbfm-mono.html" />
   <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 
   <link rel="stylesheet" href="../assets/css/all.css">
@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -73,7 +73,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.0</code></a>
     </p>
   </div>
   <div class="toc">
@@ -109,7 +109,7 @@ LuaRadio as the <a href="../docs/reference-manual.html#wbfmmonodemodulator"><cod
 
 <h5 id="source">Source</h5>
 
-<div class="language-lua highlighter-rouge"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="o">#</span><span class="n">arg</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">then</span>
     <span class="nb">io.stderr</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="s2">"Usage: "</span> <span class="o">..</span> <span class="n">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">..</span> <span class="s2">" &lt;FM radio frequency&gt;\n"</span><span class="p">)</span>
@@ -143,14 +143,12 @@ LuaRadio as the <a href="../docs/reference-manual.html#wbfmmonodemodulator"><cod
 <span class="k">end</span>
 
 <span class="n">top</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h5 id="usage">Usage</h5>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>Usage: examples/rtlsdr_wbfm_mono.lua &lt;FM radio frequency&gt;
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/rtlsdr_wbfm_mono.lua &lt;FM radio frequency&gt;
+</code></pre></div></div>
 
 <p>Running this example in a headless environment will inhibit plotting and record
 audio to the WAV file <code class="highlighter-rouge">wbfm_mono.wav</code>.</p>
@@ -159,15 +157,14 @@ audio to the WAV file <code class="highlighter-rouge">wbfm_mono.wav</code>.</p>
 
 <p>Listen to 91.1 MHz:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_wbfm_mono.lua 91.1e6
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_wbfm_mono.lua 91.1e6
+</code></pre></div></div>
 
 
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

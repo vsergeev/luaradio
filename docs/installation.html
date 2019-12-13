@@ -11,7 +11,7 @@
   
   <meta name="author" content="Vanya A. Sergeev" />
   <meta name="description" content="LuaRadio" />
-  <link rel="canonical" href="http://0.0.0.0:4000/docs/installation.html" />
+  <link rel="canonical" href="https://luaradio.io/docs/installation.html" />
   <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 
   <link rel="stylesheet" href="../assets/css/all.css">
@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -73,7 +73,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.0</code></a>
     </p>
   </div>
   <div class="toc">
@@ -110,12 +110,11 @@ also be necessary for real-time applications.</p>
 <p>LuaRadio is available through a PPA for Ubuntu 16.04 (Xenial Xerus) and Ubuntu
 14.04 (Trusty Tahr), under amd64, i386, and armhf architectures.</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install software-properties-common
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get install software-properties-common
 sudo add-apt-repository ppa:vsergeev/luaradio
 sudo apt-get update
 sudo apt-get install luaradio
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p><em>Note</em>: Users should install liquid-dsp or VOLK for real-time acceleration.
 liquid-dsp is not yet available in the PPA.  liquid-dsp or VOLK can be
@@ -129,9 +128,8 @@ plotting support.</p>
 
 <p>LuaRadio is available in <a href="http://brew.sh/">Homebrew</a> for Mac OS X:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>brew install luaradio
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install luaradio
+</code></pre></div></div>
 
 <p><em>Note</em>: Users should install liquid-dsp or VOLK for real-time acceleration.
 liquid-dsp is not yet available in Homebrew. liquid-dsp or VOLK can be
@@ -156,12 +154,11 @@ installed <a href="#install-real-time-dependencies">from source</a>.</p>
 
 <p>Build and install LuaRadio:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>git clone https://github.com/vsergeev/luaradio.git
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/vsergeev/luaradio.git
 cd luaradio/embed
 make lib
 sudo make install
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="install-real-time-dependencies">Install real-time dependencies</h3>
 
@@ -172,7 +169,7 @@ libraries are strongly encouraged for appreciable performance. VOLK depends on
 boost.</p>
 
 <ul>
-  <li>Arch Linux: <code class="highlighter-rouge">fftw</code>, <code class="highlighter-rouge">liquid-dsp-git</code> (AUR) or <code class="highlighter-rouge">libvolk</code></li>
+  <li>Arch Linux: <code class="highlighter-rouge">fftw</code>, <code class="highlighter-rouge">liquid-dsp</code>, <code class="highlighter-rouge">libvolk</code></li>
   <li>Ubuntu/Debian: <code class="highlighter-rouge">fftw3</code>, <code class="highlighter-rouge">libfftw3-dev</code>, liquid-dsp or VOLK from source</li>
   <li>Fedora, CentOS/RHEL/SL 7 or up: <code class="highlighter-rouge">fftw</code>, <code class="highlighter-rouge">fftw-devel</code>, liquid-dsp or VOLK from
 source</li>
@@ -193,20 +190,19 @@ external libraries.</p>
 
 <p>Check the installation by dumping the platform information:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>$ luaradio --platform
-luajit          LuaJIT 2.0.4
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ luaradio --platform
+luajit          LuaJIT 2.0.5
 os              Linux
 arch            x64
 page size       4096
 cpu count       4
 cpu model       Intel(R) Core(TM) i5-4570T CPU @ 2.90GHz
 features
-    fftw3f      true
-    volk        true
-    liquid      true
+    fftw3f      true    fftw-3.3.8-sse2-avx
+    volk        true    2.0 (avx2_64_mmx_orc)
+    liquid      true    1.3.2
 $
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>The <code class="highlighter-rouge">liquid</code>, <code class="highlighter-rouge">volk</code>, and <code class="highlighter-rouge">fftw3f</code> features should be marked true, if the
 respective libraries were found by LuaRadio.</p>
@@ -216,7 +212,7 @@ respective libraries were found by LuaRadio.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

@@ -11,7 +11,7 @@
   
   <meta name="author" content="Vanya A. Sergeev" />
   <meta name="description" content="LuaRadio" />
-  <link rel="canonical" href="http://0.0.0.0:4000/docs/comparison-gnuradio.html" />
+  <link rel="canonical" href="https://luaradio.io/docs/comparison-gnuradio.html" />
   <link rel="icon" type="image/x-icon" href="../favicon.ico" />
 
   <link rel="stylesheet" href="../assets/css/all.css">
@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/ChangeLog.md"><code class="version">v0.5.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -73,7 +73,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.5.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.0</code></a>
     </p>
   </div>
   <div class="toc">
@@ -120,9 +120,9 @@ block development.</p>
 
 <p>GNU Radio tends to have a large size footprint. A typical binary GNU Radio
 installation weighs in at over 100 MB. When the installation includes
-development support, the <a href="http://www.boost.org/">boost</a> development headers and
-numerous other libraries and tools (gsl, blas, swig, orc, etc.) can add another
-100 MB or more.</p>
+development support, the <a href="https://www.boost.org/">boost</a> development headers
+and numerous other libraries and tools (gsl, blas, swig, orc, etc.) can add
+another 100 MB or more.</p>
 
 <p>GNU Radio also has a large compilation footprint, in terms of time and
 dependencies. Compilation of the GNU Radio framework and its modules is
@@ -152,11 +152,9 @@ accessible to embedded Linux platforms.</p>
 <p>GNU Radio blocks are typically written in C++, and tend to have a lot of
 boilerplate for building, Python binding, graphical editor binding, and
 testing. This is mitigated with tooling, i.e. the <code class="highlighter-rouge">gr_modtool</code>, but to some,
-this may contribute to the opaqueness of the framework. See the GNU Radio
-<a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/OutOfTreeModules">Out-of-tree Modules
-guide</a> and
-<a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/BlocksCodingGuide">Blocks Coding
-guide</a>
+this may contribute to the opaqueness of the framework. See the <a href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_GNU_Radio_in_C%2B%2B">Working with
+GNU Radio in C++
+tutorial</a>
 for examples of the block development flow and block skeletons.</p>
 
 <p>GNU Radio C++ blocks naturally require compilation before they can be used in a
@@ -166,7 +164,7 @@ a custom form of string templating (e.g.
 despite being written in C++, to code generate support for multiple data types.
 C++ blocks are usually bound to Python with <a href="http://www.swig.org/">SWIG</a>, which
 generates usable, but unnatural bindings. Blocks can also be written in pure
-Python (see the <a href="http://gnuradio.org/redmine/projects/gnuradio/wiki/Guided_Tutorial_GNU_Radio_in_Python">Working with GNU Radio in Python
+Python (see the <a href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_GNU_Radio_in_Python">Working with GNU Radio in Python
 tutorial</a>),
 and though they are limited in performance compared to C++ blocks, do provide
 an avenue for more rapid prototyping. Altogether, the uninitiated may still
@@ -176,11 +174,11 @@ third-party modules on <a href="http://www.cgran.org/">CGRAN</a>.</p>
 
 <p>GNU Radio does not support creating custom first-class data types for
 serialization between blocks, but blocks may exchange Protocol Data Units
-(PDUs) with <a href="http://gnuradio.org/doc/doxygen/page_tagged_stream_blocks.html">Tagged
-Streams</a>, which
-demarcate the boundaries of the structured data, or use asynchronous <a href="http://gnuradio.org/doc/doxygen/page_msg_passing.html">Message
-Passing</a>, which pass
-data out-of-band of flow graph streams.</p>
+(PDUs) with <a href="https://www.gnuradio.org/doc/doxygen/page_tagged_stream_blocks.html">Tagged
+Streams</a>,
+which demarcate the boundaries of the structured data, or use asynchronous
+<a href="https://www.gnuradio.org/doc/doxygen/page_msg_passing.html">Message Passing</a>,
+which pass data out-of-band of flow graph streams.</p>
 
 <p>LuaRadio blocks are written in pure Lua, have substantially less boilerplate,
 and require no compilation or bindings. With LuaRadio, the convenience of
@@ -213,8 +211,9 @@ can accept any data type that implements <code class="highlighter-rouge">to_json
 problem of block type differentiation to the users. GNU Radio has developed a
 rich nomenclature for annotating their block names with their type signature,
 using obscure suffixes like <code class="highlighter-rouge">_cc</code> and <code class="highlighter-rouge">_ff</code>, e.g. <code class="highlighter-rouge">multiply_cc</code>, <code class="highlighter-rouge">multiply_ff</code>,
-<code class="highlighter-rouge">fir_filter_ccc</code>, <code class="highlighter-rouge">fir_filter_ccf</code>, <code class="highlighter-rouge">fir_filter_fff</code> — scroll through the <a href="http://gnuradio.org/doc/sphinx/">GNU
-Radio Sphinx documentation</a> for more examples.</p>
+<code class="highlighter-rouge">fir_filter_ccc</code>, <code class="highlighter-rouge">fir_filter_ccf</code>, <code class="highlighter-rouge">fir_filter_fff</code> — scroll through the <a href="https://www.gnuradio.org/doc/sphinx-v3.7.9.2/">GNU
+Radio Sphinx documentation</a> for
+more examples.</p>
 
 <p>On the other hand, LuaRadio blocks can support multiple type signatures. For
 example, the <a href="reference-manual.html#multiplyblock"><code class="highlighter-rouge">MultiplyBlock</code></a> and
@@ -260,7 +259,7 @@ cases, LuaRadio performance exceeds GNU Radio performance.</p>
 GNU Radio still performs better than LuaRadio overall. If performance is your
 priority, then you should use GNU Radio.</p>
 
-<p>See the <a href="http://luaradio.io/benchmarks.html">Benchmarks</a> page for empirical
+<p>See the <a href="https://luaradio.io/benchmarks.html">Benchmarks</a> page for empirical
 benchmarks on both LuaRadio and GNU Radio across several platforms.</p>
 
 <p>Future infrastructure improvements and additional library acceleration will
@@ -283,7 +282,7 @@ these can be added to LuaRadio as needed.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

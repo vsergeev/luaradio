@@ -1,3 +1,65 @@
+* v0.6.0 - 12/12/2019
+    * Block additions
+        * JSONSource
+        * NetworkClientSource
+        * NetworkServerSource
+        * NetworkClientSink
+        * NetworkServerSink
+    * Block changes
+        * Add format_utils with binary sample format conversion tables.
+        * Add network_utils with network server and client utility classes.
+        * Refactor several file sources and sinks to use format_utils:
+          IQFileSource, RealFileSource, WAVFileSource, IQFileSink,
+          RealFileSink, WAVFileSink.
+        * Move common shared utilities to radio/utilities/ folder.
+        * Improve memory copies in several blocks: DelayBlock, FIRFilterBlock,
+          HilbertTransformBlock, ThrottleBlock, GnuplotSpectrumSink,
+          GnuplotWaterfallSink, AX25FramerBlock, POCSAGFramerBlock,
+          RDSFramerBlock.
+        * Remove stdout debug prints from PulseAudioSource.
+        * Fix partial reads in RawFileSource.
+        * Fix error lookups in UHDSource and UHDSink.
+    * Core changes
+        * Factor common FFI cdefs out of blocks and into platform module.
+        * Improve memory copies and clears in vector module.
+        * Default construct elements on ObjectVector instantiation in vector
+          module.
+        * Remove radio.core.util export from top namespace.
+        * Add radio.core.vector export to top namespace.
+        * Fix namespacing of callback function in async module.
+        * Add library version lookups to platform module.
+    * Runner changes
+        * Add library versions to platform dump.
+    * Test changes
+        * Fix Python test code generators for DecimatorBlock and top level test
+          with scipy.signal.decimate() API change.
+        * Rename code generated tests with .gen.lua suffix.
+        * Simplify unit test file structure by moving Python test code
+          generators from tests/generator/ folder to alongside generated tests.
+        * Add `.busted` configuration to simplify unit testing invocation.
+        * Add temporarily increased epsilon conditioned on liquid-dsp
+          acceleration for FrequencyTranslatorBlock and TunerBlock tests to
+          accommodate NCO changes in library.
+    * Benchmark changes
+        * Add library versions to platform reporting in LuaRadio benchmark
+          results.
+    * Documentation changes
+        * Fix formatting of argument types in reference manual.
+        * Add README to embed/ folder.
+        * Add busted install instructions to project README and tests README.
+        * Simplify busted invocation in project README, tests README, and
+          Creating Blocks document.
+        * Add REPL install instructions and FFI development tips to Creating
+          Blocks document.
+        * Update links in Creating Blocks, Comparison to GNU Radio, and
+          Supported Hardware documents.
+    * Thirdparty changes
+        * Bump lua-MessagePack version to 0.5.2.
+        * Bump json.lua version to 0.1.2.
+    * Website changes
+        * Merge luaradio.io website subproject into website/ folder.
+        * Update luaradio.io website URL with https.
+
 * v0.5.1 - 09/03/2018
     * Block changes
         * Fix symbol issue with libSoapySDR library load on Mac OS X in

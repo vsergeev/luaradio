@@ -36,8 +36,8 @@ def format_arglist(parameters):
     else:
         return ""
 
-def escape_arg_type(s):
-    return s.replace("|", "\\|")
+def format_typelist(types):
+    return "\\|".join(["*{}*".format(t) for t in types.split("|")])
 
 def normalize_multiline(s):
     if "*" in s:
@@ -115,7 +115,7 @@ ${block.description}
 
 % for arg in block.parameters:
 %   if arg.type:
-* `${arg.name}` (*${escape_arg_type(arg.type)}*): ${normalize_multiline(arg.description)}
+* `${arg.name}` (${format_typelist(arg.type)}): ${normalize_multiline(arg.description)}
 %   else:
 * `${arg.name}`: ${normalize_multiline(arg.description)}
 %   endif
@@ -168,7 +168,7 @@ ${cls.description}
 
 % for arg in cls.parameters:
 %   if arg.type:
-* `${arg.name}` (*${escape_arg_type(arg.type)}*): ${normalize_multiline(arg.description)}
+* `${arg.name}` (${format_typelist(arg.type)}): ${normalize_multiline(arg.description)}
 %   else:
 * `${arg.name}`: ${normalize_multiline(arg.description)}
 %   endif
@@ -202,7 +202,7 @@ ${func.description}
 
 % for arg in func.parameters:
 %   if arg.type:
-* `${arg.name}` (*${escape_arg_type(arg.type)}*): ${normalize_multiline(arg.description)}
+* `${arg.name}` (${format_typelist(arg.type)}): ${normalize_multiline(arg.description)}
 %   else:
 * `${arg.name}`: ${normalize_multiline(arg.description)}
 %   endif
@@ -213,7 +213,7 @@ ${func.description}
 ###### Returns
 
 % for ret in func.returns:
-* ${normalize_multiline(ret.description)} (*${escape_arg_type(ret.type)}*)
+* ${normalize_multiline(ret.description)} (${format_typelist(ret.type)})
 % endfor
 % endif
 % if func.raises:

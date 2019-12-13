@@ -10,14 +10,14 @@ graphs, creating blocks, and creating data types. LuaRadio is built on
 LuaRadio can be used to rapidly prototype software radios,
 modulation/demodulation utilities, and signal processing experiments.  It can
 also be embedded into existing radio applications to serve as a user scriptable
-engine for processing samples.
+engine for signal processing.
 
 LuaRadio blocks are written in pure Lua, but can use [LuaJIT's
 FFI](http://luajit.org/ext_ffi.html) to wrap external libraries, like
 [VOLK](http://libvolk.org/),
 [liquid-dsp](https://github.com/jgaeddert/liquid-dsp), and others, for
-computational acceleration, more sophisticated processing, and interfacing with
-SDR hardware.
+computational acceleration, sophisticated processing, and interfacing with SDR
+hardware.
 
 Use GNU Radio? See [how LuaRadio compares to GNU
 Radio](docs/6.comparison-gnuradio.md).

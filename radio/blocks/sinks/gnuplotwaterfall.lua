@@ -65,7 +65,8 @@ end
 
 function GnuplotWaterfallSink:initialize()
     -- Check gnuplot exists
-    assert(os.execute("gnuplot --version >/dev/null 2>&1") == 0, "gnuplot not found. Is gnuplot installed?")
+    local ret = os.execute("gnuplot --version >/dev/null 2>&1")
+    assert(ret == 0 or ret == true, "gnuplot not found. Is gnuplot installed?")
 end
 
 function GnuplotWaterfallSink:write_gnuplot(s)

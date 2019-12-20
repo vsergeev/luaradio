@@ -300,9 +300,8 @@ parts of it.
 <ul>
 <li><a href="https://github.com/csete/gqrx"><i class="fa fa-github" aria-hidden="true"></i> gqrx</a></li>
 <li><a href="https://github.com/cjcliffe/CubicSDR"><i class="fa fa-github" aria-hidden="true"></i> CubicSDR</a></li>
-<li><a href="https://github.com/miek/inspectrum"><i class="fa fa-github" aria-hidden="true"></i> inspectrum</a> (for offline use)</li>
-<li><a href="https://github.com/jopohl/urh"><i class="fa fa-github" aria-hidden="true"></i> urh</a> (for offline use)</li>
 <li><a href="https://github.com/f4exb/sdrangel"><i class="fa fa-github" aria-hidden="true"></i> sdrangel</a></li>
+<li><a href="https://github.com/miek/inspectrum"><i class="fa fa-github" aria-hidden="true"></i> inspectrum</a> (for offline use)</li>
 </ul>
 
 ### Standalone Decoders
@@ -314,6 +313,7 @@ transmissions, [POCSAG](https://en.wikipedia.org/wiki/POCSAG) pager messages,
 etc.
 
 <ul>
+<li><a href="https://github.com/jopohl/urh"><i class="fa fa-github" aria-hidden="true"></i> urh</a></li>
 <li><a href="https://github.com/EliasOenal/multimon-ng"><i class="fa fa-github" aria-hidden="true"></i> multimon-ng</a></li>
 <li><a href="https://sourceforge.net/projects/fldigi/"><i class="fa fa-link" aria-hidden="true"></i> fldigi</a></li>
 <li><a href="https://github.com/antirez/dump1090"><i class="fa fa-github" aria-hidden="true"></i> dump1090</a></li>

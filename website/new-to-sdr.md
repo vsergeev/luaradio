@@ -172,10 +172,10 @@ and audio broadcast receiver, particularly for the
 [DVB-T](https://en.wikipedia.org/wiki/DVB-T) and
 [DAB/DAB+](https://en.wikipedia.org/wiki/Digital_audio_broadcasting) protocols,
 which are used in parts of Europe and Asia. Eventually, [a few developers
-discovered](http://rtlsdr.org/#history_and_discovery_of_rtlsdr) that the
-demodulating and decoding for the DAB+ and FM receiver modes of this device was
-actually implemented in the closed-source software itself, and in those modes,
-the underlying [Realtek
+discovered](https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr#history_and_discovery_of_rtlsdr)
+that the demodulating and decoding for the DAB+ and FM receiver modes of this
+device was actually implemented in the closed-source software itself, and in
+those modes, the underlying [Realtek
 RTL2832U](http://www.realtek.com.tw/products/productsView.aspx?Langid=1&PFid=35&Level=4&Conn=3&ProdID=257)
 chip streamed raw samples over USB. In other words, the dongle was a
 software-defined radio receiver in those modes.
@@ -195,20 +195,20 @@ equal. The generic ones found for under $10 on eBay may have inferior noise
 performance and frequency stability.
 
 Two popular dongles that have been vetted by the community are the [RTL-SDR
-Blog silver dongle](http://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/) and the
+Blog silver dongle](https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/) and the
 [NooElec blue
-dongle](http://www.nooelec.com/store/sdr/sdr-receivers/nesdr-mini-2-plus.html).
+dongle](https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-mini-2-plus.html).
 Both run about $20, and you can't go wrong with either one. See this
 [review](http://rtlsdr4everyone.blogspot.com/p/review.html) for more detailed
 testing on a variety of dongles, including these two.
 
 <div align="center">
 <figure>
-<a href="http://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/"><img src="{% base %}{% thumbnail /images/rtlsdr-blog-silver-dongle.jpg 150 %}" /></a>
+<a href="https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/"><img src="{% base %}{% thumbnail /images/rtlsdr-blog-silver-dongle.jpg 150 %}" /></a>
 <figcaption>RTL-SDR Blog Silver Dongle</figcaption>
 </figure>
 <figure>
-<a href="http://www.nooelec.com/store/sdr/sdr-receivers/nesdr-mini-2-plus.html"><img src="{% base %}{% thumbnail /images/nooelec-blue-dongle.jpg 150 %}" /></a>
+<a href="https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-mini-2-plus.html"><img src="{% base %}{% thumbnail /images/nooelec-blue-dongle.jpg 150 %}" /></a>
 <figcaption>NooElec Blue Dongle</figcaption>
 </figure>
 </div>
@@ -245,13 +245,13 @@ is a common wideband antenna design. However, to get the most performance out
 of any dedicated antenna, it should be placed outdoors and at high elevation.
 
 <figure class="float-right">
-<a href="http://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/"><img src="{% base %}{% thumbnail /images/rtlsdr-blog-dongle-antenna-kit.jpg 150 %}" /></a>
+<a href="https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/"><img src="{% base %}{% thumbnail /images/rtlsdr-blog-dongle-antenna-kit.jpg 150 %}" /></a>
 <figcaption>RTL-SDR Blog<br/>Dongle+Antenna Kit</figcaption>
 </figure>
 
 For getting started with SDR, without initially investing too much time, money,
 or real estate for an antenna, the RTL-SDR Blog's [RTL-SDR dongle and antenna
-package](http://amzn.to/1SLPS6F) is probably the all-around best entry level
+package](https://amzn.to/1SLPS6F) is probably the all-around best entry level
 kit. The included tall 1.5m telescopic antenna performs decently for VHF
 signals, even when used indoors, and the shorter 20cm telescopic antenna covers
 much of the UHF band, so these two antennas can adjusted to most of the
@@ -340,9 +340,9 @@ rapidly prototyping SDR projects, but may also be integrated into standalone
 applications.
 
 <ul>
-<li><a href="http://gnuradio.org/"><i class="fa fa-link" aria-hidden="true"></i> GNU Radio</a></li>
+<li><a href="https://gnuradio.org/"><i class="fa fa-link" aria-hidden="true"></i> GNU Radio</a></li>
 <li><a href="http://www.pothosware.com/"><i class="fa fa-link" aria-hidden="true"></i> Pothos SDR</a></li>
-<li><a href="http://redhawksdr.github.io/Documentation/"><i class="fa fa-link" aria-hidden="true"></i> Redhawk SDR</a></li>
+<li><a href="https://redhawksdr.github.io/"><i class="fa fa-link" aria-hidden="true"></i> Redhawk SDR</a></li>
 </ul>
 
 ### Web Interfaces
@@ -523,7 +523,7 @@ modulated transmissions.
 Although shortwave broadcasting is dominated by government-sponsored stations,
 private shortwave broadcasting exists too. In the US, much of it is religious,
 with a few stations that carry music and talk programs. For a complete schedule
-of shortwave radio stations, check out <a href="http://short-wave.info/"><i class="fa fa-link" aria-hidden="true"></i> http://short-wave.info</a>.
+of shortwave radio stations, check out <a href="https://short-wave.info/"><i class="fa fa-link" aria-hidden="true"></i> https://short-wave.info</a>.
 
 The HF band is home to many international [amateur radio
 allocations](https://en.wikipedia.org/wiki/Amateur_radio_frequency_allocations#High_frequency),
@@ -563,7 +563,7 @@ While shortwave broadcasting as a medium for news and culture has largely been
 superseded by the internet, it still continues to serve rural communities, and
 is slowly undergoing a modernization push towards digital, with protocols like
 [Digital Radio Mondiale](https://en.wikipedia.org/wiki/Digital_Radio_Mondiale),
-or Voice of America's pilot [Radiogram](http://voaradiogram.net/) project,
+or Voice of America's pilot [Radiogram](https://voaradiogram.net/) project,
 which carries news text and images over [Olivia
 MFSK](https://en.wikipedia.org/wiki/Olivia_MFSK).
 
@@ -906,14 +906,14 @@ is the six-step plan I followed to getting a license and on the air in about
 1. Find a local exam session with [this
    page](http://www.arrl.org/find-an-amateur-radio-license-exam-session)
 2. Read [The Fast Track To Your Technician Class Ham Radio
-   License](http://amzn.to/1VULRT1) book
+   License](https://www.amazon.com/Track-Technician-Class-Radio-License/dp/1720317992/) book
 3. Practice flash cards on [HamStudy](https://hamstudy.org/) or
-   [HamExam](http://hamexam.org/)
+   [HamExam](https://hamexam.org/)
 4. Take and pass the exam
 5. Wait until your call sign appears in the [FCC
-   database](http://wireless2.fcc.gov/UlsApp/UlsSearch/results.jsp)
+   database](https://wireless2.fcc.gov/UlsApp/UlsSearch/searchLicense.jsp)
 6. Make your first contact on a local VHF or UHF repeater with a Baofeng
-   [UV-B5](http://amzn.to/25XhHkN) or [UV-82](http://amzn.to/1Yn8RKO)
+   [UV-5R](https://www.amazon.com/BaoFeng-UV-5R-Dual-Radio-Black/dp/B007H4VT7A/)
 
 #### Culture
 
@@ -933,7 +933,7 @@ history of publishing academic-esque articles on subjects like propagation,
 circuits, and antenna design. Amateur radio is also increasingly intersecting
 with the modern "hacker" culture, leading to more amateur radio related
 presentations, hosted license exam sessions, or the establishment of a regular
-[contact frequency on VHF](http://conham.org/) at security conferences like
+[contact frequency on VHF](https://conham.org/) at security conferences like
 [DEF CON](https://defcon.org/).
 
 The privileges granted by amateur radio also raises some interesting political
@@ -967,7 +967,7 @@ antenna for the higher bands.
 A [long-wire antenna](https://en.wikipedia.org/wiki/Random_wire_antenna) is
 what it sounds like — a long wire, strung up at high elevation. These antennas
 are effective basic antennas for receiving and transmitting across the HF band.
-They are better when paired with a [9:1 unun](http://vk6ysf.com/unun_9-1.htm)
+They are better when paired with a [9:1 unun](https://vk6ysf.com/unun_9-1.htm)
 impedance transformer, to help match the relatively large [antenna
 impedance](https://en.wikipedia.org/wiki/Antenna_(radio)#Impedance_matching) to
 the lower 75 ohm impedance of the RTL-SDR, or to the 50 ohm impedance of most
@@ -977,7 +977,7 @@ other receivers and transmitters.
 
 <figure class="float-right">
 <a href="https://en.wikipedia.org/wiki/Discone_antenna"><img src="{% base %}{% thumbnail /images/discone-antenna.jpg 150 %}" /></a>
-<figcaption>Discone antenna<div style="line-height: 0.8;"><a style="font-size: 0.9rem;" href="http://www.hamradio.com/detail.cfm?pid=H0-007179">(Image Source)</a></div></figcaption>
+<figcaption>Discone antenna<div style="line-height: 0.8;"><a style="font-size: 0.9rem;" href="https://www.hamradio.com/detail.cfm?pid=H0-007179">(Image Source)</a></div></figcaption>
 </figure>
 
 A [discone antenna](https://en.wikipedia.org/wiki/Discone_antenna) is an
@@ -1018,17 +1018,17 @@ upconverter designed for the lower frequency bands will translate signals from
 
 Two popular upconverters that can be used with the RTL-SDR and other SDR
 receivers for the LF, MF, and HF bands are the [NooElec Ham It
-Up](http://www.nooelec.com/store/ham-it-up.html) and the [Airspy
-Spyverter](http://airspy.com/spyverter/). They are available for around $50 to
+Up](https://www.nooelec.com/store/ham-it-up.html) and the [Airspy
+Spyverter](https://airspy.com/spyverter-r2/). They are available for around $50 to
 $60 (with a shielded case).
 
 <div align="center">
 <figure>
-<a href="http://www.nooelec.com/store/ham-it-up.html"><img src="{% base %}{% thumbnail /images/nooelec-ham-it-up.gif 150 %}" /></a>
+<a href="https://www.nooelec.com/store/ham-it-up.html"><img src="{% base %}{% thumbnail /images/nooelec-ham-it-up.gif 150 %}" /></a>
 <figcaption>NooElec Ham It Up</figcaption>
 </figure>
 <figure>
-<a href="http://airspy.com/spyverter/"><img src="{% base %}{% thumbnail /images/airspy-spyverter.png 150 %}" /></a>
+<a href="https://airspy.com/spyverter-r2/"><img src="{% base %}{% thumbnail /images/airspy-spyverter.png 150 %}" /></a>
 <figcaption>Airspy Spyverter</figcaption>
 </figure>
 </div>
@@ -1062,9 +1062,9 @@ they may interfere with other transmissions.
 A few examples of SDR transceivers are:
 
 * [USRP](https://www.ettus.com/product/category/USRP-Bus-Series)
-* [bladeRF](http://nuand.com/)
+* [bladeRF](https://www.nuand.com/)
 * [HackRF](https://greatscottgadgets.com/hackrf/)
-* [LimeSDR](http://limesdr.com)
+* [LimeSDR](https://limemicro.com/products/boards/)
 
 ### Signal Processing
 
@@ -1075,32 +1075,29 @@ Below is a short list of some resources:
 
 * Signals and Systems
     * [Circuits, Signals, and Systems by Siebert](https://www.amazon.com/Circuits-Signals-Systems-MIT-Press/dp/0262690950) (book)
-    * [Signals and Systems by Baraniuk](http://cnx.org/content/col10064/)
+    * [Signals and Systems by Baraniuk](https://cnx.org/content/col10064/)
 * Communications Systems
-    * [Introduction to Communication Systems by Madhow (PDF)](http://www.ece.ucsb.edu/wcsl/Publications/intro_comm_systems_madhow_jan2014b.pdf)
-    * [Digital Modulation in Communication Systems - An Introduction (PDF)](http://cp.literature.agilent.com/litweb/pdf/5965-7160E.pdf)
+    * [Introduction to Communication Systems by Madhow (PDF)](https://www.ece.ucsb.edu/wcsl/Publications/intro_comm_systems_madhow_jan2014b.pdf)
+    * [Digital Modulation in Communication Systems - An Introduction (PDF)](https://www.keysight.com/us/en/assets/7018-09093/application-notes/5965-7160.pdf)
     * [Communication Systems on Wikibooks](https://en.wikibooks.org/wiki/Communication_Systems)
 * I/Q sampling
     * [I/Q Data for Dummies](http://whiteboard.ping.se/SDR/IQ)
-    * [What's Your IQ – About Quadrature Signals...](http://www.tek.com/blog/what%E2%80%99s-your-iq-%E2%80%93-about-quadrature-signals%E2%80%A6)
+    * [What's Your IQ – About Quadrature Signals...](https://www.tek.com/blog/what%E2%80%99s-your-iq-%E2%80%93-about-quadrature-signals%E2%80%A6)
 
 ### Resources and Communities
 
 [WebSDR](http://websdr.org/) serves a listing of web-hosted SDR receivers.
-This is a neat way to explore the RF spectrum at other locations, though
-it is currently limited to audio demodulations.
+This is a neat way to explore the RF spectrum at other locations, though it is
+currently limited to audio demodulations.
 
-[RTL-SDR blog](http://www.rtl-sdr.com/) actively aggregates SDR news and
+[RTL-SDR blog](https://www.rtl-sdr.com/) actively aggregates SDR news and
 RTL-SDR projects.
 
-[Hackaday](http://hackaday.com/) often features amateur radio and SDR related
+[Hackaday](https://hackaday.com/) often features amateur radio and SDR related
 projects and articles.
 
-[Signal Identification Wiki](http://www.sigidwiki.com/) is a wiki for
+[Signal Identification Wiki](https://www.sigidwiki.com/) is a wiki for
 crowdsourced radio signal identification.
-
-[Spectrum Wiki](http://www.spectrumwiki.com/) is a wiki for documenting
-worldwide spectrum allocations.
 
 Reddit hosts several active radio and SDR related communities:
 

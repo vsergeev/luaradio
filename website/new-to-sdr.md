@@ -890,11 +890,11 @@ and centralized (VHF/UHF repeaters) vs. decentralized (HF) networks.
 #### Getting a License
 
 In the United States, amateur radio licenses come in three levels: Technician
-Class, General Class, and Extra Class. The Technician license grants transmit
-privileges on all amateur radio bands above 30 MHz, whereas the higher license
-levels grant transmit privileges on progressively more spectrum in the lower
-frequency HF band. The Technician license can be obtained by scoring 75% or
-better on a 35 question multiple choice exam, and costs about $15 to take.
+Class, General Class, and Amateur Extra Class. The Technician license grants
+transmit privileges on all amateur radio bands above 30 MHz, whereas the higher
+license levels grant transmit privileges on progressively more spectrum in the
+lower frequency HF band. The Technician license can be obtained by scoring 75%
+or better on a 35 question multiple choice exam, and costs about $15 to take.
 These tests are not difficult to pass, as the question and answer pools for
 each level are published in advance.
 

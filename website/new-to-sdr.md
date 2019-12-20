@@ -301,7 +301,8 @@ parts of it.
 <li><a href="https://github.com/csete/gqrx"><i class="fa fa-github" aria-hidden="true"></i> gqrx</a></li>
 <li><a href="https://github.com/cjcliffe/CubicSDR"><i class="fa fa-github" aria-hidden="true"></i> CubicSDR</a></li>
 <li><a href="https://github.com/miek/inspectrum"><i class="fa fa-github" aria-hidden="true"></i> inspectrum</a> (for offline use)</li>
-<li><a href="http://sdr.osmocom.org/trac/wiki/sdrangelove"><i class="fa fa-link" aria-hidden="true"></i> sdrangelove</a></li>
+<li><a href="https://github.com/jopohl/urh"><i class="fa fa-github" aria-hidden="true"></i> urh</a> (for offline use)</li>
+<li><a href="https://github.com/f4exb/sdrangel"><i class="fa fa-github" aria-hidden="true"></i> sdrangel</a></li>
 </ul>
 
 ### Standalone Decoders
@@ -329,7 +330,6 @@ frameworks.
 <li><a href="https://github.com/gnuradio/volk"><i class="fa fa-github" aria-hidden="true"></i> VOLK</a></li>
 <li><a href="https://github.com/jgaeddert/liquid-dsp"><i class="fa fa-github" aria-hidden="true"></i> liquid-dsp</a></li>
 <li><a href="https://github.com/simonyiszk/csdr"><i class="fa fa-github" aria-hidden="true"></i> csdr</a> (also a standalone tool)</li>
-</li>
 </ul>
 
 ### Frameworks
@@ -1042,14 +1042,13 @@ lower frequency bands.
 There are several SDR receivers on the market with better performance and
 higher sample rates than the RTL-SDR:
 
-* [Airspy Mini](http://airspy.com/airspy-mini/) — 3, 6, or 10 MSPS sample rate,
-  24 to 1800 MHz tuning range, 12-bit ADC, $99 USD
-* [Airspy R2](http://airspy.com/airspy-r2/) — 2.5 or 10 MSPS sample rate, 24 to
-  1800 MHz tuning range, 12-bit ADC, $169 USD
-* [SDRplay RSP1](http://www.sdrplay.com/rsp1/) — 2 to 10.66 MSPS sample rate,
-  100 kHZ to 2000 MHz tuning range, 12-bit ADC, $99 USD
-* [SDRplay RSP2](http://www.sdrplay.com/rsp2/) — 2 to 10.66 MSPS sample rate,
-  10 kHz to 2000 MHz tuning range, 12-bit ADC, $169 USD
+* [Airspy Mini](https://airspy.com/airspy-mini/) — 3, 6, or 10 MSPS sample
+  rate, 24 to 1700 MHz tuning range, 12-bit ADC, $99 USD
+* [Airspy HF+ Discovery](https://airspy.com/airspy-hf-discovery/) — up to 36
+  MSPS sample rate, 0.5 kHz to 31 MHz, 60 MHz to 260 MHz tuning range, 18-bit
+  ADC, $169 USD
+* [SDRplay RSP1A](https://www.sdrplay.com/rsp1a/) — 2 to 10.66 MSPS sample
+  rate, 1 kHZ to 2000 MHz tuning range, 14-bit ADC, $109 USD
 
 There are also many SDR transceivers on the market. Note that transmitting with
 an SDR with the intent of high power radiation (i.e. not testing locally or
@@ -1065,6 +1064,7 @@ A few examples of SDR transceivers are:
 * [bladeRF](https://www.nuand.com/)
 * [HackRF](https://greatscottgadgets.com/hackrf/)
 * [LimeSDR](https://limemicro.com/products/boards/)
+* [PlutoSDR](https://www.analog.com/en/design-center/evaluation-hardware-and-software/evaluation-boards-kits/adalm-pluto.html)
 
 ### Signal Processing
 
@@ -1077,6 +1077,7 @@ Below is a short list of some resources:
     * [Circuits, Signals, and Systems by Siebert](https://www.amazon.com/Circuits-Signals-Systems-MIT-Press/dp/0262690950) (book)
     * [Signals and Systems by Baraniuk](https://cnx.org/content/col10064/)
 * Communications Systems
+    * [Software-Defined Radio for Engineers](https://www.analog.com/en/education/education-library/software-defined-radio-for-engineers.html)
     * [Introduction to Communication Systems by Madhow (PDF)](https://www.ece.ucsb.edu/wcsl/Publications/intro_comm_systems_madhow_jan2014b.pdf)
     * [Digital Modulation in Communication Systems - An Introduction (PDF)](https://www.keysight.com/us/en/assets/7018-09093/application-notes/5965-7160.pdf)
     * [Communication Systems on Wikibooks](https://en.wikibooks.org/wiki/Communication_Systems)

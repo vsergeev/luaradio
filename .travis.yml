@@ -6,7 +6,7 @@ env:
     global:
         - LUAJIT_TAG="v2.0.5"
         - LIQUID_TAG="v1.3.2"
-        - VOLK_TAG="f04a46f18308771b5ebf46292bf0fe6918578b35" # v2.0.0-4-gf04a46f, fixes AVX FMA rotator bug in v2.0
+        - VOLK_TAG="v2.1.0"
 
 install:
     - sudo apt-get install lua5.1 luarocks

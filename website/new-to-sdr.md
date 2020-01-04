@@ -1019,8 +1019,8 @@ upconverter designed for the lower frequency bands will translate signals from
 Two popular upconverters that can be used with the RTL-SDR and other SDR
 receivers for the LF, MF, and HF bands are the [NooElec Ham It
 Up](https://www.nooelec.com/store/ham-it-up.html) and the [Airspy
-Spyverter](https://airspy.com/spyverter-r2/). They are available for around $50 to
-$60 (with a shielded case).
+Spyverter R2](https://airspy.com/spyverter-r2/). They are available for around
+$50 to $60 (with a shielded case).
 
 <div align="center">
 <figure>
@@ -1028,8 +1028,8 @@ $60 (with a shielded case).
 <figcaption>NooElec Ham It Up</figcaption>
 </figure>
 <figure>
-<a href="https://airspy.com/spyverter-r2/"><img src="{% base %}{% thumbnail /images/airspy-spyverter.png 150 %}" /></a>
-<figcaption>Airspy Spyverter</figcaption>
+<a href="https://airspy.com/spyverter-r2/"><img src="{% base %}{% thumbnail /images/airspy-spyverter-r2.png 150 %}" /></a>
+<figcaption>Airspy SpyVerter R2</figcaption>
 </figure>
 </div>
 

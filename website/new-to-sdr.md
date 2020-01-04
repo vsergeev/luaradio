@@ -195,12 +195,12 @@ equal. The generic ones found for under $10 on eBay may have inferior noise
 performance and frequency stability.
 
 Two popular dongles that have been vetted by the community are the [RTL-SDR
-Blog silver dongle](https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/) and the
-[NooElec blue
-dongle](https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-mini-2-plus.html).
-Both run about $20, and you can't go wrong with either one. See this
-[review](http://rtlsdr4everyone.blogspot.com/p/review.html) for more detailed
-testing on a variety of dongles, including these two.
+Blog silver](https://www.rtl-sdr.com/buy-rtl-sdr-dvb-t-dongles/) and the
+[NooElec NESDR SMArt
+v4](https://www.nooelec.com/store/sdr/sdr-receivers/nesdr/nesdr-smart-sdr.html).
+Both run about $20 ($30 for bundle), and you can't go wrong with either one.
+See this [review](http://rtlsdr4everyone.blogspot.com/p/review.html) for more
+detailed testing on a variety of dongles, including these two.
 
 <div align="center">
 <figure>
@@ -208,8 +208,8 @@ testing on a variety of dongles, including these two.
 <figcaption>RTL-SDR Blog Silver Dongle</figcaption>
 </figure>
 <figure>
-<a href="https://www.nooelec.com/store/sdr/sdr-receivers/nesdr-mini-2-plus.html"><img src="{% base %}{% thumbnail /images/nooelec-blue-dongle.jpg 150 %}" /></a>
-<figcaption>NooElec Blue Dongle</figcaption>
+<a href="https://www.nooelec.com/store/sdr/sdr-receivers/nesdr/nesdr-smart-sdr.html"><img src="{% base %}{% thumbnail /images/nooelec-smart-dongle.png 150 %}" /></a>
+<figcaption>NooElec NESDR SMArt v4 Dongle</figcaption>
 </figure>
 </div>
 
@@ -1017,15 +1017,15 @@ upconverter designed for the lower frequency bands will translate signals from
 0 to 30 MHz to 125 to 155 MHz.
 
 Two popular upconverters that can be used with the RTL-SDR and other SDR
-receivers for the LF, MF, and HF bands are the [NooElec Ham It
-Up](https://www.nooelec.com/store/ham-it-up.html) and the [Airspy
-Spyverter R2](https://airspy.com/spyverter-r2/). They are available for around
-$50 to $60 (with a shielded case).
+receivers for the LF, MF, and HF bands are the [NooElec Ham It Up
+Plus](https://www.nooelec.com/store/sdr/sdr-addons/ham-it-up-304/ham-it-up-plus.html)
+and the [Airspy SpyVerter R2](https://airspy.com/spyverter-r2/). They are
+available for around $50 to $60 (with a shielded case).
 
 <div align="center">
 <figure>
-<a href="https://www.nooelec.com/store/ham-it-up.html"><img src="{% base %}{% thumbnail /images/nooelec-ham-it-up.gif 150 %}" /></a>
-<figcaption>NooElec Ham It Up</figcaption>
+<a href="https://www.nooelec.com/store/sdr/sdr-addons/ham-it-up-304/ham-it-up-plus.html"><img src="{% base %}{% thumbnail /images/nooelec-ham-it-up-plus.png 150 %}" /></a>
+<figcaption>NooElec Ham It Up Plus</figcaption>
 </figure>
 <figure>
 <a href="https://airspy.com/spyverter-r2/"><img src="{% base %}{% thumbnail /images/airspy-spyverter-r2.png 150 %}" /></a>

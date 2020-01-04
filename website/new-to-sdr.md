@@ -252,11 +252,11 @@ of any dedicated antenna, it should be placed outdoors and at high elevation.
 For getting started with SDR, without initially investing too much time, money,
 or real estate for an antenna, the RTL-SDR Blog's [RTL-SDR dongle and antenna
 package](https://amzn.to/1SLPS6F) is probably the all-around best entry level
-kit. The included tall 1.5m telescopic antenna performs decently for VHF
-signals, even when used indoors, and the shorter 20cm telescopic antenna covers
-much of the UHF band, so these two antennas can adjusted to most of the
-operating range of the RTL-SDR. All of the VHF LuaRadio examples (WBFM, NBFM,
-AX.25, POCSAG, RDS) can be run with the tall 1.5m telescopic antenna indoors.
+kit. The included long telescopic antenna performs decently for VHF signals,
+even when used indoors, and the shorter telescopic antenna covers much of the
+UHF band, so these two antennas can adjusted to most of the operating range of
+the RTL-SDR. All of the VHF LuaRadio examples (WBFM, NBFM, AX.25, POCSAG, RDS)
+can be run with the long 1m telescopic antenna indoors.
 
 <div style="clear: both;"></div>
 

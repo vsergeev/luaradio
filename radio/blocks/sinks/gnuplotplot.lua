@@ -19,7 +19,7 @@
 --
 -- @usage
 -- -- Plot a 1 kHz cosine sampled at 250 kHz
--- local snk = radio.SignalSource('cosine', 1e3, 250e3)
+-- local src = radio.SignalSource('cosine', 1e3, 250e3)
 -- local throttle = radio.ThrottleBlock()
 -- local snk = radio.GnuplotPlotSink(1000, 'Cosine')
 -- top:connect(src, throttle, snk)

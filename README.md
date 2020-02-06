@@ -97,8 +97,10 @@ building your own flow graphs.
 
 Arch Linux users can install LuaRadio with the AUR package `luaradio`.
 
+macOS users can install LuaRadio with the Homebrew package `luaradio`.
+
 See the [Installation](docs/1.installation.md) guide for other installation
-methods.
+methods and details.
 
 ## Project Roadmap
 

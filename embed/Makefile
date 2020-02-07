@@ -38,9 +38,9 @@ INSTALL_CMOD = $(shell pkg-config luajit --variable INSTALL_CMOD)
 OPT = -O3
 DEBUG =
 
-VERSION_MAJOR := $(shell cd ../; luajit -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.major)")
-VERSION_MINOR := $(shell cd ../; luajit -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.minor)")
-VERSION_PATCH := $(shell cd ../; luajit -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.patch)")
+VERSION_MAJOR := $(shell cd ../; $(LUAJIT) -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.major)" 2>/dev/null)
+VERSION_MINOR := $(shell cd ../; $(LUAJIT) -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.minor)" 2>/dev/null)
+VERSION_PATCH := $(shell cd ../; $(LUAJIT) -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.patch)" 2>/dev/null)
 VERSION_COMMIT := $(shell git describe --abbrev --always --tags --dirty 2>/dev/null || echo "")
 
 CFLAGS = -std=c99 -D_DEFAULT_SOURCE

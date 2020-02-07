@@ -29,9 +29,25 @@ LIB_OBJS := $(patsubst $(GEN_DIR)/%.c, $(BUILD_DIR)/%.o, $(LUA_C_SRCS)) $(patsub
 EXAMPLE_BINS = $(patsubst $(EXAMPLE_DIR)/%.c, $(BUILD_DIR)/$(EXAMPLE_DIR)/%, $(EXAMPLE_SRCS))
 TEST_BINS = $(patsubst $(TEST_DIR)/%.c, $(BUILD_DIR)/$(TEST_DIR)/%, $(TEST_SRCS))
 
-PREFIX ?= /usr/local
+################################################################################
+
+ifneq ($(shell pkg-config luajit 2>/dev/null; echo $$?), 0)
+$(error "LuaJIT library not found with pkg-config")
+endif
+
+ifneq ($(shell which luajit 2>/dev/null),)
+LUAJIT ?= luajit
+else
+LUAJIT ?= luajit-$(shell pkg-config --modversion luajit)
+endif
+
+ifneq ($(shell $(LUAJIT) -v 1>/dev/null 2>/dev/null; echo $$?), 0)
+$(error "LuaJIT executable not found")
+endif
 
 INSTALL_CMOD = $(shell pkg-config luajit --variable INSTALL_CMOD)
+
+PREFIX ?= /usr/local
 
 ################################################################################
 
@@ -62,8 +78,6 @@ else
 LDFLAGS =
 EXTRA_LDFLAGS = -pagezero_size 10000 -image_base 100000000
 endif
-
-LUAJIT = luajit
 
 ################################################################################
 

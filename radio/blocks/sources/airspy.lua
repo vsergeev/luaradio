@@ -77,6 +77,10 @@ function AirspySource:get_rate()
 end
 
 ffi.cdef[[
+    enum airspy_error { AIRSPY_SUCCESS = 0, };
+    enum airspy_board_id { AIRSPY_BOARD_ID_PROTO_AIRSPY = 0, };
+    enum airspy_sample_type { AIRSPY_SAMPLE_FLOAT32_IQ = 0, };
+
     struct airspy_device;
 
     typedef struct {
@@ -91,19 +95,19 @@ ffi.cdef[[
         void* samples;
         int sample_count;
         uint64_t dropped_samples;
-        int sample_type;
+        enum airspy_sample_type sample_type;
     } airspy_transfer_t, airspy_transfer;
 
     typedef int (*airspy_sample_block_cb_fn)(airspy_transfer* transfer);
 
-    const char* airspy_error_name(int errcode);
+    const char* airspy_error_name(enum airspy_error errcode);
 
     int airspy_open(struct airspy_device** device);
     int airspy_close(struct airspy_device* device);
 
     void airspy_lib_version(airspy_lib_version_t* lib_version);
     int airspy_board_id_read(struct airspy_device* device, uint8_t* value);
-    const char* airspy_board_id_name(int board_id);
+    const char* airspy_board_id_name(enum airspy_board_id board_id);
     int airspy_version_string_read(struct airspy_device* device, char* version, uint8_t length);
 
     int airspy_start_rx(struct airspy_device* device, airspy_sample_block_cb_fn callback, void* rx_ctx);
@@ -112,7 +116,6 @@ ffi.cdef[[
     int airspy_get_samplerates(struct airspy_device* device, uint32_t* buffer, const uint32_t len);
     int airspy_set_samplerate(struct airspy_device* device, uint32_t samplerate);
 
-    enum airspy_sample_type { AIRSPY_SAMPLE_FLOAT32_IQ = 0, };
     int airspy_set_sample_type(struct airspy_device* device, enum airspy_sample_type sample_type);
     int airspy_set_freq(struct airspy_device* device, const uint32_t freq_hz);
     int airspy_set_lna_gain(struct airspy_device* device, uint8_t value);

@@ -86,7 +86,10 @@ if not package.loaded['radio.blocks.sinks.soapysdr'] then
 
         enum { SOAPY_SDR_TX = 0, SOAPY_SDR_RX = 1 };
 
+        /* Version */
         const char *SoapySDR_getLibVersion(void);
+        const char *SoapySDR_getAPIVersion(void);
+        const char *SoapySDR_getABIVersion(void);
 
         /* Error strings */
         const char *SoapySDR_errToStr(const int errorCode);
@@ -341,6 +344,8 @@ function SoapySDRSource:initialize_soapysdr()
     if debug.enabled then
         -- Look up library version
         debug.printf("[SoapySDRSource] SoapySDR library version: %s\n", ffi.string(libsoapysdr.SoapySDR_getLibVersion()))
+        debug.printf("[SoapySDRSource] SoapySDR API version: %s\n", ffi.string(libsoapysdr.SoapySDR_getAPIVersion()))
+        debug.printf("[SoapySDRSource] SoapySDR ABI version: %s\n", ffi.string(libsoapysdr.SoapySDR_getABIVersion()))
     end
 
     -- Make device

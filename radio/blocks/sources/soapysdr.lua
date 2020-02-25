@@ -159,8 +159,7 @@ if not package.loaded['radio.blocks.sinks.soapysdr'] then
         char *SoapySDRDevice_readSetting(const SoapySDRDevice *device, const char *key);
 
         /* Stream setup/close */
-        int SoapySDRDevice_setupStream(SoapySDRDevice *device, SoapySDRStream **stream, const int direction, const char *format, const size_t *channels, const size_t numChans, const SoapySDRKwargs *args);
-        void SoapySDRDevice_closeStream(SoapySDRDevice *device, SoapySDRStream *stream);
+        /* See initialize() for SoapySDRDevice_setupStream() and SoapySDRDevice_closeStream() */
         size_t SoapySDRDevice_getStreamMTU(const SoapySDRDevice *device, SoapySDRStream *stream);
 
         /* Stream activate/deactivate */
@@ -179,6 +178,20 @@ function SoapySDRSource:initialize()
     -- Check library is available
     if not libsoapysdr_available then
         error("SoapySDRSource: libSoapySDR not found. Is SoapySDR installed?")
+    end
+
+    -- Check ABI version and load correct definitions of setupStream and closeStream
+    self.abi_version = ffi.string(libsoapysdr.SoapySDR_getABIVersion())
+    if self.abi_version >= "0.8" then
+        ffi.cdef[[
+            SoapySDRStream *SoapySDRDevice_setupStream(SoapySDRDevice *device, const int direction, const char *format, const size_t *channels, const size_t numChans, const SoapySDRKwargs *args);
+            int SoapySDRDevice_closeStream(SoapySDRDevice *device, SoapySDRStream *stream);
+        ]]
+    else
+        ffi.cdef[[
+            int SoapySDRDevice_setupStream(SoapySDRDevice *device, SoapySDRStream **stream, const int direction, const char *format, const size_t *channels, const size_t numChans, const SoapySDRKwargs *args);
+            void SoapySDRDevice_closeStream(SoapySDRDevice *device, SoapySDRStream *stream);
+        ]]
     end
 end
 
@@ -476,9 +489,16 @@ function SoapySDRSource:initialize_soapysdr()
     -- Setup the stream
     self.stream = ffi.new("SoapySDRStream*[1]")
     local channels = ffi.new("size_t[1]", {self.channel})
-    ret = libsoapysdr.SoapySDRDevice_setupStream(self.dev, self.stream, ffi.C.SOAPY_SDR_RX, "CF32", channels, 1, nil)
-    if ret < 0 then
-        error("SoapySDRDevice_setupStream(): " .. ffi.string(libsoapysdr.SoapySDR_errToStr(ret)))
+    if self.abi_version >= "0.8" then
+        self.stream[0] = libsoapysdr.SoapySDRDevice_setupStream(self.dev, ffi.C.SOAPY_SDR_RX, "CF32", channels, 1, nil)
+        if self.stream[0] == nil then
+            error("SoapySDRDevice_setupStream(): " .. ffi.string(libsoapysdr.SoapySDR_errToStr(ret)))
+        end
+    else
+        ret = libsoapysdr.SoapySDRDevice_setupStream(self.dev, self.stream, ffi.C.SOAPY_SDR_RX, "CF32", channels, 1, nil)
+        if ret < 0 then
+            error("SoapySDRDevice_setupStream(): " .. ffi.string(libsoapysdr.SoapySDR_errToStr(ret)))
+        end
     end
 
     -- Create output vector

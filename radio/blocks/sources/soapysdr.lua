@@ -72,10 +72,10 @@ if not package.loaded['radio.blocks.sinks.soapysdr'] then
         typedef struct SoapySDRDevice SoapySDRDevice;
         typedef struct SoapySDRStream SoapySDRStream;
 
-        typedef struct
-        {
+        typedef struct {
             double minimum;
             double maximum;
+            double step;
         } SoapySDRRange;
 
         typedef struct {

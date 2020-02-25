@@ -64,8 +64,7 @@ if not package.loaded['radio.blocks.sources.soapysdr'] then
             double maximum;
         } SoapySDRRange;
 
-        typedef struct
-        {
+        typedef struct {
             size_t size;
             char **keys;
             char **vals;
@@ -94,12 +93,12 @@ if not package.loaded['radio.blocks.sources.soapysdr'] then
 
         /* Device info */
         char *SoapySDRDevice_getDriverKey(const SoapySDRDevice *device);
-         char *SoapySDRDevice_getHardwareKey(const SoapySDRDevice *device);
+        char *SoapySDRDevice_getHardwareKey(const SoapySDRDevice *device);
         SoapySDRKwargs SoapySDRDevice_getHardwareInfo(const SoapySDRDevice *device);
 
         /* Channel info */
         size_t SoapySDRDevice_getNumChannels(const SoapySDRDevice *device, const int direction);
-         SoapySDRKwargs SoapySDRDevice_getChannelInfo(const SoapySDRDevice *device, const int direction, const size_t channel);
+        SoapySDRKwargs SoapySDRDevice_getChannelInfo(const SoapySDRDevice *device, const int direction, const size_t channel);
 
         /* Sample rate */
         int SoapySDRDevice_setSampleRate(SoapySDRDevice *device, const int direction, const size_t channel, const double rate);

@@ -150,6 +150,9 @@ if not package.loaded['radio.blocks.sinks.uhd'] then
         } uhd_error;
 
         /* Functions */
+        uhd_error uhd_get_abi_string(char* abi_string_out, size_t buffer_len);
+        uhd_error uhd_get_version_string(char* version_out, size_t buffer_len);
+
         uhd_error uhd_usrp_make(uhd_usrp_handle *h, const char *args);
         uhd_error uhd_usrp_free(uhd_usrp_handle *h);
 
@@ -434,7 +437,22 @@ function UHDSource:initialize_uhd()
 
     -- Dump version info
     if debug.enabled then
-        -- FIXME UHD is missing C API for getting UHD version and ABI string
+        -- Look up UHD version
+        local uhd_version = ffi.new("char[512]")
+        ret = libuhd.uhd_get_version_string(uhd_version, ffi.sizeof(uhd_version))
+        if ret ~= 0 then
+            error("uhd_get_version_string(): " .. uhd_code_strerror(ret))
+        end
+
+        -- Look up UHD ABI version
+        local abi_version = ffi.new("char[512]")
+        ret = libuhd.uhd_get_abi_string(abi_version, ffi.sizeof(abi_version))
+        if ret ~= 0 then
+            error("uhd_get_abi_string(): " .. uhd_code_strerror(ret))
+        end
+
+        debug.printf("[UHDSource] UHD version:      %s\n", ffi.string(uhd_version))
+        debug.printf("[UHDSource] UHD ABI version:  %s\n", ffi.string(abi_version))
     end
 
     -- Create USRP handle

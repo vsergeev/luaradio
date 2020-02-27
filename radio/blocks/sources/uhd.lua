@@ -12,7 +12,7 @@
 --      * `gain` (number in dB, overall gain, default 15.0 dB)
 --      * `bandwidth` (number in Hz)
 --      * `antenna` (string)
---      * `autogain` (bool)
+--      * `autogain` (bool, default false)
 --      * `gains` (table, gain element name to value in dB)
 --
 -- @signature > out:ComplexFloat32
@@ -50,7 +50,7 @@ function UHDSource:instantiate(device_address, frequency, rate, options)
     self.bandwidth = self.options.bandwidth
     self.antenna = self.options.antenna
     self.gains = self.options.gains
-    self.autogain = self.options.autogain
+    self.autogain = self.options.autogain or false
 
     self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
 end
@@ -528,16 +528,14 @@ function UHDSource:initialize_uhd()
         end
     end
 
-    -- Set autogain (if specified)
-    if self.autogain ~= nil then
-        ret = libuhd.uhd_usrp_set_rx_agc(self.usrp_handle[0], self.autogain, self.channel)
+    if self.autogain then
+        -- Enable AGC
+        ret = libuhd.uhd_usrp_set_rx_agc(self.usrp_handle[0], true, self.channel)
         if ret ~= 0 then
             error("uhd_usrp_set_rx_agc(): " .. uhd_last_strerror(self.usrp_handle))
         end
-    end
-
-    -- Set gain (if specified)
-    if self.gain then
+    else
+        -- Set gain
         ret = libuhd.uhd_usrp_set_rx_gain(self.usrp_handle[0], self.gain, self.channel, "")
         if ret ~= 0 then
             error("uhd_usrp_set_rx_gain(): " .. uhd_last_strerror(self.usrp_handle))

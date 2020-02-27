@@ -100,7 +100,7 @@ if not package.loaded['radio.blocks.sources.uhd'] then
             uhd_stream_mode_t stream_mode;
             size_t num_samps;
             bool stream_now;
-            time_t time_spec_full_secs;
+            int64_t time_spec_full_secs;
             double time_spec_frac_secs;
         } uhd_stream_cmd_t;
 
@@ -147,7 +147,7 @@ if not package.loaded['radio.blocks.sources.uhd'] then
 
         uhd_error uhd_rx_metadata_make(uhd_rx_metadata_handle* handle);
         uhd_error uhd_rx_metadata_free(uhd_rx_metadata_handle* handle);
-        uhd_error uhd_tx_metadata_make(uhd_tx_metadata_handle* handle, bool has_time_spec, time_t full_secs, double frac_secs, bool start_of_burst, bool end_of_burst);
+        uhd_error uhd_tx_metadata_make(uhd_tx_metadata_handle* handle, bool has_time_spec, int64_t full_secs, double frac_secs, bool start_of_burst, bool end_of_burst);
         uhd_error uhd_tx_metadata_free(uhd_tx_metadata_handle* handle);
 
         uhd_error uhd_meta_range_make(uhd_meta_range_handle* h);

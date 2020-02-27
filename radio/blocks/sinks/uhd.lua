@@ -54,6 +54,8 @@ if not package.loaded['radio.blocks.sources.uhd'] then
         typedef struct uhd_tx_streamer* uhd_tx_streamer_handle;
         typedef struct uhd_rx_metadata_t* uhd_rx_metadata_handle;
         typedef struct uhd_tx_metadata_t* uhd_tx_metadata_handle;
+        typedef struct uhd_meta_range_t* uhd_meta_range_handle;
+        typedef struct uhd_string_vector_t* uhd_string_vector_handle;
 
         /* Structures and enums */
         typedef enum {
@@ -133,12 +135,6 @@ if not package.loaded['radio.blocks.sources.uhd'] then
             UHD_ERROR_STDEXCEPT = 70,
             UHD_ERROR_UNKNOWN = 100
         } uhd_error;
-
-        struct uhd_meta_range_t;
-        typedef struct uhd_meta_range_t* uhd_meta_range_handle;
-
-        struct uhd_string_vector_t;
-        typedef struct uhd_string_vector_t* uhd_string_vector_handle;
 
         /* Functions */
         uhd_error uhd_usrp_make(uhd_usrp_handle *h, const char *args);

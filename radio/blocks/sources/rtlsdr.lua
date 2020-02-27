@@ -58,6 +58,9 @@ end
 ffi.cdef[[
     typedef struct rtlsdr_dev rtlsdr_dev_t;
 
+    const char* rtlsdr_get_device_name(uint32_t index);
+    int rtlsdr_get_usb_strings(rtlsdr_dev_t *dev, char *manufact, char *product, char *serial);
+
     int rtlsdr_open(rtlsdr_dev_t **dev, uint32_t index);
     int rtlsdr_close(rtlsdr_dev_t *dev);
 
@@ -96,6 +99,29 @@ function RtlSdrSource:initialize_rtlsdr()
     ret = librtlsdr.rtlsdr_open(self.dev, self.device_index)
     if ret ~= 0 then
         error("rtlsdr_open(): " .. tostring(ret))
+    end
+
+    -- Dump device info
+    if debug.enabled then
+        -- Look up device name
+        local device_name = ffi.string(librtlsdr.rtlsdr_get_device_name(self.device_index))
+
+        -- Look up USB device strings
+        local usb_manufacturer = ffi.new("char[256]")
+        local usb_product = ffi.new("char[256]")
+        local usb_serial = ffi.new("char[256]")
+        ret = librtlsdr.rtlsdr_get_usb_strings(self.dev[0], usb_manufacturer, usb_product, usb_serial)
+        if ret ~= 0 then
+            error("rtlsdr_get_usb_strings(): " .. tostring(ret))
+        end
+        usb_manufacturer = ffi.string(usb_manufacturer)
+        usb_product = ffi.string(usb_product)
+        usb_serial = ffi.string(usb_serial)
+
+        debug.printf("[RtlSdrSource] Device name:       %s\n", device_name)
+        debug.printf("[RtlSdrSource] USB Manufacturer:  %s\n", usb_manufacturer)
+        debug.printf("[RtlSdrSource] USB Product:       %s\n", usb_product)
+        debug.printf("[RtlSdrSource] USB Serial:        %s\n", usb_serial)
     end
 
     -- Turn on bias tee if required, ignore if not required

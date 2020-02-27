@@ -50,6 +50,8 @@ end
 
 if not package.loaded['radio.blocks.sources.hackrf'] then
     ffi.cdef[[
+        enum hackrf_error { HACKRF_SUCCESS = 0, };
+
         typedef struct hackrf_device hackrf_device;
 
         typedef struct {
@@ -63,7 +65,7 @@ if not package.loaded['radio.blocks.sources.hackrf'] then
 
         typedef int (*hackrf_sample_block_cb_fn)(hackrf_transfer* transfer);
 
-        const char* hackrf_error_name(int errcode);
+        const char* hackrf_error_name(enum hackrf_error errcode);
 
         int hackrf_init(void);
         int hackrf_exit(void);

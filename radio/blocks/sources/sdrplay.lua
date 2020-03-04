@@ -29,6 +29,7 @@ local block = require('radio.core.block')
 local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
+local async = require('radio.core.async')
 
 local SDRplaySource = block.factory("SDRplaySource")
 
@@ -49,56 +50,65 @@ end
 
 ffi.cdef[[
     typedef enum {
-        mir_sdr_Success = 0,
-        mir_sdr_Fail = 1,
-        mir_sdr_InvalidParam = 2,
-        mir_sdr_OutOfRange = 3,
-        mir_sdr_GainUpdateError = 4,
-        mir_sdr_RfUpdateError = 5,
-        mir_sdr_FsUpdateError = 6,
-        mir_sdr_HwError = 7,
-        mir_sdr_AliasingError = 8,
+        mir_sdr_Success            = 0,
+        mir_sdr_Fail               = 1,
+        mir_sdr_InvalidParam       = 2,
+        mir_sdr_OutOfRange         = 3,
+        mir_sdr_GainUpdateError    = 4,
+        mir_sdr_RfUpdateError      = 5,
+        mir_sdr_FsUpdateError      = 6,
+        mir_sdr_HwError            = 7,
+        mir_sdr_AliasingError      = 8,
         mir_sdr_AlreadyInitialised = 9,
-        mir_sdr_NotInitialised = 10
+        mir_sdr_NotInitialised     = 10,
+        mir_sdr_NotEnabled         = 11,
+        mir_sdr_HwVerError         = 12,
+        mir_sdr_OutOfMemError      = 13,
+        mir_sdr_HwRemoved          = 14
     } mir_sdr_ErrT;
 
     typedef enum {
-        mir_sdr_BW_0_200 = 200,
-        mir_sdr_BW_0_300 = 300,
-        mir_sdr_BW_0_600 = 600,
-        mir_sdr_BW_1_536 = 1536,
-        mir_sdr_BW_5_000 = 5000,
-        mir_sdr_BW_6_000 = 6000,
-        mir_sdr_BW_7_000 = 7000,
-        mir_sdr_BW_8_000 = 8000
+        mir_sdr_BW_Undefined = 0,
+        mir_sdr_BW_0_200     = 200,
+        mir_sdr_BW_0_300     = 300,
+        mir_sdr_BW_0_600     = 600,
+        mir_sdr_BW_1_536     = 1536,
+        mir_sdr_BW_5_000     = 5000,
+        mir_sdr_BW_6_000     = 6000,
+        mir_sdr_BW_7_000     = 7000,
+        mir_sdr_BW_8_000     = 8000
     } mir_sdr_Bw_MHzT;
 
     typedef enum {
-        mir_sdr_IF_Zero = 0,
-        mir_sdr_IF_0_450 = 450,
-        mir_sdr_IF_1_620 = 1620,
-        mir_sdr_IF_2_048 = 2048
+        mir_sdr_IF_Undefined = -1,
+        mir_sdr_IF_Zero      = 0,
+        mir_sdr_IF_0_450     = 450,
+        mir_sdr_IF_1_620     = 1620,
+        mir_sdr_IF_2_048     = 2048
     } mir_sdr_If_kHzT;
 
-    mir_sdr_ErrT mir_sdr_Init(int gRdB, double fsMHz, double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int *samplesPerPacket);
-    mir_sdr_ErrT mir_sdr_Uninit(void);
+    typedef enum {
+        mir_sdr_LO_Undefined = 0,
+        mir_sdr_LO_Auto      = 1,
+        mir_sdr_LO_120MHz    = 2,
+        mir_sdr_LO_144MHz    = 3,
+        mir_sdr_LO_168MHz    = 4
+    } mir_sdr_LoModeT;
+
+    typedef enum {
+        mir_sdr_USE_SET_GR          = 0,
+        mir_sdr_USE_SET_GR_ALT_MODE = 1,
+        mir_sdr_USE_RSP_SET_GR      = 2
+    } mir_sdr_SetGrModeT;
+
+    typedef void (*mir_sdr_StreamCallback_t)(short *xi, short *xq, unsigned int firstSampleNum, int grChanged, int rfChanged, int fsChanged, unsigned int numSamples, unsigned int reset, unsigned int hwRemoved, void *cbContext);
+    typedef void (*mir_sdr_GainChangeCallback_t)(unsigned int gRdB, unsigned int lnaGRdB, void *cbContext);
 
     mir_sdr_ErrT mir_sdr_ApiVersion(float *version);
+    mir_sdr_ErrT mir_sdr_DebugEnable(unsigned int enable);
 
-    mir_sdr_ErrT mir_sdr_ReadPacket(short *xi, short *xq, unsigned int *firstSampleNum, int *grChanged, int *rfChanged, int *fsChanged);
-
-    mir_sdr_ErrT mir_sdr_SetRf(double drfHz, int abs, int syncUpdate);
-    mir_sdr_ErrT mir_sdr_SetFs(double dfsHz, int abs, int syncUpdate, int reCal);
-    mir_sdr_ErrT mir_sdr_SetGr(int gRdB, int abs, int syncUpdate);
-    mir_sdr_ErrT mir_sdr_SetGrParams(int minimumGr, int lnaGrThreshold);
-    mir_sdr_ErrT mir_sdr_SetDcMode(int dcCal, int speedUp);
-    mir_sdr_ErrT mir_sdr_SetDcTrackTime(int trackTime);
-    mir_sdr_ErrT mir_sdr_SetSyncUpdateSampleNum(unsigned int sampleNum);
-    mir_sdr_ErrT mir_sdr_SetSyncUpdatePeriod(unsigned int period);
-    mir_sdr_ErrT mir_sdr_SetParam(int ParamterId, int value);
-
-    mir_sdr_ErrT mir_sdr_ResetUpdateFlags(int resetGainUpdate, int resetRfUpdate, int resetFsUpdate);
-    mir_sdr_ErrT mir_sdr_DownConvert(short *in, short *xi, short *xq, unsigned int samplesPerPacket, mir_sdr_If_kHzT ifType, unsigned int M, unsigned int preReset);
+    mir_sdr_ErrT mir_sdr_StreamInit(int *gRdB, double fsMHz, double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode, int *samplesPerPacket, mir_sdr_StreamCallback_t StreamCbFn, mir_sdr_GainChangeCallback_t GainChangeCbFn, void *cbContext);
+    mir_sdr_ErrT mir_sdr_StreamUninit(void);
 ]]
 local libmirsdrapi_rsp_available, libmirsdrapi_rsp = pcall(ffi.load, "libmirsdrapi-rsp")
 
@@ -122,6 +132,10 @@ local function libmirsdrapi_strerror(code)
         [ffi.C.mir_sdr_AliasingError] = "Aliasing error",
         [ffi.C.mir_sdr_AlreadyInitialised] = "Already initialised",
         [ffi.C.mir_sdr_NotInitialised] = "Not initialised",
+        [ffi.C.mir_sdr_NotEnabled] = "Not enabled",
+        [ffi.C.mir_sdr_HwVerError] = "Hardware version error",
+        [ffi.C.mir_sdr_OutOfMemError] = "Out of memory error",
+        [ffi.C.mir_sdr_HwRemoved] = "Hardware removed",
     }
     return libmirsdrapi_error_strings[tonumber(code)] or "Unknown"
 end
@@ -145,7 +159,52 @@ local function libmirsdrapi_compute_bandwidth_closest(bandwidth)
     return libmirsdrapi_bandwidths[#libmirsdrapi_bandwidths]
 end
 
-function SDRplaySource:initialize_sdrplay()
+local function stream_callback_factory(...)
+    local ffi = require('ffi')
+    local radio = require('radio')
+
+    local fds = {...}
+
+    local out = radio.types.ComplexFloat32.vector()
+
+    local function stream_callback(xi, xq, firstSampleNum, grChanged, rfChanged, fsChanged, numSamples, reset, hwRemoved, cbContext)
+        out:resize(numSamples)
+
+        -- Convert raw samples to complex float32 samples
+        for i = 0, out.length-1 do
+            out.data[i].real = xi[i]*1.0/32767.5
+            out.data[i].imag = xq[i]*1.0/32767.5
+        end
+
+        -- Write to each output fd
+        for i = 1, #fds do
+            local total_bytes_written = 0
+            while total_bytes_written < out.size do
+                local bytes_written = tonumber(ffi.C.write(fds[i], ffi.cast("uint8_t *", out.data) + total_bytes_written, out.size - total_bytes_written))
+                if bytes_written <= 0 then
+                    error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                end
+
+                total_bytes_written = total_bytes_written + bytes_written
+            end
+        end
+    end
+
+    return ffi.cast('mir_sdr_StreamCallback_t', stream_callback)
+end
+
+local function gain_change_callback_factory(a)
+    local ffi = require('ffi')
+    local radio = require('radio')
+
+    local function gain_change_callback(gRdb, lnaGRdb, cbContext)
+        -- Do nothing for now
+    end
+
+    return ffi.cast('mir_sdr_GainChangeCallback_t', gain_change_callback)
+end
+
+function SDRplaySource:run()
     local ret
 
     -- Dump version info
@@ -157,6 +216,12 @@ function SDRplaySource:initialize_sdrplay()
             error("mir_sdr_ApiVersion(): " .. libmirsdrapi_strerror(ret))
         end
 
+        -- Enable debug
+        ret = libmirsdrapi_rsp.mir_sdr_DebugEnable(1)
+        if ret ~= ffi.C.mir_sdr_Success then
+            error("mir_sdr_DebugEnable(): " .. libmirsdrapi_strerror(ret))
+        end
+
         debug.printf("[SDRplaySource] Library version: %.2f\n", lib_version[0])
     end
 
@@ -166,51 +231,38 @@ function SDRplaySource:initialize_sdrplay()
     debug.printf("[SDRplaySource] Frequency: %u Hz, Sample rate: %u Hz\n", self.frequency, self.rate)
     debug.printf("[SDRplaySource] Requested Bandwidth: %u Hz, Actual Bandwidth: %u Hz\n", (self.bandwidth or api_bandwidth)*1e3, api_bandwidth*1e3)
 
-    -- Open and initialize device
+    -- Build signal set with SIGTERM
+    local sigset = ffi.new("sigset_t[1]")
+    ffi.C.sigemptyset(sigset)
+    ffi.C.sigaddset(sigset, ffi.C.SIGTERM)
+
+    -- Block handling of SIGTERM
+    if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
+        error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    -- Initialize device and start receiving
+    local stream_callback, stream_callback_state = async.callback(stream_callback_factory, unpack(self.outputs[1]:filenos()))
+    local gain_change_callback, gain_change_callback_state = async.callback(gain_change_callback_factory)
     local samples_per_packet = ffi.new("int [1]")
-    ret = libmirsdrapi_rsp.mir_sdr_Init(self.gain_reduction, self.rate/1e6, self.frequency/1e6, api_bandwidth, ffi.C.mir_sdr_IF_Zero, samples_per_packet)
+    local gain_reduction = ffi.new("int [1]", self.gain_reduction)
+    local gain_reduction_system = ffi.new("int [1]")
+    ret = libmirsdrapi_rsp.mir_sdr_StreamInit(gain_reduction, self.rate/1e6, self.frequency/1e6, api_bandwidth, ffi.C.mir_sdr_IF_Zero, 0, gain_reduction_system, ffi.C.mir_sdr_USE_SET_GR, samples_per_packet, stream_callback, gain_change_callback, nil)
+    if ret ~= ffi.C.mir_sdr_Success then
+        error("mir_sdr_Init(): " .. libmirsdrapi_strerror(ret))
+    end
+
+    -- Wait for SIGTERM
+    local sig = ffi.new("int[1]")
+    if ffi.C.sigwait(sigset, sig) ~= 0 then
+        error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    -- Stop stream
+    ret = libmirsdrapi_rsp.mir_sdr_StreamUninit()
     if ret ~= 0 then
         error("mir_sdr_Init(): " .. libmirsdrapi_strerror(ret))
     end
-    self.samples_per_packet = samples_per_packet[0]
-
-    -- Create raw sample buffers
-    self.chunk_size = math.floor(32768 / self.samples_per_packet)*self.samples_per_packet
-    self.raw_samples_i = ffi.new("short [?]", self.chunk_size)
-    self.raw_samples_q = ffi.new("short [?]", self.chunk_size)
-
-    -- Create output vector
-    self.out = types.ComplexFloat32.vector(self.chunk_size)
-
-    -- Mark ourselves initialized
-    self.initialized = true
-end
-
-function SDRplaySource:process()
-    if not self.initialized then
-        -- Initialize the SDRplay in our own running process
-        self:initialize_sdrplay()
-    end
-
-    -- Extra arguments to mir_sdr_ReadPacket()
-    local firstSampleNum, grChanged, rfChanged, fsChanged = ffi.new("unsigned int [1]"), ffi.new("int [1]"), ffi.new("int [1]"), ffi.new("int [1]")
-
-    -- Read packets up to chunk size
-    for i = 0, (self.chunk_size/self.samples_per_packet)-1 do
-        -- Read packet
-        local ret = libmirsdrapi_rsp.mir_sdr_ReadPacket(self.raw_samples_i + i*self.samples_per_packet, self.raw_samples_q + i*self.samples_per_packet, firstSampleNum, grChanged, rfChanged, fsChanged)
-        if ret ~= ffi.C.mir_sdr_Success then
-            error("mir_sdr_ReadPacket(): " .. libmirsdrapi_strerror(ret))
-        end
-    end
-
-    -- Convert raw samples to complex float32 samples
-    for i = 0, self.chunk_size-1 do
-        self.out.data[i].real = self.raw_samples_i[i]*1.0/32767.5
-        self.out.data[i].imag = self.raw_samples_q[i]*1.0/32767.5
-    end
-
-    return self.out
 end
 
 return SDRplaySource

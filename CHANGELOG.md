@@ -1,3 +1,30 @@
+* v0.6.1 - 03/07/2020
+    * Block changes
+        * Fix gnuplot check under lua52compat LuaJIT for gnuplot plotting
+          sinks.
+        * Update C API (v0.8) to fix block crash for SoapySDRSource and
+          SoapySDRSink.
+        * Add library and ABI version reporting to debug dump for
+          SoapySDRSource and SoapySDRSink.
+        * Migrate to new callback based API (v2.13) for SDRplaySource.
+        * Update C API (v3.15.0.0) for UHDSource and UHDSink.
+        * Add library and ABI version reporting to debug dump for UHDSource and
+          UHDSink.
+        * Clean up manual gain warnings under autogain setup for UHDSource.
+        * Add device reporting to debug dump for RtlSdrSource.
+        * Make FFI cdefs more consistent with public APIs for HackRFSink,
+          HackRFSource, UHDSource, UHDSink, and AirspySource.
+    * Build changes
+        * Improve LuaJIT library and executable discovery in Makefile.
+    * Documentation changes
+        * Fix examples in docstrings for several gnuplot plotting sinks.
+        * Update and simplify instructions in installation guide.
+        * Add macOS Homebrew package to installation guide.
+    * Website changes
+        * Update hardware and software suggestions in New to SDR guide.
+    * Contributors
+        * Jakob L. Kreuze (@TsarFox) - 1dc9f7e
+
 * v0.6.0 - 12/12/2019
     * Block additions
         * JSONSource

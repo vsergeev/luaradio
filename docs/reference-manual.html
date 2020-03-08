@@ -30,7 +30,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.1</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -75,7 +75,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.1</code></a>
     </p>
   </div>
   <div class="toc">
@@ -90,7 +90,7 @@
         <div class="reference-manual">
   <h1 id="luaradio-reference-manual">LuaRadio Reference Manual</h1>
 
-  <p>Generated from LuaRadio <code class="highlighter-rouge">v0.6.0</code>.</p>
+  <p>Generated from LuaRadio <code class="highlighter-rouge">v0.6.1</code>.</p>
 
   <h2 id="table-of-contents">Table of contents</h2>
 
@@ -1239,7 +1239,7 @@ library.</p>
           <li><code class="highlighter-rouge">gain</code> (number in dB, overall gain, default 15.0 dB)</li>
           <li><code class="highlighter-rouge">bandwidth</code> (number in Hz)</li>
           <li><code class="highlighter-rouge">antenna</code> (string)</li>
-          <li><code class="highlighter-rouge">autogain</code> (bool)</li>
+          <li><code class="highlighter-rouge">autogain</code> (bool, default false)</li>
           <li><code class="highlighter-rouge">gains</code> (table, gain element name to value in dB)</li>
         </ul>
       </li>
@@ -1469,7 +1469,7 @@ gnuplot commands)</li>
     <h6 id="example-24">Example</h6>
 
     <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Plot a 1 kHz cosine sampled at 250 kHz</span>
-<span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'cosine'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">throttle</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotPlotSink</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">'Cosine'</span><span class="p">)</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>
@@ -1576,9 +1576,9 @@ gnuplot commands)</li>
     <h6 id="example-26">Example</h6>
 
     <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Plot the waterfall of a 1 kHz complex exponential sampled at 250 kHz</span>
-<span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">throttle</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">()</span>
-<span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">()</span>
+<span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotWaterfallSink</span><span class="p">()</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>
 </code></pre></div>    </div>
 
@@ -1625,7 +1625,7 @@ gnuplot commands)</li>
     <h6 id="example-27">Example</h6>
 
     <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Plot a 1 kHz complex exponential sampled at 250 kHz</span>
-<span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SignalSource</span><span class="p">(</span><span class="s1">'exponential'</span><span class="p">,</span> <span class="mf">1e3</span><span class="p">,</span> <span class="mf">250e3</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">throttle</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ThrottleBlock</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotXYPlotSink</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="s1">'Complex Exponential'</span><span class="p">,</span> <span class="p">{</span><span class="n">complex</span> <span class="o">=</span> <span class="kc">true</span><span class="p">})</span>
 <span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">throttle</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>

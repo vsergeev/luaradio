@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.1</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -73,7 +73,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.1</code></a>
     </p>
   </div>
   <div class="toc">
@@ -120,13 +120,28 @@ LuaRadio as the <a href="../docs/reference-manual.html#wbfmmonodemodulator"><cod
 <span class="kd">local</span> <span class="n">tune_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mf">250e3</span>
 
 <span class="c1">-- Blocks</span>
-<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RtlSdrSource</span><span class="p">(</span><span class="n">frequency</span> <span class="o">+</span> <span class="n">tune_offset</span><span class="p">,</span> <span class="mi">1102500</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">tuner</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">TunerBlock</span><span class="p">(</span><span class="n">tune_offset</span><span class="p">,</span> <span class="mf">200e3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="c1">--local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)</span>
+<span class="c1">--local source = radio.SoapySDRSource("driver=rtlsdr", frequency + tune_offset, 1102500)</span>
+<span class="c1">--local tuner = radio.TunerBlock(tune_offset, 200e3, 5)</span>
+
+<span class="c1">--local source = radio.AirspySource(frequency + tune_offset, 3e6)</span>
+<span class="c1">--local source = radio.SoapySDRSource("driver=airspy", frequency + tune_offset, 3e6, {gain=10})</span>
+<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SDRplaySource</span><span class="p">(</span><span class="n">frequency</span> <span class="o">+</span> <span class="n">tune_offset</span><span class="p">,</span> <span class="mf">3e6</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">tuner</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">TunerBlock</span><span class="p">(</span><span class="n">tune_offset</span><span class="p">,</span> <span class="mf">200e3</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+
+<span class="c1">--local source = radio.UHDSource("type=b200", frequency + tune_offset, 3e6, {autogain=true, gain=40})</span>
+<span class="c1">--local tuner = radio.TunerBlock(tune_offset, 200e3, 12)</span>
+
+<span class="c1">--local source = radio.HackRFSource(frequency + tune_offset, 8e6)</span>
+<span class="c1">--local tuner = radio.TunerBlock(tune_offset, 200e3, 32)</span>
+
 <span class="kd">local</span> <span class="n">fm_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyDiscriminatorBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">25</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">af_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">LowpassFilterBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mf">15e3</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">af_deemphasis</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FMDeemphasisFilterBlock</span><span class="p">(</span><span class="mf">75e-6</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">af_downsampler</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DownsamplerBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="c1">--local af_downsampler = radio.DownsamplerBlock(5)</span>
+<span class="kd">local</span> <span class="n">af_downsampler</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DownsamplerBlock</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">sink</span> <span class="o">=</span> <span class="nb">os.getenv</span><span class="p">(</span><span class="s1">'DISPLAY'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">radio</span><span class="p">.</span><span class="n">PulseAudioSink</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="n">radio</span><span class="p">.</span><span class="n">WAVFileSink</span><span class="p">(</span><span class="s1">'wbfm_mono.wav'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="c1">--local sink = os.getenv('DISPLAY') and radio.PortAudioSink(1) or radio.WAVFileSink('wbfm_mono.wav', 1)</span>
 
 <span class="c1">-- Plotting sinks</span>
 <span class="kd">local</span> <span class="n">plot1</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">GnuplotSpectrumSink</span><span class="p">(</span><span class="mi">2048</span><span class="p">,</span> <span class="s1">'Demodulated FM Spectrum'</span><span class="p">,</span> <span class="p">{</span><span class="n">yrange</span> <span class="o">=</span> <span class="p">{</span><span class="o">-</span><span class="mi">120</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">}})</span>

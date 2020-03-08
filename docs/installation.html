@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.1</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -73,7 +73,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.0</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.1</code></a>
     </p>
   </div>
   <div class="toc">
@@ -88,69 +88,39 @@
         
 <h1 id="installation">Installation</h1>
 
-<p>LuaRadio can be installed from the AUR on Arch Linux, from a PPA on Ubuntu,
-from Homebrew on Mac OS X, or from source.</p>
+<p>LuaRadio can be installed from the AUR on Arch Linux, from Homebrew on Mac OS
+X, or from source.</p>
 
 <p>Packaging for other distributions and platforms is a work in progress.</p>
 
 <p>To try LuaRadio without installation, you can run it <a href="https://github.com/vsergeev/luaradio/tree/master/README.md#quickstart">directly from the
 repository</a>, provided LuaJIT is installed. The
-real-time dependencies described <a href="#install-real-time-dependencies">below</a> will
-also be necessary for real-time applications.</p>
+real-time dependencies described <a href="#real-time-dependencies">below</a> will also be
+necessary for real-time applications.</p>
 
-<h2 id="installing-from-arch-linux-aur">Installing from Arch Linux AUR</h2>
+<h2 id="arch-linux-aur">Arch Linux AUR</h2>
 
 <p>LuaRadio is available in the Arch Linux AUR under the package
 <a href="https://aur.archlinux.org/packages/luaradio"><code class="highlighter-rouge">luaradio</code></a>.</p>
 
-<p>Desktop users should also install the <code class="highlighter-rouge">gnuplot</code> package for plotting support.</p>
+<h2 id="macos-homebrew">macOS Homebrew</h2>
 
-<h2 id="installing-on-ubuntu-1604-1404">Installing on Ubuntu 16.04, 14.04</h2>
-
-<p>LuaRadio is available through a PPA for Ubuntu 16.04 (Xenial Xerus) and Ubuntu
-14.04 (Trusty Tahr), under amd64, i386, and armhf architectures.</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get install software-properties-common
-sudo add-apt-repository ppa:vsergeev/luaradio
-sudo apt-get update
-sudo apt-get install luaradio
-</code></pre></div></div>
-
-<p><em>Note</em>: Users should install liquid-dsp or VOLK for real-time acceleration.
-liquid-dsp is not yet available in the PPA.  liquid-dsp or VOLK can be
-installed <a href="#install-real-time-dependencies">from source</a>. On Ubuntu 16.04, VOLK
-can be installed with the <code class="highlighter-rouge">libvolk1-dev</code> package.</p>
-
-<p>Desktop users should also install the <code class="highlighter-rouge">gnuplot5</code> or <code class="highlighter-rouge">gnuplot</code> package for
-plotting support.</p>
-
-<h2 id="installing-from-homebrew-on-mac-os-x">Installing from Homebrew on Mac OS X</h2>
-
-<p>LuaRadio is available in <a href="http://brew.sh/">Homebrew</a> for Mac OS X:</p>
+<p>LuaRadio is available in <a href="http://brew.sh/">Homebrew</a> for macOS / Mac OS X:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install luaradio
 </code></pre></div></div>
 
-<p><em>Note</em>: Users should install liquid-dsp or VOLK for real-time acceleration.
-liquid-dsp is not yet available in Homebrew. liquid-dsp or VOLK can be
-installed <a href="#install-real-time-dependencies">from source</a>.</p>
+<h2 id="source">Source</h2>
 
-<p>Desktop users should also install the <code class="highlighter-rouge">gnuplot</code> package for plotting support.</p>
-
-<h2 id="installing-from-source">Installing from Source</h2>
-
-<h3 id="install-prerequisites">Install prerequisites</h3>
-
-<p>Install LuaJIT 2.0.4 or greater:</p>
+<p>Install LuaJIT 2.0.4 or greater and prerequisites:</p>
 
 <ul>
   <li>Arch Linux: <code class="highlighter-rouge">luajit</code></li>
+  <li>macOS (Homebrew): <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">pkg-config</code></li>
+  <li>macOS/Darwin (MacPorts): <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">pkgconfig</code></li>
   <li>Ubuntu/Debian: <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">libluajit-5.1-dev</code>,<code class="highlighter-rouge">pkg-config</code></li>
   <li>Fedora, CentOS/RHEL/SL 7 or up: <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">luajit-devel</code></li>
-  <li>Mac OS X (Homebrew): <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">pkg-config</code></li>
 </ul>
-
-<h3 id="install-luaradio">Install LuaRadio</h3>
 
 <p>Build and install LuaRadio:</p>
 
@@ -160,31 +130,19 @@ make lib
 sudo make install
 </code></pre></div></div>
 
-<h3 id="install-real-time-dependencies">Install real-time dependencies</h3>
+<h3 id="real-time-dependencies">Real-time Dependencies</h3>
 
 <p>LuaRadio has no hard dependencies outside of LuaJIT, but for real-time
 applications, the <a href="https://github.com/jgaeddert/liquid-dsp">liquid-dsp</a> or
 <a href="https://github.com/gnuradio/volk">VOLK</a>, and <a href="http://www.fftw.org/">fftw</a>
-libraries are strongly encouraged for appreciable performance. VOLK depends on
-boost.</p>
+libraries are strongly encouraged for appreciable performance.</p>
 
-<ul>
-  <li>Arch Linux: <code class="highlighter-rouge">fftw</code>, <code class="highlighter-rouge">liquid-dsp</code>, <code class="highlighter-rouge">libvolk</code></li>
-  <li>Ubuntu/Debian: <code class="highlighter-rouge">fftw3</code>, <code class="highlighter-rouge">libfftw3-dev</code>, liquid-dsp or VOLK from source</li>
-  <li>Fedora, CentOS/RHEL/SL 7 or up: <code class="highlighter-rouge">fftw</code>, <code class="highlighter-rouge">fftw-devel</code>, liquid-dsp or VOLK from
-source</li>
-  <li>Mac OS X (Homebrew): <code class="highlighter-rouge">fftw</code>, liquid-dsp or VOLK from source</li>
-</ul>
-
-<p>Run <code class="highlighter-rouge">sudo ldconfig</code> after library installation on Linux platforms, to update
-the shared library cache.</p>
-
-<h3 id="install-optional-dependencies">Install optional dependencies</h3>
+<h3 id="optional-dependencies">Optional Dependencies</h3>
 
 <p>Desktop users should also install the <code class="highlighter-rouge">gnuplot</code> package for plotting support.</p>
 
-<p>Some I/O blocks, like SDR and audio sources/sinks, may require additional
-external libraries.</p>
+<p>Some I/O blocks, like SDR and audio sources/sinks, may require external
+libraries. For example, the RTL-SDR requires the <code class="highlighter-rouge">librtlsdr</code> library.</p>
 
 <h3 id="check-installation">Check Installation</h3>
 
@@ -199,7 +157,7 @@ cpu count       4
 cpu model       Intel(R) Core(TM) i5-4570T CPU @ 2.90GHz
 features
     fftw3f      true    fftw-3.3.8-sse2-avx
-    volk        true    2.0 (avx2_64_mmx_orc)
+    volk        true    2.1 (avx2_64_mmx_orc)
     liquid      true    1.3.2
 $
 </code></pre></div></div>

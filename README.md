@@ -72,13 +72,15 @@ $
 
 LuaRadio is accelerated by the optional libraries
 [liquid-dsp](https://github.com/jgaeddert/liquid-dsp),
-[VOLK](http://libvolk.org/), and [fftw](http://www.fftw.org/) for real-time
-applications. To run the real-time examples, install liquid-dsp or VOLK, and
-check that `liquid` or `volk` are marked `true` in the platform information.
+[VOLK](http://libvolk.org/), and [fftw](http://www.fftw.org/). For best
+real-time performance, install these libraries and check that the features are
+marked `true` in the platform information:
 
-LuaRadio primarily supports Linux. It also strives to support FreeBSD and Mac
-OS X, but real-time support and audio sink support on these platforms is
-currently experimental.
+* Arch Linux: `sudo pacman -S liquid-dsp libvolk fftw`
+* macOS (Homebrew): `brew install liquid-dsp fftw`
+* macOS (MacPorts): `sudo port install liquid-dsp volk fftw-3`
+* Ubuntu/Debian/Raspbian: `sudo apt-get install libliquid-dev libvolk1-dev libfftw3-dev`
+* Fedora/CentOS: `sudo yum install liquid-dsp fftw`
 
 Try out one of the [examples](examples) with an
 [RTL-SDR](http://www.rtl-sdr.com/about-rtl-sdr/) dongle:
@@ -87,8 +89,10 @@ Try out one of the [examples](examples) with an
 $ ./luaradio examples/rtlsdr_wbfm_mono.lua 91.1e6
 ```
 
-LuaRadio and all of its examples run great on the Raspberry Pi 3 with Arch
-Linux.
+LuaRadio primarily supports Linux. It also strives to support FreeBSD and
+macOS, but real-time and audio support on these platforms is currently
+experimental. LuaRadio and all of its examples run great on the Raspberry Pi 3
+with Arch Linux or Raspbian.
 
 See the [Getting Started](docs/2.getting-started.md) guide for a tutorial on
 building your own flow graphs.

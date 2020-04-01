@@ -482,6 +482,9 @@ local function factory(name, parent_class)
         self.signatures = {}
         self.signature = nil
 
+        -- Disable instance call operator
+        self.new = function () error("Block instance not callable") end
+
         self:instantiate(...)
 
         return self

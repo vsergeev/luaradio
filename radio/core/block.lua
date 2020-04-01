@@ -23,7 +23,7 @@ local util = require('radio.core.util')
 local Input = class.factory()
 
 function Input.new(name, data_type)
-    self = setmetatable({}, Input)
+    local self = setmetatable({}, Input)
     self.name = name
     self.data_type = data_type
     return self
@@ -44,7 +44,7 @@ end
 local Output = class.factory()
 
 function Output.new(name, data_type)
-    self = setmetatable({}, Output)
+    local self = setmetatable({}, Output)
     self.name = name
     self.data_type = data_type
     return self

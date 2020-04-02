@@ -92,6 +92,8 @@ end
 -- @raise Output port of block not found error.
 -- @raise Input port of block not found error.
 -- @raise Input port of block already connected error.
+-- @raise Unexpected number of output ports in block error.
+-- @raise Unexpected number of input ports in block error.
 function CompositeBlock:connect(...)
     if util.array_all({...}, function (b) return class.isinstanceof(b, block.Block) end) then
         local blocks = {...}
@@ -99,6 +101,8 @@ function CompositeBlock:connect(...)
 
         for i = 2, #blocks do
             local second = blocks[i]
+            assert(#first.outputs == 1, string.format("Unexpected number of output ports in block %d \"%s\": found %d, expected 1.", i-1, first.name, #first.outputs))
+            assert(#second.inputs == 1, string.format("Unexpected number of input ports in block %d \"%s\": found %d, expected 1.", i, second.name, #second.inputs))
             self:_connect_by_name(first, first.outputs[1].name, second, second.inputs[1].name)
             first = blocks[i]
         end

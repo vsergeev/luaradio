@@ -22,6 +22,11 @@ describe("composite", function ()
             self:add_type_signature({block.Input("in1", radio.types.ComplexFloat32), block.Input("in2", radio.types.ComplexFloat32)}, {block.Output("out", radio.types.ComplexFloat32)})
         end
 
+        local TestSplitBlock = block.factory("TestSplitBlock")
+        function TestSplitBlock:instantiate()
+            self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {block.Output("out1", radio.types.Float32), block.Output("out2", radio.types.Float32)})
+        end
+
         local TestSink = block.factory("TestSink")
         function TestSink:instantiate()
             self:add_type_signature({block.Input("in", radio.types.ComplexFloat32)}, {})
@@ -100,6 +105,15 @@ describe("composite", function ()
         local top = radio.CompositeBlock()
         local b1 = TestSource()
         local b2 = TestBlock()
+        local b3 = TestAddBlock()
+        local b4 = TestSplitBlock()
+        local b5 = TestSink()
+
+        -- Linear connection of 2 output ports to 1 input port
+        assert.has_error(function () top:connect(b4, b2) end)
+
+        -- Linear connection of 1 output port to 2 input ports
+        assert.has_error(function () top:connect(b2, b3) end)
 
         -- Unknown source pipe
         assert.has_error(function () top:connect(b1, "foo", b2, "in") end)

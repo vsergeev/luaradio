@@ -84,26 +84,15 @@ if platform.features.fftw3f then
     local libfftw3f = platform.libs.fftw3f
 
     function DFT:initialize()
-        -- Preserve input samples vector (FFTW_MEASURE overwrites input array)
-        local input_samples_save = self.input_samples.data_type.vector(self.num_samples)
-        for i = 0, self.num_samples-1 do
-            input_samples_save.data[i] = self.input_samples.data[i]
-        end
-
         -- Create plan
         if self.data_type == types.ComplexFloat32 then
-            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_FORWARD, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_FORWARD, ffi.C.FFTW_ESTIMATE), libfftw3f.fftwf_destroy_plan)
         else
-            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_r2c_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_r2c_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_ESTIMATE), libfftw3f.fftwf_destroy_plan)
         end
 
         if self.plan == nil then
             error("Creating FFTW plan.")
-        end
-
-        -- Restore input samples
-        for i = 0, self.num_samples-1 do
-            self.input_samples.data[i] = input_samples_save.data[i]
         end
     end
 
@@ -326,26 +315,15 @@ if platform.features.fftw3f then
     local libfftw3f = platform.libs.fftw3f
 
     function IDFT:initialize()
-        -- Preserve input samples vector (FFTW_MEASURE overwrites input array)
-        local input_samples_save = self.input_samples.data_type.vector(self.num_samples)
-        for i = 0, self.num_samples-1 do
-            input_samples_save.data[i] = self.input_samples.data[i]
-        end
-
         -- Create plan
         if self.data_type == types.ComplexFloat32 then
-            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_BACKWARD, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_BACKWARD, ffi.C.FFTW_ESTIMATE), libfftw3f.fftwf_destroy_plan)
         else
-            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_c2r_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_MEASURE), libfftw3f.fftwf_destroy_plan)
+            self.plan = ffi.gc(libfftw3f.fftwf_plan_dft_c2r_1d(self.num_samples, self.input_samples.data, self.output_samples.data, ffi.C.FFTW_ESTIMATE), libfftw3f.fftwf_destroy_plan)
         end
 
         if self.plan == nil then
             error("Creating FFTW plan.")
-        end
-
-        -- Restore input samples
-        for i = 0, self.num_samples-1 do
-            self.input_samples.data[i] = input_samples_save.data[i]
         end
     end
 

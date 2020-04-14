@@ -230,7 +230,7 @@ end
 -- @function Block:__tostring
 -- @treturn string String representation
 function Block:__tostring()
-    local s = self.name .. "\n"
+    local s = self.name
 
     -- tostring() on class
     if self.inputs == nil or self.outputs == nil then
@@ -264,7 +264,7 @@ function Block:__tostring()
         end
     end
 
-    s = s .. table.concat(strs, "\n")
+    s = s .. "\n" .. table.concat(strs, "\n")
 
     return s
 end

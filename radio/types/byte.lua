@@ -2,7 +2,7 @@
 -- Byte data type, a C structure defined as:
 --
 -- ``` c
--- typedef struct {
+-- typedef struct byte {
 --     uint8_t value;
 -- } byte_t;
 -- ```
@@ -15,7 +15,7 @@ local ffi = require('ffi')
 local CStructType = require('radio.types.cstruct')
 
 ffi.cdef[[
-typedef struct {
+typedef struct byte {
     uint8_t value;
 } byte_t;
 ]]

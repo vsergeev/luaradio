@@ -230,14 +230,14 @@ end
 -- @function Block:__tostring
 -- @treturn string String representation
 function Block:__tostring()
-    local s = self.name
-
     -- tostring() on class
     if self.inputs == nil or self.outputs == nil then
-        return s
+        return self.name
     end
 
     -- tostring() on class instance
+    local s = self.signature and string.format("%s [%.0f Hz]", self.name, self:get_rate()) or self.name
+
     local strs = {}
 
     for i=1, #self.inputs do

@@ -200,6 +200,13 @@ function ObjectType.factory(methods)
         return num_elems
     end
 
+    ---
+    -- Type name of this ObjectType.
+    --
+    -- @property ObjectType.type_name
+    -- @treturn string Type name
+    CustomType.type_name = "ObjectType"
+
     -- Absorb the user-defined metatable
     if methods then
         for k,v in pairs(methods) do

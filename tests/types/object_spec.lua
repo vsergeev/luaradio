@@ -87,6 +87,8 @@ describe("ObjectType factory", function ()
     it("metatable", function ()
         local x = TestType(0xdeadbeef, {0xaa, 0xbb, 0xcc, 0xdd})
 
+        assert.is.equal("ObjectType", x.type_name)
+
         assert.is.equal(0xdeadc1fd, x:foo())
 
         assert.is.equal("deadbeef", x:bar())

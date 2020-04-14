@@ -2,7 +2,7 @@
 -- Bit data type, a C structure defined as:
 --
 -- ``` c
--- typedef struct {
+-- typedef struct bit {
 --     uint8_t value;
 -- } bit_t;
 -- ```
@@ -16,7 +16,7 @@ local bit = require('bit')
 local CStructType = require('radio.types.cstruct')
 
 ffi.cdef[[
-typedef struct {
+typedef struct bit {
     uint8_t value;
 } bit_t;
 ]]

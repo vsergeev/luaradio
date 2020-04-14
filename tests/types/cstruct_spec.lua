@@ -23,6 +23,10 @@ describe("CStructType factory", function ()
     -- Manufacture the type
     local TestType = CStructType.factory("test_t", mt)
 
+    it("type name", function ()
+        assert.is.equal("test_t", TestType.type_name)
+    end)
+
     it("size", function ()
         -- Check underlying struct size
         assert.is.equal(8, ffi.sizeof(TestType))

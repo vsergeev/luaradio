@@ -125,6 +125,13 @@ function CStructType.factory(ctype, methods)
         return math.floor(size/ffi.sizeof(CustomType))
     end
 
+    ---
+    -- Type name of this CStructType.
+    --
+    -- @property CStructType.type_name
+    -- @treturn string Type name
+    mt.type_name = tostring(ctype)
+
     -- Absorb the user-defined metatable
     if methods then
         for k,v in pairs(methods) do

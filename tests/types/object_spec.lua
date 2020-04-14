@@ -52,7 +52,7 @@ end)
 
 describe("ObjectType factory", function ()
     -- Test type
-    local TestType = ObjectType.factory()
+    local TestType = ObjectType.factory({bar = function (self) return string.format("%08x", self.a) end})
 
     function TestType.new(a, b)
         local self = setmetatable({}, TestType)
@@ -88,6 +88,8 @@ describe("ObjectType factory", function ()
         local x = TestType(0xdeadbeef, {0xaa, 0xbb, 0xcc, 0xdd})
 
         assert.is.equal(0xdeadc1fd, x:foo())
+
+        assert.is.equal("deadbeef", x:bar())
     end)
 
     it("object serialization and deserialization", function ()

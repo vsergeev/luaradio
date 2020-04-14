@@ -203,7 +203,7 @@ function ObjectType.factory(methods)
     -- Absorb the user-defined metatable
     if methods then
         for k,v in pairs(methods) do
-            mt[k] = v
+            CustomType[k] = v
         end
     end
 

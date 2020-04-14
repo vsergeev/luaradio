@@ -2,7 +2,7 @@
 -- Float32 data type, a C structure defined as:
 --
 -- ``` c
--- typedef struct {
+-- typedef struct float32 {
 --     float value;
 -- } float32_t;
 -- ```
@@ -15,7 +15,7 @@ local ffi = require('ffi')
 local CStructType = require('radio.types.cstruct')
 
 ffi.cdef[[
-typedef struct {
+typedef struct float32 {
     float value;
 } float32_t;
 ]]

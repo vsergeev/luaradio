@@ -5,6 +5,10 @@ local jigs = require('tests.jigs')
 local Byte = radio.types.Byte
 
 describe("Byte type", function ()
+    it("type name", function ()
+        assert.is.equal(Byte.type_name, "Byte")
+    end)
+
     it("size", function ()
         -- Check underlying struct size
         assert.is.equal(1, ffi.sizeof(Byte))

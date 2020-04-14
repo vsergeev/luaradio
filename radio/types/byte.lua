@@ -124,6 +124,15 @@ function mt:__tostring()
     return "Byte<value=" .. self.value .. ">"
 end
 
+---
+-- Type name of Byte.
+--
+-- @property Byte.type_name
+-- @treturn string Type name
+-- @usage
+-- print(radio.types.Byte.type_name) --> Byte
+mt.type_name = "Byte"
+
 local Byte = CStructType.factory("byte_t", mt)
 
 return Byte

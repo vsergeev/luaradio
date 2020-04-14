@@ -136,6 +136,15 @@ function mt:__tostring()
     return "Float32<value=" .. self.value .. ">"
 end
 
+---
+-- Type name of Float32.
+--
+-- @property Float32.type_name
+-- @treturn string Type name
+-- @usage
+-- print(radio.types.Float32.type_name) --> Float32
+mt.type_name = "Float32"
+
 local Float32 = CStructType.factory("float32_t", mt)
 
 return Float32

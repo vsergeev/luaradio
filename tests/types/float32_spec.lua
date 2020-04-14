@@ -5,6 +5,10 @@ local jigs = require('tests.jigs')
 local Float32 = radio.types.Float32
 
 describe("Float32 type", function ()
+    it("type name", function ()
+        assert.is.equal(Float32.type_name, "Float32")
+    end)
+
     it("size", function ()
         -- Check underlying struct size
         assert.is.equal(4, ffi.sizeof(Float32))

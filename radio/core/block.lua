@@ -156,7 +156,16 @@ function Block:differentiate(input_data_types)
         end
     end
 
-    assert(util.table_length(signature_candidates) == 1, "No compatible type signatures found for block \"" .. self.name .. "\".")
+    -- If a compatible signature wasn't found
+    if util.table_length(signature_candidates) ~= 1 then
+        -- Build list of supplied data type at each input port
+        local input_descs = {}
+        for i = 1, #input_data_types do
+            input_descs[i] = string.format("\"%s\": [%s]", self.signatures[1].inputs[i].name, input_data_types[i].type_name or "Unknown Type")
+        end
+
+        assert(false, string.format("No compatible type signatures found for block %s with input data types: %s.", self.name, table.concat(input_descs, ", ")))
+    end
 
     -- Differentiate to the type signature
     self.signature, _ = next(signature_candidates)

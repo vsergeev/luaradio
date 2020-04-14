@@ -2,7 +2,7 @@
 -- ComplexFloat32 data type, a C structure defined as:
 --
 -- ``` c
--- typedef struct {
+-- typedef struct complex_float32 {
 --     float real;
 --     float imag;
 -- } complex_float32_t;
@@ -17,7 +17,7 @@ local ffi = require('ffi')
 local CStructType = require('radio.types.cstruct')
 
 ffi.cdef[[
-typedef struct {
+typedef struct complex_float32 {
     float real;
     float imag;
 } complex_float32_t;

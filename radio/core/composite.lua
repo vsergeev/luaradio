@@ -409,7 +409,7 @@ function CompositeBlock:_prepare_to_run()
         pipe_input.pipe:initialize()
     end
 
-    debug.print("[CompositeBlock] Dependency order:")
+    debug.print("[CompositeBlock] Flow graph:")
     for _, k in ipairs(evaluation_order) do
         local s = string.gsub(tostring(k), "\n", "\n[CompositeBlock]\t")
         debug.print("[CompositeBlock]\t" .. s)

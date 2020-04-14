@@ -105,6 +105,15 @@ function mt:__tostring()
 end
 
 ---
+-- Type name of Bit.
+--
+-- @property Bit.type_name
+-- @treturn string Type name
+-- @usage
+-- print(radio.types.Bit.type_name) --> Bit
+mt.type_name = "Bit"
+
+---
 -- Convert a Bit vector to a number.
 --
 -- @function Bit.tonumber

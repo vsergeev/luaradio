@@ -5,6 +5,10 @@ local jigs = require('tests.jigs')
 local Bit = radio.types.Bit
 
 describe("Bit type", function ()
+    it("type name", function ()
+        assert.is.equal(Bit.type_name, "Bit")
+    end)
+
     it("size", function ()
         -- Check underlying struct size
         assert.is.equal(1, ffi.sizeof(Bit))
@@ -13,7 +17,6 @@ describe("Bit type", function ()
     it("operations", function ()
         local one = Bit(1)
         local zero = Bit(0)
-
 
         -- Comparison
         assert.is.equal(one, Bit(1))

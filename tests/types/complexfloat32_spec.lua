@@ -5,6 +5,10 @@ local jigs = require('tests.jigs')
 local ComplexFloat32 = radio.types.ComplexFloat32
 
 describe("ComplexFloat32 type", function ()
+    it("type name", function ()
+        assert.is.equal(ComplexFloat32.type_name, "ComplexFloat32")
+    end)
+
     it("size", function ()
         -- Check underlying struct size
         assert.is.equal(8, ffi.sizeof(ComplexFloat32))

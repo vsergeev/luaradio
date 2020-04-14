@@ -208,6 +208,15 @@ function mt:__tostring()
     return "ComplexFloat32<real=" .. self.real .. ", imag=" .. self.imag .. ">"
 end
 
+---
+-- Type name of ComplexFloat32.
+--
+-- @property ComplexFloat32.type_name
+-- @treturn string Type name
+-- @usage
+-- print(radio.types.ComplexFloat32.type_name) --> ComplexFloat32
+mt.type_name = "ComplexFloat32"
+
 local ComplexFloat32 = CStructType.factory("complex_float32_t", mt)
 
 return ComplexFloat32

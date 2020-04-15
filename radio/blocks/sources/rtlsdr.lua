@@ -7,12 +7,13 @@
 -- @tparam number frequency Tuning frequency in Hz
 -- @tparam number rate Sample rate in Hz
 -- @tparam[opt={}] table options Additional options, specifying:
---                         * `biastee` (bool, default false)
---                         * `bandwidth` (number, default equal to sample rate)
---                         * `autogain` (bool, default false)
---                         * `rf_gain` (number, default closest supported to 10.0 dB)
---                         * `freq_correction` PPM (number, default 0.0)
---                         * `device_index` (integer, default 0)
+--      * `biastee` (bool, default false)
+--      * `direct_sampling` (string, default "disabled", choice of "disabled", "i", "q")
+--      * `bandwidth` (number, default equal to sample rate)
+--      * `autogain` (bool, default false)
+--      * `rf_gain` (number, default closest supported to 10.0 dB)
+--      * `freq_correction` PPM (number, default 0.0)
+--      * `device_index` (integer, default 0)
 --
 -- @signature > out:ComplexFloat32
 --
@@ -42,11 +43,14 @@ function RtlSdrSource:instantiate(frequency, rate, options)
 
     self.options = options or {}
     self.biastee = self.options.biastee or false
+    self.direct_sampling = self.options.direct_sampling or "disabled"
     self.bandwidth = self.options.bandwidth or 0.0
     self.autogain = self.options.autogain or false
     self.rf_gain = self.options.rf_gain or nil
     self.freq_correction = self.options.freq_correction or 0.0
     self.device_index = self.options.device_index or 0
+
+    assert(self.direct_sampling == "disabled" or self.direct_sampling == "i" or self.direct_sampling == "q", string.format("Invalid direct sampling mode, should be \"disabled\", \"i\", or \"q\"."))
 
     self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
 end
@@ -73,6 +77,7 @@ ffi.cdef[[
     int rtlsdr_set_freq_correction(rtlsdr_dev_t *dev, int ppm);
     int rtlsdr_get_tuner_gains(rtlsdr_dev_t *dev, int *gains);
     int rtlsdr_set_tuner_bandwidth(rtlsdr_dev_t *dev, uint32_t bw);
+    int rtlsdr_set_direct_sampling(rtlsdr_dev_t *dev, int on);
     int rtlsdr_set_bias_tee(rtlsdr_dev_t *dev, int on);
 
     int rtlsdr_reset_buffer(rtlsdr_dev_t *dev);
@@ -130,6 +135,14 @@ function RtlSdrSource:initialize_rtlsdr()
         ret = librtlsdr.rtlsdr_set_bias_tee(self.dev[0], 1)
         if ret ~= 0 then
             error("rtlsdr_set_bias_tee(): " .. tostring(ret))
+        end
+    end
+
+    if self.direct_sampling ~= "disabled" then
+        -- Set direct sampling mode
+        ret = librtlsdr.rtlsdr_set_direct_sampling(self.dev[0], ({i = 1, q = 2})[self.direct_sampling])
+        if ret ~= 0 then
+            error("rtlsdr_set_direct_sampling(): " .. tostring(ret))
         end
     end
 

@@ -17,6 +17,7 @@ return {
     HackRFSource = require('radio.blocks.sources.hackrf'),
     SDRplaySource = require('radio.blocks.sources.sdrplay'),
     PulseAudioSource = require('radio.blocks.sources.pulseaudio'),
+    PortAudioSource = require('radio.blocks.sources.portaudio'),
     SoapySDRSource = require('radio.blocks.sources.soapysdr'),
     UHDSource = require('radio.blocks.sources.uhd'),
     NetworkClientSource = require('radio.blocks.sources.networkclient'),

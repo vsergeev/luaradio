@@ -40,33 +40,36 @@ function PortAudioSink:instantiate(num_channels)
     end
 end
 
-ffi.cdef[[
-    typedef void PaStream;
+if not package.loaded['radio.blocks.sources.portaudio'] then
+    ffi.cdef[[
+        typedef void PaStream;
 
-    typedef int PaError;
-    typedef int PaDeviceIndex;
-    typedef int PaHostApiIndex;
-    typedef double PaTime;
-    typedef unsigned long PaSampleFormat;
-    typedef unsigned long PaStreamFlags;
-    typedef struct PaStreamCallbackTimeInfo PaStreamCallbackTimeInfo;
-    typedef unsigned long PaStreamCallbackFlags;
-    typedef int PaStreamCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
+        typedef int PaError;
+        typedef int PaDeviceIndex;
+        typedef int PaHostApiIndex;
+        typedef double PaTime;
+        typedef unsigned long PaSampleFormat;
+        typedef unsigned long PaStreamFlags;
+        typedef struct PaStreamCallbackTimeInfo PaStreamCallbackTimeInfo;
+        typedef unsigned long PaStreamCallbackFlags;
+        typedef int PaStreamCallback(const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData);
 
-    enum { paFramesPerBufferUnspecified = 0 };
-    enum { paFloat32 = 0x00000001 };
+        enum { paFramesPerBufferUnspecified = 0 };
+        enum { paFloat32 = 0x00000001 };
 
-    PaError Pa_Initialize(void);
-    PaError Pa_Terminate(void);
+        PaError Pa_Initialize(void);
+        PaError Pa_Terminate(void);
 
-    PaError Pa_OpenDefaultStream(PaStream **stream, int numInputChannels, int numOutputChannels, PaSampleFormat sampleFormat, double sampleRate, unsigned long framesPerBuffer, PaStreamCallback *streamCallback, void *userData);
-    PaError Pa_StartStream(PaStream *stream);
-    PaError Pa_WriteStream(PaStream *stream, const void *buffer, unsigned long frames);
-    PaError Pa_StopStream(PaStream *stream);
-    PaError Pa_CloseStream(PaStream *stream);
+        PaError Pa_OpenDefaultStream(PaStream **stream, int numInputChannels, int numOutputChannels, PaSampleFormat sampleFormat, double sampleRate, unsigned long framesPerBuffer, PaStreamCallback *streamCallback, void *userData);
+        PaError Pa_StartStream(PaStream *stream);
+        PaError Pa_WriteStream(PaStream *stream, const void *buffer, unsigned long frames);
+        PaError Pa_ReadStream(PaStream *stream, void *buffer, unsigned long frames);
+        PaError Pa_StopStream(PaStream *stream);
+        PaError Pa_CloseStream(PaStream *stream);
 
-    const char *Pa_GetErrorText(PaError errorCode);
-]]
+        const char *Pa_GetErrorText(PaError errorCode);
+    ]]
+end
 local libportaudio_available, libportaudio = pcall(ffi.load, "portaudio")
 
 function PortAudioSink:initialize()

@@ -174,6 +174,8 @@ TableDoc = collections.namedtuple('TableDoc', ['name', 'description', 'children'
 
 FunctionDoc = collections.namedtuple('FunctionDoc', ['name', 'description', 'parameters', 'returns', 'raises', 'usage', 'static'])
 
+PropertyDoc = collections.namedtuple('PropertyDoc', ['name', 'description', 'returns', 'raises', 'usage', 'static'])
+
 # High-level elements
 
 BlockDoc = collections.namedtuple('BlockDoc', ['name', 'description', 'category', 'parameters', 'signatures', 'usage', 'children'])
@@ -329,6 +331,16 @@ def decode_docstring_function(docstring):
     return FunctionDoc(name=name, description=description, parameters=parameters, returns=returns, raises=raises, usage=usage, static=static), cls
 
 
+def decode_docstring_property(docstring):
+    name, cls, static = decode_function_name(docstring.tags.lookup("property"))
+    description = docstring.description
+    returns = decode_tag_returns(docstring.tags.lookup_multiple(("treturn", "return")))
+    raises = [v for (_, v) in docstring.tags.lookup_multiple(("raise",))]
+    usage = docstring.tags.lookup_optional("usage")
+
+    return PropertyDoc(name=name, description=description, returns=returns, raises=raises, usage=usage, static=static), cls
+
+
 def decode_docstring_table(docstring):
     name = docstring.tags.lookup("table")
     description = docstring.description
@@ -347,8 +359,8 @@ def decode_docstrings(docstrings):
         # Validate tags in this docstring
         for key in tag_keys:
             if key not in ['internal', 'block', 'module', 'class', 'datatype', 'function',
-                           'table', 'tparam', 'param', 'treturn', 'return', 'tfield',
-                           'raise', 'usage', 'category', 'signature']:
+                           'property', 'table', 'tparam', 'param', 'treturn', 'return',
+                           'tfield', 'raise', 'usage', 'category', 'signature']:
                 raise ValueError("Unknown tag \"{}\" encountered in docstring: \"{}\"".format(key, docstring))
 
         if 'internal' in tag_keys:
@@ -385,12 +397,21 @@ def decode_docstrings(docstrings):
             else:
                 assert namespace, "Function docstring \"{}\" has no namespace.".format(doc.name)
                 namespace.children.append(doc)
+        elif 'property' in tag_keys:
+            doc, cls = decode_docstring_property(docstring)
+
+            parent = next(filter(lambda d: d.name == cls, docs + namespace.children), None)
+            if parent:
+                parent.children.append(doc)
+            else:
+                assert namespace, "Property docstring \"{}\" has no namespace.".format(doc.name)
+                namespace.children.append(doc)
         elif 'table' in tag_keys:
             doc = decode_docstring_table(docstring)
             assert namespace, "Table docstring \"{}\" has no namespace.".format(doc.name)
             namespace.children.append(doc)
         else:
-            raise ValueError("Unsupported docstring. Missing @block, @class, @module, @datatype, @function, or @table tag. Docstring: \"{}\".".format(docstring))
+            raise ValueError("Unsupported docstring. Missing @block, @class, @module, @datatype, @function, @property, or @table tag. Docstring: \"{}\".".format(docstring))
 
     return docs
 
@@ -490,4 +511,5 @@ if __name__ == "__main__":
 
     sys.stdout.write(refman_template.render(blocks=blocks, modules=modules, datatypes=datatypes,
                                             ModuleDoc=ModuleDoc, BlockDoc=BlockDoc, DatatypeDoc=DatatypeDoc,
-                                            ClassDoc=ClassDoc, FunctionDoc=FunctionDoc, FieldDoc=FieldDoc))
+                                            ClassDoc=ClassDoc, FunctionDoc=FunctionDoc, PropertyDoc=PropertyDoc,
+                                            FieldDoc=FieldDoc))

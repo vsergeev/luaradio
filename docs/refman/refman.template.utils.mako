@@ -77,6 +77,8 @@ ${render_class(element, namespace)}\
 ${render_class(element, namespace)}\
 % elif isinstance(element, FunctionDoc):
 ${render_function(element, namespace)}\
+% elif isinstance(element, PropertyDoc):
+${render_property(element, namespace)}\
 % elif isinstance(element, FieldDoc):
 ${render_field(element, namespace)}\
 % else:
@@ -230,6 +232,41 @@ ${func.description}
 
 ``` lua
 ${func.usage}
+```
+%endif
+
+</%def>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""" Render Property """
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+<%def name="render_property(prop, namespace)" decorator="wrap_div('function')">\
+##### `${namespace}${prop.name}`
+
+${prop.description}
+% if prop.returns:
+
+###### Returns
+
+% for ret in prop.returns:
+* ${normalize_multiline(ret.description)} (${format_typelist(ret.type)})
+% endfor
+% endif
+% if prop.raises:
+
+###### Raises
+
+% for r in prop.raises:
+* ${r}
+% endfor
+% endif
+% if prop.usage:
+
+###### Example
+
+``` lua
+${prop.usage}
 ```
 %endif
 

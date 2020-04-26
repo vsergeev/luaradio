@@ -15,6 +15,7 @@
 local ffi = require('ffi')
 
 local block = require('radio.core.block')
+local class = require('radio.core.class')
 local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
@@ -27,6 +28,8 @@ function ThrottleBlock:instantiate()
 end
 
 function ThrottleBlock:differentiate(input_data_types)
+    assert(class.isinstanceof(input_data_types[1], types.CStructType), string.format("Unsupported input data type \"%s\", must be instance of CStructType.", input_data_types[1].type_name))
+
     -- Absorb data type into dummy type signature
     self.signatures[1].inputs[1].data_type = input_data_types[1]
     self.signatures[1].outputs[1].data_type = input_data_types[1]

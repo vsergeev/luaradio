@@ -272,8 +272,9 @@ end
 --
 -- @internal
 -- @function Pipe:read
+-- @tparam[opt=nil] int count Number of elements to read
 -- @treturn Vector|nil Sample vector or nil on EOF
-function Pipe:read()
+function Pipe:read(count)
     -- Update our read buffer
     self:_read_buffer_update()
 
@@ -285,7 +286,7 @@ function Pipe:read()
         return nil
     end
 
-    return self:_read_buffer_deserialize(num)
+    return self:_read_buffer_deserialize(count and math.min(num, count) or num)
 end
 
 ---

@@ -35,61 +35,59 @@ function ThrottleBlock:differentiate(input_data_types)
 end
 
 function ThrottleBlock:initialize()
-    -- Target 1% above sample rate
-    self.target_rate = 1.01*self:get_rate()
-    self.chunk_size = 1024
+    self.target_rate = self:get_rate()
+    self.chunk_size = 16384
     self.sleep_time = self.chunk_size/self.target_rate
 
-    -- Adjust chunk size and sleep time for 5us minimum sleep
-    if self.sleep_time < 5e-6 then
-        self.chunk_size = self.chunk_size * math.ceil(5e-6/self.sleep_time)
-        self.sleep_time = 5e-6
-    end
-
-    self.data_out = self:get_input_type().vector(self.chunk_size)
+    self.adjust_period = 10*self.sleep_time
+    self.adjust_gain = 1000
+    self.max_chunk_size = 262144
+    self.min_sleep_time = 25e-6
 end
 
 function ThrottleBlock:run()
-    local data_in_offset = 0
-    local data_out_offset = 0
+    local samples_written = 0
+    local tic = platform.time_us()
 
     while true do
-        -- Read input vector
-        local data_in = self.inputs[1].pipe:read()
-        if data_in == nil then
+        -- Read input up to chunk size
+        local vec = self.inputs[1].pipe:read(self.chunk_size)
+        if vec == nil then
             break
         end
-        data_in_offset = 0
 
-        -- Write throttled input vector
-        local tic = platform.time_us()
-        while data_in_offset < data_in.length do
-            -- Shift from data_in to data_out vector
-            local shift_length = math.min(self.chunk_size - data_out_offset, data_in.length - data_in_offset)
-            ffi.copy(self.data_out.data + data_out_offset, data_in.data + data_in_offset, shift_length*ffi.sizeof(self.data_out.data[0]))
-            data_out_offset = data_out_offset + shift_length
-            data_in_offset = data_in_offset + shift_length
-
-            -- If we've filled our data_out vector up to chunk size, emit it
-            if data_out_offset == self.chunk_size then
-                -- Write output to pipes
-                for j=1, #self.outputs[1].pipes do
-                    self.outputs[1].pipes[j]:write(self.data_out)
-                end
-
-                -- Sleep for this batch of samples
-                ffi.C.usleep(math.floor(self.sleep_time*1e6))
-
-                data_out_offset = 0
-            end
+        -- Write output to pipes
+        for j=1, #self.outputs[1].pipes do
+            self.outputs[1].pipes[j]:write(vec)
         end
+
+        -- Sleep for this batch of samples
+        ffi.C.usleep(math.floor(self.sleep_time*1e6))
+
+        -- Update samples written
+        samples_written = samples_written + vec.length
+
         local toc = platform.time_us()
 
-        -- Adjust sleep time based on actual rate
-        local actual_rate = (data_in.length - data_out_offset)/(toc - tic)
-        debug.printf("[ThrottleBlock] Target rate: %.2f   Actual Rate: %.2f   Error: %.2f   Sleep time: %g\n", self.target_rate, actual_rate, self.target_rate - actual_rate, self.sleep_time)
-        self.sleep_time = self.sleep_time - 1*(1/self.target_rate - 1/actual_rate)
-        self.sleep_time = math.max(self.sleep_time, 0)
+        if (toc - tic) > self.adjust_period then
+            -- Calculate actual rate
+            local actual_rate = samples_written/(toc - tic)
+
+            debug.printf("[ThrottleBlock] Target rate: %.2f | Actual Rate: %.2f | Error: %.2f | Sleep time: %g | Chunk Size: %u\n", self.target_rate, actual_rate, self.target_rate - actual_rate, self.sleep_time, self.chunk_size)
+
+            -- Adjust sleep time
+            self.sleep_time = self.sleep_time + self.adjust_gain*(1/self.target_rate - 1/actual_rate)
+            self.sleep_time = math.max(0, self.sleep_time)
+
+            -- Double chunk size and sleep time if sleep time falls below min sleep time
+            if self.sleep_time < self.min_sleep_time and self.chunk_size < self.max_chunk_size then
+                self.chunk_size = 2 * self.chunk_size
+                self.sleep_time = 2 * self.sleep_time
+            end
+
+            samples_written = 0
+            tic = toc
+        end
     end
 end
 

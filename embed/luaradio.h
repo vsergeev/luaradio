@@ -117,7 +117,7 @@ const luaradio_version_t *luaradio_version_info(void);
 /**
  * @brief Complex 32-bit float type.
  */
-typedef struct {
+typedef struct complex_float32 {
     float real;
     float imag;
 } complex_float32_t;
@@ -125,21 +125,21 @@ typedef struct {
 /**
  * @brief 32-bit float type.
  */
-typedef struct {
+typedef struct float32 {
     float value;
 } float32_t;
 
 /**
  * @brief 8-bit byte type.
  */
-typedef struct {
+typedef struct byte {
     uint8_t value;
 } byte_t;
 
 /**
  * @brief Bit type.
  */
-typedef struct {
+typedef struct bit {
     uint8_t value;
 } bit_t;
 

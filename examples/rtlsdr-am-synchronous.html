@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -45,6 +45,7 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,7 +74,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
     </p>
   </div>
   <div class="toc">
@@ -128,7 +129,7 @@ bands with the RTL-SDR.</p>
 <span class="kd">local</span> <span class="n">bandwidth</span> <span class="o">=</span> <span class="mf">5e3</span>
 
 <span class="c1">-- Blocks</span>
-<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RtlSdrSource</span><span class="p">(</span><span class="n">frequency</span> <span class="o">-</span> <span class="n">ifreq</span><span class="p">,</span> <span class="mi">1102500</span><span class="p">,</span> <span class="p">{</span><span class="n">rf_gain</span><span class="o">=</span><span class="mi">30</span><span class="p">})</span>
+<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RtlSdrSource</span><span class="p">(</span><span class="n">frequency</span> <span class="o">-</span> <span class="n">ifreq</span><span class="p">,</span> <span class="mi">1102500</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">rf_decimator</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">DecimatorBlock</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">if_filter</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">ComplexBandpassFilterBlock</span><span class="p">(</span><span class="mi">129</span><span class="p">,</span> <span class="p">{</span><span class="n">ifreq</span> <span class="o">-</span> <span class="n">bandwidth</span><span class="p">,</span> <span class="n">ifreq</span> <span class="o">+</span> <span class="n">bandwidth</span><span class="p">})</span>
 <span class="kd">local</span> <span class="n">pll</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">PLLBlock</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ifreq</span> <span class="o">-</span> <span class="mi">100</span><span class="p">,</span> <span class="n">ifreq</span> <span class="o">+</span> <span class="mi">100</span><span class="p">)</span>

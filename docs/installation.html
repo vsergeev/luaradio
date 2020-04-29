@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.6.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
   </p>
   <div class="toc">
     <ul>
@@ -45,6 +45,7 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,7 +74,7 @@
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
     <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.6.1</code></a>
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
     </p>
   </div>
   <div class="toc">
@@ -88,39 +89,49 @@
         
 <h1 id="installation">Installation</h1>
 
-<p>LuaRadio can be installed from the AUR on Arch Linux, from Homebrew on Mac OS
-X, or from source.</p>
+<p>LuaRadio can be installed from the Arch Linux AUR, macOS Homebrew, macOS
+MacPorts, or from source.</p>
 
 <p>Packaging for other distributions and platforms is a work in progress.</p>
 
 <p>To try LuaRadio without installation, you can run it <a href="https://github.com/vsergeev/luaradio/tree/master/README.md#quickstart">directly from the
-repository</a>, provided LuaJIT is installed. The
-real-time dependencies described <a href="#real-time-dependencies">below</a> will also be
-necessary for real-time applications.</p>
+repository</a>, provided LuaJIT is installed.</p>
 
-<h2 id="arch-linux-aur">Arch Linux AUR</h2>
+<h2 id="packages">Packages</h2>
 
-<p>LuaRadio is available in the Arch Linux AUR under the package
-<a href="https://aur.archlinux.org/packages/luaradio"><code class="highlighter-rouge">luaradio</code></a>.</p>
+<h3 id="arch-linux-aur">Arch Linux AUR</h3>
 
-<h2 id="macos-homebrew">macOS Homebrew</h2>
+<p>LuaRadio is available in the AUR: <a href="https://aur.archlinux.org/packages/luaradio"><code class="highlighter-rouge">luaradio</code></a></p>
 
-<p>LuaRadio is available in <a href="http://brew.sh/">Homebrew</a> for macOS / Mac OS X:</p>
+<h3 id="macos-homebrew">macOS Homebrew</h3>
+
+<p>LuaRadio is available in <a href="http://brew.sh/">Homebrew</a>:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install luaradio
 </code></pre></div></div>
 
-<h2 id="source">Source</h2>
+<h3 id="macos-macports">macOS MacPorts</h3>
+
+<p>LuaRadio is available in <a href="https://www.macports.org/">MacPorts</a>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo port install luaradio
+</code></pre></div></div>
+
+<h2 id="building-from-source">Building from Source</h2>
+
+<h3 id="prerequisites">Prerequisites</h3>
 
 <p>Install LuaJIT 2.0.4 or greater and prerequisites:</p>
 
 <ul>
-  <li>Arch Linux: <code class="highlighter-rouge">luajit</code></li>
-  <li>macOS (Homebrew): <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">pkg-config</code></li>
-  <li>macOS/Darwin (MacPorts): <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">pkgconfig</code></li>
-  <li>Ubuntu/Debian: <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">libluajit-5.1-dev</code>,<code class="highlighter-rouge">pkg-config</code></li>
-  <li>Fedora, CentOS/RHEL/SL 7 or up: <code class="highlighter-rouge">luajit</code>, <code class="highlighter-rouge">luajit-devel</code></li>
+  <li>Arch Linux: <code class="highlighter-rouge">sudo pacman -S luajit</code></li>
+  <li>macOS (Homebrew): <code class="highlighter-rouge">brew install luajit pkg-config</code></li>
+  <li>macOS (MacPorts): <code class="highlighter-rouge">sudo port install luajit pkgconfig</code></li>
+  <li>Ubuntu/Debian/Rasbpian: <code class="highlighter-rouge">sudo apt-get install luajit libluajit-5.1-dev pkg-config</code></li>
+  <li>Fedora/CentOS: <code class="highlighter-rouge">sudo yum install luajit luajit-devel</code></li>
 </ul>
+
+<h3 id="installation-1">Installation</h3>
 
 <p>Build and install LuaRadio:</p>
 
@@ -132,10 +143,18 @@ sudo make install
 
 <h3 id="real-time-dependencies">Real-time Dependencies</h3>
 
-<p>LuaRadio has no hard dependencies outside of LuaJIT, but for real-time
-applications, the <a href="https://github.com/jgaeddert/liquid-dsp">liquid-dsp</a> or
-<a href="https://github.com/gnuradio/volk">VOLK</a>, and <a href="http://www.fftw.org/">fftw</a>
-libraries are strongly encouraged for appreciable performance.</p>
+<p>LuaRadio has no hard dependencies outside of LuaJIT, but is accelerated by the
+optional libraries <a href="https://github.com/jgaeddert/liquid-dsp">liquid-dsp</a>,
+<a href="http://libvolk.org/">VOLK</a>, and <a href="http://www.fftw.org/">fftw</a>. For best
+real-time performance, install these libraries:</p>
+
+<ul>
+  <li>Arch Linux: <code class="highlighter-rouge">sudo pacman -S liquid-dsp libvolk fftw</code></li>
+  <li>macOS (Homebrew): <code class="highlighter-rouge">brew install liquid-dsp fftw</code></li>
+  <li>macOS (MacPorts): <code class="highlighter-rouge">sudo port install liquid-dsp volk fftw-3</code></li>
+  <li>Ubuntu/Debian/Raspbian: <code class="highlighter-rouge">sudo apt-get install libliquid-dev libvolk1-dev libfftw3-dev</code></li>
+  <li>Fedora/CentOS: <code class="highlighter-rouge">sudo yum install liquid-dsp fftw</code></li>
+</ul>
 
 <h3 id="optional-dependencies">Optional Dependencies</h3>
 

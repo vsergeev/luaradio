@@ -22,6 +22,9 @@ hardware.
 Use GNU Radio? See [how LuaRadio compares to GNU
 Radio](docs/6.comparison-gnuradio.md).
 
+See the LuaRadio [mailing list](https://groups.io/g/luaradio) for general
+discussion.
+
 ## Example
 
 ##### Wideband FM Broadcast Radio Receiver

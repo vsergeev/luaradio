@@ -1,3 +1,36 @@
+* v0.7.0 - 04/29/2020
+    * Block additions
+        * PortAudioSource
+        * AirspyHFSource
+    * Block changes
+        * Add option for direct sampling mode to RtlSdrSource.
+        * Fix feedback loop causing diminishing throughput in ThrottleBlock.
+        * Use `FFTW_ESTIMATE` in fftw DFT/IDFT initialization to reduce startup
+          time on certain platforms (e.g. Raspberry Pi 3) when using FFT
+          accelerated FIRFilterBlock.
+    * Core changes
+        * Improve string representation for core C structure types.
+        * Add `type_name` property to core types, CStructType factory, and
+          ObjectType factory for use in error and debug reporting.
+        * Disable call operator for constructed block instances.
+        * Fix method registration with `methods` table argument in ObjectType
+          factory function.
+        * Enforce linear connections between blocks have exactly one output and
+          input port.
+        * Improve error reporting in type signature differentiation with port
+          names and types.
+        * Improve flow graph debug reporting with sample rates and data types.
+        * Add optional `count` argument to Pipe read().
+    * Documentation changes
+        * Add macOS MacPorts package to installation guide and README.
+        * Improve dependency installation instructions in installation guide
+          and README.
+        * Add support for `@property` docstring in reference manual.
+        * Add mailing list link (https://groups.io/g/luaradio) to README and
+          website.
+        * Add Airspy HF+ Dual Port and Discovery to Supported Hardware
+          document.
+
 * v0.6.1 - 03/07/2020
     * Block changes
         * Fix gnuplot check under lua52compat LuaJIT for gnuplot plotting

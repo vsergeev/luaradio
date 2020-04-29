@@ -24,6 +24,9 @@ hardware.
 Use GNU Radio? See [how LuaRadio compares to GNU
 Radio](docs/comparison-gnuradio.html).
 
+See the LuaRadio [mailing list](https://groups.io/g/luaradio) for general
+discussion.
+
 ## Example
 
 <p align="center">

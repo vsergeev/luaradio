@@ -78,7 +78,21 @@ if not package.loaded['radio.blocks.sources.pulseaudio'] then
         const char* pa_strerror(int error);
     ]]
 end
-local libpulse_available, libpulse = pcall(ffi.load, "pulse-simple")
+
+function load_libary(libnames)
+    for _, libname in ipairs(libnames) do
+        local available, lib = pcall(ffi.load, libname)
+        if available then
+            return true, lib
+        end
+    end
+    return false, nil
+end
+
+local libpulse_available, libpulse = load_libary({
+    "pulse-simple",
+    "libpulse-simple.so.0"
+})
 
 function PulseAudioSink:initialize()
     -- Check library is available

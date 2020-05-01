@@ -9,6 +9,7 @@
 -- @tfield int cpu_count CPU count (e.g. 4).
 -- @tfield int cpu_model CPU model (e.g. "Intel(R) Core(TM) i5-4570T CPU @ 2.90GHz").
 -- @tfield function alloc Platform page-aligned allocator function.
+-- @tfield function load Platform FFI load library helper function.
 -- @tfield function time_us Platform timestamp function.
 -- @tfield bool features.liquid Liquid-dsp library found and enabled.
 -- @tfield bool features.volk VOLK library found and enabled.
@@ -262,6 +263,17 @@ platform.alloc = function (size)
         error("posix_memalign(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
     return ffi.gc(ptr[0], ffi.C.free)
+end
+
+-- Platform FFI load library helper
+platform.load = function (names)
+    for _, name in ipairs(names) do
+        local lib_available, lib = pcall(ffi.load, name)
+        if lib_available then
+            return true, lib
+        end
+    end
+    return false, nil
 end
 
 -- Platform timestamp

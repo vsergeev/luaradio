@@ -95,6 +95,8 @@ return {
     ComplexToFloatBlock = require('radio.blocks.signal.complextofloat'),
     RealToComplexBlock = require('radio.blocks.signal.realtocomplex'),
     FloatToComplexBlock = require('radio.blocks.signal.floattocomplex'),
+    --- Modulation
+    FrequencyModulatorBlock = require('radio.blocks.signal.frequencymodulator'),
     --- Demodulation
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator'),
     --- Miscellaneous

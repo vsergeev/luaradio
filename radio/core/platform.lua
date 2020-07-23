@@ -9,6 +9,7 @@
 -- @tfield int cpu_count CPU count (e.g. 4).
 -- @tfield int cpu_model CPU model (e.g. "Intel(R) Core(TM) i5-4570T CPU @ 2.90GHz").
 -- @tfield function alloc Platform page-aligned allocator function.
+-- @tfield function time_us Platform timestamp function.
 -- @tfield bool features.liquid Liquid-dsp library found and enabled.
 -- @tfield bool features.volk VOLK library found and enabled.
 -- @tfield bool features.fftw3f FFTW3F library found and enabled.

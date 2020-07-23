@@ -21,6 +21,7 @@
 
 local ffi = require('ffi')
 
+local platform = require('radio.core.platform')
 local block = require('radio.core.block')
 local types = require('radio.types')
 
@@ -70,7 +71,7 @@ if not package.loaded['radio.blocks.sources.portaudio'] then
         const char *Pa_GetErrorText(PaError errorCode);
     ]]
 end
-local libportaudio_available, libportaudio = pcall(ffi.load, "portaudio")
+local libportaudio_available, libportaudio = platform.load({"portaudio", "libportaudio.so.2"})
 
 function PortAudioSink:initialize()
     -- Check library is available

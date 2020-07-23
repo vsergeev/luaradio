@@ -24,6 +24,7 @@
 
 local ffi = require('ffi')
 
+local platform = require('radio.core.platform')
 local block = require('radio.core.block')
 local types = require('radio.types')
 
@@ -84,7 +85,7 @@ if not package.loaded['radio.blocks.sinks.pulseaudio'] then
         const char* pa_strerror(int error);
     ]]
 end
-local libpulse_available, libpulse = pcall(ffi.load, "pulse-simple")
+local libpulse_available, libpulse = platform.load({"pulse-simple", "libpulse-simple.so.0"})
 
 function PulseAudioSource:initialize()
     -- Check library is available

@@ -285,14 +285,10 @@ platform.time_us = function ()
     return tonumber(tp.tv_sec) + (tonumber(tp.tv_nsec) / 1e9)
 end
 
--- Load libraries
-for _, name in ipairs({"liquid", "volk", "fftw3f"}) do
-    local lib_available, lib = pcall(ffi.load, name)
-    if lib_available then
-        platform.libs[name] = lib
-        platform.features[name] = true
-    end
-end
+-- Load acceleration libraries
+platform.features["liquid"], platform.libs["liquid"] = platform.load({"liquid", "libliquid.so.2d", "libliquid.so.1d"})
+platform.features["volk"], platform.libs["volk"] = platform.load({"volk", "libvolk.so.2.3", "libvolk.so.1.4", "libvolk.so.1.3"})
+platform.features["fftw3f"], platform.libs["fftw3f"] = platform.load({"fftw3f", "libfftw3f.so.3"})
 
 -- Look up library versions
 if platform.features.liquid then

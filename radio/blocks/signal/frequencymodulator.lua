@@ -16,6 +16,7 @@
 local ffi = require('ffi')
 local math = require('math')
 
+local platform = require('radio.core.platform')
 local block = require('radio.core.block')
 local types = require('radio.types')
 
@@ -27,28 +28,60 @@ function FrequencyModulatorBlock:instantiate(modulation_index)
     self:add_type_signature({block.Input("in", types.Float32)}, {block.Output("out", types.ComplexFloat32)})
 end
 
-ffi.cdef[[
-    float cosf(float x);
-    float sinf(float x);
-]]
+if platform.features.liquid then
 
-function FrequencyModulatorBlock:initialize()
-    self.phase = 0
-    self.delta = 2*math.pi*self.modulation_index
+    ffi.cdef[[
+    typedef struct freqmod_s * freqmod;
+    freqmod freqmod_create(float _kf);
+    void freqmod_destroy(freqmod _q);
 
-    self.out = types.ComplexFloat32.vector()
-end
+    void freqmod_modulate_block(freqmod _q, const float32_t * _m, unsigned int _n, complex_float32_t * _s);
+    ]]
+    local libliquid = platform.libs.liquid
 
-function FrequencyModulatorBlock:process(x)
-    local out = self.out:resize(x.length)
+    function FrequencyModulatorBlock:initialize()
+        self.freqmod = ffi.gc(libliquid.freqmod_create(self.modulation_index), libliquid.freqmod_destroy)
+        if self.freqmod == nil then
+            error("Creating liquid freqmod object.")
+        end
 
-    for i = 0, x.length-1 do
-        self.phase = (self.phase + self.delta*x.data[i].value) % (2 * math.pi)
-        out.data[i].real = ffi.C.cosf(self.phase)
-        out.data[i].imag = ffi.C.sinf(self.phase)
+        self.out = types.ComplexFloat32.vector()
     end
 
-    return out
+    function FrequencyModulatorBlock:process(x)
+        local out = self.out:resize(x.length)
+
+        libliquid.freqmod_modulate_block(self.freqmod, x.data, x.length, out.data)
+
+        return out
+    end
+
+else
+
+    ffi.cdef[[
+        float cosf(float x);
+        float sinf(float x);
+    ]]
+
+    function FrequencyModulatorBlock:initialize()
+        self.phase = 0
+        self.delta = 2*math.pi*self.modulation_index
+
+        self.out = types.ComplexFloat32.vector()
+    end
+
+    function FrequencyModulatorBlock:process(x)
+        local out = self.out:resize(x.length)
+
+        for i = 0, x.length-1 do
+            self.phase = (self.phase + self.delta*x.data[i].value) % (2 * math.pi)
+            out.data[i].real = ffi.C.cosf(self.phase)
+            out.data[i].imag = ffi.C.sinf(self.phase)
+        end
+
+        return out
+    end
+
 end
 
 return FrequencyModulatorBlock

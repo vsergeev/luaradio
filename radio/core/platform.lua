@@ -95,6 +95,9 @@ ffi.cdef[[
     /* fcntl() commands */
     enum { F_GETFL = 3, F_SETFL = 4 };
 
+    /* flock() operations */
+    enum { LOCK_SH = 0x01, LOCK_EX = 0x02, LOCK_NB = 0x04, LOCK_UN = 0x08 };
+
     /* poll() events */
     enum { POLLIN = 0x1, POLLOUT = 0x4, POLLHUP = 0x10 };
 
@@ -108,6 +111,8 @@ ffi.cdef[[
     };
 
     int fcntl(int fildes, int cmd, ...);
+
+    int flock(int fd, int operation);
 
     int poll(struct pollfd fds[], nfds_t nfds, int timeout);
 

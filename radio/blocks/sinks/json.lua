@@ -47,11 +47,19 @@ function JSONSink:initialize()
         end
     end
 
+    -- Save file descriptor
+    self.fd = ffi.C.fileno(self.file)
+
     -- Register open file
     self.files[self.file] = true
 end
 
 function JSONSink:process(x)
+    -- Lock file
+    if ffi.C.flock(self.fd, ffi.C.LOCK_EX) ~= 0 then
+        error("flock(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
     for i = 0, x.length-1 do
         local s = x.data[i]:to_json() .. "\n"
 
@@ -64,6 +72,11 @@ function JSONSink:process(x)
     -- Flush file
     if ffi.C.fflush(self.file) ~= 0 then
         error("fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    -- Unlock file
+    if ffi.C.flock(self.fd, ffi.C.LOCK_UN) ~= 0 then
+        error("flock(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 end
 

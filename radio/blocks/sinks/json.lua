@@ -25,29 +25,25 @@ local block = require('radio.core.block')
 local JSONSink = block.factory("JSONSink")
 
 function JSONSink:instantiate(file)
-    if type(file) == "number" then
-        self.fd = file
-    elseif type(file) == "string" then
-        self.filename = file
-    elseif file == nil then
-        -- Default to io.stdout
-        self.file = io.stdout
-    end
+    -- Default to io.stdout
+    self.file = file or io.stdout
 
     -- Accept all input types that implement to_json()
     self:add_type_signature({block.Input("in", function (type) return type.to_json ~= nil end)}, {})
 end
 
 function JSONSink:initialize()
-    if self.filename then
-        self.file = ffi.C.fopen(self.filename, "wb")
-        if self.file == nil then
-            error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-    elseif self.fd then
-        self.file = ffi.C.fdopen(self.fd, "wb")
+    if type(self.file) == "number" then
+        -- file descriptor
+        self.file = ffi.C.fdopen(self.file, "wb")
         if self.file == nil then
             error("fdopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+    elseif type(self.file) == "string" then
+        -- path
+        self.file = ffi.C.fopen(self.file, "wb")
+        if self.file == nil then
+            error("fopen(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
     end
 
@@ -72,16 +68,8 @@ function JSONSink:process(x)
 end
 
 function JSONSink:cleanup()
-    if self.filename then
-        if ffi.C.fclose(self.file) ~= 0 then
-            error("fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-    elseif self.fd then
-        if ffi.C.fflush(self.file) ~= 0 then
-            error("fflush(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-    else
-        self.file:flush()
+    if ffi.C.fclose(self.file) ~= 0 then
+        error("fclose(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     end
 end
 

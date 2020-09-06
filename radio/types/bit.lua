@@ -147,6 +147,39 @@ function mt.tonumber(vec, offset, length, order)
     return x
 end
 
+---
+-- Convert a Bit vector to a byte string. Assumes MSB bit order.
+--
+-- @function Bit.tobytes
+-- @tparam Vector vec Bit vector
+-- @tparam[opt=0] int offset Offset in bits
+-- @tparam[opt] int length Length in bits
+-- @treturn string Extracted bytes
+--
+-- @usage
+-- -- Convert bits starting at offset 16 to an 8-byte byte string
+-- local data = radio.types.Bit.tobytes(vec, 16, 10*8)
+function mt.tobytes(vec, offset, length)
+    offset = offset or 0
+    length = length or (vec.length - offset)
+
+    assert(length % 8 == 0, "Length is not a multiple of 8 bits")
+
+    local s = ""
+
+    for i = 0, length-1, 8 do
+        local x = 0
+        for j = 0, 7 do
+            if vec.data[offset + i + j].value == 1 then
+                x = bit.bor(x, bit.lshift(1, 7 - j))
+            end
+        end
+        s = s .. string.char(x)
+    end
+
+    return s
+end
+
 local Bit = CStructType.factory("bit_t", mt)
 
 return Bit

@@ -64,4 +64,20 @@ describe("Bit type", function ()
         -- Offset, length, LSB first
         assert.is.equal(2, Bit.tonumber(bits, 1, 4, "lsb"))
     end)
+
+    it("tobytes()", function ()
+        local bits = Bit.vector_from_array({0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1})
+
+        -- Default usage: zero offset, full length
+        assert.is.equal("abc", Bit.tobytes(bits))
+
+        -- Offset
+        assert.is.equal("\x0b\x13", Bit.tobytes(bits, 3, 16))
+
+        -- Offset and length
+        assert.is.equal("bc", Bit.tobytes(bits, 8, 16))
+
+        -- Invalid length
+        assert.has_error(function () Bit.tobytes(bits, 8, 15) end)
+    end)
 end)

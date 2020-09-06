@@ -87,6 +87,7 @@ return {
     --- Digital
     BinaryPhaseCorrectorBlock = require('radio.blocks.signal.binaryphasecorrector'),
     SamplerBlock = require('radio.blocks.signal.sampler'),
+    PreambleSamplerBlock = require('radio.blocks.signal.preamblesampler'),
     SlicerBlock = require('radio.blocks.signal.slicer'),
     DifferentialDecoderBlock = require('radio.blocks.signal.differentialdecoder'),
     ManchesterDecoderBlock = require('radio.blocks.signal.manchesterdecoder'),

@@ -122,4 +122,5 @@ return {
     --- ERT
     IDMFramerBlock = require('radio.blocks.protocol.idmframer'),
     SCMFramerBlock = require('radio.blocks.protocol.scmframer'),
+    SCMPlusFramerBlock = require('radio.blocks.protocol.scmplusframer'),
 }

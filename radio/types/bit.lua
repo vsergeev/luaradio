@@ -118,8 +118,8 @@ mt.type_name = "Bit"
 --
 -- @function Bit.tonumber
 -- @tparam Vector vec Bit vector
--- @tparam[opt=0] int offset Offset
--- @tparam[opt=0] int length Length
+-- @tparam[opt=0] int offset Offset in bits
+-- @tparam[opt] int length Length in bits
 -- @tparam[opt="msb"] string order Bit order. Choice of "msb" or "lsb".
 -- @treturn number Extracted number
 --

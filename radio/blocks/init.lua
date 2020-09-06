@@ -121,4 +121,5 @@ return {
     VaricodeDecoderBlock = require('radio.blocks.protocol.varicodedecoder'),
     --- ERT
     IDMFramerBlock = require('radio.blocks.protocol.idmframer'),
+    SCMFramerBlock = require('radio.blocks.protocol.scmframer'),
 }

@@ -80,4 +80,17 @@ describe("Bit type", function ()
         -- Invalid length
         assert.has_error(function () Bit.tobytes(bits, 8, 15) end)
     end)
+
+    it("tostring()", function ()
+        local bits = Bit.vector_from_array({1, 0, 1, 0, 0, 1, 0, 1, 0})
+
+        -- Default usage: zero offset, full length
+        assert.is.equal('101001010', Bit.tostring(bits))
+
+        -- Offset
+        assert.is.equal('1001010', Bit.tostring(bits, 2))
+
+        -- Offset and length
+        assert.is.equal('00101', Bit.tostring(bits, 3, 5))
+    end)
 end)

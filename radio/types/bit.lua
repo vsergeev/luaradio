@@ -180,6 +180,32 @@ function mt.tobytes(vec, offset, length)
     return s
 end
 
+---
+-- Format a Bit vector to a string. Assumes MSB bit order.
+--
+-- @function Bit.tostring
+-- @tparam Vector vec Bit vector
+-- @tparam[opt=0] int offset Offset in bits
+-- @tparam[opt] int length Length in bits
+-- @treturn string Formatted bit string
+--
+-- @usage
+-- local vec = radio.types.Bit.vector_from_array({0, 1, 0, 1, 1, 1})
+-- print(radio.types.Bit.tostring(vec)) --> '010111'
+-- print(radio.types.Bit.tostring(vec, 1, 4)) --> '1011'
+function mt.tostring(vec, offset, length)
+    offset = offset or 0
+    length = length or (vec.length - offset)
+
+    local s = ""
+
+    for i = 0, length-1 do
+        s = s .. (vec.data[offset + i].value == 1 and '1' or '0')
+    end
+
+    return s
+end
+
 local Bit = CStructType.factory("bit_t", mt)
 
 return Bit

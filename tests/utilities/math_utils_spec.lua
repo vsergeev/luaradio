@@ -1,0 +1,12 @@
+local math_utils = require('radio.utilities.math_utils')
+
+describe("math_utils", function ()
+    it("ceil_log2()", function ()
+        assert.is.equal(0, math_utils.ceil_log2(1))
+        assert.is.equal(1, math_utils.ceil_log2(2))
+        assert.is.equal(6, math_utils.ceil_log2(50))
+        assert.is.equal(6, math_utils.ceil_log2(64))
+        assert.is.equal(7, math_utils.ceil_log2(65))
+        assert.is.equal(7, math_utils.ceil_log2(128))
+    end)
+end)

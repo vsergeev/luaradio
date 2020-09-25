@@ -23,18 +23,7 @@ local types = require('radio.types')
 local ThrottleBlock = block.factory("ThrottleBlock")
 
 function ThrottleBlock:instantiate()
-    -- Add a dummy type signature
-    self:add_type_signature({block.Input("in", nil)}, {block.Output("out", nil)})
-end
-
-function ThrottleBlock:differentiate(input_data_types)
-    assert(class.isinstanceof(input_data_types[1], types.CStructType), string.format("Unsupported input data type \"%s\", must be instance of CStructType.", input_data_types[1].type_name))
-
-    -- Absorb data type into dummy type signature
-    self.signatures[1].inputs[1].data_type = input_data_types[1]
-    self.signatures[1].outputs[1].data_type = input_data_types[1]
-
-    block.Block.differentiate(self, input_data_types)
+    self:add_type_signature({block.Input("in", function (type) return class.isinstanceof(type, types.CStructType) end)}, {block.Output("out", "copy")})
 end
 
 function ThrottleBlock:initialize()

@@ -91,10 +91,10 @@ local function TestBlock(block_class, vectors, options)
                 -- Create the ready-to-go block
                 local block = create_block(test_vector)
 
-                -- Compare type signature with expected output count and types
+                -- Compare differentiated type signature with expected output count and types
                 assert.is.equal(#block.signature.outputs, #test_vector.outputs)
                 for i=1, #test_vector.outputs do
-                    assert.is.equal(block.signature.outputs[i].data_type, test_vector.outputs[i].data_type)
+                    assert.is.equal(block:get_output_type(i), test_vector.outputs[i].data_type)
                 end
 
                 -- Run process

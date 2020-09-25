@@ -19,16 +19,7 @@ local block = require('radio.core.block')
 local NopBlock = block.factory("NopBlock")
 
 function NopBlock:instantiate()
-    -- Add a dummy type signature
-    self:add_type_signature({block.Input("in", nil)}, {block.Output("out", nil)})
-end
-
-function NopBlock:differentiate(input_data_types)
-    -- Absorb data type into dummy type signature
-    self.signatures[1].inputs[1].data_type = input_data_types[1]
-    self.signatures[1].outputs[1].data_type = input_data_types[1]
-
-    block.Block.differentiate(self, input_data_types)
+    self:add_type_signature({block.Input("in", function (type) return true end)}, {block.Output("out", "copy")})
 end
 
 function NopBlock:process(x)

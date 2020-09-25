@@ -210,6 +210,24 @@ describe("block", function ()
 
         blk:differentiate({3})
         assert.is.equal(blk.signatures[2], blk.signature)
+
+        -- Test copying input type to output type
+
+        local TestBlock = block.factory("TestBlock")
+
+        function TestBlock:instantiate()
+            self:add_type_signature({block.Input("in", function (type) return true end)}, {block.Output("out", "copy")})
+        end
+
+        local blk = TestBlock()
+
+        blk:differentiate({radio.types.Float32})
+        assert.is.same(radio.types.Float32, blk:get_input_type())
+        assert.is.same(radio.types.Float32, blk:get_output_type())
+
+        blk:differentiate({radio.types.Byte})
+        assert.is.same(radio.types.Byte, blk:get_input_type())
+        assert.is.same(radio.types.Byte, blk:get_output_type())
     end)
 
     it("rate propagation", function ()

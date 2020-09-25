@@ -35,7 +35,7 @@ end
 --
 -- @class Output
 -- @tparam string name Name
--- @tparam type data_type Data type, e.g. `radio.types.ComplexFloat32`
+-- @tparam type data_type|str Data type, e.g. `radio.types.ComplexFloat32`, or "copy" to copy input data type
 -- @usage
 -- local inputs = {...}
 -- local outputs = {radio.block.Output("out", radio.types.ComplexFloat32)}
@@ -175,7 +175,11 @@ function Block:differentiate(input_data_types)
         self.inputs[i].data_type = input_data_types[i]
     end
     for i = 1, #self.signature.outputs do
-        self.outputs[i].data_type = self.signature.outputs[i].data_type
+        if self.signature.outputs[i].data_type == "copy" then
+            self.outputs[i].data_type = input_data_types[i]
+        else
+            self.outputs[i].data_type = self.signature.outputs[i].data_type
+        end
     end
 end
 

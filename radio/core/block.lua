@@ -248,7 +248,7 @@ function Block:__tostring()
         if self.inputs[i].pipe then
             local pipe = self.inputs[i].pipe or self.inputs[i].real_input.pipe
             if pipe then
-                strs[#strs + 1] = string.format("    .%-5s [%s] <- {%s.%s}", self.inputs[i].name, self.inputs[i].data_type.type_name or "Unknown Type", pipe.pipe_output.owner.name, pipe.pipe_output.name)
+                strs[#strs + 1] = string.format("    .%-5s [%s] <- {%s.%s}", self.inputs[i].name, self.inputs[i].data_type and self.inputs[i].data_type.type_name or "Unknown Type", pipe.pipe_output.owner.name, pipe.pipe_output.name)
             else
                 strs[#strs + 1] = string.format("    .%-5s <- unconnected", self.inputs[i].name)
             end
@@ -262,7 +262,7 @@ function Block:__tostring()
             for i=1, #pipes do
                 connections[i] = string.format("%s.%s", pipes[i].pipe_input.owner.name, pipes[i].pipe_input.name)
             end
-            strs[#strs + 1] = string.format("    .%-5s [%s] -> {%s}", self.outputs[i].name, self.outputs[i].data_type.type_name or "Unknown Type", table.concat(connections, ", "))
+            strs[#strs + 1] = string.format("    .%-5s [%s] -> {%s}", self.outputs[i].name, self.outputs[i].data_type and self.outputs[i].data_type.type_name or "Unknown Type", table.concat(connections, ", "))
         else
             strs[#strs + 1] = string.format("    .%-5s -> unconnected", self.outputs[i].name)
         end

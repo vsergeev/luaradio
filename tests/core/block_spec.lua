@@ -40,9 +40,9 @@ describe("block", function ()
         assert.is.equal(2, #blk.signatures)
         assert.is.equal(2, #blk.inputs)
         assert.is.equal(1, #blk.outputs)
-        assert.is_true(class.isinstanceof(blk.inputs[1], pipe.PipeInput))
-        assert.is_true(class.isinstanceof(blk.inputs[2], pipe.PipeInput))
-        assert.is_true(class.isinstanceof(blk.outputs[1], pipe.PipeOutput))
+        assert.is_true(class.isinstanceof(blk.inputs[1], pipe.InputPort))
+        assert.is_true(class.isinstanceof(blk.inputs[2], pipe.InputPort))
+        assert.is_true(class.isinstanceof(blk.outputs[1], pipe.OutputPort))
 
         -- Test invalid input descriptor
         function TestBlock:instantiate()

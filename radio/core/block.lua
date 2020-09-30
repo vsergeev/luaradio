@@ -81,10 +81,10 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
     end
 
     if not self.inputs then
-        -- Create inputs with a PipeInput for each input
+        -- Create inputs with a InputPort for each input
         self.inputs = {}
         for i = 1, #inputs do
-            self.inputs[i] = pipe.PipeInput(self, inputs[i].name)
+            self.inputs[i] = pipe.InputPort(self, inputs[i].name)
         end
     else
         -- Check input count
@@ -102,10 +102,10 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
     end
 
     if not self.outputs then
-        -- Create outputs with a PipeOutput for each output
+        -- Create outputs with a OutputPort for each output
         self.outputs = {}
         for i = 1, #outputs do
-            self.outputs[i] = pipe.PipeOutput(self, outputs[i].name)
+            self.outputs[i] = pipe.OutputPort(self, outputs[i].name)
         end
     else
         -- Check output count
@@ -248,7 +248,7 @@ function Block:__tostring()
         if self.inputs[i].pipe then
             local pipe = self.inputs[i].pipe or self.inputs[i].real_input.pipe
             if pipe then
-                strs[#strs + 1] = string.format("    .%-5s [%s] <- {%s.%s}", self.inputs[i].name, self.inputs[i].data_type and self.inputs[i].data_type.type_name or "Unknown Type", pipe.pipe_output.owner.name, pipe.pipe_output.name)
+                strs[#strs + 1] = string.format("    .%-5s [%s] <- {%s.%s}", self.inputs[i].name, self.inputs[i].data_type and self.inputs[i].data_type.type_name or "Unknown Type", pipe.output.owner.name, pipe.output.name)
             else
                 strs[#strs + 1] = string.format("    .%-5s <- unconnected", self.inputs[i].name)
             end
@@ -260,7 +260,7 @@ function Block:__tostring()
         if #pipes > 0 then
             local connections = {}
             for i=1, #pipes do
-                connections[i] = string.format("%s.%s", pipes[i].pipe_input.owner.name, pipes[i].pipe_input.name)
+                connections[i] = string.format("%s.%s", pipes[i].input.owner.name, pipes[i].input.name)
             end
             strs[#strs + 1] = string.format("    .%-5s [%s] -> {%s}", self.outputs[i].name, self.outputs[i].data_type and self.outputs[i].data_type.type_name or "Unknown Type", table.concat(connections, ", "))
         else

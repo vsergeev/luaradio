@@ -16,10 +16,10 @@ local platform = require('radio.core.platform')
 -- @class
 -- @tparam Block owner Block owner
 -- @tparam string name Input name
-local PipeInput = class.factory()
+local InputPort = class.factory()
 
-function PipeInput.new(owner, name)
-    local self = setmetatable({}, PipeInput)
+function InputPort.new(owner, name)
+    local self = setmetatable({}, InputPort)
     self.owner = owner
     self.name = name
     self.data_type = nil
@@ -31,8 +31,8 @@ end
 -- Close input end of associated pipe.
 --
 -- @internal
--- @function PipeInput:close
-function PipeInput:close()
+-- @function InputPort:close
+function InputPort:close()
     self.pipe:close_input()
 end
 
@@ -40,9 +40,9 @@ end
 -- Get input file descriptors of associated pipe.
 --
 -- @internal
--- @function PipeInput:filenos
+-- @function InputPort:filenos
 -- @treturn array Array of file descriptors
-function PipeInput:filenos()
+function InputPort:filenos()
     return {self.pipe:fileno_input()}
 end
 
@@ -53,10 +53,10 @@ end
 -- @class
 -- @tparam Block owner Block owner
 -- @tparam string name Output name
-local PipeOutput = class.factory()
+local OutputPort = class.factory()
 
-function PipeOutput.new(owner, name)
-    local self = setmetatable({}, PipeOutput)
+function OutputPort.new(owner, name)
+    local self = setmetatable({}, OutputPort)
     self.owner = owner
     self.name = name
     self.data_type = nil
@@ -68,8 +68,8 @@ end
 -- Close output end of associated pipe.
 --
 -- @internal
--- @function PipeInput:close
-function PipeOutput:close()
+-- @function InputPort:close
+function OutputPort:close()
     for i=1, #self.pipes do
         self.pipes[i]:close_output()
     end
@@ -79,9 +79,9 @@ end
 -- Get output file descriptors of associated pipe.
 --
 -- @internal
--- @function PipeInput:filenos
+-- @function InputPort:filenos
 -- @treturn array Array of file descriptors
-function PipeOutput:filenos()
+function OutputPort:filenos()
     local fds = {}
     for i = 1, #self.pipes do
         fds[i] = self.pipes[i]:fileno_output()
@@ -90,17 +90,17 @@ function PipeOutput:filenos()
 end
 
 ---
--- Aliased input port of a pipe. These alias PipeInput objects, and are created
+-- Aliased input port of a pipe. These alias InputPort objects, and are created
 -- in CompositeBlock's add_type_signature().
 --
 -- @internal
 -- @class
 -- @tparam Block owner Block owner
 -- @tparam string name Output name
-local AliasedPipeInput = class.factory()
+local AliasedInputPort = class.factory()
 
-function AliasedPipeInput.new(owner, name)
-    local self = setmetatable({}, AliasedPipeInput)
+function AliasedInputPort.new(owner, name)
+    local self = setmetatable({}, AliasedInputPort)
     self.owner = owner
     self.name = name
     self.real_inputs = {}
@@ -108,17 +108,17 @@ function AliasedPipeInput.new(owner, name)
 end
 
 ---
--- Aliased output port of a pipe. These alias PipeOutput objects, and are
+-- Aliased output port of a pipe. These alias OutputPort objects, and are
 -- created in CompositeBlock's add_type_signature().
 --
 -- @internal
 -- @class
 -- @tparam Block owner Block owner
 -- @tparam string name Output name
-local AliasedPipeOutput = class.factory()
+local AliasedOutputPort = class.factory()
 
-function AliasedPipeOutput.new(owner, name)
-    local self = setmetatable({}, AliasedPipeOutput)
+function AliasedOutputPort.new(owner, name)
+    local self = setmetatable({}, AliasedOutputPort)
     self.owner = owner
     self.name = name
     self.real_output = nil
@@ -131,14 +131,14 @@ end
 --
 -- @internal
 -- @class
--- @tparam PipeOutput pipe_output Pipe output port
--- @tparam PipeInput pipe_input Pipe input port
+-- @tparam OutputPort output Pipe output port
+-- @tparam InputPort input Pipe input port
 local Pipe = class.factory()
 
-function Pipe.new(pipe_output, pipe_input)
+function Pipe.new(output, input)
     local self = setmetatable({}, Pipe)
-    self.pipe_output = pipe_output
-    self.pipe_input = pipe_input
+    self.output = output
+    self.input = input
     return self
 end
 
@@ -149,7 +149,7 @@ end
 -- @function Pipe:get_rate
 -- @treturn number Sample rate
 function Pipe:get_rate()
-    return self.pipe_output.owner:get_rate()
+    return self.output.owner:get_rate()
 end
 
 ---
@@ -159,7 +159,7 @@ end
 -- @function Pipe:get_data_type
 -- @treturn data_type Data type
 function Pipe:get_data_type()
-    return self.pipe_output.data_type
+    return self.output.data_type
 end
 
 ffi.cdef[[
@@ -306,7 +306,7 @@ function Pipe:write(vec)
         if bytes_written <= 0 then
             local errno = ffi.errno()
             if errno == ffi.C.EPIPE or errno == ffi.C.ECONNRESET then
-                io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.pipe_output.owner.name, self.pipe_input.owner.name))
+                io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.output.owner.name, self.input.owner.name))
             end
             error("write(): " .. ffi.string(ffi.C.strerror(errno)))
         end
@@ -423,4 +423,4 @@ local function read_synchronous(pipes)
 end
 
 -- Exported module
-return {PipeInput = PipeInput, PipeOutput = PipeOutput, AliasedPipeInput = AliasedPipeInput, AliasedPipeOutput = AliasedPipeOutput, Pipe = Pipe, read_synchronous = read_synchronous}
+return {InputPort = InputPort, OutputPort = OutputPort, AliasedInputPort = AliasedInputPort, AliasedOutputPort = AliasedOutputPort, Pipe = Pipe, read_synchronous = read_synchronous}

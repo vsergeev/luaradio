@@ -32,17 +32,17 @@ end
 function CompositeBlock:add_type_signature(inputs, outputs)
     block.Block.add_type_signature(self, inputs, outputs)
 
-    -- Replace PipeInput's with AliasedPipeInput's
+    -- Replace InputPort's with AliasedInputPort's
     for i = 1, #self.inputs do
-        if class.isinstanceof(self.inputs[i], pipe.PipeInput) then
-            self.inputs[i] = pipe.AliasedPipeInput(self, self.inputs[i].name)
+        if class.isinstanceof(self.inputs[i], pipe.InputPort) then
+            self.inputs[i] = pipe.AliasedInputPort(self, self.inputs[i].name)
         end
     end
 
-    -- Replace PipeOutput's with AliasedPipeOutput's
+    -- Replace OutputPort's with AliasedOutputPort's
     for i = 1, #self.outputs do
-        if class.isinstanceof(self.outputs[i], pipe.PipeOutput) then
-            self.outputs[i] = pipe.AliasedPipeOutput(self, self.outputs[i].name)
+        if class.isinstanceof(self.outputs[i], pipe.OutputPort) then
+            self.outputs[i] = pipe.AliasedOutputPort(self, self.outputs[i].name)
         end
     end
 end
@@ -113,70 +113,70 @@ function CompositeBlock:connect(...)
     return self
 end
 
-function CompositeBlock:_connect_by_name(src, src_pipe_name, dst, dst_pipe_name)
-    -- Look up pipe objects
-    local src_pipe = util.array_search(src.outputs, function (p) return p.name == src_pipe_name end) or
-                        util.array_search(src.inputs, function (p) return p.name == src_pipe_name end)
-    local dst_pipe = util.array_search(dst.outputs, function (p) return p.name == dst_pipe_name end) or
-                        util.array_search(dst.inputs, function (p) return p.name == dst_pipe_name end)
-    assert(src_pipe, string.format("Output port \"%s\" of block \"%s\" not found.", src_pipe_name, src.name))
-    assert(dst_pipe, string.format("Input port \"%s\" of block \"%s\" not found.", dst_pipe_name, dst.name))
+function CompositeBlock:_connect_by_name(src, src_port_name, dst, dst_port_name)
+    -- Look up port objects
+    local src_port = util.array_search(src.outputs, function (p) return p.name == src_port_name end) or
+                        util.array_search(src.inputs, function (p) return p.name == src_port_name end)
+    local dst_port = util.array_search(dst.outputs, function (p) return p.name == dst_port_name end) or
+                        util.array_search(dst.inputs, function (p) return p.name == dst_port_name end)
+    assert(src_port, string.format("Output port \"%s\" of block \"%s\" not found.", src_port_name, src.name))
+    assert(dst_port, string.format("Input port \"%s\" of block \"%s\" not found.", dst_port_name, dst.name))
 
     -- If this is a block to block connection in a top composite block
     if src ~= self and dst ~= self then
-        -- Map aliased outputs and inputs to their real pipes
-        src_pipe = class.isinstanceof(src_pipe, pipe.AliasedPipeOutput) and src_pipe.real_output or src_pipe
-        dst_pipes = class.isinstanceof(dst_pipe, pipe.AliasedPipeInput) and dst_pipe.real_inputs or {dst_pipe}
+        -- Map aliased outputs and inputs to their real ports
+        src_port = class.isinstanceof(src_port, pipe.AliasedOutputPort) and src_port.real_output or src_port
+        dst_ports = class.isinstanceof(dst_port, pipe.AliasedInputPort) and dst_port.real_inputs or {dst_port}
 
-        for i = 1, #dst_pipes do
+        for i = 1, #dst_ports do
             -- Assert input is not already connected
-            assert(not self._connections[dst_pipes[i]], string.format("Input port \"%s\" of block \"%s\" already connected.", dst_pipes[i].name, dst_pipes[i].owner.name))
+            assert(not self._connections[dst_ports[i]], string.format("Input port \"%s\" of block \"%s\" already connected.", dst_ports[i].name, dst_ports[i].owner.name))
 
             -- Create a pipe from output to input
-            local p = pipe.Pipe(src_pipe, dst_pipes[i])
+            local p = pipe.Pipe(src_port, dst_ports[i])
             -- Link the pipe to the input and output ends
-            src_pipe.pipes[#src_pipe.pipes+1] = p
-            dst_pipes[i].pipe = p
+            src_port.pipes[#src_port.pipes+1] = p
+            dst_ports[i].pipe = p
 
             -- Update our connections table
-            self._connections[dst_pipes[i]] = src_pipe
+            self._connections[dst_ports[i]] = src_port
 
-            debug.printf("[CompositeBlock] Connected output %s.%s to input %s.%s\n", src.name, src_pipe.name, dst.name, dst_pipe.name)
+            debug.printf("[CompositeBlock] Connected output %s.%s to input %s.%s\n", src.name, src_port.name, dst.name, dst_port.name)
         end
     else
         -- Otherwise, we are aliasing an input or output of a composite block
 
-        -- Map src and dst pipe to alias pipe and real pipe
-        local alias_pipe = (src == self) and src_pipe or dst_pipe
-        local target_pipe = (src == self) and dst_pipe or src_pipe
+        -- Map src and dst ports to alias port and target port
+        local alias_port = (src == self) and src_port or dst_port
+        local target_port = (src == self) and dst_port or src_port
 
-        if class.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and class.isinstanceof(target_pipe, pipe.PipeInput) then
+        if class.isinstanceof(alias_port, pipe.AliasedInputPort) and class.isinstanceof(target_port, pipe.InputPort) then
             -- If we are aliasing a composite block input to a concrete block input
 
-            alias_pipe.real_inputs[#alias_pipe.real_inputs + 1] = target_pipe
-            debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
-        elseif class.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and class.isinstanceof(target_pipe, pipe.PipeOutput) then
+            alias_port.real_inputs[#alias_port.real_inputs + 1] = target_port
+            debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
+        elseif class.isinstanceof(alias_port, pipe.AliasedOutputPort) and class.isinstanceof(target_port, pipe.OutputPort) then
             -- If we are aliasing a composite block output to a concrete block output
 
-            assert(not alias_pipe.real_output, "Aliased output already connected.")
-            alias_pipe.real_output = target_pipe
-            debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
-        elseif class.isinstanceof(alias_pipe, pipe.AliasedPipeInput) and class.isinstanceof(target_pipe, pipe.AliasedPipeInput) then
+            assert(not alias_port.real_output, "Aliased output already connected.")
+            alias_port.real_output = target_port
+            debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
+        elseif class.isinstanceof(alias_port, pipe.AliasedInputPort) and class.isinstanceof(target_port, pipe.AliasedInputPort) then
             -- If we are aliasing a composite block input to a composite block input
 
             -- Absorb destination alias real inputs
-            for i = 1, #target_pipe.real_inputs do
-                alias_pipe.real_inputs[#alias_pipe.real_inputs + 1] = target_pipe.real_inputs[i]
+            for i = 1, #target_port.real_inputs do
+                alias_port.real_inputs[#alias_port.real_inputs + 1] = target_port.real_inputs[i]
             end
-            debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
-        elseif class.isinstanceof(alias_pipe, pipe.AliasedPipeOutput) and class.isinstanceof(target_pipe, pipe.AliasedPipeOutput) then
+            debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
+        elseif class.isinstanceof(alias_port, pipe.AliasedOutputPort) and class.isinstanceof(target_port, pipe.AliasedOutputPort) then
             -- If we are aliasing a composite block output to a composite block output
 
-            assert(not alias_pipe.real_output, "Aliased output already connected.")
-            alias_pipe.real_output = target_pipe.real_output
-            debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_pipe.owner.name, alias_pipe.name, target_pipe.owner.name, target_pipe.name)
+            assert(not alias_port.real_output, "Aliased output already connected.")
+            alias_port.real_output = target_port.real_output
+            debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
         else
-            error("Malformed pipe connection.")
+            error("Malformed port connection.")
         end
     end
 end
@@ -190,9 +190,9 @@ local function crawl_connections(connections)
     repeat
         local new_blocks_found = false
 
-        for pipe_input, pipe_output in pairs(connections_copy) do
-            local src = pipe_output.owner
-            local dst = pipe_input.owner
+        for input, output in pairs(connections_copy) do
+            local src = output.owner
+            local dst = input.owner
 
             for _, block in ipairs({src, dst}) do
                 -- If we haven't seen this block before
@@ -200,13 +200,13 @@ local function crawl_connections(connections)
                     -- Add all of the block's inputs our connections table
                     for i=1, #block.inputs do
                         if block.inputs[i].pipe then
-                            connections_copy[block.inputs[i]] = block.inputs[i].pipe.pipe_output
+                            connections_copy[block.inputs[i]] = block.inputs[i].pipe.output
                         end
                     end
                     -- Add all of the block's outputs to to our connection table
                     for i=1, #block.outputs do
                         for j=1, #block.outputs[i].pipes do
-                            local input = block.outputs[i].pipes[j].pipe_input
+                            local input = block.outputs[i].pipes[j].input
                             connections_copy[input] = block.outputs[i]
                         end
                     end
@@ -227,9 +227,9 @@ local function build_dependency_graph(connections)
     local graph = {}
 
     -- Add dependencies between connected blocks
-    for pipe_input, pipe_output in pairs(connections) do
-        local src = pipe_output.owner
-        local dst = pipe_input.owner
+    for input, output in pairs(connections) do
+        local src = output.owner
+        local dst = input.owner
 
         if graph[src] == nil then
             graph[src] = {}
@@ -249,9 +249,9 @@ local function build_reverse_dependency_graph(connections)
     local graph = {}
 
     -- Add dependencies between connected blocks
-    for pipe_input, pipe_output in pairs(connections) do
-        local src = pipe_output.owner
-        local dst = pipe_input.owner
+    for input, output in pairs(connections) do
+        local src = output.owner
+        local dst = input.owner
 
         if graph[src] == nil then
             graph[src] = {dst}
@@ -405,8 +405,8 @@ function CompositeBlock:_prepare_to_run()
     end
 
     -- Initialize all pipes
-    for pipe_input, pipe_output in pairs(all_connections) do
-        pipe_input.pipe:initialize()
+    for input, output in pairs(all_connections) do
+        input.pipe:initialize()
     end
 
     debug.print("[CompositeBlock] Flow graph:")
@@ -554,9 +554,9 @@ function CompositeBlock:start(multiprocess)
         end
 
         -- Close all pipe inputs and outputs in the top-level process
-        for pipe_input, pipe_output in pairs(all_connections) do
-            pipe_input:close()
-            pipe_output:close()
+        for input, output in pairs(all_connections) do
+            input:close()
+            output:close()
         end
 
         -- Mark ourselves as running

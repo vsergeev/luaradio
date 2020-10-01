@@ -51,6 +51,122 @@ function Output.new(name, data_type)
 end
 
 ---
+-- Input port of a block. These are created in Block's add_type_signature().
+--
+-- @internal
+-- @class
+-- @tparam Block owner Block owner
+-- @tparam string name Input name
+local InputPort = class.factory()
+
+function InputPort.new(owner, name)
+    local self = setmetatable({}, InputPort)
+    self.owner = owner
+    self.name = name
+    self.data_type = nil
+    self.pipe = nil
+    return self
+end
+
+---
+-- Close input end of associated pipe.
+--
+-- @internal
+-- @function InputPort:close
+function InputPort:close()
+    self.pipe:close_input()
+end
+
+---
+-- Get input file descriptors of associated pipe.
+--
+-- @internal
+-- @function InputPort:filenos
+-- @treturn array Array of file descriptors
+function InputPort:filenos()
+    return {self.pipe:fileno_input()}
+end
+
+---
+-- Output port of a block. These are created in Block's add_type_signature().
+--
+-- @internal
+-- @class
+-- @tparam Block owner Block owner
+-- @tparam string name Output name
+local OutputPort = class.factory()
+
+function OutputPort.new(owner, name)
+    local self = setmetatable({}, OutputPort)
+    self.owner = owner
+    self.name = name
+    self.data_type = nil
+    self.pipes = {}
+    return self
+end
+
+---
+-- Close output end of associated pipe.
+--
+-- @internal
+-- @function InputPort:close
+function OutputPort:close()
+    for i=1, #self.pipes do
+        self.pipes[i]:close_output()
+    end
+end
+
+---
+-- Get output file descriptors of associated pipe.
+--
+-- @internal
+-- @function InputPort:filenos
+-- @treturn array Array of file descriptors
+function OutputPort:filenos()
+    local fds = {}
+    for i = 1, #self.pipes do
+        fds[i] = self.pipes[i]:fileno_output()
+    end
+    return fds
+end
+
+---
+-- Aliased input port of a block. These alias InputPort objects, and are
+-- created in CompositeBlock's add_type_signature().
+--
+-- @internal
+-- @class
+-- @tparam Block owner Block owner
+-- @tparam string name Output name
+local AliasedInputPort = class.factory()
+
+function AliasedInputPort.new(owner, name)
+    local self = setmetatable({}, AliasedInputPort)
+    self.owner = owner
+    self.name = name
+    self.real_inputs = {}
+    return self
+end
+
+---
+-- Aliased output port of a block. These alias OutputPort objects, and are
+-- created in CompositeBlock's add_type_signature().
+--
+-- @internal
+-- @class
+-- @tparam Block owner Block owner
+-- @tparam string name Output name
+local AliasedOutputPort = class.factory()
+
+function AliasedOutputPort.new(owner, name)
+    local self = setmetatable({}, AliasedOutputPort)
+    self.owner = owner
+    self.name = name
+    self.real_output = nil
+    return self
+end
+
+---
 -- Block base class.
 --
 -- @class Block
@@ -84,7 +200,7 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
         -- Create inputs with a InputPort for each input
         self.inputs = {}
         for i = 1, #inputs do
-            self.inputs[i] = pipe.InputPort(self, inputs[i].name)
+            self.inputs[i] = InputPort(self, inputs[i].name)
         end
     else
         -- Check input count
@@ -105,7 +221,7 @@ function Block:add_type_signature(inputs, outputs, process_func, initialize_func
         -- Create outputs with a OutputPort for each output
         self.outputs = {}
         for i = 1, #outputs do
-            self.outputs[i] = pipe.OutputPort(self, outputs[i].name)
+            self.outputs[i] = OutputPort(self, outputs[i].name)
         end
     else
         -- Check output count
@@ -507,4 +623,4 @@ local function factory(name, parent_class)
 end
 
 -- Exported module
-return {Input = Input, Output = Output, Block = Block, factory = factory}
+return {Input = Input, Output = Output, InputPort = InputPort, OutputPort = OutputPort, AliasedInputPort = AliasedInputPort, AliasedOutputPort = AliasedOutputPort, Block = Block, factory = factory}

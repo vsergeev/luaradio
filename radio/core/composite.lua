@@ -34,15 +34,15 @@ function CompositeBlock:add_type_signature(inputs, outputs)
 
     -- Replace InputPort's with AliasedInputPort's
     for i = 1, #self.inputs do
-        if class.isinstanceof(self.inputs[i], pipe.InputPort) then
-            self.inputs[i] = pipe.AliasedInputPort(self, self.inputs[i].name)
+        if class.isinstanceof(self.inputs[i], block.InputPort) then
+            self.inputs[i] = block.AliasedInputPort(self, self.inputs[i].name)
         end
     end
 
     -- Replace OutputPort's with AliasedOutputPort's
     for i = 1, #self.outputs do
-        if class.isinstanceof(self.outputs[i], pipe.OutputPort) then
-            self.outputs[i] = pipe.AliasedOutputPort(self, self.outputs[i].name)
+        if class.isinstanceof(self.outputs[i], block.OutputPort) then
+            self.outputs[i] = block.AliasedOutputPort(self, self.outputs[i].name)
         end
     end
 end
@@ -125,8 +125,8 @@ function CompositeBlock:_connect_by_name(src, src_port_name, dst, dst_port_name)
     -- If this is a block to block connection in a top composite block
     if src ~= self and dst ~= self then
         -- Map aliased outputs and inputs to their real ports
-        src_port = class.isinstanceof(src_port, pipe.AliasedOutputPort) and src_port.real_output or src_port
-        dst_ports = class.isinstanceof(dst_port, pipe.AliasedInputPort) and dst_port.real_inputs or {dst_port}
+        src_port = class.isinstanceof(src_port, block.AliasedOutputPort) and src_port.real_output or src_port
+        dst_ports = class.isinstanceof(dst_port, block.AliasedInputPort) and dst_port.real_inputs or {dst_port}
 
         for i = 1, #dst_ports do
             -- Assert input is not already connected
@@ -150,18 +150,18 @@ function CompositeBlock:_connect_by_name(src, src_port_name, dst, dst_port_name)
         local alias_port = (src == self) and src_port or dst_port
         local target_port = (src == self) and dst_port or src_port
 
-        if class.isinstanceof(alias_port, pipe.AliasedInputPort) and class.isinstanceof(target_port, pipe.InputPort) then
+        if class.isinstanceof(alias_port, block.AliasedInputPort) and class.isinstanceof(target_port, block.InputPort) then
             -- If we are aliasing a composite block input to a concrete block input
 
             alias_port.real_inputs[#alias_port.real_inputs + 1] = target_port
             debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
-        elseif class.isinstanceof(alias_port, pipe.AliasedOutputPort) and class.isinstanceof(target_port, pipe.OutputPort) then
+        elseif class.isinstanceof(alias_port, block.AliasedOutputPort) and class.isinstanceof(target_port, block.OutputPort) then
             -- If we are aliasing a composite block output to a concrete block output
 
             assert(not alias_port.real_output, "Aliased output already connected.")
             alias_port.real_output = target_port
             debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
-        elseif class.isinstanceof(alias_port, pipe.AliasedInputPort) and class.isinstanceof(target_port, pipe.AliasedInputPort) then
+        elseif class.isinstanceof(alias_port, block.AliasedInputPort) and class.isinstanceof(target_port, block.AliasedInputPort) then
             -- If we are aliasing a composite block input to a composite block input
 
             -- Absorb destination alias real inputs
@@ -169,7 +169,7 @@ function CompositeBlock:_connect_by_name(src, src_port_name, dst, dst_port_name)
                 alias_port.real_inputs[#alias_port.real_inputs + 1] = target_port.real_inputs[i]
             end
             debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
-        elseif class.isinstanceof(alias_port, pipe.AliasedOutputPort) and class.isinstanceof(target_port, pipe.AliasedOutputPort) then
+        elseif class.isinstanceof(alias_port, block.AliasedOutputPort) and class.isinstanceof(target_port, block.AliasedOutputPort) then
             -- If we are aliasing a composite block output to a composite block output
 
             assert(not alias_port.real_output, "Aliased output already connected.")

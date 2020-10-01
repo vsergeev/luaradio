@@ -49,6 +49,6 @@ def generate():
             buf = ''.join(["\\x%02x" % b for b in f_buf.getvalue()])
 
             # Build test vector
-            vectors.append(TestVector(["buffer.open(\"%s\")" % buf, num_channels, 44100], [], [expected_vector[:, i] for i in range(num_channels)], "bits per sample %d, num channels %d" % (bits_per_sample, num_channels)))
+            vectors.append(TestVector(["require('tests.buffer').open(\"%s\")" % buf, num_channels, 44100], [], [expected_vector[:, i] for i in range(num_channels)], "bits per sample %d, num channels %d" % (bits_per_sample, num_channels)))
 
-    return SourceSpec("WAVFileSource", vectors, 1e-6)
+    return BlockSpec("WAVFileSource", vectors, 1e-6)

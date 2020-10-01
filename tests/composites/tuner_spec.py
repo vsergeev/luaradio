@@ -21,4 +21,4 @@ def generate():
 
     # FIXME liquid-dsp implementation has less precision (1e-3)
     # FIXME why does this need 1e-5 epsilon?
-    return CompositeSpec("TunerBlock", vectors, "(radio.platform.features.liquid and not radio.platform.features.volk) and 1e-3 or 1e-5")
+    return BlockSpec("TunerBlock", vectors, "(radio.platform.features.liquid and not radio.platform.features.volk) and 1e-3 or 1e-5")

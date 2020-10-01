@@ -22,4 +22,4 @@ def generate():
     vectors.append(TestVector([4], [x], process(4, x), "4 Factor, 256 Float32 input, 64 Float32 output"))
     vectors.append(TestVector([7], [x], process(7, x), "7 Factor, 256 Float32 input, 36 Float32 output"))
 
-    return CompositeSpec("DecimatorBlock", vectors, 1e-6)
+    return BlockSpec("DecimatorBlock", vectors, 1e-6)

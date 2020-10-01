@@ -3,7 +3,7 @@
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-jigs.TestCompositeBlock(radio.InterpolatorBlock, {
+jigs.TestBlock(radio.InterpolatorBlock, {
     {
         desc = "2 Factor, 32 ComplexFloat32 input, 64 ComplexFloat32 output",
         args = {2},

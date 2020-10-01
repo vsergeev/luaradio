@@ -25,4 +25,4 @@ def generate():
     vectors.append(TestVector([4], [x], process(4, x), "4 Factor, 32 Float32 input, 128 Float32 output"))
     vectors.append(TestVector([7], [x], process(7, x), "7 Factor, 32 Float32 input, 224 Float32 output"))
 
-    return CompositeSpec("InterpolatorBlock", vectors, 1e-6)
+    return BlockSpec("InterpolatorBlock", vectors, 1e-6)

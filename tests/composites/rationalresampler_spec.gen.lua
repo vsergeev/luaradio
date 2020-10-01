@@ -3,7 +3,7 @@
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-jigs.TestCompositeBlock(radio.RationalResamplerBlock, {
+jigs.TestBlock(radio.RationalResamplerBlock, {
     {
         desc = "2 up, 3 down, 32 ComplexFloat32 input, 21 ComplexFloat32 output",
         args = {2, 3},

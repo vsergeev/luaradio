@@ -23,4 +23,4 @@ def generate():
     vectors.append(TestVector([2, 3], [x], process(2, 3, x), "2 up, 3 down, 32 Float32 input, 21 Float32 output"))
     vectors.append(TestVector([7, 5], [x], process(7, 5, x), "7 up, 5 down, 32 Float32 input, 44 Float32 output"))
 
-    return CompositeSpec("RationalResamplerBlock", vectors, 1e-6)
+    return BlockSpec("RationalResamplerBlock", vectors, 1e-6)

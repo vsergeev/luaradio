@@ -2,9 +2,8 @@
 
 local radio = require('radio')
 local jigs = require('tests.jigs')
-local buffer = require('tests.buffer')
 
-jigs.TestSourceBlock(radio.SignalSource, {
+jigs.TestBlock(radio.SignalSource, {
     {
         desc = "exponential frequency 50, sample rate 1000, ampltiude 1.00, phase 0.0000, offset 0.00",
         args = {"exponential", 50, 1000.0, {amplitude = 1.0, offset = 0.0, phase = 0.0}},

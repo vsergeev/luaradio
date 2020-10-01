@@ -53,4 +53,4 @@ def generate():
             vectors.append(TestVector(["\"%s\"" % signal, frequency, 1e3, {'amplitude': amplitude, 'phase': phase, 'offset': offset}], [], process(signal, frequency, 1e3, amplitude, phase, offset), "%s frequency %d, sample rate 1000, ampltiude %.2f, phase %.4f, offset %.2f" % (signal, frequency, amplitude, phase, offset)))
 
     # FIXME why does this need 2e-5 epsilon?
-    return SourceSpec("SignalSource", vectors, 2e-5)
+    return BlockSpec("SignalSource", vectors, 2e-5)

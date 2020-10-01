@@ -3,7 +3,7 @@
 local radio = require('radio')
 local jigs = require('tests.jigs')
 
-jigs.TestCompositeBlock(radio.TunerBlock, {
+jigs.TestBlock(radio.TunerBlock, {
     {
         desc = "0.2 offset, 0.1 bandwidth, 5 decimation, 256 ComplexFloat32 input, 256 ComplexFloat32 output",
         args = {0.2, 0.1, 5},

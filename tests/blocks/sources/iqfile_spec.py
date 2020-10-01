@@ -48,6 +48,6 @@ def generate():
         buf = ''.join(["\\x%02x" % b for b in buf])
 
         # Build test vector
-        vectors.append(TestVector(["buffer.open(\"%s\")" % buf, "\"%s\"" % fmt, 1], [], process(vector), "Data type %s, rate 1" % fmt))
+        vectors.append(TestVector(["require('tests.buffer').open(\"%s\")" % buf, "\"%s\"" % fmt, 1], [], process(vector), "Data type %s, rate 1" % fmt))
 
-    return SourceSpec("IQFileSource", vectors, 1e-6)
+    return BlockSpec("IQFileSource", vectors, 1e-6)

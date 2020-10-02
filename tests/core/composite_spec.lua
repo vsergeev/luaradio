@@ -107,12 +107,16 @@ describe("composite", function ()
         local b3 = TestAddBlock()
         local b4 = TestSplitBlock()
         local b5 = TestSink()
+        local b6 = TestBlock()
 
         -- Linear connection of 2 output ports to 1 input port
         assert.has_error(function () top:connect(b4, b2) end)
 
         -- Linear connection of 1 output port to 2 input ports
         assert.has_error(function () top:connect(b2, b3) end)
+
+        -- Connection of input port to output port
+        assert.has_error(function () top:connect(b6, "in", b2, "out") end)
 
         -- Unknown source pipe
         assert.has_error(function () top:connect(b1, "foo", b2, "in") end)

@@ -128,9 +128,15 @@ function CompositeBlock:_connect_by_name(src, src_port_name, dst, dst_port_name)
         src_port = class.isinstanceof(src_port, block.AliasedOutputPort) and src_port.real_output or src_port
         dst_ports = class.isinstanceof(dst_port, block.AliasedInputPort) and dst_port.real_inputs or {dst_port}
 
+        -- Assert source is an output
+        assert(class.isinstanceof(src_port, block.OutputPort), string.format("Source port %s.%s is not an output port.", src_port.owner.name, src_port.name))
+
         for i = 1, #dst_ports do
             -- Assert input is not already connected
             assert(not self._connections[dst_ports[i]], string.format("Input port \"%s\" of block \"%s\" already connected.", dst_ports[i].name, dst_ports[i].owner.name))
+
+            -- Assert destination is an input
+            assert(class.isinstanceof(dst_ports[i], block.InputPort), string.format("Destination port %s.%s is not an input port.", dst_ports[i].owner.name, dst_ports[i].name))
 
             -- Create a pipe from output to input
             local p = pipe.Pipe(src_port, dst_ports[i])

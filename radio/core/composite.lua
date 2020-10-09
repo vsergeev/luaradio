@@ -335,37 +335,7 @@ local function build_evaluation_order(dependency_graph)
     return order
 end
 
--- Execution
-
-ffi.cdef[[
-    /* File descriptor table size */
-    int getdtablesize(void);
-
-    /* File tree walk */
-    int ftw(const char *dirpath, int (*fn) (const char *fpath, const struct stat *sb, int typeflag), int nopenfd);
-]]
-
-local function listdir(path)
-    local entries = {}
-
-    -- Normalize directory path with trailing /
-    path = (string.sub(path, -1) == "/") and path or (path .. "/")
-
-    -- Store each file entry in entries
-    local function store_entry_fn(fpath, sb, typeflag)
-        if typeflag == 0 then
-            entries[#entries + 1] = string.sub(ffi.string(fpath), #path+1)
-        end
-        return 0
-    end
-
-    -- File tree walk on directory path
-    if ffi.C.ftw(path, store_entry_fn, 1) ~= 0 then
-        error("ftw(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
-
-    return entries
-end
+-- Validation, Differentiation, and Initialization
 
 function CompositeBlock:_prepare_to_run()
     -- Crawl our connections to get the full list of blocks and connections
@@ -422,6 +392,38 @@ function CompositeBlock:_prepare_to_run()
     end
 
     return all_connections, evaluation_order
+end
+
+-- Execution
+
+ffi.cdef[[
+    /* File descriptor table size */
+    int getdtablesize(void);
+
+    /* File tree walk */
+    int ftw(const char *dirpath, int (*fn) (const char *fpath, const struct stat *sb, int typeflag), int nopenfd);
+]]
+
+local function listdir(path)
+    local entries = {}
+
+    -- Normalize directory path with trailing /
+    path = (string.sub(path, -1) == "/") and path or (path .. "/")
+
+    -- Store each file entry in entries
+    local function store_entry_fn(fpath, sb, typeflag)
+        if typeflag == 0 then
+            entries[#entries + 1] = string.sub(ffi.string(fpath), #path+1)
+        end
+        return 0
+    end
+
+    -- File tree walk on directory path
+    if ffi.C.ftw(path, store_entry_fn, 1) ~= 0 then
+        error("ftw(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    return entries
 end
 
 ---

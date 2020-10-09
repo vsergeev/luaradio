@@ -24,6 +24,19 @@ local CompositeBlock = block.factory("CompositeBlock")
 function CompositeBlock:instantiate()
     self._running = false
     self._connections = {}
+    self._blocks = {}
+    self._evaluation_order = nil
+end
+
+-- Overridden implementation of Block's initialize().
+function CompositeBlock:initialize()
+    if not self._evaluation_order then
+        self._evaluation_order = build_evaluation_order(build_dependency_graph(self._connections))
+    end
+
+    for _, block in ipairs(self._evaluation_order) do
+        block:initialize()
+    end
 end
 
 -- Connection logic
@@ -119,68 +132,50 @@ function CompositeBlock:_connect_by_name(src, src_port_name, dst, dst_port_name)
                         util.array_search(src.inputs, function (p) return p.name == src_port_name end)
     local dst_port = util.array_search(dst.outputs, function (p) return p.name == dst_port_name end) or
                         util.array_search(dst.inputs, function (p) return p.name == dst_port_name end)
+
     assert(src_port, string.format("Output port \"%s\" of block \"%s\" not found.", src_port_name, src.name))
     assert(dst_port, string.format("Input port \"%s\" of block \"%s\" not found.", dst_port_name, dst.name))
 
     -- If this is a block to block connection in a top composite block
     if src ~= self and dst ~= self then
-        -- Map aliased outputs and inputs to their real ports
-        src_port = class.isinstanceof(src_port, block.AliasedOutputPort) and src_port.real_output or src_port
-        dst_ports = class.isinstanceof(dst_port, block.AliasedInputPort) and dst_port.real_inputs or {dst_port}
+        assert(class.isinstanceof(src_port, block.OutputPort) or class.isinstanceof(src_port, block.AliasedOutputPort), string.format("Source port %s.%s is not an output port.", src_port.owner.name, src_port.name))
+        assert(class.isinstanceof(dst_port, block.InputPort) or class.isinstanceof(dst_port, block.AliasedInputPort), string.format("Destination port %s.%s is not an input port.", dst_port.owner.name, dst_port.name))
 
-        -- Assert source is an output
-        assert(class.isinstanceof(src_port, block.OutputPort), string.format("Source port %s.%s is not an output port.", src_port.owner.name, src_port.name))
+        -- Assert input is not already connected
+        assert(not self._connections[dst_port], string.format("Input port \"%s\" of block \"%s\" already connected.", dst_port.name, dst_port.owner.name))
 
-        for i = 1, #dst_ports do
-            -- Assert input is not already connected
-            assert(not self._connections[dst_ports[i]], string.format("Input port \"%s\" of block \"%s\" already connected.", dst_ports[i].name, dst_ports[i].owner.name))
+        -- Update our connections table
+        self._connections[dst_port] = src_port
+        self._blocks[src] = true
+        self._blocks[dst] = true
 
-            -- Assert destination is an input
-            assert(class.isinstanceof(dst_ports[i], block.InputPort), string.format("Destination port %s.%s is not an input port.", dst_ports[i].owner.name, dst_ports[i].name))
-
-            -- Create a pipe from output to input
-            local p = pipe.Pipe(src_port, dst_ports[i])
-            -- Link the pipe to the input and output ends
-            src_port.pipes[#src_port.pipes+1] = p
-            dst_ports[i].pipe = p
-
-            -- Update our connections table
-            self._connections[dst_ports[i]] = src_port
-
-            debug.printf("[CompositeBlock] Connected output %s.%s to input %s.%s\n", src.name, src_port.name, dst.name, dst_port.name)
-        end
+        debug.printf("[CompositeBlock] Connected output %s.%s to input %s.%s\n", src.name, src_port.name, dst.name, dst_port.name)
     else
         -- Otherwise, we are aliasing an input or output of a composite block
 
-        -- Map src and dst ports to alias port and target port
+        -- Map src and dst ports to alias port and block port
         local alias_port = (src == self) and src_port or dst_port
         local target_port = (src == self) and dst_port or src_port
 
-        if class.isinstanceof(alias_port, block.AliasedInputPort) and class.isinstanceof(target_port, block.InputPort) then
+        if class.isinstanceof(alias_port, block.AliasedInputPort) and
+                (class.isinstanceof(target_port, block.InputPort) or class.isinstanceof(target_port, block.AliasedInputPort)) then
             -- If we are aliasing a composite block input to a concrete block input
 
-            alias_port.real_inputs[#alias_port.real_inputs + 1] = target_port
-            debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
-        elseif class.isinstanceof(alias_port, block.AliasedOutputPort) and class.isinstanceof(target_port, block.OutputPort) then
+            assert(not self._connections[target_port], string.format("Input port %s.%s already connected.", target_port.owner.name, target_port.name))
+            self._connections[target_port] = alias_port
+            self._blocks[target_port.owner] = true
+
+            debug.printf("[CompositeBlock] Aliased composite input %s.%s to block input %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
+        elseif class.isinstanceof(alias_port, block.AliasedOutputPort) and
+                (class.isinstanceof(target_port, block.OutputPort) or class.isinstanceof(target_port, block.AliasedOutputPort)) then
             -- If we are aliasing a composite block output to a concrete block output
 
-            assert(not alias_port.real_output, "Aliased output already connected.")
-            alias_port.real_output = target_port
-            debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
-        elseif class.isinstanceof(alias_port, block.AliasedInputPort) and class.isinstanceof(target_port, block.AliasedInputPort) then
-            -- If we are aliasing a composite block input to a composite block input
+            assert(not self._connections[alias_port], string.format("Output port %s.%s already connected.", alias_port.owner.name, alias_port.name))
 
-            -- Absorb destination alias real inputs
-            for i = 1, #target_port.real_inputs do
-                alias_port.real_inputs[#alias_port.real_inputs + 1] = target_port.real_inputs[i]
-            end
-            debug.printf("[CompositeBlock] Aliased input %s.%s to input %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
-        elseif class.isinstanceof(alias_port, block.AliasedOutputPort) and class.isinstanceof(target_port, block.AliasedOutputPort) then
-            -- If we are aliasing a composite block output to a composite block output
+            self._connections[alias_port] = target_port
+            self._blocks[target_port.owner] = true
 
-            assert(not alias_port.real_output, "Aliased output already connected.")
-            alias_port.real_output = target_port.real_output
-            debug.printf("[CompositeBlock] Aliased output %s.%s to output %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
+            debug.printf("[CompositeBlock] Aliased composite output %s.%s to block output %s.%s\n", alias_port.owner.name, alias_port.name, target_port.owner.name, target_port.name)
         else
             error("Malformed port connection.")
         end
@@ -189,51 +184,15 @@ end
 
 -- Helper functions to manipulate internal data structures
 
-local function crawl_connections(connections)
-    local blocks = {}
-    local connections_copy = util.table_copy(connections)
-
-    repeat
-        local new_blocks_found = false
-
-        for input, output in pairs(connections_copy) do
-            local src = output.owner
-            local dst = input.owner
-
-            for _, block in ipairs({src, dst}) do
-                -- If we haven't seen this block before
-                if not blocks[block] then
-                    -- Add all of the block's inputs our connections table
-                    for i=1, #block.inputs do
-                        if block.inputs[i].pipe then
-                            connections_copy[block.inputs[i]] = block.inputs[i].pipe.output
-                        end
-                    end
-                    -- Add all of the block's outputs to to our connection table
-                    for i=1, #block.outputs do
-                        for j=1, #block.outputs[i].pipes do
-                            local input = block.outputs[i].pipes[j].input
-                            connections_copy[input] = block.outputs[i]
-                        end
-                    end
-
-                    -- Add it to our blocks table
-                    blocks[block] = true
-
-                    new_blocks_found = true
-                end
-            end
-        end
-    until new_blocks_found == false
-
-    return blocks, connections_copy
-end
-
 local function build_dependency_graph(connections)
     local graph = {}
 
     -- Add dependencies between connected blocks
     for input, output in pairs(connections) do
+        if class.isinstanceof(input, block.AliasedOutputPort) or class.isinstanceof(output, block.AliasedInputPort) then
+            goto continue
+        end
+
         local src = output.owner
         local dst = input.owner
 
@@ -246,6 +205,8 @@ local function build_dependency_graph(connections)
         else
             graph[dst][#graph[dst] + 1] = src
         end
+
+        ::continue::
     end
 
     return graph
@@ -337,48 +298,151 @@ end
 
 -- Validation, Differentiation, and Initialization
 
-function CompositeBlock:_prepare_to_run()
-    -- Crawl our connections to get the full list of blocks and connections
-    local blocks, all_connections = crawl_connections(self._connections)
-
-    -- Check all block inputs are connected
-    for block, _ in pairs(blocks) do
+function CompositeBlock:_validate_inputs()
+    for block, _ in pairs(self._blocks) do
         for i=1, #block.inputs do
-            assert(block.inputs[i].pipe ~= nil, string.format("Block \"%s\" input \"%s\" is unconnected.", block.name, block.inputs[i].name))
+            assert(self._connections[block.inputs[i]] ~= nil, string.format("Block \"%s\" input \"%s\" is unconnected.", block.name, block.inputs[i].name))
+        end
+
+        if class.isinstanceof(block, CompositeBlock) then
+            block:_validate_inputs()
         end
     end
+end
 
-    -- Build dependency graph and evaluation order
-    local evaluation_order = build_evaluation_order(build_dependency_graph(all_connections))
+function CompositeBlock:_differentiate()
+    if not self._evaluation_order then
+        self._evaluation_order = build_evaluation_order(build_dependency_graph(self._connections))
+    end
 
-    -- Differentiate all blocks
-    for _, block in ipairs(evaluation_order) do
+    for _, block in ipairs(self._evaluation_order) do
         -- Gather input data types to this block
         local input_data_types = {}
         for _, input in ipairs(block.inputs) do
-            input_data_types[#input_data_types+1] = input.pipe:get_data_type()
+            input_data_types[#input_data_types+1] = self._connections[input].data_type
         end
 
         -- Differentiate the block
         block:differentiate(input_data_types)
+
+        if class.isinstanceof(block, CompositeBlock) then
+            block:_differentiate()
+        end
     end
 
-    -- Check all block input rates match
-    for _, block in pairs(evaluation_order) do
-        local rate = nil
-        for i=1, #block.inputs do
-            if not rate then
-                rate = block.inputs[i].pipe:get_rate()
-            else
-                assert(block.inputs[i].pipe:get_rate() == rate, string.format("Block \"%s\" input \"%s\" sample rate mismatch.", block.name, block.inputs[i].name))
+    -- Validate aliased output port types match concrete output port types
+    if self.outputs then
+        for _, composite_output in ipairs(self.outputs) do
+            local block_output = self._connections[composite_output]
+            assert(composite_output.data_type == block_output.data_type, string.format("Invalid type signature, composite output %s.%s data type %s does not match block output %s.%s data type %s.", self.name, composite_output.name, composite_output.data_type.type_name, block_output.owner.name, block_output.name, block_output.data_type.type_name))
+        end
+    end
+end
+
+function CompositeBlock:_crawl_connections(crawled_connections, composite_stack)
+    crawled_connections = crawled_connections or {}
+    composite_stack = composite_stack or {}
+
+    if not self._evaluation_order then
+        self._evaluation_order = build_evaluation_order(build_dependency_graph(self._connections))
+    end
+
+    local function resolve_port(port)
+        if class.isinstanceof(port, block.OutputPort) then
+            return port
+        elseif class.isinstanceof(port, block.AliasedOutputPort) then
+            return resolve_port(port.owner._connections[port])
+        elseif class.isinstanceof(port, block.AliasedInputPort) then
+            for _, composite in pairs(composite_stack) do
+                if composite._connections[port] then
+                    return resolve_port(composite._connections[port])
+                end
+            end
+            error(string.format("Unexpected disconnected composite input port %s.%s", port.owner.name, port.name))
+        else
+            error(string.format("Unexpected port type for port %s.%s", port.owner.name, port.name))
+        end
+    end
+
+    for _, block in pairs(self._evaluation_order) do
+        if class.isinstanceof(block, CompositeBlock) then
+            block:_crawl_connections(crawled_connections, {self, unpack(composite_stack)})
+        else
+            for _, input in ipairs(block.inputs) do
+                crawled_connections[input] = resolve_port(self._connections[input])
             end
         end
     end
 
-    -- Initialize all blocks
-    for _, block in ipairs(evaluation_order) do
+    return crawled_connections
+end
+
+function CompositeBlock:_connect_pipes(all_connections)
+    for input, output in pairs(all_connections) do
+        assert(class.isinstanceof(input, block.InputPort), string.format("Unexpected type for input port %s.%s", input.owner.name, input.name))
+        assert(class.isinstanceof(output, block.OutputPort), string.format("Unexpected type for output port %s.%s", output.owner.name, output.name))
+
+        -- Create a pipe from output to input
+        local p = pipe.Pipe(output, input)
+        -- Link the pipe to the input and output ends
+        output.pipes[#output.pipes + 1] = p
+        input.pipe = p
+    end
+end
+
+function CompositeBlock:_validate_rates()
+    if not self._evaluation_order then
+        self._evaluation_order = build_evaluation_order(build_dependency_graph(self._connections))
+    end
+
+    -- Check all block input rates match
+    for _, block in pairs(self._evaluation_order) do
+        if class.isinstanceof(block, CompositeBlock) then
+            block:_validate_rates()
+        else
+            local rate = nil
+            for i=1, #block.inputs do
+                if not rate then
+                    rate = block.inputs[i].pipe:get_rate()
+                else
+                    assert(block.inputs[i].pipe:get_rate() == rate, string.format("Block \"%s\" input \"%s\" sample rate mismatch.", block.name, block.inputs[i].name))
+                end
+            end
+        end
+    end
+end
+
+function CompositeBlock:_initialize()
+    if not self._evaluation_order then
+        self._evaluation_order = build_evaluation_order(build_dependency_graph(self._connections))
+    end
+
+    for _, block in ipairs(self._evaluation_order) do
         block:initialize()
     end
+end
+
+function CompositeBlock:_prepare_to_run()
+    -- Validate all block inputs are connected
+    self:_validate_inputs()
+
+    -- Differentiate all blocks
+    self:_differentiate()
+
+    -- Crawl connections
+    local all_connections = self:_crawl_connections()
+
+    -- Connect pipes
+    self:_connect_pipes(all_connections)
+
+    -- Validate all block input rates match
+    self:_validate_rates(evaluation_order)
+
+    -- Initialize all blocks
+    self:_initialize()
+
+    -- Determine global block evaluation order
+    local evaluation_order = build_evaluation_order(build_dependency_graph(all_connections))
 
     -- Initialize all pipes
     for input, output in pairs(all_connections) do

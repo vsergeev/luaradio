@@ -144,7 +144,7 @@ function AliasedInputPort.new(owner, name)
     local self = setmetatable({}, AliasedInputPort)
     self.owner = owner
     self.name = name
-    self.real_inputs = {}
+    self.data_type = nil
     return self
 end
 
@@ -162,7 +162,7 @@ function AliasedOutputPort.new(owner, name)
     local self = setmetatable({}, AliasedOutputPort)
     self.owner = owner
     self.name = name
-    self.real_output = nil
+    self.data_type = nil
     return self
 end
 

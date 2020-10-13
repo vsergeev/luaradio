@@ -29,6 +29,11 @@ function Input.new(name, data_type)
     return self
 end
 
+function Input:__tostring()
+    local data_type_str = type(self.data_type) == "function" and "function" or self.data_type.type_name or self.data_type
+    return string.format("%s [%s]", self.name, data_type_str)
+end
+
 ---
 -- Block output port descriptor. This contains the name and data type of
 -- a block output port.
@@ -50,6 +55,11 @@ function Output.new(name, data_type)
     return self
 end
 
+function Output:__tostring()
+    local data_type_str = self.data_type == "copy" and "copy" or self.data_type.type_name or self.data_type
+    return string.format("%s [%s]", self.name, data_type_str)
+end
+
 ---
 -- Input port of a block. These are created in Block's add_type_signature().
 --
@@ -66,6 +76,15 @@ function InputPort.new(owner, name)
     self.data_type = nil
     self.pipe = nil
     return self
+end
+
+function InputPort:__tostring()
+    local data_type_str = self.data_type == nil and "n/a" or self.data_type.type_name or self.data_type
+    if self.pipe then
+        return string.format(".%-5s [%s] <- {%s.%s}", self.name, data_type_str, self.pipe.output.owner.name, self.pipe.output.name)
+    else
+        return string.format(".%-5s [%s] <- unconnected", self.name, data_type_str)
+    end
 end
 
 ---
@@ -103,6 +122,19 @@ function OutputPort.new(owner, name)
     self.data_type = nil
     self.pipes = {}
     return self
+end
+
+function OutputPort:__tostring()
+    local data_type_str = self.data_type == nil and "n/a" or self.data_type.type_name or self.data_type
+    if #self.pipes > 0 then
+        local input_strs = {}
+        for _, p in ipairs(self.pipes) do
+            input_strs[#input_strs + 1] = string.format("%s.%s", p.input.owner.name, p.input.name)
+        end
+        return string.format(".%-5s [%s] -> {%s}", self.name, data_type_str, table.concat(input_strs, ", "))
+    else
+        return string.format(".%-5s [%s] -> unconnected", self.name, data_type_str)
+    end
 end
 
 ---
@@ -148,6 +180,11 @@ function AliasedInputPort.new(owner, name)
     return self
 end
 
+function AliasedInputPort:__tostring()
+    local data_type_str = self.data_type == nil and "n/a" or self.data_type.type_name or self.data_type
+    return string.format(".%-5s [%s]", self.name, data_type_str)
+end
+
 ---
 -- Aliased output port of a block. These alias OutputPort objects, and are
 -- created in CompositeBlock's add_type_signature().
@@ -164,6 +201,11 @@ function AliasedOutputPort.new(owner, name)
     self.name = name
     self.data_type = nil
     return self
+end
+
+function AliasedOutputPort:__tostring()
+    local data_type_str = self.data_type == nil and "n/a" or self.data_type.type_name or self.data_type
+    return string.format(".%-5s [%s]", self.name, data_type_str)
 end
 
 ---

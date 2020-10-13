@@ -387,11 +387,13 @@ local BenchmarkSuite = {
         "PLL",
         "PLLBlock",
         function (results_fd)
-            return radio.CompositeBlock():connect(
-                radio.UniformRandomSource(radio.types.ComplexFloat32, 1e6),
-                radio.PLLBlock(1e3, 200e3, 220e3),
-                radio.BenchmarkSink(results_fd, true)
-            )
+            local src = radio.UniformRandomSource(radio.types.ComplexFloat32, 1e6)
+            local pll = radio.PLLBlock(1e3, 200e3, 220e3)
+            local sink = radio.BenchmarkSink(results_fd, true)
+            local top = radio.CompositeBlock()
+            top:connect(src, pll)
+            top:connect(pll, 'out', sink, 'in')
+            return top
         end
     },
     {

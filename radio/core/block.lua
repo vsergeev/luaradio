@@ -392,43 +392,61 @@ end
 -- @function Block:__tostring
 -- @treturn string String representation
 function Block:__tostring()
-    -- tostring() on class
     if self.inputs == nil or self.outputs == nil then
+        -- tostring() on class
         return self.name
-    end
+    elseif self.signature == nil then
+        -- tostring() on undifferentiated instance
+        local strs = {}
 
-    -- tostring() on class instance
-    local s = self.signature and string.format("%s [%.0f Hz]", self.name, self:get_rate()) or self.name
+        strs[1] = string.format("%s (undifferentiated)", self.name)
 
-    local strs = {}
-
-    for i=1, #self.inputs do
-        if self.inputs[i].pipe then
-            local pipe = self.inputs[i].pipe or self.inputs[i].real_input.pipe
-            if pipe then
-                strs[#strs + 1] = string.format("    .%-5s [%s] <- {%s.%s}", self.inputs[i].name, self.inputs[i].data_type and self.inputs[i].data_type.type_name or "Unknown Type", pipe.output.owner.name, pipe.output.name)
-            else
-                strs[#strs + 1] = string.format("    .%-5s <- unconnected", self.inputs[i].name)
-            end
+        for _, input in ipairs(self.inputs) do
+            strs[#strs + 1] = "    " .. tostring(input)
         end
-    end
 
-    for i=1, #self.outputs do
-        local pipes = self.outputs[i].pipes or self.outputs[i].real_output.pipes
-        if #pipes > 0 then
-            local connections = {}
-            for i=1, #pipes do
-                connections[i] = string.format("%s.%s", pipes[i].input.owner.name, pipes[i].input.name)
+        for _, output in ipairs(self.outputs) do
+            strs[#strs + 1] = "    " .. tostring(output)
+        end
+
+        strs[#strs + 1] = "    Type Signatures Available"
+
+        for _, signature in ipairs(self.signatures) do
+            local input_strs = {}
+            for _, input in ipairs(signature.inputs) do
+                input_strs[#input_strs + 1] = tostring(input)
             end
-            strs[#strs + 1] = string.format("    .%-5s [%s] -> {%s}", self.outputs[i].name, self.outputs[i].data_type and self.outputs[i].data_type.type_name or "Unknown Type", table.concat(connections, ", "))
+
+            local output_strs = {}
+            for _, output in ipairs(signature.outputs) do
+                output_strs[#output_strs + 1] = tostring(output)
+            end
+
+            strs[#strs + 1] = string.format("        {%s} -> {%s}", table.concat(input_strs, ", "), table.concat(output_strs, ", "))
+        end
+
+        return table.concat(strs, "\n")
+    else
+        -- tostring() on differentiated instance
+        local strs = {}
+
+        local rate_available, rate = pcall(function () return self:get_rate() end)
+        if rate_available then
+            strs[1] = string.format("%s [%.0f Hz]", self.name, rate)
         else
-            strs[#strs + 1] = string.format("    .%-5s -> unconnected", self.outputs[i].name)
+            strs[1] = self.name
         end
+
+        for _, input in ipairs(self.inputs) do
+            strs[#strs + 1] = "    " .. tostring(input)
+        end
+
+        for _, output in ipairs(self.outputs) do
+            strs[#strs + 1] = "    " .. tostring(output)
+        end
+
+        return table.concat(strs, "\n")
     end
-
-    s = s .. "\n" .. table.concat(strs, "\n")
-
-    return s
 end
 
 ---

@@ -413,7 +413,8 @@ nav .title a:hover {
 nav .version {
   color: {{ site.data.theme.highlight_color }};
   background-color: white;
-  margin-left: 0.5rem;
+  margin-left: 0;
+  padding-left: 0;
   font-size: 1.6rem;
   letter-spacing: -0.075rem;
 }

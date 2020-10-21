@@ -35,6 +35,12 @@ body {
   margin-right: auto;
 }
 
+.scroll-toc div.toc-header .links {
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @media (min-width: 550px) {
   /* Only show scrolling toc in grid layout */
   .is-position-fixed {
@@ -409,6 +415,10 @@ nav .title a {
 
 nav .title a:hover {
   text-decoration: none;
+}
+
+nav .links {
+  margin-left: 1.6rem;
 }
 
 nav .version {

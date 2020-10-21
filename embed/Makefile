@@ -45,6 +45,7 @@ ifneq ($(shell $(LUAJIT) -v 1>/dev/null 2>/dev/null; echo $$?), 0)
 $(error "LuaJIT executable not found")
 endif
 
+INSTALL_LMOD = $(shell pkg-config luajit --variable INSTALL_LMOD)
 INSTALL_CMOD = $(shell pkg-config luajit --variable INSTALL_CMOD)
 
 PREFIX ?= /usr/local
@@ -98,6 +99,21 @@ runtests: $(TEST_BINS)
 	for f in $(TEST_BINS); do \
 		LD_LIBRARY_PATH=$(BUILD_DIR) DYLD_LIBRARY_PATH=$(BUILD_DIR) ./$$f; \
 	done
+
+install-lmod:
+	install -d $(DESTDIR)$(INSTALL_LMOD)
+	@for d in $(sort $(dir $(patsubst $(SRC_DIR)/%.lua, %.lua, $(LUA_SRCS)))); do \
+		echo install -d $(DESTDIR)$(INSTALL_LMOD)/$$d; \
+		install -d $(DESTDIR)$(INSTALL_LMOD)/$$d; \
+	done
+	@for f in $(patsubst $(SRC_DIR)/%.lua, %.lua, $(LUA_SRCS)); do \
+		echo install -m644 $(SRC_DIR)/$$f $(DESTDIR)$(INSTALL_LMOD)/$$f; \
+		install -m644 $(SRC_DIR)/$$f $(DESTDIR)$(INSTALL_LMOD)/$$f; \
+	done
+	install -d $(DESTDIR)$(PREFIX)/bin
+	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
+	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
+	install -m644 ../LICENSE $(DESTDIR)$(PREFIX)/share/licenses/luaradio/LICENSE
 
 ifneq ($(shell uname -s),Darwin)
 .PHONY: install

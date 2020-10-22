@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Installation</a></span>
@@ -99,75 +102,115 @@ repository</a>, provided LuaJIT is installed.</p>
 
 <h2 id="packages">Packages</h2>
 
-<h3 id="arch-linux-aur">Arch Linux AUR</h3>
+<h4 id="arch-linux-aur">Arch Linux AUR</h4>
 
-<p>LuaRadio is available in the AUR: <a href="https://aur.archlinux.org/packages/luaradio"><code class="highlighter-rouge">luaradio</code></a></p>
+<p>LuaRadio is available in the AUR: <a href="https://aur.archlinux.org/packages/luaradio"><code class="language-plaintext highlighter-rouge">luaradio</code></a></p>
 
-<h3 id="macos-homebrew">macOS Homebrew</h3>
+<h4 id="macos-homebrew">macOS Homebrew</h4>
 
 <p>LuaRadio is available in <a href="http://brew.sh/">Homebrew</a>:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install luaradio
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>brew install luaradio
 </code></pre></div></div>
 
-<h3 id="macos-macports">macOS MacPorts</h3>
+<h4 id="macos-macports">macOS MacPorts</h4>
 
 <p>LuaRadio is available in <a href="https://www.macports.org/">MacPorts</a>:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo port install luaradio
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo port install luaradio
 </code></pre></div></div>
 
-<h2 id="building-from-source">Building from Source</h2>
+<h2 id="installing-luaradio-as-a-lua-module-option-1">Installing LuaRadio as a Lua module (option 1)</h2>
+
+<p>The Lua module version of LuaRadio is installed in its original Lua source
+form, along with the <code class="language-plaintext highlighter-rouge">luaradio</code> runner executable.</p>
 
 <h3 id="prerequisites">Prerequisites</h3>
 
 <p>Install LuaJIT 2.0.4 or greater and prerequisites:</p>
 
 <ul>
-  <li>Arch Linux: <code class="highlighter-rouge">sudo pacman -S luajit</code></li>
-  <li>macOS (Homebrew): <code class="highlighter-rouge">brew install luajit pkg-config</code></li>
-  <li>macOS (MacPorts): <code class="highlighter-rouge">sudo port install luajit pkgconfig</code></li>
-  <li>Ubuntu/Debian/Rasbpian: <code class="highlighter-rouge">sudo apt-get install luajit libluajit-5.1-dev pkg-config</code></li>
-  <li>Fedora/CentOS: <code class="highlighter-rouge">sudo yum install luajit luajit-devel</code></li>
+  <li>Arch Linux: <code class="language-plaintext highlighter-rouge">sudo pacman -S luajit</code></li>
+  <li>macOS (Homebrew): <code class="language-plaintext highlighter-rouge">brew install luajit pkg-config</code></li>
+  <li>macOS (MacPorts): <code class="language-plaintext highlighter-rouge">sudo port install luajit pkg-config</code></li>
+  <li>Ubuntu/Debian/Rasbpian: <code class="language-plaintext highlighter-rouge">sudo apt-get install luajit pkg-config</code></li>
+  <li>Fedora/CentOS: <code class="language-plaintext highlighter-rouge">sudo yum install luajit</code></li>
 </ul>
 
 <h3 id="installation-1">Installation</h3>
 
-<p>Build and install LuaRadio:</p>
+<p>Install LuaRadio as a Lua module:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/vsergeev/luaradio.git
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/vsergeev/luaradio.git
+cd luaradio/embed
+sudo make install-lmod
+</code></pre></div></div>
+
+<h2 id="installing-luaradio-as-a-shared-library-option-2">Installing LuaRadio as a shared library (option 2)</h2>
+
+<p>The shared library version of LuaRadio is installed as a single shared library,
+along with the <code class="language-plaintext highlighter-rouge">luaradio</code> runner executable. The shared library also exposes
+the LuaRadio C API, which can be used to <a href="embedding-luaradio.html">embed</a>
+LuaRadio into host applications.</p>
+
+<h3 id="prerequisites-1">Prerequisites</h3>
+
+<p>Install LuaJIT 2.0.4 or greater and prerequisites:</p>
+
+<ul>
+  <li>Arch Linux: <code class="language-plaintext highlighter-rouge">sudo pacman -S luajit</code></li>
+  <li>macOS (Homebrew): <code class="language-plaintext highlighter-rouge">brew install luajit pkg-config</code></li>
+  <li>macOS (MacPorts): <code class="language-plaintext highlighter-rouge">sudo port install luajit pkgconfig</code></li>
+  <li>Ubuntu/Debian/Rasbpian: <code class="language-plaintext highlighter-rouge">sudo apt-get install luajit libluajit-5.1-dev pkg-config</code></li>
+  <li>Fedora/CentOS: <code class="language-plaintext highlighter-rouge">sudo yum install luajit luajit-devel</code></li>
+</ul>
+
+<p>Note: LuaJIT 2.1.0-beta3, the version provided in recent Debian-based
+distributions, including Ubuntu and Raspbian, has a bug with embedded bytecode
+loading on 32-bit platforms that prevents the LuaRadio shared library module
+from loading correctly. This includes Raspberry Pis running a 32-bit OS. Use
+LuaJIT version 2.0.5, or a newer 2.1.0 beta, to run LuaRadio from the shared
+library module. Alternatively, install LuaRadio as a Lua module as <a href="#installing-luaradio-as-a-lua-module-option-1">described
+above</a>, or run LuaRadio
+<a href="https://github.com/vsergeev/luaradio/tree/master/README.md#quickstart">directly from the repository</a>.</p>
+
+<h3 id="installation-2">Installation</h3>
+
+<p>Build and install LuaRadio as a single shared library:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/vsergeev/luaradio.git
 cd luaradio/embed
 make lib
 sudo make install
 </code></pre></div></div>
 
-<h3 id="real-time-dependencies">Real-time Dependencies</h3>
+<h2 id="real-time-dependencies">Real-time Dependencies</h2>
 
 <p>LuaRadio has no hard dependencies outside of LuaJIT, but is accelerated by the
 optional libraries <a href="https://github.com/jgaeddert/liquid-dsp">liquid-dsp</a>,
-<a href="http://libvolk.org/">VOLK</a>, and <a href="http://www.fftw.org/">fftw</a>. For best
-real-time performance, install these libraries:</p>
+<a href="http://libvolk.org/">VOLK</a>, and <a href="http://www.fftw.org/">fftw</a>. <strong>For best
+real-time performance,</strong> install these libraries:</p>
 
 <ul>
-  <li>Arch Linux: <code class="highlighter-rouge">sudo pacman -S liquid-dsp libvolk fftw</code></li>
-  <li>macOS (Homebrew): <code class="highlighter-rouge">brew install liquid-dsp fftw</code></li>
-  <li>macOS (MacPorts): <code class="highlighter-rouge">sudo port install liquid-dsp volk fftw-3</code></li>
-  <li>Ubuntu/Debian/Raspbian: <code class="highlighter-rouge">sudo apt-get install libliquid-dev libvolk1-dev libfftw3-dev</code></li>
-  <li>Fedora/CentOS: <code class="highlighter-rouge">sudo yum install liquid-dsp fftw</code></li>
+  <li>Arch Linux: <code class="language-plaintext highlighter-rouge">sudo pacman -S liquid-dsp libvolk fftw</code></li>
+  <li>macOS (Homebrew): <code class="language-plaintext highlighter-rouge">brew install liquid-dsp fftw</code></li>
+  <li>macOS (MacPorts): <code class="language-plaintext highlighter-rouge">sudo port install liquid-dsp volk fftw-3</code></li>
+  <li>Ubuntu/Debian/Raspbian: <code class="language-plaintext highlighter-rouge">sudo apt-get install libliquid-dev libvolk1-dev libfftw3-dev</code></li>
+  <li>Fedora/CentOS: <code class="language-plaintext highlighter-rouge">sudo yum install liquid-dsp fftw</code></li>
 </ul>
 
-<h3 id="optional-dependencies">Optional Dependencies</h3>
+<h2 id="optional-dependencies">Optional Dependencies</h2>
 
-<p>Desktop users should also install the <code class="highlighter-rouge">gnuplot</code> package for plotting support.</p>
+<p>Desktop users should also install the <code class="language-plaintext highlighter-rouge">gnuplot</code> package for plotting support.</p>
 
 <p>Some I/O blocks, like SDR and audio sources/sinks, may require external
-libraries. For example, the RTL-SDR requires the <code class="highlighter-rouge">librtlsdr</code> library.</p>
+libraries. For example, the RTL-SDR requires the <code class="language-plaintext highlighter-rouge">librtlsdr</code> library.</p>
 
-<h3 id="check-installation">Check Installation</h3>
+<h2 id="check-installation">Check Installation</h2>
 
 <p>Check the installation by dumping the platform information:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ luaradio --platform
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ luaradio --platform
 luajit          LuaJIT 2.0.5
 os              Linux
 arch            x64
@@ -181,7 +224,7 @@ features
 $
 </code></pre></div></div>
 
-<p>The <code class="highlighter-rouge">liquid</code>, <code class="highlighter-rouge">volk</code>, and <code class="highlighter-rouge">fftw3f</code> features should be marked true, if the
+<p>The <code class="language-plaintext highlighter-rouge">liquid</code>, <code class="language-plaintext highlighter-rouge">volk</code>, and <code class="language-plaintext highlighter-rouge">fftw3f</code> features should be marked true, if the
 respective libraries were found by LuaRadio.</p>
 
 
@@ -189,7 +232,7 @@ respective libraries were found by LuaRadio.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

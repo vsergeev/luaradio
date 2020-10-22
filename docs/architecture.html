@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Architecture</a></span>
@@ -139,29 +142,29 @@
 
 <h3 id="block-model">Block Model</h3>
 
-<p>Blocks provide a <code class="highlighter-rouge">process(...)</code> method that accepts vectors of input samples as
+<p>Blocks provide a <code class="language-plaintext highlighter-rouge">process(...)</code> method that accepts vectors of input samples as
 arguments, processes them, and returns vectors of output samples. Blocks may
 retain state.</p>
 
 <p>Input sample vectors must be processed in their entirety by blocks in
-<code class="highlighter-rouge">process(...)</code>. Samples across multiple inputs are synchronized, meaning that
+<code class="language-plaintext highlighter-rouge">process(...)</code>. Samples across multiple inputs are synchronized, meaning that
 the multiple input vectors are always of the same length, and samples across
 the input vectors all correspond to the same timestep.</p>
 
 <p>Output sample vectors may be produced by blocks asynchronously, meaning that
 there is no requirement on the amount of output samples produced, or on which
-call to <code class="highlighter-rouge">process(...)</code> that output samples are produced.</p>
+call to <code class="language-plaintext highlighter-rouge">process(...)</code> that output samples are produced.</p>
 
 <h3 id="serialization">Serialization</h3>
 
 <p>Vectors of samples are serialized between output and input ports of blocks over
 anonymous UNIX sockets.</p>
 
-<p>Vectors of <a href="reference-manual.html#cstructtype"><code class="highlighter-rouge">CStruct</code> data type</a> samples are
+<p>Vectors of <a href="reference-manual.html#cstructtype"><code class="language-plaintext highlighter-rouge">CStruct</code> data type</a> samples are
 serialized raw, in their native memory representation, with no marshalling or
 unmarshalling.</p>
 
-<p>Vectors of <a href="reference-manual.html#objecttype"><code class="highlighter-rouge">Object</code> data type</a> samples are
+<p>Vectors of <a href="reference-manual.html#objecttype"><code class="language-plaintext highlighter-rouge">Object</code> data type</a> samples are
 marshalled and unmarshalled with <a href="http://msgpack.org/">MessagePack</a> and
 serialized as byte strings, preceded by their length.</p>
 
@@ -178,17 +181,17 @@ and communicate with applications.</p>
 <p>Memory for input samples is allocated once. A persistent buffer is allocated
 for each block input port, where raw input samples are read into.  The raw
 input samples are cast into read-only vectors, which are provided as the
-arguments to the block’s <code class="highlighter-rouge">process(...)</code> method.</p>
+arguments to the block’s <code class="language-plaintext highlighter-rouge">process(...)</code> method.</p>
 
 <p>Memory for output samples is typically allocated once by each block.  Blocks
 are responsible for managing their own output sample memory.  Most blocks
-create a persistent output sample vector in their <code class="highlighter-rouge">initialize()</code> method, and
-resize it as needed in <code class="highlighter-rouge">process(...)</code> to store the computed output samples.
+create a persistent output sample vector in their <code class="language-plaintext highlighter-rouge">initialize()</code> method, and
+resize it as needed in <code class="language-plaintext highlighter-rouge">process(...)</code> to store the computed output samples.
 However, this is not strictly enforced by the framework.</p>
 
 <p>Blocks that do reuse output sample vectors have constant memory usage in the
 steady state. The output sample vectors approach a stable size, as they are
-resized in <code class="highlighter-rouge">process(...)</code> to accommodate the inputs vectors the block consumes.</p>
+resized in <code class="language-plaintext highlighter-rouge">process(...)</code> to accommodate the inputs vectors the block consumes.</p>
 
 <p>All objects in LuaRadio are garbage collected, although this mainly applies to
 transient objects. The input and output sample memory in the situations
@@ -206,7 +209,7 @@ memory circular buffer (not unlike GNU Radio).</p>
 samples were not allocated by the block, but instead pointers into the
 persistent shared memory circular buffer (also not unlike GNU Radio) that is
 shared between the output and input port.  Implementing this would likely
-require a different <code class="highlighter-rouge">process(...)</code> signature that includes the outputs vectors
+require a different <code class="language-plaintext highlighter-rouge">process(...)</code> signature that includes the outputs vectors
 as arguments, and a new resizing mechanism for output vectors.</p>
 
 <p>Multi-processing instead of multi-threading for concurrency incurs some memory
@@ -217,7 +220,7 @@ problem is addressed in the multi-processing architecture with forking.</p>
 
 <p>Block processes currently have a slightly larger memory footprint than
 necessary, as other blocks and their initialized objects, e.g. buffers
-allocated in <code class="highlighter-rouge">initialize()</code>, are not yet released after forking. This can be
+allocated in <code class="language-plaintext highlighter-rouge">initialize()</code>, are not yet released after forking. This can be
 addressed by pruning references to all unneeded blocks and associated
 connectivity after forking.</p>
 
@@ -232,23 +235,23 @@ but this would add substantial complexity.</p>
 
 <p>Samples are typed by special data types that implement the necessary interface
 to be serialized and deserialized between blocks. These data types can either
-be <a href="reference-manual.html#cstructtype"><code class="highlighter-rouge">CStruct</code> types</a>, which are backed by a
-C structure, or <a href="reference-manual.html#objecttype"><code class="highlighter-rouge">Object</code> types</a>, which are
+be <a href="reference-manual.html#cstructtype"><code class="language-plaintext highlighter-rouge">CStruct</code> types</a>, which are backed by a
+C structure, or <a href="reference-manual.html#objecttype"><code class="language-plaintext highlighter-rouge">Object</code> types</a>, which are
 backed by a Lua object.</p>
 
-<p><code class="highlighter-rouge">CStruct</code> types are serialized as raw contiguous samples between blocks in
+<p><code class="language-plaintext highlighter-rouge">CStruct</code> types are serialized as raw contiguous samples between blocks in
 their native memory representation, with no marshalling and unmarshalling.
 These types must be of a fixed size, so the sample boundaries are well-defined
 in the stream.</p>
 
-<p><code class="highlighter-rouge">Object</code> types are serialized as <a href="http://msgpack.org/">MessagePack</a> marshalled
+<p><code class="language-plaintext highlighter-rouge">Object</code> types are serialized as <a href="http://msgpack.org/">MessagePack</a> marshalled
 bytes between blocks. These types can be variable size, may nest other Lua
 types, and may have optional members.</p>
 
-<p>LuaRadio has four basic types, all of which are <code class="highlighter-rouge">CStruct</code> types. These are the
-<a href="reference-manual.html#complexfloat32"><code class="highlighter-rouge">ComplexFloat32</code></a>,
-<a href="reference-manual.html#float32"><code class="highlighter-rouge">Float32</code></a>, <a href="reference-manual.html#bit"><code class="highlighter-rouge">Bit</code></a>,
-and <a href="reference-manual.html#byte"><code class="highlighter-rouge">Byte</code></a> types.</p>
+<p>LuaRadio has four basic types, all of which are <code class="language-plaintext highlighter-rouge">CStruct</code> types. These are the
+<a href="reference-manual.html#complexfloat32"><code class="language-plaintext highlighter-rouge">ComplexFloat32</code></a>,
+<a href="reference-manual.html#float32"><code class="language-plaintext highlighter-rouge">Float32</code></a>, <a href="reference-manual.html#bit"><code class="language-plaintext highlighter-rouge">Bit</code></a>,
+and <a href="reference-manual.html#byte"><code class="language-plaintext highlighter-rouge">Byte</code></a> types.</p>
 
 <p>They are backed by the following C structure types:</p>
 
@@ -270,16 +273,16 @@ and <a href="reference-manual.html#byte"><code class="highlighter-rouge">Byte</c
 <span class="p">}</span> <span class="n">byte_t</span><span class="p">;</span>
 </code></pre></div></div>
 
-<p>The use of a structure to back <code class="highlighter-rouge">CStruct</code> types, rather than the raw C type
-(e.g.  <code class="highlighter-rouge">float</code>), is for implementation reasons. It allows the framework to
+<p>The use of a structure to back <code class="language-plaintext highlighter-rouge">CStruct</code> types, rather than the raw C type
+(e.g.  <code class="language-plaintext highlighter-rouge">float</code>), is for implementation reasons. It allows the framework to
 associate a metatable with the type using <a href="http://luajit.org/ext_ffi.html">LuaJIT
 FFI</a> library’s
-<a href="http://luajit.org/ext_ffi_api.html#ffi_metatype"><code class="highlighter-rouge">ffi.metatype()</code></a>, to bind
+<a href="http://luajit.org/ext_ffi_api.html#ffi_metatype"><code class="language-plaintext highlighter-rouge">ffi.metatype()</code></a>, to bind
 useful metamethods and methods to all instances of the type. It also makes
 those instances distinct from other occurrences of the underlying data types
-(e.g.  <code class="highlighter-rouge">float32_t</code> vs <code class="highlighter-rouge">float</code>).</p>
+(e.g.  <code class="language-plaintext highlighter-rouge">float32_t</code> vs <code class="language-plaintext highlighter-rouge">float</code>).</p>
 
-<p>Users can define their own <code class="highlighter-rouge">CStruct</code> and <code class="highlighter-rouge">Object</code> types and bind methods to
+<p>Users can define their own <code class="language-plaintext highlighter-rouge">CStruct</code> and <code class="language-plaintext highlighter-rouge">Object</code> types and bind methods to
 them. See the <a href="creating-blocks.html#custom-types">Creating Blocks</a> guide for
 more details and examples.</p>
 
@@ -293,11 +296,11 @@ overhead of serializing the sample and calling the block to process it would
 exceed the cost of processing it. Instead, blocks operate on a vector of
 samples at a time, to amortize the overhead of serialization.</p>
 
-<p>Vectors are dynamic arrays of a <code class="highlighter-rouge">CStruct</code> or <code class="highlighter-rouge">Object</code> data type.  Blocks get
+<p>Vectors are dynamic arrays of a <code class="language-plaintext highlighter-rouge">CStruct</code> or <code class="language-plaintext highlighter-rouge">Object</code> data type.  Blocks get
 their inputs as vectors, and return their outputs as vectors.</p>
 
 <p>Each data type provides two static methods for creating a vector of itself:
-<code class="highlighter-rouge">.vector(num)</code> for a zero-initialized vector, or <code class="highlighter-rouge">.vector_from_array(arr)</code> for
+<code class="language-plaintext highlighter-rouge">.vector(num)</code> for a zero-initialized vector, or <code class="language-plaintext highlighter-rouge">.vector_from_array(arr)</code> for
 a vector initialized from a Lua array. For example:</p>
 
 <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- ComplexFloat32 vector of length 16</span>
@@ -322,23 +325,23 @@ a vector initialized from a Lua array. For example:</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="p">.</span><span class="n">length</span><span class="p">)</span> <span class="c1">--&gt; 6</span>
 </code></pre></div></div>
 
-<p>Vectors of <code class="highlighter-rouge">CStruct</code> typed samples are laid out contiguously in memory. The
-array of samples is available under the <code class="highlighter-rouge">.data</code> member, and its length under
-the <code class="highlighter-rouge">.length</code> member. These samples can be modified directly in Lua, or can be
+<p>Vectors of <code class="language-plaintext highlighter-rouge">CStruct</code> typed samples are laid out contiguously in memory. The
+array of samples is available under the <code class="language-plaintext highlighter-rouge">.data</code> member, and its length under
+the <code class="language-plaintext highlighter-rouge">.length</code> member. These samples can be modified directly in Lua, or can be
 passed to an external library for processing.</p>
 
-<p>Resizing a <code class="highlighter-rouge">CStruct</code> typed vector only causes a re-allocation when it is grown
+<p>Resizing a <code class="language-plaintext highlighter-rouge">CStruct</code> typed vector only causes a re-allocation when it is grown
 to a larger size. The underlying buffer is retained on resizing to a smaller
 size; just the bookkeeping is updated. This allows blocks that reuse vectors
 for output samples to approach constant memory usage, as the underlying memory
 of the vectors will reach a stable size for the inputs the block consumes.</p>
 
-<p>All <code class="highlighter-rouge">CStruct</code> typed vectors are allocated with page alignment, to enable
+<p>All <code class="language-plaintext highlighter-rouge">CStruct</code> typed vectors are allocated with page alignment, to enable
 processing with libraries that require, or perform better with, aligned
 buffers. This is often because SIMD operations are involved.</p>
 
-<p>Vectors of <code class="highlighter-rouge">Object</code> typed samples are stored in a Lua array, but provide a
-compatible interface to <code class="highlighter-rouge">CStruct</code> typed vectors. These vectors cannot be passed
+<p>Vectors of <code class="language-plaintext highlighter-rouge">Object</code> typed samples are stored in a Lua array, but provide a
+compatible interface to <code class="language-plaintext highlighter-rouge">CStruct</code> typed vectors. These vectors cannot be passed
 to external libraries.</p>
 
 <p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/vector.lua">Vector and ObjectVector classes</a>.</p>
@@ -346,33 +349,33 @@ to external libraries.</p>
 <h3 id="blocks">Blocks</h3>
 
 <p>Blocks are classes derived from
-<a href="reference-manual.html#block-1"><code class="highlighter-rouge">radio.block.Block</code></a> that implement their
+<a href="reference-manual.html#block-1"><code class="language-plaintext highlighter-rouge">radio.block.Block</code></a> that implement their
 functionality in the following methods:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">instantiate(...)</code> — constructor</li>
-  <li><code class="highlighter-rouge">initialize()</code> — initialization (optional)</li>
-  <li><code class="highlighter-rouge">process(...)</code> — main work method</li>
-  <li><code class="highlighter-rouge">cleanup()</code> — clean up (optional)</li>
+  <li><code class="language-plaintext highlighter-rouge">instantiate(...)</code> — constructor</li>
+  <li><code class="language-plaintext highlighter-rouge">initialize()</code> — initialization (optional)</li>
+  <li><code class="language-plaintext highlighter-rouge">process(...)</code> — main work method</li>
+  <li><code class="language-plaintext highlighter-rouge">cleanup()</code> — clean up (optional)</li>
 </ul>
 
-<p>The role of the <code class="highlighter-rouge">instantiate()</code> constructor is to establish the basic state of
+<p>The role of the <code class="language-plaintext highlighter-rouge">instantiate()</code> constructor is to establish the basic state of
 the block and to register its type signatures, which specify the block’s
 input/output port names and types.</p>
 
-<p>The <code class="highlighter-rouge">initialize()</code> method is called after the block has been connected in a
+<p>The <code class="language-plaintext highlighter-rouge">initialize()</code> method is called after the block has been connected in a
 flow graph and differentiated. It allows the block to perform additional
 initialization based on its differentiated type signature and its sample rate.</p>
 
-<p>The <code class="highlighter-rouge">process()</code> method is the main work method of the block. It receives input
+<p>The <code class="language-plaintext highlighter-rouge">process()</code> method is the main work method of the block. It receives input
 vectors of samples as arguments, and returns output vectors of samples. This
 method is called repeatedly by the framework to process inputs into outputs.</p>
 
-<p>The <code class="highlighter-rouge">cleanup()</code> method is called by the framework when the flow graph has
+<p>The <code class="language-plaintext highlighter-rouge">cleanup()</code> method is called by the framework when the flow graph has
 collapsed, for additional clean up of resources.</p>
 
 <p>Source blocks and blocks that modify the sample rate must implement the
-<a href="reference-manual.html#blockgetrate"><code class="highlighter-rouge">get_rate()</code></a>  method, which returns the
+<a href="reference-manual.html#blockgetrate"><code class="language-plaintext highlighter-rouge">get_rate()</code></a>  method, which returns the
 source’s sample rate as a number, in samples per second.</p>
 
 <p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/block.lua">Block class</a>.</p>
@@ -391,14 +394,14 @@ section below.</p>
 
 <h4 id="instantiation">Instantiation</h4>
 
-<p>The <code class="highlighter-rouge">instantiate(...)</code> method is called whenever a block is instantiated by
+<p>The <code class="language-plaintext highlighter-rouge">instantiate(...)</code> method is called whenever a block is instantiated by
 name.  This method takes the arguments passed to the block on instantiation.</p>
 
 <p>Blocks must register type signatures with the
-<a href="reference-manual.html#blockaddtypesignatureinputs-outputs-processfuncnil-initializefuncnil"><code class="highlighter-rouge">add_type_signature()</code></a>
-method in their <code class="highlighter-rouge">instantiate()</code> constructor. This method takes an array of
+<a href="reference-manual.html#blockaddtypesignatureinputs-outputs-processfuncnil-initializefuncnil"><code class="language-plaintext highlighter-rouge">add_type_signature()</code></a>
+method in their <code class="language-plaintext highlighter-rouge">instantiate()</code> constructor. This method takes an array of
 input port descriptors, followed by an array of output port descriptors. Each
-port descriptor specifies a name and a data type. For example, an <code class="highlighter-rouge">AddBlock</code>
+port descriptor specifies a name and a data type. For example, an <code class="language-plaintext highlighter-rouge">AddBlock</code>
 that supports both complex-valued and real-valued inputs would register:</p>
 
 <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="nf">AddBlock</span><span class="p">:</span><span class="n">instantiate</span><span class="p">()</span>
@@ -413,37 +416,30 @@ that supports both complex-valued and real-valued inputs would register:</p>
 respectively, when they add type signatures. Otherwise, sources and sinks are
 implemented largely the same way as other blocks.</p>
 
-<p>The <code class="highlighter-rouge">add_type_signature()</code> method can also be used to specify different
-<code class="highlighter-rouge">process()</code> and <code class="highlighter-rouge">initialize()</code> methods to type signatures, that are bound to
+<p>The <code class="language-plaintext highlighter-rouge">add_type_signature()</code> method can also be used to specify different
+<code class="language-plaintext highlighter-rouge">process()</code> and <code class="language-plaintext highlighter-rouge">initialize()</code> methods to type signatures, that are bound to
 the block on differentiation. See the <a href="creating-blocks.html#type-signatures">Creating
 Blocks</a> guide for examples.</p>
 
 <h4 id="connection">Connection</h4>
 
 <p>After a block is instantiated, it can be connected into a flow graph under a
-<code class="highlighter-rouge">CompositeBlock</code>. This is described in more detail in the <a href="#composite-blocks">Composite
+<code class="language-plaintext highlighter-rouge">CompositeBlock</code>. This is described in more detail in the <a href="#composite-blocks">Composite
 Blocks</a> section below.</p>
 
-<p>When the <code class="highlighter-rouge">add_type_signature()</code> method is called in a block’s <code class="highlighter-rouge">instantiate()</code>
-constructor, it builds <code class="highlighter-rouge">PipeInput</code> and <code class="highlighter-rouge">PipeOutput</code> containers for each
+<p>When the <code class="language-plaintext highlighter-rouge">add_type_signature()</code> method is called in a block’s <code class="language-plaintext highlighter-rouge">instantiate()</code>
+constructor, it builds <code class="language-plaintext highlighter-rouge">InputPort</code> and <code class="language-plaintext highlighter-rouge">OutputPort</code> containers for each
 specified input and output port of the block, and stores them in arrays under
-the <code class="highlighter-rouge">.inputs</code> and <code class="highlighter-rouge">.outputs</code> members. These containers are the actual “ports”
+the <code class="language-plaintext highlighter-rouge">.inputs</code> and <code class="language-plaintext highlighter-rouge">.outputs</code> members. These containers are the actual “ports”
 connected in a flow graph.  They contain a name and block owner, and are later
-populated with their concrete data type and a shared <code class="highlighter-rouge">Pipe</code> object.</p>
+populated with their concrete data type and a shared <code class="language-plaintext highlighter-rouge">Pipe</code> object.</p>
 
 <p>The act of connecting two blocks in a flow graph is registering the block’s
-<code class="highlighter-rouge">PipeInput</code> instance as the key and the <code class="highlighter-rouge">PipeOutput</code> instance as a value in a
-hash table owned by a <code class="highlighter-rouge">CompositeBlock</code>, thereby building a graph of input and
+<code class="language-plaintext highlighter-rouge">InputPort</code> instance as the key and the <code class="language-plaintext highlighter-rouge">OutputPort</code> instance as a value in a
+hash table owned by a <code class="language-plaintext highlighter-rouge">CompositeBlock</code>, thereby building a graph of input and
 output connections.</p>
 
-<p>When a connection is made, a <code class="highlighter-rouge">Pipe</code> object is also created and registered under
-both <code class="highlighter-rouge">PipeInput</code> and <code class="highlighter-rouge">PipeOutput</code> containers of the connected blocks. This
-<code class="highlighter-rouge">Pipe</code> object provides an interface for the serialization and deserialization
-of sample vectors between blocks. The <code class="highlighter-rouge">Pipe</code> is how a block reads or writes
-vectors of samples from or to another block.</p>
-
-<p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/block.lua">Block class</a>, <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/pipe.lua">PipeInput, PipeOutput,
-Pipe classes</a>.</p>
+<p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/block.lua">Block class</a>, <a href="../radio/core/block.lua">InputPort, OutputPort classes</a>, <a href="../radio/core/composite.lua">CompositeBlock class</a>.</p>
 
 <h4 id="differentiation">Differentiation</h4>
 
@@ -452,7 +448,7 @@ into a compatible type signature. This differentiation starts at the source
 blocks and ends at the sink blocks, and is carried out in a downstream order.</p>
 
 <p>A block is differentiated by its input types, using the
-<a href="reference-manual.html#blockdifferentiateinputdatatypes"><code class="highlighter-rouge">differentiate()</code></a>
+<a href="reference-manual.html#blockdifferentiateinputdatatypes"><code class="language-plaintext highlighter-rouge">differentiate()</code></a>
 method. This method takes an array of input data types and differentiates the
 block into a compatible type signature, by finding a registered type signature
 with matching input data types.  The method raises an error if a compatible
@@ -460,18 +456,18 @@ type signature is not found.</p>
 
 <p>Type signatures may also specify a function predicate instead of a concrete
 data type for input ports. For example, the
-<a href="https://github.com/vsergeev/luaradio/tree/master/radio/blocks/sinks/json.lua"><code class="highlighter-rouge">JSONSink</code></a> does this to accept any data type
-that implements <code class="highlighter-rouge">to_json()</code>. In those cases, <code class="highlighter-rouge">differentiate()</code> calls the
+<a href="https://github.com/vsergeev/luaradio/tree/master/radio/blocks/sinks/json.lua"><code class="language-plaintext highlighter-rouge">JSONSink</code></a> does this to accept any data type
+that implements <code class="language-plaintext highlighter-rouge">to_json()</code>. In those cases, <code class="language-plaintext highlighter-rouge">differentiate()</code> calls the
 function predicate with the input type and expects a boolean result to indicate
 if the input type is compatible.</p>
 
-<p>The result of differentiation is that the <code class="highlighter-rouge">PipeInput</code> and <code class="highlighter-rouge">PipeOutput</code> ports in
-the block’s <code class="highlighter-rouge">.inputs</code> and <code class="highlighter-rouge">.outputs</code> take on the concrete data types specified
-in the selected type signature, and the block’s <code class="highlighter-rouge">initialize()</code> and <code class="highlighter-rouge">process()</code>
+<p>The result of differentiation is that the <code class="language-plaintext highlighter-rouge">InputPort</code> and <code class="language-plaintext highlighter-rouge">OutputPort</code> ports in
+the block’s <code class="language-plaintext highlighter-rouge">.inputs</code> and <code class="language-plaintext highlighter-rouge">.outputs</code> take on the concrete data types specified
+in the selected type signature, and the block’s <code class="language-plaintext highlighter-rouge">initialize()</code> and <code class="language-plaintext highlighter-rouge">process()</code>
 methods are bound to the ones specified in the type signature. The concrete
 data types are available to the block with the
-<a href="reference-manual.html#blockgetinputtypeindex1"><code class="highlighter-rouge">get_input_type()</code></a> and
-<a href="reference-manual.html#blockgetoutputtypeindex1"><code class="highlighter-rouge">get_output_type()</code></a>
+<a href="reference-manual.html#blockgetinputtypeindex1"><code class="language-plaintext highlighter-rouge">get_input_type()</code></a> and
+<a href="reference-manual.html#blockgetoutputtypeindex1"><code class="language-plaintext highlighter-rouge">get_output_type()</code></a>
 methods.</p>
 
 <p>Since a block is differentiated by its input types, it cannot have
@@ -492,45 +488,45 @@ be used in the differentiation of downstream blocks.</p>
 <h4 id="initialization">Initialization</h4>
 
 <p>The initialization phase takes place after the differentiation phase in running
-a flow graph.  In this phase, every block’s <code class="highlighter-rouge">initialize()</code> method is called,
+a flow graph.  In this phase, every block’s <code class="language-plaintext highlighter-rouge">initialize()</code> method is called,
 starting at the source blocks and ending at the sink blocks, in a downstream
 order.</p>
 
-<p>In the <code class="highlighter-rouge">initialize()</code> method, the block can perform data type dependent
+<p>In the <code class="language-plaintext highlighter-rouge">initialize()</code> method, the block can perform data type dependent
 initialization with the
-<a href="reference-manual.html#blockgetinputtypeindex1"><code class="highlighter-rouge">get_input_type()</code></a> and
-<a href="reference-manual.html#blockgetoutputtypeindex1"><code class="highlighter-rouge">get_output_type()</code></a>
+<a href="reference-manual.html#blockgetinputtypeindex1"><code class="language-plaintext highlighter-rouge">get_input_type()</code></a> and
+<a href="reference-manual.html#blockgetoutputtypeindex1"><code class="language-plaintext highlighter-rouge">get_output_type()</code></a>
 methods, which return the differentiated input and output types of the
 specified port index, respectively.</p>
 
 <p>The block can also perform sample rate dependent initialization with
-<a href="reference-manual.html#blockgetrate"><code class="highlighter-rouge">get_rate()</code></a>, which recursively calls
-<code class="highlighter-rouge">get_rate()</code> on upstream blocks in the flow graph to determine the sample rate.
+<a href="reference-manual.html#blockgetrate"><code class="language-plaintext highlighter-rouge">get_rate()</code></a>, which recursively calls
+<code class="language-plaintext highlighter-rouge">get_rate()</code> on upstream blocks in the flow graph to determine the sample rate.
 Blocks may modify the sample rate for downstream blocks by overriding this
 method, and source blocks are required to implement it to return a concrete
 value.</p>
 
-<p>Most blocks will create persistent output sample vectors in <code class="highlighter-rouge">initialize()</code>, to
-be used by <code class="highlighter-rouge">process(...)</code>. This allows blocks to efficiently produce new
+<p>Most blocks will create persistent output sample vectors in <code class="language-plaintext highlighter-rouge">initialize()</code>, to
+be used by <code class="language-plaintext highlighter-rouge">process(...)</code>. This allows blocks to efficiently produce new
 samples without excessive allocations and deallocations.</p>
 
 <p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/block.lua">Block class</a>.</p>
 
 <h4 id="processing">Processing</h4>
 
-<p>The block’s <code class="highlighter-rouge">process()</code> method is called repeatedly in the running phase
+<p>The block’s <code class="language-plaintext highlighter-rouge">process()</code> method is called repeatedly in the running phase
 of a flow graph to process inputs into outputs.</p>
 
 <p>This method receives a set of input vectors as arguments, corresponding to the
 input ports it defined in its type signatures. These inputs are immutable,
-read-only vectors and are all of the same length. The <code class="highlighter-rouge">process()</code> method is
+read-only vectors and are all of the same length. The <code class="language-plaintext highlighter-rouge">process()</code> method is
 responsible for computing output vectors from these inputs and any block state,
 and returning the output vectors in the order corresponding to the output ports
 it defined in its type signatures.</p>
 
 <p>Blocks are responsible for managing their output sample vectors. Most blocks
-allocate persistent output sample vectors in their <code class="highlighter-rouge">initialize()</code> method, and
-then resize, populate, and return them in <code class="highlighter-rouge">process(...)</code>. Since vector resizes
+allocate persistent output sample vectors in their <code class="language-plaintext highlighter-rouge">initialize()</code> method, and
+then resize, populate, and return them in <code class="language-plaintext highlighter-rouge">process(...)</code>. Since vector resizes
 only cause re-allocation when they are grown, the underlying memory of output
 vectors approach a stable size as the vector is resized to accommodate the
 block’s inputs.</p>
@@ -553,46 +549,46 @@ block’s inputs.</p>
 <p>After a flow graph is connected, differentiated, and initialized, every block
 is run concurrently.</p>
 
-<p>While running, each block’s inputs share a <code class="highlighter-rouge">Pipe</code> object with another block’s
-output. A block output may have multiple <code class="highlighter-rouge">Pipe</code> objects to several different
-block inputs, but every block input only has one <code class="highlighter-rouge">Pipe</code> object.</p>
+<p>While running, each block’s inputs share a <code class="language-plaintext highlighter-rouge">Pipe</code> object with another block’s
+output. A block output may have multiple <code class="language-plaintext highlighter-rouge">Pipe</code> objects to several different
+block inputs, but every block input only has one <code class="language-plaintext highlighter-rouge">Pipe</code> object.</p>
 
-<p>The <code class="highlighter-rouge">Pipe</code> object provides an interface for the serialization and
-deserialization of sample vectors between blocks.  The <code class="highlighter-rouge">read()</code> method reads a
-vector from the pipe. The <code class="highlighter-rouge">write()</code> method writes a vector to the pipe.</p>
+<p>The <code class="language-plaintext highlighter-rouge">Pipe</code> object provides an interface for the serialization and
+deserialization of sample vectors between blocks.  The <code class="language-plaintext highlighter-rouge">read()</code> method reads a
+vector from the pipe. The <code class="language-plaintext highlighter-rouge">write()</code> method writes a vector to the pipe.</p>
 
-<p>A block is run with its <code class="highlighter-rouge">run()</code> method, which is a loop that repeatedly reads
-input pipes into an array of vectors, calls <code class="highlighter-rouge">process(...)</code> with these input
+<p>A block is run with its <code class="language-plaintext highlighter-rouge">run()</code> method, which is a loop that repeatedly reads
+input pipes into an array of vectors, calls <code class="language-plaintext highlighter-rouge">process(...)</code> with these input
 vectors, and writes the resulting array of vectors to the output pipes.</p>
 
 <p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/block.lua">Block class</a>.</p>
 
 <h4 id="termination">Termination</h4>
 
-<p>A block runs indefinitely in its <code class="highlighter-rouge">run()</code> method, until a <code class="highlighter-rouge">read()</code> on one of the
-input <code class="highlighter-rouge">Pipe</code> objects returns <code class="highlighter-rouge">nil</code>. This indicates that the upstream block
-closed its output <code class="highlighter-rouge">Pipe</code> and that the flow graph is collapsing.</p>
+<p>A block runs indefinitely in its <code class="language-plaintext highlighter-rouge">run()</code> method, until a <code class="language-plaintext highlighter-rouge">read()</code> on one of the
+input <code class="language-plaintext highlighter-rouge">Pipe</code> objects returns <code class="language-plaintext highlighter-rouge">nil</code>. This indicates that the upstream block
+closed its output <code class="language-plaintext highlighter-rouge">Pipe</code> and that the flow graph is collapsing.</p>
 
-<p>When an input <code class="highlighter-rouge">Pipe</code> returns <code class="highlighter-rouge">nil</code>, the block breaks its main run loop, calls
-<code class="highlighter-rouge">cleanup()</code>, and then closes its output pipes. This causes the downstream
+<p>When an input <code class="language-plaintext highlighter-rouge">Pipe</code> returns <code class="language-plaintext highlighter-rouge">nil</code>, the block breaks its main run loop, calls
+<code class="language-plaintext highlighter-rouge">cleanup()</code>, and then closes its output pipes. This causes the downstream
 blocks to terminate similarly.</p>
 
 <p>Sources that produce a finite number of samples will exit naturally after they
 have produced all of their samples, triggering the collapse of the flow graph.
 Sources that run indefinitely, on the other hand, can only be shutdown by the
-framework forcibly by the <code class="highlighter-rouge">SIGINT</code> signal.</p>
+framework forcibly by the <code class="language-plaintext highlighter-rouge">SIGINT</code> signal.</p>
 
 <p>A block shutdown does not mean samples are lost. Samples are buffered in the
-underlying implementation of the <code class="highlighter-rouge">Pipe</code>, even after the producing block has
-terminated, and the consuming block will only encounter the <code class="highlighter-rouge">nil</code> on an input
-<code class="highlighter-rouge">Pipe</code> after all of these samples have been consumed. This allows samples from
+underlying implementation of the <code class="language-plaintext highlighter-rouge">Pipe</code>, even after the producing block has
+terminated, and the consuming block will only encounter the <code class="language-plaintext highlighter-rouge">nil</code> on an input
+<code class="language-plaintext highlighter-rouge">Pipe</code> after all of these samples have been consumed. This allows samples from
 a finite source to be processed through a flow graph to completion.</p>
 
 <p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/block.lua">Block class</a>.</p>
 
 <h3 id="composite-blocks">Composite Blocks</h3>
 
-<p>The <a href="reference-manual.html#compositeblock"><code class="highlighter-rouge">CompositeBlock</code></a> is a special block
+<p>The <a href="reference-manual.html#compositeblock"><code class="language-plaintext highlighter-rouge">CompositeBlock</code></a> is a special block
 used to build and run flow graphs.  It can either be used as a hierarchical
 block: a composition of blocks abstracted into one block with redefined
 inputs/outputs at its boundary, or as a top-level block: a composition of
@@ -600,21 +596,21 @@ blocks forming a complete flow graph that can be run.</p>
 
 <h4 id="hierarchical-block">Hierarchical Block</h4>
 
-<p>A <code class="highlighter-rouge">CompositeBlock</code> used for a hierarchical block builds an internal flow graph
+<p>A <code class="language-plaintext highlighter-rouge">CompositeBlock</code> used for a hierarchical block builds an internal flow graph
 by connecting block ports with the
-<a href="reference-manual.html#compositeblockconnect"><code class="highlighter-rouge">connect()</code></a> method, just as a
+<a href="reference-manual.html#compositeblockconnect"><code class="language-plaintext highlighter-rouge">connect()</code></a> method, just as a
 top-level block would. However, unlike top-level blocks, which have no boundary
 inputs or outputs, hierarchical blocks also specify a type signature with
-<code class="highlighter-rouge">add_type_signature()</code> for their boundary inputs and outputs.</p>
+<code class="language-plaintext highlighter-rouge">add_type_signature()</code> for their boundary inputs and outputs.</p>
 
-<p>When a <code class="highlighter-rouge">CompositeBlock</code> adds a type signature, instead of building the
-<code class="highlighter-rouge">PipeInput</code> and <code class="highlighter-rouge">PipeOutput</code> input and output ports under the <code class="highlighter-rouge">.inputs</code> and
-<code class="highlighter-rouge">.outputs</code> arrays as a normal block would, the <code class="highlighter-rouge">CompositeBlock</code> builds
-<code class="highlighter-rouge">AliasedPipeInput</code> and <code class="highlighter-rouge">AliasedPipeOutput</code> ports, respectively. These are
+<p>When a <code class="language-plaintext highlighter-rouge">CompositeBlock</code> adds a type signature, instead of building the
+<code class="language-plaintext highlighter-rouge">InputPort</code> and <code class="language-plaintext highlighter-rouge">OutputPort</code> input and output ports under the <code class="language-plaintext highlighter-rouge">.inputs</code> and
+<code class="language-plaintext highlighter-rouge">.outputs</code> arrays as a normal block would, the <code class="language-plaintext highlighter-rouge">CompositeBlock</code> builds
+<code class="language-plaintext highlighter-rouge">AliasedInputPort</code> and <code class="language-plaintext highlighter-rouge">AliasedOutputPort</code> ports, respectively. These are
 special input and output ports that alias existing input and output ports
 inside a flow graph.</p>
 
-<p>These aliases are established in calls to <code class="highlighter-rouge">connect()</code>, when boundary
+<p>These aliases are established in calls to <code class="language-plaintext highlighter-rouge">connect()</code>, when boundary
 input/output ports are connected to the input/output ports of concrete blocks
 in the flow graph.</p>
 
@@ -622,111 +618,126 @@ in the flow graph.</p>
 
 <h4 id="top-level-block">Top-level Block</h4>
 
-<p>A <code class="highlighter-rouge">CompositeBlock</code> used for a top-level block builds a flow graph by connecting
-block ports with the <a href="reference-manual.html#compositeblockconnect"><code class="highlighter-rouge">connect()</code></a>
+<p>A <code class="language-plaintext highlighter-rouge">CompositeBlock</code> used for a top-level block builds a flow graph by connecting
+block ports with the <a href="reference-manual.html#compositeblockconnect"><code class="language-plaintext highlighter-rouge">connect()</code></a>
 method. The data structure for the flow graph is a table that maps block
-<code class="highlighter-rouge">PipeInput</code> instances to <code class="highlighter-rouge">PipeOutput</code> instances. In other words, it is a hash
+<code class="language-plaintext highlighter-rouge">InputPort</code> instances to <code class="language-plaintext highlighter-rouge">OutputPort</code> instances. In other words, it is a hash
 table of input port to output port, for each connection between blocks in the
 graph.</p>
 
 <h5 id="connection-1">Connection</h5>
 
-<p>When a connection is made with <code class="highlighter-rouge">connect()</code> on a top-level <code class="highlighter-rouge">CompositeBlock</code>, the
-<code class="highlighter-rouge">PipeInput</code> and <code class="highlighter-rouge">PipeOutput</code> ports are looked up in the blocks and added to the
-connections table, and a <code class="highlighter-rouge">Pipe</code> object is created and registered under both
-<code class="highlighter-rouge">PipeInput</code> and <code class="highlighter-rouge">PipeOutput</code> port instances.</p>
-
-<p>If a hierarchical block is connected into a top-level block, then its
-<code class="highlighter-rouge">AliasedPipeInput</code> and <code class="highlighter-rouge">AliasedPipeOutput</code> ports are followed to the underlying
-real <code class="highlighter-rouge">PipeInput</code> and <code class="highlighter-rouge">PipeOutput</code> ports, and those are the input and output
-port instances registered in the flow graph. This means that the hierarchical
-block does not exist in a top-level flow graph; it’s just a convenience for
-composing blocks.</p>
+<p>When a connection is made with <code class="language-plaintext highlighter-rouge">connect()</code> on a top-level <code class="language-plaintext highlighter-rouge">CompositeBlock</code>, the
+<code class="language-plaintext highlighter-rouge">InputPort</code> and <code class="language-plaintext highlighter-rouge">OutputPort</code> ports are looked up by name in the blocks and
+added to the connections table as a key-value pair of input port to output
+port. A hierarchical block is connected in the same way, except its ports are
+of <code class="language-plaintext highlighter-rouge">AliasedInputPort</code> and <code class="language-plaintext highlighter-rouge">AliasedOutputPort</code> types.</p>
 
 <p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/composite.lua">CompositeBlock class</a>.</p>
 
 <h5 id="run-preparation">Run Preparation</h5>
 
 <p>After the flow graph is connected under a top-level block, it can be run with
-<a href="reference-manual.html#compositeblockstart"><code class="highlighter-rouge">start()</code></a> or
-<a href="reference-manual.html#compositeblockrun"><code class="highlighter-rouge">run()</code></a>.  Running a flow graph
-requires a few initialization steps before each block can begin to consume,
-process, and produce samples.</p>
+<a href="reference-manual.html#compositeblockstart"><code class="language-plaintext highlighter-rouge">start()</code></a> or
+<a href="reference-manual.html#compositeblockrun"><code class="language-plaintext highlighter-rouge">run()</code></a>.  Running a flow graph
+requires a few validation and initialization steps before each block can begin
+to consume, process, and produce samples.</p>
 
-<p>First, the <code class="highlighter-rouge">CompositeBlock</code> crawls its connections table and absorbs the
-internal connections table of any hierarchical blocks. Since hierarchical
-blocks were just connected at the boundary ports, the internal connections are
-not yet available to the top-level block and need to be absorbed.</p>
+<p>First, each block referenced in the connections table is checked for
+unconnected inputs. Hierarchical blocks are checked recursively for unconnected
+inputs in their nested connections tables. If an input is unconnected, the flow
+graph cannot be run and an error is raised.</p>
 
-<p>Next, every block referenced in the connections table is checked for
-unconnected inputs. If an input is unconnected, the flow graph cannot be run
-and an error is raised.</p>
+<p>The connections table is then used to build an auxiliary list called the
+“evaluation order”. This is a list of the blocks in the flow graph arranged in
+a downstream, dependency-free order, starting with source blocks and ending
+with sink blocks. Each block in this list may depend on the outputs of previous
+blocks in the list, but does not depend on the outputs of any successive
+blocks. This order is needed to correctly differentiate the flow graph, because
+the output types of upstream blocks become the input types to downstream blocks
+for differentiation.</p>
 
-<p>The connections table data structure is then used to build an auxiliary list
-called the evaluation order. This is a list of all of the blocks in the flow
-graph, arranged in a downstream and dependency-free order. Each block in this
-list may depend on the outputs of previous blocks in the list, but does not
-depend on the outputs of any successive blocks. This order is needed to
-correctly differentiate the flow graph, because the output types of each block
-are fed as the input types to downstream blocks for differentiation.</p>
+<p>The evaluation order is visited to <code class="language-plaintext highlighter-rouge">differentiate()</code> each block. Hierarchical
+blocks are differentiated themselves, and then their nested flow graph is
+differentiated recursively in a similar manner – by first building an
+evaluation order for their connections table, and then differentiating the
+internal blocks along it. If a block does not have a matching type signature
+for the input types at its ports, an error is raised. By the end of this
+process, every block has a type signature selected with well-defined input and
+output types.</p>
 
-<p>The evaluation order is followed once to <code class="highlighter-rouge">differentiate()</code> each block, once to
-check that all of its input port sample rates match, and once to <code class="highlighter-rouge">initialize()</code>
-each block. If input port sample rates do not match, the flow graph is not run
-and an error is raised.</p>
+<p>Next, the top-level block crawls its connections table recursively to absorb
+the internal connections of any hierarchical blocks. The result is a new
+connections table of all the underlying concrete blocks in the flow graph,
+without abstract hierarchical blocks. Each pair in this connections table is
+then visited to create <code class="language-plaintext highlighter-rouge">Pipe</code> objects that connect the <code class="language-plaintext highlighter-rouge">OutputPort</code> and
+<code class="language-plaintext highlighter-rouge">InputPort</code> of the concrete blocks in the flow graph.</p>
 
-<p>Finally, all of the <code class="highlighter-rouge">Pipe</code> objects in the flow graph are initialized. Pipes are
-backed by anonymous UNIX socket pairs created by <code class="highlighter-rouge">socketpair()</code>.</p>
+<p>Now that all of the concrete blocks have been connected with <code class="language-plaintext highlighter-rouge">Pipe</code> objects,
+each concrete block is checked for matching sample rates across its input
+ports. Sample rates are looked up recursively through the <code class="language-plaintext highlighter-rouge">Pipe</code> objects, and
+originate with the <code class="language-plaintext highlighter-rouge">get_rate()</code> implementation in source blocks. If the input
+port sample rates do not match for a block, an error is raised.</p>
+
+<p>At this stage, all blocks have been differentiated and have a known sample
+rate, so <code class="language-plaintext highlighter-rouge">initialize()</code> is called on each block in the flow graph, including
+hierarchical blocks, to carry out any block-specific initialization before
+running.</p>
+
+<p>Finally, all of the <code class="language-plaintext highlighter-rouge">Pipe</code> objects that connect the <code class="language-plaintext highlighter-rouge">OutputPort</code> and
+<code class="language-plaintext highlighter-rouge">InputPort</code> of the blocks in the flow graph are initialized. Each <code class="language-plaintext highlighter-rouge">Pipe</code>
+creates an anonymous UNIX socket pair and pre-allocates a read buffer.</p>
 
 <p>The flow graph is now ready to run.</p>
 
-<p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/composite.lua">CompositeBlock class</a>.</p>
+<p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/composite.lua">CompositeBlock class</a>, <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/pipe.lua">Pipe
+class</a>.</p>
 
 <h5 id="running-1">Running</h5>
 
 <p>At this stage, the flow graph is fully validated, differentiated, initialized,
 and is ready to run.</p>
 
-<p>The <code class="highlighter-rouge">CompositeBlock</code> first blocks <code class="highlighter-rouge">SIGINT</code> and <code class="highlighter-rouge">SIGCHLD</code> signals with
-<code class="highlighter-rouge">sigprocmask()</code>, so that it can later synchronously detect these signals with
-<code class="highlighter-rouge">sigpending()</code> in <code class="highlighter-rouge">wait()</code>. The <code class="highlighter-rouge">CompositeBlock</code> then calls <code class="highlighter-rouge">fork()</code> for each
+<p>The <code class="language-plaintext highlighter-rouge">CompositeBlock</code> first blocks <code class="language-plaintext highlighter-rouge">SIGINT</code> and <code class="language-plaintext highlighter-rouge">SIGCHLD</code> signals with
+<code class="language-plaintext highlighter-rouge">sigprocmask()</code>, so that it can later synchronously detect these signals with
+<code class="language-plaintext highlighter-rouge">sigpending()</code> in <code class="language-plaintext highlighter-rouge">wait()</code>. The <code class="language-plaintext highlighter-rouge">CompositeBlock</code> then calls <code class="language-plaintext highlighter-rouge">fork()</code> for each
 block.</p>
 
 <p>The child process for each block closes all unneeded file descriptors, and
-calls the block’s main <code class="highlighter-rouge">run()</code> method. The child process spends the majority of
+calls the block’s main <code class="language-plaintext highlighter-rouge">run()</code> method. The child process spends the majority of
 its processing lifetime in this method. If this method returns naturally due to
 a flow graph collapse, the child exits with exit code 0. If it returns because
 of a runtime error, the child prints the error and backtrace to standard error,
 and exits with exit code 1.</p>
 
-<p>The parent process closes all file descriptors associated with the <code class="highlighter-rouge">Pipe</code>
+<p>The parent process closes all file descriptors associated with the <code class="language-plaintext highlighter-rouge">Pipe</code>
 objects it built, so that the blocks are the only owners of these connected
 files, and can close them to signal block termination.</p>
 
-<p>The parent returns back to the top-level script, where it can use <code class="highlighter-rouge">status()</code> to
-get the running status of the flow graph, <code class="highlighter-rouge">wait()</code> to wait for the flow graph
-to finish, or <code class="highlighter-rouge">stop()</code> to stop the flow graph.</p>
+<p>The parent returns back to the top-level script, where it can use <code class="language-plaintext highlighter-rouge">status()</code> to
+get the running status of the flow graph, <code class="language-plaintext highlighter-rouge">wait()</code> to wait for the flow graph
+to finish, or <code class="language-plaintext highlighter-rouge">stop()</code> to stop the flow graph.</p>
 
 <p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/composite.lua">CompositeBlock class</a>.</p>
 
 <h5 id="flow-graph-control">Flow Graph Control</h5>
 
-<p>The <a href="reference-manual.html#compositeblockwait"><code class="highlighter-rouge">wait()</code></a> method waits for a
-<code class="highlighter-rouge">SIGINT</code> or <code class="highlighter-rouge">SIGCHLD</code> signal. If it gets a <code class="highlighter-rouge">SIGINT</code> signal, which indicates a
-user requested exit, it calls <code class="highlighter-rouge">stop()</code> to stop the flow graph. If it gets a
-<code class="highlighter-rouge">SIGCHLD</code> signal, which indicates a block exited, it waits on each block PID
-with <code class="highlighter-rouge">waitpid()</code> until the flow graph has fully collapsed, and then unblocks
-the <code class="highlighter-rouge">SIGINT</code> and <code class="highlighter-rouge">SIGCHLD</code> signals.</p>
+<p>The <a href="reference-manual.html#compositeblockwait"><code class="language-plaintext highlighter-rouge">wait()</code></a> method waits for a
+<code class="language-plaintext highlighter-rouge">SIGINT</code> or <code class="language-plaintext highlighter-rouge">SIGCHLD</code> signal. If it gets a <code class="language-plaintext highlighter-rouge">SIGINT</code> signal, which indicates a
+user requested exit, it calls <code class="language-plaintext highlighter-rouge">stop()</code> to stop the flow graph. If it gets a
+<code class="language-plaintext highlighter-rouge">SIGCHLD</code> signal, which indicates a block exited, it waits on each block PID
+with <code class="language-plaintext highlighter-rouge">waitpid()</code> until the flow graph has fully collapsed, and then unblocks
+the <code class="language-plaintext highlighter-rouge">SIGINT</code> and <code class="language-plaintext highlighter-rouge">SIGCHLD</code> signals.</p>
 
-<p>The <a href="reference-manual.html#compositeblockstop"><code class="highlighter-rouge">stop()</code></a> method kills all
-source blocks with <code class="highlighter-rouge">SIGTERM</code>, waits on each block PID with <code class="highlighter-rouge">waitpid()</code> until
-the flow graph has fully collapsed, and then unblocks the <code class="highlighter-rouge">SIGINT</code> and
-<code class="highlighter-rouge">SIGCHLD</code> signals.</p>
+<p>The <a href="reference-manual.html#compositeblockstop"><code class="language-plaintext highlighter-rouge">stop()</code></a> method kills all
+source blocks with <code class="language-plaintext highlighter-rouge">SIGTERM</code>, waits on each block PID with <code class="language-plaintext highlighter-rouge">waitpid()</code> until
+the flow graph has fully collapsed, and then unblocks the <code class="language-plaintext highlighter-rouge">SIGINT</code> and
+<code class="language-plaintext highlighter-rouge">SIGCHLD</code> signals.</p>
 
-<p>The <a href="reference-manual.html#compositeblockstatus"><code class="highlighter-rouge">status()</code></a> method checks if
-any block is still running with <code class="highlighter-rouge">kill(&lt;pid&gt;, 0)</code>.  If all blocks have exited,
-it waits on each block PID with <code class="highlighter-rouge">waitpid()</code>, and then unblocks the <code class="highlighter-rouge">SIGINT</code> and
-<code class="highlighter-rouge">SIGCHLD</code> signals.</p>
+<p>The <a href="reference-manual.html#compositeblockstatus"><code class="language-plaintext highlighter-rouge">status()</code></a> method checks if
+any block is still running with <code class="language-plaintext highlighter-rouge">kill(&lt;pid&gt;, 0)</code>.  If all blocks have exited,
+it waits on each block PID with <code class="language-plaintext highlighter-rouge">waitpid()</code>, and then unblocks the <code class="language-plaintext highlighter-rouge">SIGINT</code> and
+<code class="language-plaintext highlighter-rouge">SIGCHLD</code> signals.</p>
 
 <p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/composite.lua">CompositeBlock class</a>.</p>
 
@@ -735,7 +746,7 @@ it waits on each block PID with <code class="highlighter-rouge">waitpid()</code>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

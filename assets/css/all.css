@@ -887,6 +887,12 @@ body {
   margin-right: auto;
 }
 
+.scroll-toc div.toc-header .links {
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 @media (min-width: 550px) {
   /* Only show scrolling toc in grid layout */
   .is-position-fixed {
@@ -1018,7 +1024,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: inherit;
   font-weight: 600;
   line-height: 1.4;
-  margin-bottom: 1.8rem;
+  margin-bottom: 1.6rem;
 }
 
 h2, h3, h4, h5, h6 {
@@ -1033,6 +1039,7 @@ h1 {
 }
 
 h2 {
+  padding-top: 0.6rem;
   padding-bottom: 0.48rem;
   font-size: 2.8rem;
   line-height: 1.225;
@@ -1262,10 +1269,15 @@ nav .title a:hover {
   text-decoration: none;
 }
 
+nav .links {
+  margin-left: 1.6rem;
+}
+
 nav .version {
   color: #3498db;
   background-color: white;
-  margin-left: 0.5rem;
+  margin-left: 0;
+  padding-left: 0;
   font-size: 1.6rem;
   letter-spacing: -0.075rem;
 }

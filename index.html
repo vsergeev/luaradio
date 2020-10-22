@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href=".">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="./new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="./docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="./examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top"></a></span>
@@ -140,10 +143,10 @@ discussion.</p>
 
 <p>With LuaJIT installed, LuaRadio can be run directly from the repository:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/vsergeev/luaradio.git
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/vsergeev/luaradio.git
 </code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cd luaradio
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cd luaradio
 $ ./luaradio --platform
 luajit          LuaJIT 2.0.5
 os              Linux
@@ -162,7 +165,7 @@ $
 <a href="https://github.com/jgaeddert/liquid-dsp">liquid-dsp</a>,
 <a href="http://libvolk.org/">VOLK</a>, and <a href="http://www.fftw.org/">fftw</a> for real-time
 applications. To run the real-time examples, install liquid-dsp or VOLK, and
-check that the <code class="highlighter-rouge">liquid</code> and/or <code class="highlighter-rouge">volk</code> features are marked <code class="highlighter-rouge">true</code> in the
+check that the <code class="language-plaintext highlighter-rouge">liquid</code> and/or <code class="language-plaintext highlighter-rouge">volk</code> features are marked <code class="language-plaintext highlighter-rouge">true</code> in the
 platform information.</p>
 
 <p>LuaRadio primarily supports Linux. It also strives to support FreeBSD and Mac
@@ -172,7 +175,7 @@ currently experimental.</p>
 <p>Try out one of the <a href="examples/">examples</a> with an
 <a href="http://www.rtl-sdr.com/about-rtl-sdr/">RTL-SDR</a> dongle:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_wbfm_mono.lua 91.1e6
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_wbfm_mono.lua 91.1e6
 </code></pre></div></div>
 
 <p>LuaRadio and all of its examples run great on the Raspberry Pi 3 with Arch
@@ -185,7 +188,7 @@ building your own flow graphs.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

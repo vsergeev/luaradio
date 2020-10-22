@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Embedding LuaRadio</a></span>
@@ -89,7 +92,7 @@
         
 <h1 id="embedding-luaradio">Embedding LuaRadio</h1>
 
-<p>This document describes how to embed LuaRadio into applications, and how
+<p>This document describes how to embed LuaRadio into host applications, and how
 applications can source or sink samples with LuaRadio flow graphs.</p>
 
 <h2 id="table-of-contents">Table of Contents</h2>
@@ -115,33 +118,34 @@ applications can source or sink samples with LuaRadio flow graphs.</p>
 <h2 id="introduction">Introduction</h2>
 
 <p>LuaRadio can be run directly from its Lua file sources, but when it is
-installed, it is packaged into one dual-purpose binary library called
-<code class="highlighter-rouge">libluaradio</code>.</p>
+installed as a shared library, it is packaged into one dual-purpose shared
+library called <code class="language-plaintext highlighter-rouge">libluaradio</code>.</p>
 
-<p>This library can both be loaded as the <code class="highlighter-rouge">radio</code> package by the LuaJIT
-interpreter for scripts, and linked into C/C++ applications to be run via its C
-API.  The packaged library contains the entire LuaRadio framework, bytecode
-compiled, as well as a small C API for creating LuaRadio contexts, loading
-scripts with a top-level flow graph, and controlling the top-level flow graph.</p>
+<p>This library can both be loaded as the <code class="language-plaintext highlighter-rouge">radio</code> module by LuaJIT for use in
+LuaRadio scripts, as well as linked into C/C++ applications to embed the
+LuaRadio engine. The packaged library contains the entire LuaRadio framework,
+bytecode compiled, as well as a small C API for creating LuaRadio contexts,
+loading scripts with a top-level flow graph, and controlling the top-level flow
+graph.</p>
 
-<p>A LuaRadio packaged library installation provides the following:</p>
+<p>A LuaRadio packaged shared library installation provides the following:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">/usr/bin/luaradio</code> — LuaRadio runner helper script</li>
-  <li><code class="highlighter-rouge">/usr/lib/libluaradio.so</code> — Shared library for dynamic linking</li>
-  <li><code class="highlighter-rouge">/usr/lib/libluaradio.a</code> — Static library for static linking</li>
-  <li><code class="highlighter-rouge">/usr/include/luaradio.h</code> — C API header file</li>
-  <li><code class="highlighter-rouge">/usr/lib/lua/5.1/radio.so</code> <em>-symlink-&gt;</em> <code class="highlighter-rouge">/usr/lib/libluaradio.so</code> — Lua module</li>
+  <li><code class="language-plaintext highlighter-rouge">/usr/bin/luaradio</code> — LuaRadio runner helper script</li>
+  <li><code class="language-plaintext highlighter-rouge">/usr/lib/libluaradio.so</code> — Shared library for dynamic linking</li>
+  <li><code class="language-plaintext highlighter-rouge">/usr/lib/libluaradio.a</code> — Static library for static linking</li>
+  <li><code class="language-plaintext highlighter-rouge">/usr/include/luaradio.h</code> — C API header file</li>
+  <li><code class="language-plaintext highlighter-rouge">/usr/lib/lua/5.1/radio.so</code> <em>-symlink-&gt;</em> <code class="language-plaintext highlighter-rouge">/usr/lib/libluaradio.so</code> — Lua module</li>
 </ul>
 
-<p>Dynamically linking <code class="highlighter-rouge">libluaradio.so</code> and <code class="highlighter-rouge">libluajit-5.1.so</code> into an application
+<p>Dynamically linking <code class="language-plaintext highlighter-rouge">libluaradio.so</code> and <code class="language-plaintext highlighter-rouge">libluajit-5.1.so</code> into an application
 enables it to run LuaRadio scripts. Statically linking the static equivalent of
 these libraries allows building entirely standalone executables with LuaRadio.</p>
 
 <h2 id="c-api-synopsis">C API Synopsis</h2>
 
 <p>The LuaRadio packaged library includes a small <a href="https://github.com/vsergeev/luaradio/tree/master/embed/luaradio.h">C API</a>
-that wraps the details of Lua states and the <code class="highlighter-rouge">radio</code> package. This simplified
+that wraps the details of Lua states and the <code class="language-plaintext highlighter-rouge">radio</code> package. This simplified
 interface provides for creating a LuaRadio context, loading a script with a
 top-level flow graph, and the basic control functions of the top-level flow
 graph (start, status, wait, stop).</p>
@@ -180,55 +184,55 @@ graph (start, status, wait, stop).</p>
 </code></pre></div></div>
 
 <p>The C API also defines the C types corresponding to the four basic data types
-<a href="reference-manual.html#complexfloat32"><code class="highlighter-rouge">radio.types.ComplexFloat32</code></a>,
-<a href="reference-manual.html#float32"><code class="highlighter-rouge">radio.types.Float32</code></a>,
-<a href="reference-manual.html#bit"><code class="highlighter-rouge">radio.types.Bit</code></a>, and
-<a href="reference-manual.html#byte"><code class="highlighter-rouge">radio.types.Byte</code></a>, under <code class="highlighter-rouge">complex_float32_t</code>,
-<code class="highlighter-rouge">float32_t</code>, <code class="highlighter-rouge">bit_t</code>, <code class="highlighter-rouge">byte_t</code>, respectively.</p>
+<a href="reference-manual.html#complexfloat32"><code class="language-plaintext highlighter-rouge">radio.types.ComplexFloat32</code></a>,
+<a href="reference-manual.html#float32"><code class="language-plaintext highlighter-rouge">radio.types.Float32</code></a>,
+<a href="reference-manual.html#bit"><code class="language-plaintext highlighter-rouge">radio.types.Bit</code></a>, and
+<a href="reference-manual.html#byte"><code class="language-plaintext highlighter-rouge">radio.types.Byte</code></a>, under <code class="language-plaintext highlighter-rouge">complex_float32_t</code>,
+<code class="language-plaintext highlighter-rouge">float32_t</code>, <code class="language-plaintext highlighter-rouge">bit_t</code>, <code class="language-plaintext highlighter-rouge">byte_t</code>, respectively.</p>
 
 <p>In basic usage of the API, applications create a LuaRadio context with
-<code class="highlighter-rouge">luaradio_new()</code>, load a script that returns a top-level flow graph with
-<code class="highlighter-rouge">luaradio_load()</code>, and start the flow graph with <code class="highlighter-rouge">luaradio_start()</code>.</p>
+<code class="language-plaintext highlighter-rouge">luaradio_new()</code>, load a script that returns a top-level flow graph with
+<code class="language-plaintext highlighter-rouge">luaradio_load()</code>, and start the flow graph with <code class="language-plaintext highlighter-rouge">luaradio_start()</code>.</p>
 
-<p>After this, <code class="highlighter-rouge">luaradio_status()</code>, <code class="highlighter-rouge">luaradio_wait()</code>, and <code class="highlighter-rouge">luaradio_stop()</code> can
+<p>After this, <code class="language-plaintext highlighter-rouge">luaradio_status()</code>, <code class="language-plaintext highlighter-rouge">luaradio_wait()</code>, and <code class="language-plaintext highlighter-rouge">luaradio_stop()</code> can
 be used to get the running status of the flow graph, wait on the flow graph to
 finish, or stop the flow graph, respectively.  These calls correspond to the
-<a href="reference-manual.html#compositeblock"><code class="highlighter-rouge">CompositeBlock</code></a> methods of the same
+<a href="reference-manual.html#compositeblock"><code class="language-plaintext highlighter-rouge">CompositeBlock</code></a> methods of the same
 name.</p>
 
 <p>When the flow graph is terminated and work with the context is complete, the
-context can be freed with <code class="highlighter-rouge">luaradio_free()</code>.</p>
+context can be freed with <code class="language-plaintext highlighter-rouge">luaradio_free()</code>.</p>
 
 <p>In more advanced usage, applications may access the Lua state of the LuaRadio
-context with <code class="highlighter-rouge">luaradio_get_state()</code> . Applications can use this with the Lua C
+context with <code class="language-plaintext highlighter-rouge">luaradio_get_state()</code> . Applications can use this with the Lua C
 API to prepare a custom environment for scripts prior to loading them.</p>
 
 <p>Most API functions return 0 on success or a negative integer code on failure.
-<code class="highlighter-rouge">luaradio_new()</code> returns <code class="highlighter-rouge">NULL</code> on memory allocation failure.
-<code class="highlighter-rouge">luaradio_strerror()</code> can be used to get a human-readable error string of the
+<code class="language-plaintext highlighter-rouge">luaradio_new()</code> returns <code class="language-plaintext highlighter-rouge">NULL</code> on memory allocation failure.
+<code class="language-plaintext highlighter-rouge">luaradio_strerror()</code> can be used to get a human-readable error string of the
 last failure that occurred.</p>
 
-<p>The API is re-entrant, as all relevant state is maintained in the <code class="highlighter-rouge">luaradio_t</code>
+<p>The API is re-entrant, as all relevant state is maintained in the <code class="language-plaintext highlighter-rouge">luaradio_t</code>
 context.</p>
 
 <h2 id="interfacing-samples">Interfacing Samples</h2>
 
 <p>An application may source or sink samples in a LuaRadio flow graph through a
-pair of connected file descriptors, e.g. from <code class="highlighter-rouge">pipe()</code> or <code class="highlighter-rouge">socketpair()</code>.  A
+pair of connected file descriptors, e.g. from <code class="language-plaintext highlighter-rouge">pipe()</code> or <code class="language-plaintext highlighter-rouge">socketpair()</code>.  A
 file descriptor can be handed off to LuaRadio as a parameter to a
-<a href="reference-manual.html#rawfilesource"><code class="highlighter-rouge">RawFileSource</code></a>, if the application is
-sourcing samples, or a <a href="reference-manual.html#rawfilesink"><code class="highlighter-rouge">RawFileSink</code></a>, if
+<a href="reference-manual.html#rawfilesource"><code class="language-plaintext highlighter-rouge">RawFileSource</code></a>, if the application is
+sourcing samples, or a <a href="reference-manual.html#rawfilesink"><code class="language-plaintext highlighter-rouge">RawFileSink</code></a>, if
 the application is sinking samples, or both.</p>
 
-<p>The application can then use standard file descriptor I/O calls <code class="highlighter-rouge">read()</code> or
-<code class="highlighter-rouge">write()</code> on its file descriptor to serialize samples from or to LuaRadio. The
+<p>The application can then use standard file descriptor I/O calls <code class="language-plaintext highlighter-rouge">read()</code> or
+<code class="language-plaintext highlighter-rouge">write()</code> on its file descriptor to serialize samples from or to LuaRadio. The
 application must know the C type of the samples, as the samples are read and
 written raw, in their native memory representation, with no marshalling.</p>
 
 <p>In the case of an application sinking samples of a variable-sized
-<a href="reference-manual.html#objecttype"><code class="highlighter-rouge">Object</code></a> based data type (e.g. for a
-decoded packet type), the <a href="reference-manual.html#jsonsink"><code class="highlighter-rouge">JSONSink</code></a> can be
-used.  This sink accepts a file descriptor parameter, like the <code class="highlighter-rouge">RawFileSink</code>,
+<a href="reference-manual.html#objecttype"><code class="language-plaintext highlighter-rouge">Object</code></a> based data type (e.g. for a
+decoded packet type), the <a href="reference-manual.html#jsonsink"><code class="language-plaintext highlighter-rouge">JSONSink</code></a> can be
+used.  This sink accepts a file descriptor parameter, like the <code class="language-plaintext highlighter-rouge">RawFileSink</code>,
 but serializes individual samples with JSON, separated by a newline delimiter.
 The application can split each serialized sample by the newline delimiter, and
 deserialize the sample with JSON.</p>
@@ -241,10 +245,10 @@ unintended errors and injection.</p>
 <p>The recommended approach for applications adding support for user defined
 LuaRadio scripts is to use the <a href="https://www.lua.org/manual/5.1/manual.html#3">Lua C
 API</a> with the underlying Lua
-state of the LuaRadio context (see <code class="highlighter-rouge">luaradio_get_state()</code>) to define a custom
+state of the LuaRadio context (see <code class="language-plaintext highlighter-rouge">luaradio_get_state()</code>) to define a custom
 environment. For example, the application might define an environment
 containing variables with the source and sink file descriptors, or even
-pre-instantiated <code class="highlighter-rouge">RawFileSource</code> and <code class="highlighter-rouge">RawFileSink</code> blocks, that can be used in
+pre-instantiated <code class="language-plaintext highlighter-rouge">RawFileSource</code> and <code class="language-plaintext highlighter-rouge">RawFileSink</code> blocks, that can be used in
 the user defined scripts as sources from or sinks to the application.</p>
 
 <h5 id="aside">Aside</h5>
@@ -264,9 +268,9 @@ generation and mapping types.</p>
 
 <p>The FM Radio example is a command-line FM broadcast radio receiver, built with
 a small flow graph containing an
-<a href="reference-manual.html#rtlsdrsource"><code class="highlighter-rouge">RtlSdrSource</code></a>, a
-<a href="reference-manual.html#wbfmmonodemodulator"><code class="highlighter-rouge">WBFMMonoDemodulator</code></a>, and a
-<a href="reference-manual.html#pulseaudiosink"><code class="highlighter-rouge">PulseAudioSink</code></a>. It accepts the
+<a href="reference-manual.html#rtlsdrsource"><code class="language-plaintext highlighter-rouge">RtlSdrSource</code></a>, a
+<a href="reference-manual.html#wbfmmonodemodulator"><code class="language-plaintext highlighter-rouge">WBFMMonoDemodulator</code></a>, and a
+<a href="reference-manual.html#pulseaudiosink"><code class="language-plaintext highlighter-rouge">PulseAudioSink</code></a>. It accepts the
 station frequency from the command-line and substitutes it into the flow graph
 script.</p>
 
@@ -335,9 +339,9 @@ script.</p>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>This example may be built in the <a href="https://github.com/vsergeev/luaradio/tree/master/embed/">embed</a> directory with <code class="highlighter-rouge">make examples</code>.</p>
+<p>This example may be built in the <a href="https://github.com/vsergeev/luaradio/tree/master/embed/">embed</a> directory with <code class="language-plaintext highlighter-rouge">make examples</code>.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio/embed $ make examples
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio/embed $ make examples
 ...
 luaradio/embed $ export LD_LIBRARY_PATH=build
 luaradio/embed $ ./build/examples/fm-radio
@@ -347,11 +351,11 @@ luaradio/embed $
 
 <p>Listen to 91.1 MHz:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio/embed $ ./build/examples/fm-radio 91.1e6
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio/embed $ ./build/examples/fm-radio 91.1e6
 </code></pre></div></div>
 
-<p>Note: there is no need to set <code class="highlighter-rouge">LD_LIBRARY_PATH</code> if LuaRadio is installed, as
-<code class="highlighter-rouge">libluaradio.so.0</code> will be in a library search path like <code class="highlighter-rouge">/usr/lib</code>.</p>
+<p>Note: there is no need to set <code class="language-plaintext highlighter-rouge">LD_LIBRARY_PATH</code> if LuaRadio is installed, as
+<code class="language-plaintext highlighter-rouge">libluaradio.so.0</code> will be in a library search path like <code class="language-plaintext highlighter-rouge">/usr/lib</code>.</p>
 
 <h3 id="rds-timesync">RDS Timesync</h3>
 
@@ -366,10 +370,10 @@ information. RDS-enabled FM radio stations transmit it once every minute.</p>
 
 <p>The RDS timesync example is a command-line tool that sets the system time and
 date to an RDS-enabled FM radio station.  It is built with a small flow graph
-containing an <a href="reference-manual.html#rtlsdrsource"><code class="highlighter-rouge">RtlSdrSource</code></a>, an
-<a href="reference-manual.html#rdsreceiver"><code class="highlighter-rouge">RDSReceiver</code></a>, and a
-<a href="reference-manual.html#rawfilesink"><code class="highlighter-rouge">RawFileSink</code></a>.  The frames decoded by the
-RDS receiver are serialized to the C application through the <code class="highlighter-rouge">RawFileSink</code>. The
+containing an <a href="reference-manual.html#rtlsdrsource"><code class="language-plaintext highlighter-rouge">RtlSdrSource</code></a>, an
+<a href="reference-manual.html#rdsreceiver"><code class="language-plaintext highlighter-rouge">RDSReceiver</code></a>, and a
+<a href="reference-manual.html#rawfilesink"><code class="language-plaintext highlighter-rouge">RawFileSink</code></a>.  The frames decoded by the
+RDS receiver are serialized to the C application through the <code class="language-plaintext highlighter-rouge">RawFileSink</code>. The
 C application scans for the time and date message type, and once it finds one,
 decodes it and sets the system time and date to it.</p>
 
@@ -509,9 +513,9 @@ to an application.</p>
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>This example may be built in the <a href="https://github.com/vsergeev/luaradio/tree/master/embed/">embed</a> directory with <code class="highlighter-rouge">make examples</code>.</p>
+<p>This example may be built in the <a href="https://github.com/vsergeev/luaradio/tree/master/embed/">embed</a> directory with <code class="language-plaintext highlighter-rouge">make examples</code>.</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio/embed $ make examples
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio/embed $ make examples
 ...
 luaradio/embed $ export LD_LIBRARY_PATH=build
 luaradio/embed $ ./build/examples/rds-timesync
@@ -521,34 +525,34 @@ luaradio/embed $
 
 <p>Sync time and date with 88.5 MHz:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio/embed $ ./build/examples/rds-timesync 88.5e6
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio/embed $ ./build/examples/rds-timesync 88.5e6
 RDS frames received:    443
 RDS time frame found!
 Setting system time to Tue May 10 23:11:00 2016
 luaradio/embed $
 </code></pre></div></div>
 
-<p>Note: there is no need to set <code class="highlighter-rouge">LD_LIBRARY_PATH</code> if LuaRadio is installed, as
-<code class="highlighter-rouge">libluaradio.so.0</code> will be in a library search path like <code class="highlighter-rouge">/usr/lib</code>.</p>
+<p>Note: there is no need to set <code class="language-plaintext highlighter-rouge">LD_LIBRARY_PATH</code> if LuaRadio is installed, as
+<code class="language-plaintext highlighter-rouge">libluaradio.so.0</code> will be in a library search path like <code class="language-plaintext highlighter-rouge">/usr/lib</code>.</p>
 
 <h2 id="building">Building</h2>
 
 <h3 id="dynamically-linked">Dynamically Linked</h3>
 
-<p>Compile the examples and link them with the <code class="highlighter-rouge">libluaradio</code> and <code class="highlighter-rouge">libluajit-5.1</code>
+<p>Compile the examples and link them with the <code class="language-plaintext highlighter-rouge">libluaradio</code> and <code class="language-plaintext highlighter-rouge">libluajit-5.1</code>
 shared libraries:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ clang fm-radio.c -o fm-radio -lluaradio -lluajit-5.1 -Wl,-E
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ clang fm-radio.c -o fm-radio -lluaradio -lluajit-5.1 -Wl,-E
 $ clang rds-timesync.c -o rds-timesync -lluaradio -lluajit-5.1 -Wl,-E
 </code></pre></div></div>
 
-<p>You may need to add header and library paths with <code class="highlighter-rouge">-I</code> and <code class="highlighter-rouge">-L</code>, respectively,
+<p>You may need to add header and library paths with <code class="language-plaintext highlighter-rouge">-I</code> and <code class="language-plaintext highlighter-rouge">-L</code>, respectively,
 if LuaRadio is not installed to standard paths.</p>
 
-<p>We can check with <code class="highlighter-rouge">ldd</code> that these executables only depend on standard
-libraries, <code class="highlighter-rouge">libluaradio</code>, and <code class="highlighter-rouge">libluajit-5.1</code>:</p>
+<p>We can check with <code class="language-plaintext highlighter-rouge">ldd</code> that these executables only depend on standard
+libraries, <code class="language-plaintext highlighter-rouge">libluaradio</code>, and <code class="language-plaintext highlighter-rouge">libluajit-5.1</code>:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ldd fm-radio
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ldd fm-radio
         linux-vdso.so.1 (0x00007ffc76d3a000)
         libluaradio.so.0 =&gt; /usr/lib/libluaradio.so.0 (0x00007f566ac4f000)
         libluajit-5.1.so.2 =&gt; /usr/lib/libluajit-5.1.so.2 (0x00007f566a9df000)
@@ -571,20 +575,20 @@ $
 
 <h3 id="statically-linked">Statically Linked</h3>
 
-<p>Compile the examples and link them with the <code class="highlighter-rouge">libluaradio</code> and <code class="highlighter-rouge">libluajit</code>
+<p>Compile the examples and link them with the <code class="language-plaintext highlighter-rouge">libluaradio</code> and <code class="language-plaintext highlighter-rouge">libluajit</code>
 static libraries:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ clang fm-radio.c -o fm-radio -Wl,--whole-archive,-E libluaradio.a -Wl,--no-whole-archive libluajit.a -ldl -lm
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ clang fm-radio.c -o fm-radio -Wl,--whole-archive,-E libluaradio.a -Wl,--no-whole-archive libluajit.a -ldl -lm
 $ clang rds-timesync.c -o rds-timesync -Wl,--whole-archive,-E libluaradio.a -Wl,--no-whole-archive libluajit.a -ldl -lm
 </code></pre></div></div>
 
-<p>The <code class="highlighter-rouge">libluajit.a</code> static library can be obtained from <code class="highlighter-rouge">LuaJIT/src/libluajit.a</code>
+<p>The <code class="language-plaintext highlighter-rouge">libluajit.a</code> static library can be obtained from <code class="language-plaintext highlighter-rouge">LuaJIT/src/libluajit.a</code>
 after building LuaJIT locally.</p>
 
 <p>After stripping symbols, these standalone executables contain the entire
 LuaJIT + LuaRadio runtime in 640 KB:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ du -h fm-radio rds-timesync
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ du -h fm-radio rds-timesync
 716K    fm-radio
 716K    rds-timesync
 $ strip fm-radio rds-timesync
@@ -594,9 +598,9 @@ $ du -h fm-radio rds-timesync
 $
 </code></pre></div></div>
 
-<p>We can check with <code class="highlighter-rouge">ldd</code> that these executables only depend on standard libraries:</p>
+<p>We can check with <code class="language-plaintext highlighter-rouge">ldd</code> that these executables only depend on standard libraries:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ldd fm-radio
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ldd fm-radio
         linux-vdso.so.1 (0x00007fff08556000)
         libdl.so.2 =&gt; /usr/lib/libdl.so.2 (0x00007f9095e02000)
         libm.so.6 =&gt; /usr/lib/libm.so.6 (0x00007f9095afe000)
@@ -618,7 +622,7 @@ $
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

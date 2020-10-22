@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">WAV File SSB Modulator Example</a></span>
@@ -86,19 +89,19 @@
 
       </div>
       <div class="nine columns content">
-        <h1 id="wavfile_ssb_modulatorlua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/wavfile_ssb_modulator.lua"><code class="highlighter-rouge">wavfile_ssb_modulator.lua</code></a></h1>
+        <h1 id="wavfile_ssb_modulatorlua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/wavfile_ssb_modulator.lua"><code class="language-plaintext highlighter-rouge">wavfile_ssb_modulator.lua</code></a></h1>
 
 <p>This example is a file-based
 <a href="https://en.wikipedia.org/wiki/Single-sideband_modulation">Single-Sideband</a>
 (SSB) modulator. It takes a single channel WAV file audio input, and produces a
-binary IQ file (<code class="highlighter-rouge">f32le</code> format) output with the single-sideband modulated
+binary IQ file (<code class="language-plaintext highlighter-rouge">f32le</code> format) output with the single-sideband modulated
 audio. This example doesn’t use the RTL-SDR at all, but instead demonstrates
 how you can build file-based command-line utilities with modulation,
 demodulation, decoding, file conversion, etc. flow graphs that run to
 completion.</p>
 
 <p>This single-sideband modulator composition is available in LuaRadio as the
-<a href="../docs/reference-manual.html#ssbmodulator"><code class="highlighter-rouge">SSBModulator</code></a> block.</p>
+<a href="../docs/reference-manual.html#ssbmodulator"><code class="language-plaintext highlighter-rouge">SSBModulator</code></a> block.</p>
 
 <h5 id="flow-graph">Flow Graph</h5>
 
@@ -144,21 +147,21 @@ completion.</p>
 
 <h5 id="usage">Usage</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/wavfile_ssb_modulator.lua &lt;WAV file in&gt; &lt;IQ f32le file out&gt; &lt;bandwidth&gt; &lt;sideband&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/wavfile_ssb_modulator.lua &lt;WAV file in&gt; &lt;IQ f32le file out&gt; &lt;bandwidth&gt; &lt;sideband&gt;
 </code></pre></div></div>
 
 <h5 id="usage-example">Usage Example</h5>
 
-<p>Modulate <code class="highlighter-rouge">test.wav</code> into <code class="highlighter-rouge">test.iq</code>, with 3 kHz bandwidth and lower sideband:</p>
+<p>Modulate <code class="language-plaintext highlighter-rouge">test.wav</code> into <code class="language-plaintext highlighter-rouge">test.iq</code>, with 3 kHz bandwidth and lower sideband:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/wavfile_ssb_modulator.lua test.wav test.iq 3e3 lsb
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/wavfile_ssb_modulator.lua test.wav test.iq 3e3 lsb
 </code></pre></div></div>
 
 
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

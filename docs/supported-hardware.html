@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Supported Hardware</a></span>
@@ -97,21 +100,21 @@ high speed interfaces.</p>
 <h3 id="sources">Sources</h3>
 
 <ul>
-  <li><a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a> with <a href="reference-manual.html#soapysdrsource"><code class="highlighter-rouge">SoapySDRSource</code></a> via <a href="https://github.com/pothosware/SoapySDR">libSoapySDR</a></li>
-  <li><a href="http://www.rtl-sdr.com/about-rtl-sdr/">RTL-SDR</a> with <a href="reference-manual.html#rtlsdrsource"><code class="highlighter-rouge">RtlSdrSource</code></a> via <a href="http://sdr.osmocom.org/trac/wiki/rtl-sdr">librtlsdr</a></li>
-  <li><a href="http://airspy.com/">Airspy R2 and Mini</a> with <a href="reference-manual.html#airspysource"><code class="highlighter-rouge">AirspySource</code></a> via <a href="https://github.com/airspy/airspyonehost">libairspy</a></li>
-  <li><a href="http://airspy.com/">Airspy HF+ Dual Port and Discovery</a> with <a href="reference-manual.html#airspyhfsource"><code class="highlighter-rouge">AirspyHFSource</code></a> via <a href="https://github.com/airspy/airspyhf">libairspyhf</a></li>
-  <li><a href="https://greatscottgadgets.com/hackrf/">HackRF One</a> with <a href="reference-manual.html#hackrfsource"><code class="highlighter-rouge">HackRFSource</code></a> via <a href="https://github.com/mossmann/hackrf">libhackrf</a></li>
-  <li><a href="http://sdrplay.com/">SDRplay RSP</a> with <a href="reference-manual.html#sdrplaysource"><code class="highlighter-rouge">SDRplaySource</code></a> via <a href="https://www.sdrplay.com/downloads/">libmirsdrapi-rsp</a></li>
-  <li><a href="https://www.ettus.com/">USRP</a> with <a href="reference-manual.html#uhdsource"><code class="highlighter-rouge">UHDSource</code></a> via <a href="https://github.com/EttusResearch/uhd">libuhd</a></li>
+  <li><a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a> with <a href="reference-manual.html#soapysdrsource"><code class="language-plaintext highlighter-rouge">SoapySDRSource</code></a> via <a href="https://github.com/pothosware/SoapySDR">libSoapySDR</a></li>
+  <li><a href="http://www.rtl-sdr.com/about-rtl-sdr/">RTL-SDR</a> with <a href="reference-manual.html#rtlsdrsource"><code class="language-plaintext highlighter-rouge">RtlSdrSource</code></a> via <a href="http://sdr.osmocom.org/trac/wiki/rtl-sdr">librtlsdr</a></li>
+  <li><a href="http://airspy.com/">Airspy R2 and Mini</a> with <a href="reference-manual.html#airspysource"><code class="language-plaintext highlighter-rouge">AirspySource</code></a> via <a href="https://github.com/airspy/airspyonehost">libairspy</a></li>
+  <li><a href="http://airspy.com/">Airspy HF+ Dual Port and Discovery</a> with <a href="reference-manual.html#airspyhfsource"><code class="language-plaintext highlighter-rouge">AirspyHFSource</code></a> via <a href="https://github.com/airspy/airspyhf">libairspyhf</a></li>
+  <li><a href="https://greatscottgadgets.com/hackrf/">HackRF One</a> with <a href="reference-manual.html#hackrfsource"><code class="language-plaintext highlighter-rouge">HackRFSource</code></a> via <a href="https://github.com/mossmann/hackrf">libhackrf</a></li>
+  <li><a href="http://sdrplay.com/">SDRplay RSP</a> with <a href="reference-manual.html#sdrplaysource"><code class="language-plaintext highlighter-rouge">SDRplaySource</code></a> via <a href="https://www.sdrplay.com/downloads/">libmirsdrapi-rsp</a></li>
+  <li><a href="https://www.ettus.com/">USRP</a> with <a href="reference-manual.html#uhdsource"><code class="language-plaintext highlighter-rouge">UHDSource</code></a> via <a href="https://github.com/EttusResearch/uhd">libuhd</a></li>
 </ul>
 
 <h3 id="sinks">Sinks</h3>
 
 <ul>
-  <li><a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a> with <a href="reference-manual.html#soapysdrsink"><code class="highlighter-rouge">SoapySDRSink</code></a> via <a href="https://github.com/pothosware/SoapySDR">libSoapySDR</a></li>
-  <li><a href="https://greatscottgadgets.com/hackrf/">HackRF One</a> with <a href="reference-manual.html#hackrfsink"><code class="highlighter-rouge">HackRFSink</code></a> via <a href="https://github.com/mossmann/hackrf">libhackrf</a></li>
-  <li><a href="https://www.ettus.com/">USRP</a> with <a href="reference-manual.html#uhdsink"><code class="highlighter-rouge">UHDSink</code></a> via <a href="https://github.com/EttusResearch/uhd">libuhd</a></li>
+  <li><a href="https://github.com/pothosware/SoapySDR/wiki">SoapySDR</a> with <a href="reference-manual.html#soapysdrsink"><code class="language-plaintext highlighter-rouge">SoapySDRSink</code></a> via <a href="https://github.com/pothosware/SoapySDR">libSoapySDR</a></li>
+  <li><a href="https://greatscottgadgets.com/hackrf/">HackRF One</a> with <a href="reference-manual.html#hackrfsink"><code class="language-plaintext highlighter-rouge">HackRFSink</code></a> via <a href="https://github.com/mossmann/hackrf">libhackrf</a></li>
+  <li><a href="https://www.ettus.com/">USRP</a> with <a href="reference-manual.html#uhdsink"><code class="language-plaintext highlighter-rouge">UHDSink</code></a> via <a href="https://github.com/EttusResearch/uhd">libuhd</a></li>
 </ul>
 
 <h2 id="sound-card-sdr-sources-and-sinks">Sound card SDR Sources and Sinks</h2>
@@ -124,14 +127,14 @@ demodulated audio signals through sound card mono channels.</p>
 <h3 id="sources-1">Sources</h3>
 
 <ul>
-  <li><a href="reference-manual.html#pulseaudiosource"><code class="highlighter-rouge">PulseAudioSource</code></a> via <a href="https://freedesktop.org/software/pulseaudio/doxygen/">libpulse</a></li>
+  <li><a href="reference-manual.html#pulseaudiosource"><code class="language-plaintext highlighter-rouge">PulseAudioSource</code></a> via <a href="https://freedesktop.org/software/pulseaudio/doxygen/">libpulse</a></li>
 </ul>
 
 <h3 id="sinks-1">Sinks</h3>
 
 <ul>
-  <li><a href="reference-manual.html#pulseaudiosink"><code class="highlighter-rouge">PulseAudioSink</code></a> via <a href="https://freedesktop.org/software/pulseaudio/doxygen/">libpulse</a></li>
-  <li><a href="reference-manual.html#portaudiosink"><code class="highlighter-rouge">PortAudioSink</code></a> via <a href="http://www.portaudio.com/">libportaudio</a></li>
+  <li><a href="reference-manual.html#pulseaudiosink"><code class="language-plaintext highlighter-rouge">PulseAudioSink</code></a> via <a href="https://freedesktop.org/software/pulseaudio/doxygen/">libpulse</a></li>
+  <li><a href="reference-manual.html#portaudiosink"><code class="language-plaintext highlighter-rouge">PortAudioSink</code></a> via <a href="http://www.portaudio.com/">libportaudio</a></li>
 </ul>
 
 <h2 id="file-sources-and-sinks">File Sources and Sinks</h2>
@@ -143,17 +146,17 @@ external utility that interfaces with the SDR hardware.</p>
 <h3 id="sources-2">Sources</h3>
 
 <ul>
-  <li><a href="reference-manual.html#iqfilesource"><code class="highlighter-rouge">IQFileSource</code></a> for binary I/Q files</li>
-  <li><a href="reference-manual.html#realfilesource"><code class="highlighter-rouge">RealFileSource</code></a> for binary real-valued files</li>
-  <li><a href="reference-manual.html#wavfilesource"><code class="highlighter-rouge">WAVFileSource</code></a> for WAV files</li>
+  <li><a href="reference-manual.html#iqfilesource"><code class="language-plaintext highlighter-rouge">IQFileSource</code></a> for binary I/Q files</li>
+  <li><a href="reference-manual.html#realfilesource"><code class="language-plaintext highlighter-rouge">RealFileSource</code></a> for binary real-valued files</li>
+  <li><a href="reference-manual.html#wavfilesource"><code class="language-plaintext highlighter-rouge">WAVFileSource</code></a> for WAV files</li>
 </ul>
 
 <h3 id="sinks-2">Sinks</h3>
 
 <ul>
-  <li><a href="reference-manual.html#iqfilesink"><code class="highlighter-rouge">IQFileSink</code></a> for binary I/Q files</li>
-  <li><a href="reference-manual.html#realfilesink"><code class="highlighter-rouge">RealFileSink</code></a> for binary real-valued files</li>
-  <li><a href="reference-manual.html#wavfilesink"><code class="highlighter-rouge">WAVFileSink</code></a> for WAV files</li>
+  <li><a href="reference-manual.html#iqfilesink"><code class="language-plaintext highlighter-rouge">IQFileSink</code></a> for binary I/Q files</li>
+  <li><a href="reference-manual.html#realfilesink"><code class="language-plaintext highlighter-rouge">RealFileSink</code></a> for binary real-valued files</li>
+  <li><a href="reference-manual.html#wavfilesink"><code class="language-plaintext highlighter-rouge">WAVFileSink</code></a> for WAV files</li>
 </ul>
 
 
@@ -161,7 +164,7 @@ external utility that interfaces with the SDR hardware.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

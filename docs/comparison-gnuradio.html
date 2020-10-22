@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Comparison to GNU Radio</a></span>
@@ -152,7 +155,7 @@ accessible to embedded Linux platforms.</p>
 
 <p>GNU Radio blocks are typically written in C++, and tend to have a lot of
 boilerplate for building, Python binding, graphical editor binding, and
-testing. This is mitigated with tooling, i.e. the <code class="highlighter-rouge">gr_modtool</code>, but to some,
+testing. This is mitigated with tooling, i.e. the <code class="language-plaintext highlighter-rouge">gr_modtool</code>, but to some,
 this may contribute to the opaqueness of the framework. See the <a href="https://wiki.gnuradio.org/index.php/Guided_Tutorial_GNU_Radio_in_C%2B%2B">Working with
 GNU Radio in C++
 tutorial</a>
@@ -161,7 +164,7 @@ for examples of the block development flow and block skeletons.</p>
 <p>GNU Radio C++ blocks naturally require compilation before they can be used in a
 flow graph, which affects the ease of their iteration. C++ blocks sometimes use
 a custom form of string templating (e.g.
-<a href="https://github.com/gnuradio/gnuradio/blob/v3.7.9.2/gr-blocks/lib/add_XX_impl.cc.t#L53"><code class="highlighter-rouge">add_XX_impl.cc.t</code></a>),
+<a href="https://github.com/gnuradio/gnuradio/blob/v3.7.9.2/gr-blocks/lib/add_XX_impl.cc.t#L53"><code class="language-plaintext highlighter-rouge">add_XX_impl.cc.t</code></a>),
 despite being written in C++, to code generate support for multiple data types.
 C++ blocks are usually bound to Python with <a href="http://www.swig.org/">SWIG</a>, which
 generates usable, but unnatural bindings. Blocks can also be written in pure
@@ -202,23 +205,23 @@ Radio</a>,
 <h3 id="type-signatures">Type Signatures</h3>
 
 <p>GNU Radio’s I/O signature system is limited to matching sizes of types (e.g.
-<code class="highlighter-rouge">sizeof(gr_complex)</code>) in block connections, whereas LuaRadio’s type signature
+<code class="language-plaintext highlighter-rouge">sizeof(gr_complex)</code>) in block connections, whereas LuaRadio’s type signature
 system is safer and more flexible. Types in block connections are matched
 explicitly in LuaRadio, and input types can also be specified by a function
-predicate. For example, the <a href="reference-manual.html#jsonsink"><code class="highlighter-rouge">JSONSink</code></a> block
-can accept any data type that implements <code class="highlighter-rouge">to_json()</code>.</p>
+predicate. For example, the <a href="reference-manual.html#jsonsink"><code class="language-plaintext highlighter-rouge">JSONSink</code></a> block
+can accept any data type that implements <code class="language-plaintext highlighter-rouge">to_json()</code>.</p>
 
 <p>GNU Radio blocks can only support one type signature each, which pushes the
 problem of block type differentiation to the users. GNU Radio has developed a
 rich nomenclature for annotating their block names with their type signature,
-using obscure suffixes like <code class="highlighter-rouge">_cc</code> and <code class="highlighter-rouge">_ff</code>, e.g. <code class="highlighter-rouge">multiply_cc</code>, <code class="highlighter-rouge">multiply_ff</code>,
-<code class="highlighter-rouge">fir_filter_ccc</code>, <code class="highlighter-rouge">fir_filter_ccf</code>, <code class="highlighter-rouge">fir_filter_fff</code> — scroll through the <a href="https://www.gnuradio.org/doc/sphinx-v3.7.9.2/">GNU
+using obscure suffixes like <code class="language-plaintext highlighter-rouge">_cc</code> and <code class="language-plaintext highlighter-rouge">_ff</code>, e.g. <code class="language-plaintext highlighter-rouge">multiply_cc</code>, <code class="language-plaintext highlighter-rouge">multiply_ff</code>,
+<code class="language-plaintext highlighter-rouge">fir_filter_ccc</code>, <code class="language-plaintext highlighter-rouge">fir_filter_ccf</code>, <code class="language-plaintext highlighter-rouge">fir_filter_fff</code> — scroll through the <a href="https://www.gnuradio.org/doc/sphinx-v3.7.9.2/">GNU
 Radio Sphinx documentation</a> for
 more examples.</p>
 
 <p>On the other hand, LuaRadio blocks can support multiple type signatures. For
-example, the <a href="reference-manual.html#multiplyblock"><code class="highlighter-rouge">MultiplyBlock</code></a> and
-<a href="reference-manual.html#firfilterblock"><code class="highlighter-rouge">FIRFilterBlock</code></a> can accept both
+example, the <a href="reference-manual.html#multiplyblock"><code class="language-plaintext highlighter-rouge">MultiplyBlock</code></a> and
+<a href="reference-manual.html#firfilterblock"><code class="language-plaintext highlighter-rouge">FIRFilterBlock</code></a> can accept both
 complex-valued and real-valued input/output types, and the framework will
 automatically differentiate the correct type signature based on the block’s
 connections in a flow graph. This helps with code reuse and consolidation, as
@@ -237,7 +240,7 @@ reduces the amount of configuration needed by blocks, and any frequency
 parameters that are required can be specified in units of hertz. It also allows
 for a suite of convenience blocks that automatically perform sample rate
 dependent initialization, e.g. the
-<a href="reference-manual.html#lowpassfilterblock"><code class="highlighter-rouge">LowpassFilterBlock</code></a>, whose
+<a href="reference-manual.html#lowpassfilterblock"><code class="language-plaintext highlighter-rouge">LowpassFilterBlock</code></a>, whose
 parameters are just number of taps and a cutoff frequency in hertz.</p>
 
 <h3 id="embeddability">Embeddability</h3>
@@ -283,7 +286,7 @@ these can be added to LuaRadio as needed.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

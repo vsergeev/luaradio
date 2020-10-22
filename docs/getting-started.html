@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Getting Started</a></span>
@@ -114,10 +117,10 @@ filters and multipliers.</p>
 </p>
 
 <p>LuaRadio blocks have data types associated with their input and output ports.
-For example, a multiplier block may support complex-valued inputs named <code class="highlighter-rouge">in1</code>
-and <code class="highlighter-rouge">in2</code>, with a complex-valued output named <code class="highlighter-rouge">out</code>.  It may also support
-real-valued inputs named <code class="highlighter-rouge">in1</code> and <code class="highlighter-rouge">in2</code>, with a real-valued output named
-<code class="highlighter-rouge">out</code>.  Each collection of data types associated with the input and output
+For example, a multiplier block may support complex-valued inputs named <code class="language-plaintext highlighter-rouge">in1</code>
+and <code class="language-plaintext highlighter-rouge">in2</code>, with a complex-valued output named <code class="language-plaintext highlighter-rouge">out</code>.  It may also support
+real-valued inputs named <code class="language-plaintext highlighter-rouge">in1</code> and <code class="language-plaintext highlighter-rouge">in2</code>, with a real-valued output named
+<code class="language-plaintext highlighter-rouge">out</code>.  Each collection of data types associated with the input and output
 ports is called a type signature.</p>
 
 <p align="center">
@@ -187,12 +190,12 @@ blocks, and running a flow graph.</p>
 <span class="n">top</span><span class="p">:</span><span class="n">run</span><span class="p">()</span>
 </code></pre></div></div>
 
-<p>Run the flow graph with the <code class="highlighter-rouge">luaradio</code> runner:</p>
+<p>Run the flow graph with the <code class="language-plaintext highlighter-rouge">luaradio</code> runner:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio test.lua
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio test.lua
 </code></pre></div></div>
 
-<p>The flow graph can be terminated with Ctrl-C or <code class="highlighter-rouge">SIGINT</code>.</p>
+<p>The flow graph can be terminated with Ctrl-C or <code class="language-plaintext highlighter-rouge">SIGINT</code>.</p>
 
 <p>This flow graph <a href="https://en.wikipedia.org/wiki/Frequency_mixer">mixes</a> two
 tones at 125 kHz and 75 kHz to create the sum and difference frequency tones at
@@ -214,8 +217,8 @@ produces the plot below:</p>
 <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">radio</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">'radio'</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>The first line of the example imports the <code class="highlighter-rouge">radio</code> package under the local
-variable <code class="highlighter-rouge">radio</code>. This package exposes all LuaRadio blocks, as well the
+<p>The first line of the example imports the <code class="language-plaintext highlighter-rouge">radio</code> package under the local
+variable <code class="language-plaintext highlighter-rouge">radio</code>. This package exposes all LuaRadio blocks, as well the
 facilities to create custom blocks and types.</p>
 
 <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Blocks</span>
@@ -232,11 +235,11 @@ sample rate parameters are only required for the source blocks; all other
 blocks inherit their sample rate through the connections in the flow graph.</p>
 
 <p>The last line of the blocks section instantiates a special kind of block,
-called the <a href="reference-manual.html#compositeblock"><code class="highlighter-rouge">CompositeBlock</code></a>. A
+called the <a href="reference-manual.html#compositeblock"><code class="language-plaintext highlighter-rouge">CompositeBlock</code></a>. A
 composite block is a composition of blocks, created for one of two purposes:
 either for a top-level block — a composition of blocks forming a complete flow
 graph that can be run, or for a hierarchical block — a composition of blocks
-abstracted into one block. In this example, we create a <code class="highlighter-rouge">CompositeBlock</code> to
+abstracted into one block. In this example, we create a <code class="language-plaintext highlighter-rouge">CompositeBlock</code> to
 serve as a top-level block that contains a complete flow graph.</p>
 
 <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Connections</span>
@@ -249,14 +252,14 @@ serve as a top-level block that contains a complete flow graph.</p>
 the top-level block, which form the complete flow graph.</p>
 
 <p>The first two connections demonstrate the explicit connection syntax. For
-instance, <code class="highlighter-rouge">top:connect(source1, 'out', mixer, 'in1')</code>, where <code class="highlighter-rouge">source1</code>’s output
-port named <code class="highlighter-rouge">out</code> is explicitly connected the <code class="highlighter-rouge">mixer</code>’s input port named <code class="highlighter-rouge">in1</code>.
-In this case, the mixer has two inputs, <code class="highlighter-rouge">in1</code> and <code class="highlighter-rouge">in2</code>, so we use the explicit
+instance, <code class="language-plaintext highlighter-rouge">top:connect(source1, 'out', mixer, 'in1')</code>, where <code class="language-plaintext highlighter-rouge">source1</code>’s output
+port named <code class="language-plaintext highlighter-rouge">out</code> is explicitly connected the <code class="language-plaintext highlighter-rouge">mixer</code>’s input port named <code class="language-plaintext highlighter-rouge">in1</code>.
+In this case, the mixer has two inputs, <code class="language-plaintext highlighter-rouge">in1</code> and <code class="language-plaintext highlighter-rouge">in2</code>, so we use the explicit
 connection syntax to specify which input the source block output should connect
 to.</p>
 
 <p>The third connection demonstrates the linear block connection syntax. This
-syntax will take any number of blocks, e.g.  <code class="highlighter-rouge">top:connect(b1, b2, b3, ...)</code>,
+syntax will take any number of blocks, e.g.  <code class="language-plaintext highlighter-rouge">top:connect(b1, b2, b3, ...)</code>,
 and connect the first output to the first input of each adjacent block. This
 syntax is convenient for connecting chains of blocks that only have one input
 and output, which is most blocks.</p>
@@ -267,9 +270,9 @@ and output, which is most blocks.</p>
 
 <p>The last line of the example runs the flow graph. This line will block until
 the flow graph terminates, either naturally by an exiting source, or forcibly
-by a user’s <code class="highlighter-rouge">SIGINT</code> signal. In this case, the cosine signal generator sources
+by a user’s <code class="language-plaintext highlighter-rouge">SIGINT</code> signal. In this case, the cosine signal generator sources
 will generate samples indefinitely, so this flow graph will only terminate by a
-user’s <code class="highlighter-rouge">SIGINT</code> signal.</p>
+user’s <code class="language-plaintext highlighter-rouge">SIGINT</code> signal.</p>
 
 <h2 id="blocks-and-types">Blocks and Types</h2>
 
@@ -290,12 +293,12 @@ types.</p>
 <p>LuaRadio comes with four basic data types:</p>
 
 <ul>
-  <li><a href="reference-manual.html#complexfloat32"><code class="highlighter-rouge">ComplexFloat32</code></a>, compatible with the
-<code class="highlighter-rouge">float complex</code> C type</li>
-  <li><a href="reference-manual.html#float32"><code class="highlighter-rouge">Float32</code></a>, compatible with the <code class="highlighter-rouge">float</code> C
+  <li><a href="reference-manual.html#complexfloat32"><code class="language-plaintext highlighter-rouge">ComplexFloat32</code></a>, compatible with the
+<code class="language-plaintext highlighter-rouge">float complex</code> C type</li>
+  <li><a href="reference-manual.html#float32"><code class="language-plaintext highlighter-rouge">Float32</code></a>, compatible with the <code class="language-plaintext highlighter-rouge">float</code> C
 type</li>
-  <li><a href="reference-manual.html#byte"><code class="highlighter-rouge">Byte</code></a>, compatible with the <code class="highlighter-rouge">uint8_t</code> C type</li>
-  <li><a href="reference-manual.html#bit"><code class="highlighter-rouge">Bit</code></a>, compatible with the <code class="highlighter-rouge">uint8_t</code> C type,
+  <li><a href="reference-manual.html#byte"><code class="language-plaintext highlighter-rouge">Byte</code></a>, compatible with the <code class="language-plaintext highlighter-rouge">uint8_t</code> C type</li>
+  <li><a href="reference-manual.html#bit"><code class="language-plaintext highlighter-rouge">Bit</code></a>, compatible with the <code class="language-plaintext highlighter-rouge">uint8_t</code> C type,
 stored in the least significant bit</li>
 </ul>
 
@@ -317,7 +320,7 @@ Types</a> section of the next guide.</p>
 
 <p>Feedback loops cannot be implemented by blocks connected in a cycle.  Instead,
 operations that require feedback loops must be implemented entirely within a
-block (for example, the <a href="reference-manual.html#pllblock"><code class="highlighter-rouge">PLLBlock</code></a>).</p>
+block (for example, the <a href="reference-manual.html#pllblock"><code class="language-plaintext highlighter-rouge">PLLBlock</code></a>).</p>
 
 <h6 id="blocks-cannot-be-manipulated-after-a-flow-graph-is-running">Blocks cannot be manipulated after a flow graph is running.</h6>
 
@@ -338,7 +341,7 @@ blocks and data types.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

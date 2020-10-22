@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">POCSAG Receiver Example</a></span>
@@ -86,7 +89,7 @@
 
       </div>
       <div class="nine columns content">
-        <h1 id="rtlsdr_pocsaglua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_pocsag.lua"><code class="highlighter-rouge">rtlsdr_pocsag.lua</code></a></h1>
+        <h1 id="rtlsdr_pocsaglua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_pocsag.lua"><code class="language-plaintext highlighter-rouge">rtlsdr_pocsag.lua</code></a></h1>
 
 <p>This example is a <a href="https://en.wikipedia.org/wiki/POCSAG">POCSAG</a> receiver. It
 can be used to receive pager messages dispatched by hospital, fire, emergency,
@@ -96,7 +99,7 @@ POCSAG messages in JSON to standard out, and shows two real-time plots: the RF
 spectrum and the demodulated bitstream.</p>
 
 <p>This POCSAG receiver composition is available in LuaRadio as the
-<a href="../docs/reference-manual.html#pocsagreceiver"><code class="highlighter-rouge">POCSAGReceiver</code></a> block.</p>
+<a href="../docs/reference-manual.html#pocsagreceiver"><code class="language-plaintext highlighter-rouge">POCSAGReceiver</code></a> block.</p>
 
 <p align="center">
 <a href="../images/screenshot-rtlsdr_pocsag.png" target="_blank"><img src="../images/screenshot-rtlsdr_pocsag-thumb.png" style="display: inline-block; vertical-align: middle;" /></a>
@@ -163,7 +166,7 @@ spectrum and the demodulated bitstream.</p>
 
 <h5 id="usage">Usage</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/rtlsdr_pocsag.lua &lt;frequency&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/rtlsdr_pocsag.lua &lt;frequency&gt;
 </code></pre></div></div>
 
 <p>Running this example in a headless environment will inhibit plotting.</p>
@@ -175,7 +178,7 @@ POCSAG transmitter.</p>
 
 <p>Receive POCSAG on 152.240 MHz:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_pocsag.lua 152.240e6
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_pocsag.lua 152.240e6
 {"address":1234567,"func":2,"alphanumeric":"THIS IS A TEST PERIODIC PAGE SEQUENTIAL NUMBER  1973"}
 {"address":234567,"func":2,"alphanumeric":"THIS IS A TEST PERIODIC PAGE SEQUENTIAL NUMBER  1973"}
 {"address":1234567,"func":2,"alphanumeric":"THIS IS A TEST PERIODIC PAGE SEQUENTIAL NUMBER  1974"}
@@ -189,7 +192,7 @@ POCSAG transmitter.</p>
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

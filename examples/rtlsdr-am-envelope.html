@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">AM Receiver (Envelope) Example</a></span>
@@ -86,7 +89,7 @@
 
       </div>
       <div class="nine columns content">
-        <h1 id="rtlsdr_am_envelopelua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_am_envelope.lua"><code class="highlighter-rouge">rtlsdr_am_envelope.lua</code></a></h1>
+        <h1 id="rtlsdr_am_envelopelua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_am_envelope.lua"><code class="language-plaintext highlighter-rouge">rtlsdr_am_envelope.lua</code></a></h1>
 
 <p>This example is an AM radio receiver, implemented with an envelope detector. It
 can be used to listen to broadcast stations on the MF (<a href="https://en.wikipedia.org/wiki/AM_broadcasting">AM
@@ -101,7 +104,7 @@ spectrum and the demodulated audio spectrum.</p>
 bands with the RTL-SDR.</p>
 
 <p>This AM envelope demodulator composition is available in LuaRadio as the
-<a href="../docs/reference-manual.html#amenvelopedemodulator"><code class="highlighter-rouge">AMEnvelopeDemodulator</code></a> block.</p>
+<a href="../docs/reference-manual.html#amenvelopedemodulator"><code class="language-plaintext highlighter-rouge">AMEnvelopeDemodulator</code></a> block.</p>
 
 <p align="center">
 <a href="../images/screenshot-rtlsdr_am_envelope.png" target="_blank"><img src="../images/screenshot-rtlsdr_am_envelope-thumb.png" style="display: inline-block; vertical-align: middle;" /></a>
@@ -155,30 +158,30 @@ bands with the RTL-SDR.</p>
 
 <h5 id="usage">Usage</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/rtlsdr_am_envelope.lua &lt;frequency&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/rtlsdr_am_envelope.lua &lt;frequency&gt;
 </code></pre></div></div>
 
 <p>Running this example in a headless environment will inhibit plotting and record
-audio to the WAV file <code class="highlighter-rouge">am_envelope.wav</code>.</p>
+audio to the WAV file <code class="language-plaintext highlighter-rouge">am_envelope.wav</code>.</p>
 
 <h5 id="usage-example">Usage Example</h5>
 
 <p>Listen to <a href="https://en.wikipedia.org/wiki/WWV_(radio_station)">WWV</a> at 5 MHz
 (with a 125 MHz upconverter):</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_am_envelope.lua 130e6
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_am_envelope.lua 130e6
 </code></pre></div></div>
 
 <p>Listen to an AM radio station at 560 kHz (with a 125 MHz upconverter):</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_am_envelope.lua 125.560e6
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_am_envelope.lua 125.560e6
 </code></pre></div></div>
 
 
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">IQ File Converter Example</a></span>
@@ -86,7 +89,7 @@
 
       </div>
       <div class="nine columns content">
-        <h1 id="iqfile_converterlua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/iqfile_converter.lua"><code class="highlighter-rouge">iqfile_converter.lua</code></a></h1>
+        <h1 id="iqfile_converterlua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/iqfile_converter.lua"><code class="language-plaintext highlighter-rouge">iqfile_converter.lua</code></a></h1>
 
 <p>This example is an IQ file format converter. It converts the binary encoding of
 IQ files from one format, e.g. signed 8-bit, to another, e.g. 32-bit float
@@ -124,7 +127,7 @@ to completion.</p>
 
 <h5 id="usage">Usage</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/iqfile_converter.lua &lt;input IQ file&gt; &lt;input format&gt; &lt;output IQ file&gt; &lt;output format&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/iqfile_converter.lua &lt;input IQ file&gt; &lt;input format&gt; &lt;output IQ file&gt; &lt;output format&gt;
 
 Supported formats:
     s8, u8,
@@ -135,10 +138,10 @@ Supported formats:
 
 <h5 id="usage-example">Usage Example</h5>
 
-<p>Convert <code class="highlighter-rouge">test.s8.iq</code>, with signed 8-bit samples, into <code class="highlighter-rouge">test.f32le.iq</code>, with
+<p>Convert <code class="language-plaintext highlighter-rouge">test.s8.iq</code>, with signed 8-bit samples, into <code class="language-plaintext highlighter-rouge">test.f32le.iq</code>, with
 32-bit float little endian samples:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/iqfile_converter.lua test.s8.iq s8 test.f32le.iq f32le
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/iqfile_converter.lua test.s8.iq s8 test.f32le.iq f32le
 $ du -b test.s8.iq
 10236   test.s8.iq
 $ du -b test.f32le.iq
@@ -150,7 +153,7 @@ $
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

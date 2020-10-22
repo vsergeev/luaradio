@@ -29,9 +29,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href=".">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="./new-to-sdr.html">New to SDR?</a></li>
@@ -47,7 +49,6 @@
             </ul>
         </li>
         <li><a href="./docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="./examples/">Examples</a>
             <ul>
@@ -75,9 +76,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">Benchmarks</a></span>
@@ -95,7 +98,7 @@ samples per second, under both LuaRadio and GNU Radio. Equivalent blocks from
 LuaRadio and GNU Radio are compared, and the results are normalized to GNU
 Radio performance. Benchmark results are included for two platforms: an Intel
 i5 desktop and the Raspberry Pi 3. The benchmark suites can be found in the
-<a href="https://github.com/vsergeev/luaradio/tree/master/benchmarks"><code class="highlighter-rouge">benchmarks/</code></a>
+<a href="https://github.com/vsergeev/luaradio/tree/master/benchmarks"><code class="language-plaintext highlighter-rouge">benchmarks/</code></a>
 folder of the project.</p>
 
 <h4 id="observations">Observations</h4>
@@ -108,7 +111,7 @@ that are already in the very high throughput territory, e.g. hundreds to
 thousands of megasamples per second on an Intel i5 desktop. Analogous
 observations hold for the Raspberry Pi 3.</p>
 
-<p>Some blocks in LuaRadio, like the <code class="highlighter-rouge">SignalSource</code>, have not yet been optimized
+<p>Some blocks in LuaRadio, like the <code class="language-plaintext highlighter-rouge">SignalSource</code>, have not yet been optimized
 with library accelerated implementations. These blocks will see more comparable
 throughput results to GNU Radio with future performance improvements.</p>
 
@@ -179,7 +182,7 @@ new Chart(document.getElementById("rpi3_benchmarks"), rpi3_benchmarks_data);
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

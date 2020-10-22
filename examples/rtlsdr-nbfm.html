@@ -27,9 +27,11 @@
       <div class="three columns sidebar">
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
-  <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><code class="version">v0.7.0</code></a>
-  </p>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
   <div class="toc">
     <ul>
         <li><a href="../new-to-sdr.html">New to SDR?</a></li>
@@ -45,7 +47,6 @@
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
-        <li><a href="https://groups.io/g/luaradio">Mailing List</a></li>
         <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
         <li><a href="../examples/">Examples</a>
             <ul>
@@ -73,9 +74,11 @@
         <nav class="scroll-toc">
   <div class="toc-header">
     <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
-    <p align="center">
-      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github" aria-hidden="true"></i> GitHub</a><a href="https://github.com/vsergeev/luaradio"><code class="version">v0.7.0</code></a>
-    </p>
+    <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.8.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+    </div>
   </div>
   <div class="toc">
     <span class="page-title"><a data-scroll href="#top">NBFM Receiver Example</a></span>
@@ -86,7 +89,7 @@
 
       </div>
       <div class="nine columns content">
-        <h1 id="rtlsdr_nbfmlua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_nbfm.lua"><code class="highlighter-rouge">rtlsdr_nbfm.lua</code></a></h1>
+        <h1 id="rtlsdr_nbfmlua"><a href="https://github.com/vsergeev/luaradio/blob/master/examples/rtlsdr_nbfm.lua"><code class="language-plaintext highlighter-rouge">rtlsdr_nbfm.lua</code></a></h1>
 
 <p>This example is a Narrowband FM radio receiver. It can be used to listen to
 <a href="https://en.wikipedia.org/wiki/NOAA_Weather_Radio">NOAA weather radio</a> in the
@@ -96,7 +99,7 @@ PulseAudio, and shows two real-time plots: the RF spectrum and the demodulated
 audio spectrum.</p>
 
 <p>This NBFM demodulator composition is available in LuaRadio as the
-<a href="../docs/reference-manual.html#nbfmdemodulator"><code class="highlighter-rouge">NBFMDemodulator</code></a>
+<a href="../docs/reference-manual.html#nbfmdemodulator"><code class="language-plaintext highlighter-rouge">NBFMDemodulator</code></a>
 block.</p>
 
 <p align="center">
@@ -150,28 +153,28 @@ block.</p>
 
 <h5 id="usage">Usage</h5>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/rtlsdr_nbfm.lua &lt;frequency&gt;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: examples/rtlsdr_nbfm.lua &lt;frequency&gt;
 </code></pre></div></div>
 
 <p>Running this example in a headless environment will inhibit plotting and record
-audio to the WAV file <code class="highlighter-rouge">nbfm.wav</code>.</p>
+audio to the WAV file <code class="language-plaintext highlighter-rouge">nbfm.wav</code>.</p>
 
 <h5 id="usage-example">Usage Example</h5>
 
 <p>Listen to NOAA1, 162.400 MHz:</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_nbfm.lua 162.400e6
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./luaradio examples/rtlsdr_nbfm.lua 162.400e6
 </code></pre></div></div>
 
-<p>Additional NOAA weather radio station frequencies: <code class="highlighter-rouge">162.400 MHz</code> (NOAA1),
-<code class="highlighter-rouge">162.425 MHz</code> (NOAA2), <code class="highlighter-rouge">162.450 MHz</code> (NOAA3), <code class="highlighter-rouge">162.475 MHz</code> (NOAA4),
-<code class="highlighter-rouge">162.500 MHz</code> (NOAA5), <code class="highlighter-rouge">162.525 MHz</code> (NOAA6), <code class="highlighter-rouge">162.550 MHz</code> (NOAA7).</p>
+<p>Additional NOAA weather radio station frequencies: <code class="language-plaintext highlighter-rouge">162.400 MHz</code> (NOAA1),
+<code class="language-plaintext highlighter-rouge">162.425 MHz</code> (NOAA2), <code class="language-plaintext highlighter-rouge">162.450 MHz</code> (NOAA3), <code class="language-plaintext highlighter-rouge">162.475 MHz</code> (NOAA4),
+<code class="language-plaintext highlighter-rouge">162.500 MHz</code> (NOAA5), <code class="language-plaintext highlighter-rouge">162.525 MHz</code> (NOAA6), <code class="language-plaintext highlighter-rouge">162.550 MHz</code> (NOAA7).</p>
 
 
         <div class="footer">
           <div class="disclaimer">
   <p>
-    © Vanya A. Sergeev, 2016-2019 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+    © Vanya A. Sergeev, 2016-2020 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
   </p>
 </div>
 

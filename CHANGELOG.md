@@ -1,3 +1,58 @@
+* v0.8.0 - 10/22/2020
+    * Block additions
+        * FrequencyModulatorBlock
+        * ManchesterMatchedFilterBlock
+        * PreambleSamplerBlock
+        * IDMFramerBlock
+        * SCMFramerBlock
+        * SCMPlusFramerBlock
+    * Composite additions
+        * ERTReceiver
+    * Block changes
+        * Add file locking to JSONSink to support interleaved writes to the
+          same file from multiple instances of the sink.
+        * Add alternative library name candidates to PortAudioSource,
+          PortAudioSink, PulseAudioSource, PulseAudioSink for better user
+          experience on Debian-based platforms.
+    * Type changes
+        * Add `tobytes()` helper function to the Bit type to convert a Bit
+          vector to bytes.
+        * Add `tostring()` helper function to the Bit type to format a Bit
+          vector as a string.
+    * Core changes
+        * Add support for trying multiple shared library name candidates in FFI
+          library loads.
+        * Add alternative library name candidates for liquid-dsp, VOLK, and
+          FFTW3 for better user experience on Debian-based platforms.
+        * Add support for copying the input data type to the output in block
+          type signatures with the `"copy"` sentinel.
+        * Enforce explicit block connections are specified with the output port
+          first and the input port second.
+        * Refactor hierarchical block functionality of CompositeBlock.
+            * Add support for type signature differentiation of hierarchical
+              blocks.
+            * Add support for the `initialize()` hook for hierarchical blocks,
+              allowing additional initialization based on the sample rates and
+              differentiated type signatures of internal blocks.
+            * Improve type validation of aliased ports in hierarchical blocks.
+        * Improve the string representation of block objects during various
+          connectivity stages (unconnected, differentiated, connected).
+    * Build changes
+        * Add Lua module installation target to Makefile.
+    * Documentation changes
+        * Update CompositeBlock internals with hierarchical block functionality
+          refactoring in architecture document.
+        * Add Lua module installation option to installation guide.
+        * Add note about LuaJIT 2.1.0-beta3 embedded bytecode loading bug to
+          installation guide.
+        * Improve description of shared library in embedding guide.
+    * Website changes
+        * Improve formatting of headers and the sidebar.
+    * Contributors
+        * Jonas Rudloff (@kokjo) - eb5bc68, 4a16f57, 36ce479
+        * Paul Harrington (@phrrngtn) - for discussion, many IQ samples, and
+          testing of the ERTReceiver composite.
+
 * v0.7.0 - 04/29/2020
     * Block additions
         * PortAudioSource

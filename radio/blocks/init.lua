@@ -61,6 +61,7 @@ return {
     FMDeemphasisFilterBlock = require('radio.blocks.signal.fmdeemphasisfilter'),
     FMPreemphasisFilterBlock = require('radio.blocks.signal.fmpreemphasisfilter'),
     ManchesterMatchedFilterBlock = require('radio.blocks.signal.manchestermatchedfilter'),
+    PulseMatchedFilterBlock = require('radio.blocks.signal.pulsematchedfilter'),
     --- Math Operations
     AddBlock = require('radio.blocks.signal.add'),
     AddConstantBlock = require('radio.blocks.signal.addconstant'),

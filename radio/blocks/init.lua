@@ -101,6 +101,7 @@ return {
     --- Modulation
     FrequencyModulatorBlock = require('radio.blocks.signal.frequencymodulator'),
     PulseAmplitudeModulatorBlock = require('radio.blocks.signal.pulseamplitudemodulator'),
+    QuadratureAmplitudeModulatorBlock = require('radio.blocks.signal.quadratureamplitudemodulator'),
     --- Demodulation
     FrequencyDiscriminatorBlock = require('radio.blocks.signal.frequencydiscriminator'),
     --- Miscellaneous

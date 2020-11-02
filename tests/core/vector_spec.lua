@@ -82,6 +82,23 @@ describe("vector", function ()
         assert.is.equal(0xffffffff, v.data[3].y)
     end)
 
+    it("fill", function ()
+        -- Vector of 4 zero-initialized
+        local v = Vector(ffi.typeof("elem_t"), 4)
+
+        -- Fill with element
+        v:fill(ffi.new("elem_t", 0xdeadbeef, 0xcafecafe))
+        assert.is.equal(4, v.length)
+        assert.is.equal(0xdeadbeef, v.data[0].x)
+        assert.is.equal(0xcafecafe, v.data[0].y)
+        assert.is.equal(0xdeadbeef, v.data[1].x)
+        assert.is.equal(0xcafecafe, v.data[1].y)
+        assert.is.equal(0xdeadbeef, v.data[2].x)
+        assert.is.equal(0xcafecafe, v.data[2].y)
+        assert.is.equal(0xdeadbeef, v.data[3].x)
+        assert.is.equal(0xcafecafe, v.data[3].y)
+    end)
+
     it("resize", function ()
         -- Empty vector
         local v = Vector(ffi.typeof("elem_t"))

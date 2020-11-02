@@ -148,6 +148,21 @@ function Vector:append(elem)
     return self
 end
 
+
+---
+-- Fill a vector with an element.
+--
+-- @function Vector:fill
+-- @param elem Element
+-- @treturn Vector self
+function Vector:fill(elem)
+    for i=0, self.length - 1 do
+        self.data[i] = elem
+    end
+
+    return self
+end
+
 ---
 -- A dynamic array of a Lua object type.
 --

@@ -21,6 +21,7 @@ return {
     PortAudioSource = require('radio.blocks.sources.portaudio'),
     SoapySDRSource = require('radio.blocks.sources.soapysdr'),
     UHDSource = require('radio.blocks.sources.uhd'),
+    BladeRFSource = require('radio.blocks.sources.bladerf'),
     NetworkClientSource = require('radio.blocks.sources.networkclient'),
     NetworkServerSource = require('radio.blocks.sources.networkserver'),
 

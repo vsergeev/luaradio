@@ -43,6 +43,7 @@ return {
     SoapySDRSink = require('radio.blocks.sinks.soapysdr'),
     NopSink = require('radio.blocks.sinks.nop'),
     UHDSink = require('radio.blocks.sinks.uhd'),
+    BladeRFSink = require('radio.blocks.sinks.bladerf'),
     NetworkClientSink = require('radio.blocks.sinks.networkclient'),
     NetworkServerSink = require('radio.blocks.sinks.networkserver'),
 

@@ -12,6 +12,7 @@
 -- @block BenchmarkSink
 -- @tparam[opt=io.stderr] string|file|int file Filename, file object, or file descriptor
 -- @tparam[opt=false] bool use_json Serialize aggregate results in JSON on termination
+-- @tparam[opt="BenchmarkSink"] string title Title in reporting
 --
 -- @signature in:any >
 --
@@ -32,7 +33,7 @@ local platform = require('radio.core.platform')
 
 local BenchmarkSink = block.factory("BenchmarkSink")
 
-function BenchmarkSink:instantiate(file, use_json)
+function BenchmarkSink:instantiate(file, use_json, title)
     if type(file) == "number" then
         self.fd = file
     elseif type(file) == "string" then
@@ -45,6 +46,7 @@ function BenchmarkSink:instantiate(file, use_json)
     end
 
     self.use_json = use_json or false
+    self.title = title or "BenchmarkSink"
     self.report_period = 3.0
 
     -- Accept all input types
@@ -99,7 +101,7 @@ function BenchmarkSink:process(x)
             local bps, bps_prefix = normalize(bytes_per_second)
 
             -- Form report string
-            local s = string.format("[BenchmarkSink] %.2f %sS/s (%.2f %sB/s)\n", sps, sps_prefix, bps, bps_prefix)
+            local s = string.format("[%s] %.2f %sS/s (%.2f %sB/s)\n", self.title, sps, sps_prefix, bps, bps_prefix)
 
             -- Write to file
             if ffi.C.fwrite(s, 1, #s, self.file) ~= #s then

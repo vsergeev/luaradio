@@ -25,6 +25,8 @@ function PrintSink:instantiate(file)
         self.fd = file
     elseif type(file) == "string" then
         self.filename = file
+    elseif type(file) == "userdata" then
+        self.file = file
     elseif file == nil then
         -- Default to io.stdout
         self.file = io.stdout

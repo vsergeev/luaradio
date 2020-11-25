@@ -37,6 +37,8 @@ function BenchmarkSink:instantiate(file, use_json)
         self.fd = file
     elseif type(file) == "string" then
         self.filename = file
+    elseif type(file) == "userdata" then
+        self.file = file
     elseif file == nil then
         -- Default to stderr
         self.file = io.stderr

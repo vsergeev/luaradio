@@ -6,6 +6,7 @@
 -- @category Sinks
 -- @block PrintSink
 -- @tparam[opt=io.stdout] string|file|int file Filename, file object, or file descriptor
+-- @tparam[opt=""] string title Title in reporting
 --
 -- @signature in:supported >
 --
@@ -20,7 +21,7 @@ local block = require('radio.core.block')
 
 local PrintSink = block.factory("PrintSink")
 
-function PrintSink:instantiate(file)
+function PrintSink:instantiate(file, title)
     if type(file) == "number" then
         self.fd = file
     elseif type(file) == "string" then
@@ -31,6 +32,8 @@ function PrintSink:instantiate(file)
         -- Default to io.stdout
         self.file = io.stdout
     end
+
+    self.title = title
 
     -- Accept all input types that implement __tostring()
     self:add_type_signature({block.Input("in", function (type) return type.__tostring ~= nil end)}, {})
@@ -49,13 +52,16 @@ function PrintSink:initialize()
         end
     end
 
+    -- Preformat title
+    self.title = self.title and string.format("[%s] ", self.title) or ""
+
     -- Register open file
     self.files[self.file] = true
 end
 
 function PrintSink:process(x)
     for i = 0, x.length-1 do
-        local s = tostring(x.data[i]) .. "\n"
+        local s = self.title .. tostring(x.data[i]) .. "\n"
 
         -- Write to file
         if ffi.C.fwrite(s, 1, #s, self.file) ~= #s then

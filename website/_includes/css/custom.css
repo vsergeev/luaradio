@@ -24,21 +24,8 @@ body {
 .scroll-toc {
   visibility: hidden;
   height: 0;
-}
-
-.scroll-toc div.toc-header {
   width: 75%;
   max-width: 242px;
-  border-bottom: dotted #ddd;
-  border-width: 1px 0;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.scroll-toc div.toc-header .links {
-  display: table;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 @media (min-width: 550px) {
@@ -48,48 +35,27 @@ body {
     position: fixed !important;
     height: 100%;
     top: 1.7rem;
-    left: 1.7rem;
-    max-width: 15%;
   }
 }
 
-@media (min-width: 750px) {
-  .is-position-fixed {
-    top: 3.2rem;
-    left: 3.2rem;
-    max-width: 20%;
-  }
-}
-
-@media (min-width: 1000px) {
-  .is-position-fixed {
-    max-width: 25%;
-  }
-}
-
-@media (min-width: 1400px) {
-  .is-position-fixed {
-    left: 12.5%;
-  }
-}
-
-/* Scroll support */
-
-.scroll-toc div.toc {
-  padding-top: 1.1rem;
-  padding-bottom: 0.5rem;
+.scroll-toc .toc {
+  border-top: dotted #ddd;
+  border-width: 1px 0;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
 }
 
 @media (min-width: 550px) {
-  .scroll-toc div.toc {
+  .scroll-toc .toc {
     height: 80%;
+    margin-left: 1.6rem;
   }
-  .scroll-toc div.toc div.js-toc {
+  .scroll-toc .toc .js-toc {
     max-height: 80%;
   }
 }
 
-.scroll-toc div.toc div.js-toc {
+.scroll-toc .toc .js-toc {
   overflow: auto;
   white-space: nowrap;
 }
@@ -98,23 +64,8 @@ body {
   position: relative;
 }
 
-/* Collapse support */
-
-.is-collapsible {
-  max-height: 1000px;
-  overflow: hidden;
-  transition: all 300ms ease-in-out;
-}
-
-.is-collapsed {
-  max-height: 0;
-}
-
-/* Toc List container inside Scrolling Toc */
-
 .toc-list {
-  margin: 0;
-  padding-left: 1.6rem;
+  margin-left: 1.6rem;
 }
 
 .toc .toc-list ul li {
@@ -140,6 +91,16 @@ a.toc-link {
 .is-active-link::before {
   content: '\25ba';
   color: {{ site.data.theme.highlight_color }};
+}
+
+.is-collapsible {
+  max-height: 1000px;
+  overflow: hidden;
+  transition: all 300ms ease-in-out;
+}
+
+.is-collapsed {
+  max-height: 0;
 }
 
 /******************************************************************************/

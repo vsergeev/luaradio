@@ -6,6 +6,8 @@ import subprocess
 
 git_version = os.environ.get("GIT_VERSION") or subprocess.check_output("git describe --abbrev --always --tags".split(" ")).decode().strip()
 
+disable_toc = os.environ.get("DISABLE_TOC")
+
 block_categories = [
     "Sources",
     "Sinks",

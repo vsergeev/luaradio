@@ -3,6 +3,7 @@
 
 Generated from LuaRadio `${utils.attr.git_version}`.
 
+% if not utils.attr.disable_toc:
 ## Table of contents
 
 * [Example](#example)
@@ -41,6 +42,7 @@ Generated from LuaRadio `${utils.attr.git_version}`.
     * [Debug](#debug)
     * [Platform](#platform)
 
+% endif
 ## Example
 
 <p align="center">

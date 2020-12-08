@@ -17,94 +17,6 @@ body {
   border-top: 7px solid {{ site.data.theme.highlight_color }};
 }
 
-/******************************************************************************/
-
-/* Scrolling Toc Container */
-
-.scroll-toc {
-  visibility: hidden;
-  height: 0;
-  width: 75%;
-  max-width: 242px;
-}
-
-@media (min-width: 550px) {
-  /* Only show scrolling toc in grid layout */
-  .is-position-fixed {
-    visibility: visible;
-    position: fixed !important;
-    height: 100%;
-    top: 1.7rem;
-  }
-}
-
-.scroll-toc .toc {
-  border-top: dotted #ddd;
-  border-width: 1px 0;
-  margin-top: 1rem;
-  padding-top: 0.9rem;
-}
-
-@media (min-width: 550px) {
-  .scroll-toc .toc {
-    height: 80%;
-    margin-left: 1.6rem;
-  }
-  .scroll-toc .toc .js-toc {
-    max-height: 80%;
-  }
-}
-
-.scroll-toc .toc .js-toc {
-  overflow: auto;
-  white-space: nowrap;
-}
-
-.scroll-toc div.toc>ul {
-  position: relative;
-}
-
-.toc-list {
-  margin-left: 1.6rem;
-}
-
-.toc .toc-list ul li {
-  margin-top: 0.2rem;
-  margin-bottom: 0;
-}
-
-a.toc-link {
-  color: currentColor;
-  height: 100%;
-}
-
-.toc-link::before {
-  content: ' ';
-  margin-left: -1.2em;
-  float: left;
-}
-
-.is-active-link {
-  font-weight: 700
-}
-
-.is-active-link::before {
-  content: '\25ba';
-  color: {{ site.data.theme.highlight_color }};
-}
-
-.is-collapsible {
-  max-height: 1000px;
-  overflow: hidden;
-  transition: all 300ms ease-in-out;
-}
-
-.is-collapsed {
-  max-height: 0;
-}
-
-/******************************************************************************/
-
 /* Block element margins */
 
 p, blockquote, ul, ol, dl, table, pre {
@@ -274,49 +186,6 @@ pre.benchmark-platform {
 
 /******************************************************************************/
 
-/* Reference Manual formatting */
-
-.reference-manual hr {
-  margin-top: 2.0rem;
-  margin-bottom: 1.5rem;
-}
-
-.reference-manual h4 {
-  margin-bottom: 1.0rem;
-}
-
-.reference-manual h5 {
-  font-size: 1.8rem;
-  margin-top: 0;
-  padding-top: 0.25rem;
-  margin-bottom: 1.0rem;
-}
-
-.reference-manual .class p, .reference-manual .class ul, .reference-manual .class pre, .reference-manual .class h6,
-.reference-manual .block p, .reference-manual .block ul, .reference-manual .block pre, .reference-manual .block h6,
-.reference-manual .field p, .reference-manual .field ul, .reference-manual .field pre, .reference-manual .field h6,
-.reference-manual .function p, .reference-manual .function ul, .reference-manual .function pre, .reference-manual .function h6 {
-  margin-bottom: 0.75rem;
-  margin-left: 2.0rem;
-}
-
-.reference-manual .class h5 code {
-  margin-left: 0rem;
-}
-
-.reference-manual .block h5 code {
-  margin-left: 1.4rem;
-}
-
-.reference-manual h6 {
-  color: #999;
-  font-size: 1.5rem;
-  margin-top: 1.0rem;
-  margin-bottom: 0.8rem;
-}
-
-/******************************************************************************/
-
 /* Content Pane */
 
 .content {
@@ -351,6 +220,24 @@ pre.benchmark-platform {
   .sidebar {
     padding-top: 2.5rem;
   }
+}
+
+/******************************************************************************/
+
+/* Footer Formatting */
+
+.footer {
+  width: 100%;
+  font-size: 80%;
+  color: #666;
+  border-top: 4px solid #eee;
+  overflow: hidden;
+}
+
+.disclaimer p {
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 /******************************************************************************/
@@ -448,18 +335,129 @@ nav .toc a:visited {
 
 /******************************************************************************/
 
-/* Footer Formatting */
+/* Scrolling Toc Container */
 
-.footer {
-  width: 100%;
-  font-size: 80%;
-  color: #666;
-  border-top: 4px solid #eee;
-  overflow: hidden;
+.scroll-toc {
+  visibility: hidden;
+  height: 0;
+  width: 75%;
+  max-width: 242px;
 }
 
-.disclaimer p {
-  margin-top: 0.5rem;
-  font-size: 1.1rem;
-  text-align: center;
+@media (min-width: 550px) {
+  /* Only show scrolling toc in grid layout */
+  .is-position-fixed {
+    visibility: visible;
+    position: fixed !important;
+    height: 100%;
+    top: 1.7rem;
+  }
+}
+
+.scroll-toc .toc {
+  border-top: dotted #ddd;
+  border-width: 1px 0;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+}
+
+@media (min-width: 550px) {
+  .scroll-toc .toc {
+    height: 80%;
+    margin-left: 1.6rem;
+  }
+  .scroll-toc .toc .js-toc {
+    max-height: 80%;
+  }
+}
+
+.scroll-toc .toc .js-toc {
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.scroll-toc div.toc>ul {
+  position: relative;
+}
+
+.toc-list {
+  margin-left: 1.6rem;
+}
+
+.toc .toc-list ul li {
+  margin-top: 0.2rem;
+  margin-bottom: 0;
+}
+
+a.toc-link {
+  color: currentColor;
+  height: 100%;
+}
+
+.toc-link::before {
+  content: ' ';
+  margin-left: -1.2em;
+  float: left;
+}
+
+.is-active-link {
+  font-weight: 700
+}
+
+.is-active-link::before {
+  content: '\25ba';
+  color: {{ site.data.theme.highlight_color }};
+}
+
+.is-collapsible {
+  max-height: 1000px;
+  overflow: hidden;
+  transition: all 300ms ease-in-out;
+}
+
+.is-collapsed {
+  max-height: 0;
+}
+
+/******************************************************************************/
+
+/* Reference Manual formatting */
+
+.reference-manual hr {
+  margin-top: 2.0rem;
+  margin-bottom: 1.5rem;
+}
+
+.reference-manual h4 {
+  margin-bottom: 1.0rem;
+}
+
+.reference-manual h5 {
+  font-size: 1.8rem;
+  margin-top: 0;
+  padding-top: 0.25rem;
+  margin-bottom: 1.0rem;
+}
+
+.reference-manual .class p, .reference-manual .class ul, .reference-manual .class pre, .reference-manual .class h6,
+.reference-manual .block p, .reference-manual .block ul, .reference-manual .block pre, .reference-manual .block h6,
+.reference-manual .field p, .reference-manual .field ul, .reference-manual .field pre, .reference-manual .field h6,
+.reference-manual .function p, .reference-manual .function ul, .reference-manual .function pre, .reference-manual .function h6 {
+  margin-bottom: 0.75rem;
+  margin-left: 2.0rem;
+}
+
+.reference-manual .class h5 code {
+  margin-left: 0rem;
+}
+
+.reference-manual .block h5 code {
+  margin-left: 1.4rem;
+}
+
+.reference-manual h6 {
+  color: #999;
+  font-size: 1.5rem;
+  margin-top: 1.0rem;
+  margin-bottom: 0.8rem;
 }

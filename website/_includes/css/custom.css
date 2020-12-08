@@ -378,6 +378,12 @@ nav .title a:hover {
   text-decoration: none;
 }
 
+nav .contact {
+  display: block;
+  text-align: center;
+  font-size: 1.4rem;
+}
+
 nav .links {
   margin-left: 1.6rem;
 }

@@ -357,7 +357,8 @@ pre.benchmark-platform {
 
 /* Navigation Formatting */
 
-.menu div.toc {
+.menu .toc {
+  margin-top: 1.0rem;
   margin-bottom: 1.0rem;
   border: dotted #ddd;
   border-width: 1px 0;
@@ -431,6 +432,10 @@ nav ul ul {
 
 nav ul ul li {
   font-size: 1.4rem;
+}
+
+nav ul ul ul {
+  margin-left: 3.0rem;
 }
 
 nav .toc a {

@@ -5,8 +5,14 @@ kramdown:
   input: GFM
   auto_ids: true
   syntax_highlighter: rouge
+plugins:
+  - jekyll-toc
 
 host: 0.0.0.0
 url: https://luaradio.io
 lsi: false
 exclude: [CNAME, .gitignore, Gemfile, Gemfile.lock, _thumbnails]
+
+toc:
+  min_level: 2
+  max_level: 4

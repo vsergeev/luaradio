@@ -1,0 +1,12 @@
+<nav class="menu">
+  <h1 class="title"><a href="{% base %}">{{ site.data.theme.name }}</a></h1>
+  <div class="links">
+      <a href="{{ site.data.theme.github_url }}/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">{{ site.data.theme.version }}</code></a><br />
+      <a href="{{ site.data.theme.github_url }}"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="{{ site.data.theme.mailing_list_url }}"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
+  <div class="toc">
+    {{ content | toc_only }}
+  </div>
+  <a class="contact" href="mailto:v@sergeev.io"><i class="fa fa-envelope-o" aria-hidden="true"></i> v@sergeev.io</a>
+</nav>

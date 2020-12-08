@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% if page.title %}
+  <title>{{ site.data.theme.name }} - {{ page.title }}</title>
+  {% else %}
+  <title>{{ site.data.theme.name }}</title>
+  {% endif %}
+  <meta name="author" content="{{ site.data.theme.author }}" />
+  <meta name="description" content="{{ site.data.theme.description }}" />
+  <link rel="canonical" href="{{ site.url }}{{ page.url | replace:'index.html','' }}" />
+  <link rel="icon" type="image/x-icon" href="{% base %}/favicon.ico" />
+
+  <link rel="stylesheet" href="{% base %}/assets/css/all.css">
+  <script type="text/javascript" src="{% base %}/assets/js/tocbot.min.js"></script>
+  <script type="text/javascript" src="{% base %}/assets/js/toc.js"></script>
+
+  {% if page.mathjax %}
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  {% endif %}
+  {% if page.chartjs %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.6/Chart.min.js"></script>
+  {% endif %}
+</head>
+<body id="top">
+  <div class="reference-manual-sidebar">
+    {% include refmantoc.html %}
+  </div>
+  <div class="reference-manual">
+  <div class="container">
+  <div class="row">
+    <div class="three columns sidebar">
+    </div>
+    <div class="nine columns content">
+        {{ content }}
+
+      <div class="footer">
+        {% include footer.html %}
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+</body>
+</html>

@@ -421,6 +421,55 @@ a.toc-link {
 
 /******************************************************************************/
 
+/* Reference Manual Layout */
+
+.reference-manual-sidebar {
+  position: fixed;
+  width: 20%;
+  max-width: 350px; /* usually 242px */
+  top: 0;
+  padding-top: 1.25rem;
+  height: 100%;
+  z-index: 1;
+  border-top: 7px solid {{ site.data.theme.highlight_color }};
+  visibility: hidden;
+}
+
+@media (min-width: 550px) {
+  .reference-manual-sidebar {
+    visibility: visible;
+  }
+}
+
+.reference-manual-sidebar .menu {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.reference-manual-sidebar .toc {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.reference-manual-sidebar .contact {
+  margin-bottom: 3rem;
+}
+
+.reference-manual .container {
+  max-width: initial;
+}
+
+.reference-manual .sidebar {
+  max-width: 350px;
+}
+
+.reference-manual .content {
+  width: 75%;
+  max-width: 815px;
+  margin-left: -1%;
+}
+
 /* Reference Manual formatting */
 
 .reference-manual hr {

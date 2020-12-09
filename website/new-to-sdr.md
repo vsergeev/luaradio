@@ -227,7 +227,9 @@ tend to be much larger than those designed for 100 MHz, and especially larger
 than a WiFi antenna designed for 2.4 GHz.
 
 <figure class="float-right">
+<div align="center">
 <img src="{% base %}{% thumbnail /images/rtlsdr-stock-antenna.jpg 150 %}" />
+</div>
 <figcaption>Stock antenna, included<br/>with some RTL-SDR dongles<div style="line-height: 0.8;"><a href="https://www.fabtolab.com/SDR-USB" style="font-size: 0.9rem;">(Image Source)</a></div></figcaption>
 </figure>
 

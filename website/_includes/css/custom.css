@@ -48,10 +48,6 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 1.6rem;
 }
 
-h2, h3, h4, h5, h6 {
-  margin-top: 1.6rem;
-}
-
 h1 {
   padding-bottom: 0.48rem;
   font-size: 3.6rem;
@@ -129,8 +125,6 @@ a:visited {
 
 img {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* Figures */
@@ -210,32 +204,19 @@ pre.benchmark-platform {
   padding-top: 2.5rem;
 }
 
-@media (min-width: 550px) {
-  .sidebar {
-    padding-top: 2.0rem;
-  }
-}
-
-@media (min-width: 750px) {
-  .sidebar {
-    padding-top: 2.5rem;
-  }
-}
-
 /******************************************************************************/
 
 /* Footer Formatting */
 
 .footer {
   width: 100%;
-  font-size: 80%;
   color: #666;
   border-top: 4px solid #eee;
   overflow: hidden;
+  padding-top: 0.5rem;
 }
 
 .disclaimer p {
-  margin-top: 0.5rem;
   font-size: 1.1rem;
   text-align: center;
 }
@@ -250,11 +231,15 @@ pre.benchmark-platform {
   border: dotted #ddd;
   border-width: 1px 0;
   padding-top: 0.9rem;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.9rem;
 }
 
 nav .title {
   text-align: center;
+  font-size: 3.2rem;
+  padding: 0;
+  margin-bottom: 1.0rem;
+  border-bottom: none;
 }
 
 nav .title a {
@@ -285,36 +270,21 @@ nav .version {
   letter-spacing: -0.075rem;
 }
 
-nav h1, nav h2, nav h5 {
-  text-align: center;
-  padding: 0;
-  margin-bottom: 1.0rem;
-  border-bottom: none;
-}
-
-nav h1 {
-  font-size: 3.2rem;
-}
-
 nav ul {
   padding: 0;
   margin-left: 1.6rem;
-  margin-top: 0;
   margin-bottom: 0;
-  margin-right: 0;
   list-style-type: none;
 }
 
 nav ul li {
   margin-top: 0.4rem;
-  margin-bottom: 0.4rem;
   line-height: 2.2rem;
   font-size: 1.6rem;
 }
 
 nav ul ul {
   margin-left: 2.0rem;
-  list-style-type: none;
 }
 
 nav ul ul li {
@@ -340,7 +310,7 @@ nav .toc a:visited {
 .scroll-toc {
   visibility: hidden;
   height: 0;
-  width: 75%;
+  width: 25%;
   max-width: 242px;
 }
 
@@ -350,7 +320,7 @@ nav .toc a:visited {
     visibility: visible;
     position: fixed !important;
     height: 100%;
-    top: 1.7rem;
+    top: 2.5rem;
   }
 }
 
@@ -368,30 +338,17 @@ nav .toc a:visited {
   }
   .scroll-toc .toc .js-toc {
     max-height: 80%;
+    overflow: auto;
   }
 }
 
-.scroll-toc .toc .js-toc {
-  overflow: auto;
-  white-space: nowrap;
+.scroll-toc .toc .toc-list ul {
+  padding-left: 1.6rem;
+  margin: 0;
 }
 
-.scroll-toc div.toc>ul {
-  position: relative;
-}
-
-.toc-list {
-  margin-left: 1.6rem;
-}
-
-.toc .toc-list ul li {
+.scroll-toc .toc .toc-list ul li {
   margin-top: 0.2rem;
-  margin-bottom: 0;
-}
-
-a.toc-link {
-  color: currentColor;
-  height: 100%;
 }
 
 .toc-link::before {
@@ -483,7 +440,6 @@ a.toc-link {
 
 .reference-manual h5 {
   font-size: 1.8rem;
-  margin-top: 0;
   padding-top: 0.25rem;
   margin-bottom: 1.0rem;
 }
@@ -497,7 +453,7 @@ a.toc-link {
 }
 
 .reference-manual .class h5 code {
-  margin-left: 0rem;
+  margin-left: 0;
 }
 
 .reference-manual .block h5 code {
@@ -508,5 +464,4 @@ a.toc-link {
   color: #999;
   font-size: 1.5rem;
   margin-top: 1.0rem;
-  margin-bottom: 0.8rem;
 }

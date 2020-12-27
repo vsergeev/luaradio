@@ -73,6 +73,11 @@ function Pipe:initialize()
     self._rbuf = platform.alloc(self._rbuf_capacity)
     self._rbuf_size = 0
     self._rbuf_offset = 0
+
+    -- Write buffer
+    self._wbuf = nil
+    self._wbuf_size = 0
+    self._wbuf_offset = 0
 end
 
 --------------------------------------------------------------------------------
@@ -181,29 +186,71 @@ function Pipe:read(count)
     return self:_read_buffer_deserialize(count and math.min(available, count) or available)
 end
 
+--------------------------------------------------------------------------------
+-- Write methods
+--------------------------------------------------------------------------------
+
+---
+-- Update the Pipe's internal write buffer.
+--
+-- @internal
+-- @function Pipe:_write_buffer_update
+-- @treturn int|nil Number of bytes written or nil on EOF
+function Pipe:_write_buffer_update()
+    local bytes_written = tonumber(ffi.C.write(self._wfd, ffi.cast("char *", self._wbuf) + self._wbuf_offset, self._wbuf_size - self._wbuf_offset))
+    if bytes_written < 0 then
+        local errno = ffi.errno()
+        if errno == ffi.C.EPIPE or errno == ffi.C.ECONNRESET then
+            return nil
+        end
+        error("write(): " .. ffi.string(ffi.C.strerror(errno)))
+    end
+
+    self._wbuf_offset = self._wbuf_offset + bytes_written
+
+    return bytes_written
+end
+
+---
+-- Test if the Pipe's internal write buffer is empty.
+--
+-- @internal
+-- @function Pipe:_write_buffer_full
+-- @treturn bool Empty
+function Pipe:_write_buffer_empty()
+    -- Return empty status of write buffer
+    return self._wbuf_offset == self._wbuf_size
+end
+
+---
+-- Serialize elements from a vector to the Pipe's internal write buffer.
+--
+-- @internal
+-- @function Pipe:_write_buffer_serialize
+-- @tparam Vector vec Sample vector
+function Pipe:_write_buffer_serialize(vec)
+    -- Serialize to buffer
+    self._wbuf, self._wbuf_size = self.data_type.serialize(vec)
+    self._wbuf_offset = 0
+end
+
 ---
 -- Write a sample vector to the Pipe.
 --
 -- @internal
 -- @function Pipe:write
 -- @tparam Vector vec Sample vector
+-- @teturn bool Success
 function Pipe:write(vec)
-    -- Get vector serialized buffer and size
-    local data, size = self.data_type.serialize(vec)
+    self:_write_buffer_serialize(vec)
 
-    -- Write entire buffer
-    local len = 0
-    while len < size do
-        local bytes_written = tonumber(ffi.C.write(self._wfd, ffi.cast("char *", data) + len, size - len))
-        if bytes_written <= 0 then
-            local errno = ffi.errno()
-            if errno == ffi.C.EPIPE or errno == ffi.C.ECONNRESET then
-                io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.output.owner.name, self.input.owner.name))
-            end
-            error("write(): " .. ffi.string(ffi.C.strerror(errno)))
+    while not self:_write_buffer_empty() do
+        if self:_write_buffer_update() == nil then
+            return false
         end
-        len = len + bytes_written
     end
+
+    return true
 end
 
 --------------------------------------------------------------------------------

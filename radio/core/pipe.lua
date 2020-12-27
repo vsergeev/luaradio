@@ -70,11 +70,13 @@ function Pipe:initialize()
 
     -- Read buffer
     self._rbuf_capacity = 1048576
-    self._rbuf = platform.alloc(self._rbuf_capacity)
+    self._rbuf_anchor = platform.alloc(self._rbuf_capacity)
+    self._rbuf = ffi.cast("char *", self._rbuf_anchor)
     self._rbuf_size = 0
     self._rbuf_offset = 0
 
     -- Write buffer
+    self._wbuf_anchor = nil
     self._wbuf = nil
     self._wbuf_size = 0
     self._wbuf_offset = 0
@@ -94,11 +96,11 @@ function Pipe:_read_buffer_update()
     -- Shift unread samples down to beginning of buffer
     local unread_length = self._rbuf_size - self._rbuf_offset
     if unread_length > 0 then
-        ffi.C.memmove(self._rbuf, ffi.cast("char *", self._rbuf) + self._rbuf_offset, unread_length)
+        ffi.C.memmove(self._rbuf, self._rbuf + self._rbuf_offset, unread_length)
     end
 
     -- Read new samples in
-    local bytes_read = tonumber(ffi.C.read(self._rfd, ffi.cast("char *", self._rbuf) + unread_length, self._rbuf_capacity - unread_length))
+    local bytes_read = tonumber(ffi.C.read(self._rfd, self._rbuf + unread_length, self._rbuf_capacity - unread_length))
     if bytes_read < 0 then
         error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     elseif unread_length == 0 and bytes_read == 0 then
@@ -126,7 +128,7 @@ function Pipe:_read_buffer_count()
     end
 
     -- Return item count in read buffer
-    return self.data_type.deserialize_count(ffi.cast("char *", self._rbuf) + self._rbuf_offset, self._rbuf_size - self._rbuf_offset)
+    return self.data_type.deserialize_count(self._rbuf + self._rbuf_offset, self._rbuf_size - self._rbuf_offset)
 end
 
 ---
@@ -150,13 +152,13 @@ end
 function Pipe:_read_buffer_deserialize(num)
     -- Shift samples down to beginning of buffer
     if self._rbuf_offset > 0 then
-        ffi.C.memmove(self._rbuf, ffi.cast("char *", self._rbuf) + self._rbuf_offset, self._rbuf_size - self._rbuf_offset)
+        ffi.C.memmove(self._rbuf, self._rbuf + self._rbuf_offset, self._rbuf_size - self._rbuf_offset)
         self._rbuf_size = self._rbuf_size - self._rbuf_offset
         self._rbuf_offset = 0
     end
 
     -- Deserialize a vector from the read buffer
-    local vec, size = self.data_type.deserialize_partial(ffi.cast("char *", self._rbuf), num)
+    local vec, size = self.data_type.deserialize_partial(self._rbuf, num)
 
     -- Update read offset
     self._rbuf_offset = self._rbuf_offset + size
@@ -197,7 +199,7 @@ end
 -- @function Pipe:_write_buffer_update
 -- @treturn int|nil Number of bytes written or nil on EOF
 function Pipe:_write_buffer_update()
-    local bytes_written = tonumber(ffi.C.write(self._wfd, ffi.cast("char *", self._wbuf) + self._wbuf_offset, self._wbuf_size - self._wbuf_offset))
+    local bytes_written = tonumber(ffi.C.write(self._wfd, self._wbuf + self._wbuf_offset, self._wbuf_size - self._wbuf_offset))
     if bytes_written < 0 then
         local errno = ffi.errno()
         if errno == ffi.C.EPIPE or errno == ffi.C.ECONNRESET then
@@ -230,7 +232,8 @@ end
 -- @tparam Vector vec Sample vector
 function Pipe:_write_buffer_serialize(vec)
     -- Serialize to buffer
-    self._wbuf, self._wbuf_size = self.data_type.serialize(vec)
+    self._wbuf_anchor, self._wbuf_size = self.data_type.serialize(vec)
+    self._wbuf = ffi.cast("char *", self._wbuf_anchor)
     self._wbuf_offset = 0
 end
 

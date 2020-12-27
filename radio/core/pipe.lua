@@ -68,36 +68,44 @@ function Pipe:initialize()
     self._wfd = socket_fds[1]
     self._eof = false
 
-    -- Pre-allocate read buffer
-    self._buf_capacity = 1048576
-    self._buf = platform.alloc(self._buf_capacity)
-    self._buf_size = 0
-    self._buf_read_offset = 0
+    -- Read buffer
+    self._rbuf_capacity = 1048576
+    self._rbuf = platform.alloc(self._rbuf_capacity)
+    self._rbuf_size = 0
+    self._rbuf_offset = 0
 end
+
+--------------------------------------------------------------------------------
+-- Read methods
+--------------------------------------------------------------------------------
 
 ---
 -- Update the Pipe's internal read buffer.
 --
 -- @internal
 -- @function Pipe:_read_buffer_update
+-- @treturn int|nil Number of bytes read or nil on EOF
 function Pipe:_read_buffer_update()
     -- Shift unread samples down to beginning of buffer
-    local unread_length = self._buf_size - self._buf_read_offset
+    local unread_length = self._rbuf_size - self._rbuf_offset
     if unread_length > 0 then
-        ffi.C.memmove(self._buf, ffi.cast("char *", self._buf) + self._buf_read_offset, unread_length)
+        ffi.C.memmove(self._rbuf, ffi.cast("char *", self._rbuf) + self._rbuf_offset, unread_length)
     end
 
     -- Read new samples in
-    local bytes_read = tonumber(ffi.C.read(self._rfd, ffi.cast("char *", self._buf) + unread_length, self._buf_capacity - unread_length))
+    local bytes_read = tonumber(ffi.C.read(self._rfd, ffi.cast("char *", self._rbuf) + unread_length, self._rbuf_capacity - unread_length))
     if bytes_read < 0 then
         error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     elseif unread_length == 0 and bytes_read == 0 then
         self._eof = true
+        return nil
     end
 
     -- Update size and reset unread offset
-    self._buf_size = unread_length + bytes_read
-    self._buf_read_offset = 0
+    self._rbuf_size = unread_length + bytes_read
+    self._rbuf_offset = 0
+
+    return bytes_read
 end
 
 ---
@@ -113,7 +121,7 @@ function Pipe:_read_buffer_count()
     end
 
     -- Return item count in read buffer
-    return self.data_type.deserialize_count(ffi.cast("char *", self._buf) + self._buf_read_offset, self._buf_size - self._buf_read_offset)
+    return self.data_type.deserialize_count(ffi.cast("char *", self._rbuf) + self._rbuf_offset, self._rbuf_size - self._rbuf_offset)
 end
 
 ---
@@ -124,7 +132,7 @@ end
 -- @treturn bool Full
 function Pipe:_read_buffer_full()
     -- Return full status of read buffer
-    return (self._buf_size - self._buf_read_offset) == self._buf_capacity
+    return (self._rbuf_size - self._rbuf_offset) == self._rbuf_capacity
 end
 
 ---
@@ -136,17 +144,17 @@ end
 -- @treturn Vector Vector
 function Pipe:_read_buffer_deserialize(num)
     -- Shift samples down to beginning of buffer
-    if self._buf_read_offset > 0 then
-        ffi.C.memmove(self._buf, ffi.cast("char *", self._buf) + self._buf_read_offset, self._buf_size - self._buf_read_offset)
-        self._buf_size = self._buf_size - self._buf_read_offset
-        self._buf_read_offset = 0
+    if self._rbuf_offset > 0 then
+        ffi.C.memmove(self._rbuf, ffi.cast("char *", self._rbuf) + self._rbuf_offset, self._rbuf_size - self._rbuf_offset)
+        self._rbuf_size = self._rbuf_size - self._rbuf_offset
+        self._rbuf_offset = 0
     end
 
     -- Deserialize a vector from the read buffer
-    local vec, size = self.data_type.deserialize_partial(ffi.cast("char *", self._buf), num)
+    local vec, size = self.data_type.deserialize_partial(ffi.cast("char *", self._rbuf), num)
 
     -- Update read offset
-    self._buf_read_offset = self._buf_read_offset + size
+    self._rbuf_offset = self._rbuf_offset + size
 
     return vec
 end
@@ -163,14 +171,14 @@ function Pipe:read(count)
     self:_read_buffer_update()
 
     -- Get available item count
-    local num = self:_read_buffer_count()
+    local available = self:_read_buffer_count()
 
     -- Return nil on EOF
-    if num == nil then
+    if available == nil then
         return nil
     end
 
-    return self:_read_buffer_deserialize(count and math.min(num, count) or num)
+    return self:_read_buffer_deserialize(count and math.min(available, count) or available)
 end
 
 ---
@@ -197,6 +205,10 @@ function Pipe:write(vec)
         len = len + bytes_written
     end
 end
+
+--------------------------------------------------------------------------------
+-- Misc methods
+--------------------------------------------------------------------------------
 
 ---
 -- Close the input end of the pipe.
@@ -246,7 +258,9 @@ function Pipe:fileno_output()
     return self._wfd
 end
 
+--------------------------------------------------------------------------------
 -- Helper function to read synchronously from a set of pipes
+--------------------------------------------------------------------------------
 
 local POLL_READ_EVENTS = bit.bor(ffi.C.POLLIN, ffi.C.POLLHUP)
 

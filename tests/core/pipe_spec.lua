@@ -37,6 +37,90 @@ describe("pipe", function ()
         ["ComplexFloat32"] = {data_type = radio.types.Float32, random_vector_fn = random_float32_vector},
     }
 
+    it("read buffer", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        assert.is.equal(p:_read_buffer_count(), 0)
+        assert.is_false(p:_read_buffer_full())
+
+        local write_vec = random_complexfloat32_vector(128)
+        p:write(write_vec)
+
+        assert.is.equal(p:_read_buffer_update(), write_vec.size)
+        assert.is.equal(p:_read_buffer_count(), write_vec.length)
+        assert.is_false(p:_read_buffer_full())
+
+        -- Read 3
+        local read_vec = p:_read_buffer_deserialize(3)
+        assert.is.equal(read_vec.length, 3)
+        assert.is_true(ffi.C.memcmp(read_vec.data, write_vec.data, 3 * ffi.sizeof(radio.types.ComplexFloat32)) == 0)
+
+        assert.is.equal(p:_read_buffer_count(), 125)
+
+        -- Read 125
+        local read_vec = p:_read_buffer_deserialize(125)
+        assert.is.equal(read_vec.length, 125)
+        assert.is_true(ffi.C.memcmp(read_vec.data, ffi.cast("char *", write_vec.data) + 3 * ffi.sizeof(radio.types.ComplexFloat32), 125 * ffi.sizeof(radio.types.ComplexFloat32)) == 0)
+
+        assert.is.equal(p:_read_buffer_count(), 0)
+
+        while not p:_read_buffer_full() do
+            local write_vec = random_complexfloat32_vector(128)
+            p:write(write_vec)
+            p:_read_buffer_update()
+        end
+
+        assert.is.equal(p:_read_buffer_count(), p._rbuf_capacity / ffi.sizeof(radio.types.ComplexFloat32))
+    end)
+
+    it("read buffer eof", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        assert.is.equal(p:_read_buffer_count(), 0)
+        assert.is_false(p:_read_buffer_full())
+
+        p:close_output()
+        assert.is.equal(p:_read_buffer_update(), nil)
+        assert.is.equal(p:_read_buffer_count(), nil)
+        assert.is_false(p:_read_buffer_full())
+    end)
+
+    it("write buffer", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        assert.is_true(p:_write_buffer_empty(), true)
+
+        local write_vec = random_complexfloat32_vector(128)
+
+        p:_write_buffer_serialize(write_vec)
+        assert.is.equal(p:_write_buffer_empty(), false)
+        assert.is.equal(p:_write_buffer_update(), write_vec.size)
+        assert.is.equal(p:_write_buffer_empty(), true)
+
+        local read_vec = p:read(128)
+        assert.is.equal(read_vec.length, 128)
+        assert.is_true(ffi.C.memcmp(read_vec.data, write_vec.data, 128 * ffi.sizeof(radio.types.ComplexFloat32)) == 0)
+    end)
+
+    it ("write buffer eof", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        -- Ignore SIGPIPE, handle with error from write()
+        ffi.C.signal(ffi.C.SIGPIPE, ffi.cast("sighandler_t", ffi.C.SIG_IGN))
+
+        p:close_input()
+        assert.is.equal(p:_write_buffer_serialize(random_complexfloat32_vector(128)), nil)
+        assert.is.equal(p:_write_buffer_update(), nil)
+    end)
+
     for type_name, _ in pairs(cstruct_types) do
         it("write and read cstruct " .. type_name, function ()
             local data_type = cstruct_types[type_name].data_type

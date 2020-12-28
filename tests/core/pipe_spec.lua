@@ -6,6 +6,20 @@ local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
 
 describe("pipe", function ()
+    local FooType = radio.types.ObjectType.factory()
+
+    function FooType.new(a, b, c)
+        return setmetatable({a = a, b = b, c = c}, FooType)
+    end
+
+    local function random_foo_vector(n)
+        local vec = FooType.vector()
+        for i = 1, n do
+            vec:append(FooType(math.random(), string.char(math.random(0x41, 0x5a)), false))
+        end
+        return vec
+    end
+
     local function random_byte_vector(n)
         local vec = radio.types.Byte.vector(n)
         for i = 0, vec.length - 1 do
@@ -189,20 +203,6 @@ describe("pipe", function ()
     end
 
     it("write and read object type", function ()
-        local FooType = radio.types.ObjectType.factory()
-
-        function FooType.new(a, b, c)
-            return setmetatable({a = a, b = b, c = c}, FooType)
-        end
-
-        local function random_foo_vector(n)
-            local vec = FooType.vector()
-            for i = 1, n do
-                vec:append(FooType(math.random(), string.char(math.random(0x41, 0x5a)), false))
-            end
-            return vec
-        end
-
         local test_vector = random_foo_vector(175)
 
         for _, write_num in ipairs({1, 123, test_vector.length}) do

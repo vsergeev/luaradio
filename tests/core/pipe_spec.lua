@@ -12,10 +12,24 @@ describe("pipe", function ()
         return setmetatable({a = a, b = b, c = c}, FooType)
     end
 
+    local BarType = radio.types.ObjectType.factory()
+
+    function BarType.new(x, y)
+        return setmetatable({x = x, y = y}, BarType)
+    end
+
     local function random_foo_vector(n)
         local vec = FooType.vector()
         for i = 1, n do
             vec:append(FooType(math.random(), string.char(math.random(0x41, 0x5a)), false))
+        end
+        return vec
+    end
+
+    local function random_bar_vector(n)
+        local vec = BarType.vector()
+        for i = 1, n do
+            vec:append(BarType(math.random() > 5 and true or false, math.random(1, 100), false))
         end
         return vec
     end
@@ -268,6 +282,460 @@ describe("pipe", function ()
                 assert.is_true(p:_read_buffer_count() == nil)
             end
         end
+    end)
+
+    it("PipeMux read none", function ()
+        local pipe_mux = pipe.PipeMux({}, {})
+
+        local data_in, eof = pipe_mux:read()
+        assert.is.same(data_in, {})
+        assert.is_false(eof)
+    end)
+
+    it("PipeMux read cstruct single", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        local pipe_mux = pipe.PipeMux({p}, {})
+
+        local vec = random_complexfloat32_vector(128)
+        p:write(vec)
+
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 1)
+        assert.is.equal(data_in[1].data_type, vec.data_type)
+        assert.is.equal(data_in[1].length, vec.length)
+        assert.is.equal(ffi.C.memcmp(data_in[1].data, vec.data, 128 * ffi.sizeof(radio.types.ComplexFloat32)), 0)
+    end)
+
+    it("PipeMux read object single", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return FooType end
+        p:initialize()
+
+        local pipe_mux = pipe.PipeMux({p}, {})
+
+        local vec = random_foo_vector(12)
+        p:write(vec)
+
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 1)
+        assert.is.equal(data_in[1].data_type, vec.data_type)
+        assert.is.equal(data_in[1].length, vec.length)
+        for i = 0, vec.length-1 do
+            assert.are.same(data_in[1].data[i], vec.data[i])
+        end
+    end)
+
+    it("PipeMux read cstruct multiple", function ()
+        local p1 = pipe.Pipe()
+        p1.get_data_type = function () return radio.types.Byte end
+        p1:initialize()
+
+        local p2 = pipe.Pipe()
+        p2.get_data_type = function () return radio.types.Float32 end
+        p2:initialize()
+
+        local p3 = pipe.Pipe()
+        p3.get_data_type = function () return radio.types.ComplexFloat32 end
+        p3:initialize()
+
+        local pipe_mux = pipe.PipeMux({p1, p2, p3}, {})
+
+        local vec1 = random_byte_vector(7)
+        local vec2 = random_float32_vector(11)
+        local vec3 = random_complexfloat32_vector(17)
+
+        p1:write(vec1)
+        p2:write(vec2)
+        p3:write(vec3)
+
+        -- Read 7 elements from all three input pipes
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 3)
+
+        assert.is.equal(data_in[1].data_type, radio.types.Byte)
+        assert.is.equal(data_in[1].length, 7)
+        assert.is.equal(ffi.C.memcmp(data_in[1].data, vec1.data, 3 * ffi.sizeof(radio.types.Byte)), 0)
+
+        assert.is.equal(data_in[2].data_type, radio.types.Float32)
+        assert.is.equal(data_in[2].length, 7)
+        assert.is.equal(ffi.C.memcmp(data_in[2].data, vec2.data, 3 * ffi.sizeof(radio.types.Float32)), 0)
+
+        assert.is.equal(data_in[3].data_type, radio.types.ComplexFloat32)
+        assert.is.equal(data_in[3].length, 7)
+        assert.is.equal(ffi.C.memcmp(data_in[3].data, vec3.data, 3 * ffi.sizeof(radio.types.ComplexFloat32)), 0)
+
+        -- Remaining elements: 0, 4, 10
+
+        local vec11 = random_byte_vector(4)
+        p1:write(vec11)
+
+        -- Read 4 elements from all three input pipes
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 3)
+
+        assert.is.equal(data_in[1].data_type, radio.types.Byte)
+        assert.is.equal(data_in[1].length, 4)
+        assert.is.equal(ffi.C.memcmp(data_in[1].data, vec11.data, 4 * ffi.sizeof(radio.types.Byte)), 0)
+
+        assert.is.equal(data_in[2].data_type, radio.types.Float32)
+        assert.is.equal(data_in[2].length, 4)
+        assert.is.equal(ffi.C.memcmp(data_in[2].data, vec2.data + 7, 4 * ffi.sizeof(radio.types.Float32)), 0)
+
+        assert.is.equal(data_in[3].data_type, radio.types.ComplexFloat32)
+        assert.is.equal(data_in[3].length, 4)
+        assert.is.equal(ffi.C.memcmp(data_in[3].data, vec3.data + 7, 4 * ffi.sizeof(radio.types.ComplexFloat32)), 0)
+
+        -- Remaining elements: 0, 0, 6
+
+        local vec111 = random_byte_vector(6)
+        local vec22 = random_float32_vector(6)
+
+        p1:write(vec111)
+        p2:write(vec22)
+
+        -- Read 6 elements from all three input pipes
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 3)
+
+        assert.is.equal(data_in[1].data_type, radio.types.Byte)
+        assert.is.equal(data_in[1].length, 6)
+        assert.is.equal(ffi.C.memcmp(data_in[1].data, vec111.data, 6 * ffi.sizeof(radio.types.Byte)), 0)
+
+        assert.is.equal(data_in[2].data_type, radio.types.Float32)
+        assert.is.equal(data_in[2].length, 6)
+        assert.is.equal(ffi.C.memcmp(data_in[2].data, vec22.data, 6 * ffi.sizeof(radio.types.Float32)), 0)
+
+        assert.is.equal(data_in[3].data_type, radio.types.ComplexFloat32)
+        assert.is.equal(data_in[3].length, 6)
+        assert.is.equal(ffi.C.memcmp(data_in[3].data, vec3.data + 11, 6 * ffi.sizeof(radio.types.ComplexFloat32)), 0)
+    end)
+
+    it("PipeMux read object multiple", function ()
+        local p1 = pipe.Pipe()
+        p1.get_data_type = function () return FooType end
+        p1:initialize()
+
+        local p2 = pipe.Pipe()
+        p2.get_data_type = function () return BarType end
+        p2:initialize()
+
+        local pipe_mux = pipe.PipeMux({p1, p2}, {})
+
+        local vec1 = random_foo_vector(7)
+        local vec2 = random_bar_vector(11)
+
+        p1:write(vec1)
+        p2:write(vec2)
+
+        -- Read 7 elements from both input pipes
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 2)
+
+        assert.is.equal(data_in[1].data_type, FooType)
+        assert.is.equal(data_in[1].length, 7)
+        for i = 0, 6 do
+            assert.are.same(data_in[1].data[i], vec1.data[i])
+        end
+
+        assert.is.equal(data_in[2].data_type, BarType)
+        assert.is.equal(data_in[2].length, 7)
+        for i = 0, 6 do
+            assert.are.same(data_in[2].data[i], vec2.data[i])
+        end
+
+        -- Remaining elements: 0, 4
+
+        local vec11 = random_foo_vector(4)
+        p1:write(vec11)
+
+        -- Read 4 elements from both input pipes
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 2)
+
+        assert.is.equal(data_in[1].data_type, FooType)
+        assert.is.equal(data_in[1].length, 4)
+        for i = 0, 3 do
+            assert.are.same(data_in[1].data[i], vec11.data[i])
+        end
+
+        assert.is.equal(data_in[2].data_type, BarType)
+        assert.is.equal(data_in[2].length, 4)
+        for i = 7, 10 do
+            assert.are.same(data_in[2].data[i - 7], vec2.data[i])
+        end
+    end)
+
+    it("PipeMux read single eof", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        local pipe_mux = pipe.PipeMux({p}, {})
+
+        local vec = random_complexfloat32_vector(128)
+        p:write(vec)
+
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 1)
+        assert.is.equal(data_in[1].length, vec.length)
+
+        p:close_output()
+        local data_in, eof = pipe_mux:read()
+        assert.is_true(eof)
+        assert.is.same(data_in, {})
+    end)
+
+    it("PipeMux read multiple eof", function ()
+        local p1 = pipe.Pipe()
+        p1.get_data_type = function () return radio.types.Byte end
+        p1:initialize()
+
+        local p2 = pipe.Pipe()
+        p2.get_data_type = function () return radio.types.Float32 end
+        p2:initialize()
+
+        local p3 = pipe.Pipe()
+        p3.get_data_type = function () return radio.types.ComplexFloat32 end
+        p3:initialize()
+
+        local pipe_mux = pipe.PipeMux({p1, p2, p3}, {})
+
+        local vec1 = random_byte_vector(11)
+        local vec2 = random_float32_vector(7)
+        local vec3 = random_complexfloat32_vector(17)
+
+        p1:write(vec1)
+        p2:write(vec2)
+        p3:write(vec3)
+
+        -- Read 7
+        local data_in, eof = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is.equal(#data_in, 3)
+        assert.is.equal(data_in[1].length, 7)
+        assert.is.equal(data_in[1].length, 7)
+        assert.is.equal(data_in[1].length, 7)
+
+        -- Close p2
+        p2:close_output()
+        local data_in, eof = pipe_mux:read()
+        assert.is_true(eof)
+        assert.is.same(data_in, {})
+    end)
+
+    it("PipeMux write none", function ()
+        local pipe_mux = pipe.PipeMux({}, {})
+
+        local eof, eof_pipe = pipe_mux:write({})
+        assert.is.equal(eof, false)
+        assert.is_nil(eof_pipe)
+    end)
+
+    it("PipeMux write cstruct single", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        local pipe_mux = pipe.PipeMux({}, {{p}})
+
+        local vec = random_complexfloat32_vector(128)
+
+        local eof, eof_pipe = pipe_mux:write({vec})
+        assert.is_false(eof)
+        assert.is_nil(eof_pipe)
+
+        local read_vec = p:read()
+        assert.is.equal(read_vec.data_type, vec.data_type)
+        assert.is.equal(read_vec.length, vec.length)
+        assert.is.equal(ffi.C.memcmp(read_vec.data, vec.data, 128 * ffi.sizeof(radio.types.ComplexFloat32)), 0)
+    end)
+
+    it("PipeMux write object single", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return FooType end
+        p:initialize()
+
+        local pipe_mux = pipe.PipeMux({}, {{p}})
+
+        local vec = random_foo_vector(12)
+
+        local eof, eof_pipe = pipe_mux:write({vec})
+        assert.is_false(eof)
+        assert.is_nil(eof_pipe)
+
+        local read_vec = p:read()
+        assert.is.equal(read_vec.data_type, vec.data_type)
+        assert.is.equal(read_vec.length, vec.length)
+        for i = 0, vec.length-1 do
+            assert.are.same(read_vec.data[i], vec.data[i])
+        end
+    end)
+
+    it("PipeMux write cstruct multiple", function ()
+        local p11 = pipe.Pipe()
+        p11.get_data_type = function () return radio.types.Byte end
+        p11:initialize()
+
+        local p12 = pipe.Pipe()
+        p12.get_data_type = function () return radio.types.Byte end
+        p12:initialize()
+
+        local p2 = pipe.Pipe()
+        p2.get_data_type = function () return radio.types.Float32 end
+        p2:initialize()
+
+        local p31 = pipe.Pipe()
+        p31.get_data_type = function () return radio.types.ComplexFloat32 end
+        p31:initialize()
+
+        local p32 = pipe.Pipe()
+        p32.get_data_type = function () return radio.types.ComplexFloat32 end
+        p32:initialize()
+
+        local p33 = pipe.Pipe()
+        p33.get_data_type = function () return radio.types.ComplexFloat32 end
+        p33:initialize()
+
+        local pipe_mux = pipe.PipeMux({}, {{p11, p12}, {p2}, {p31, p32, p33}})
+
+        local vec1 = random_byte_vector(11)
+        local vec2 = random_float32_vector(7)
+        local vec3 = random_complexfloat32_vector(17)
+
+        local eof, eof_pipe = pipe_mux:write({vec1, vec2, vec3})
+        assert.is_false(eof)
+        assert.is_nil(eof_pipe)
+
+        function check_pipe(p, vec)
+            local read_vec = p:read()
+            assert.is.equal(read_vec.data_type, vec.data_type)
+            assert.is.equal(read_vec.length, vec.length)
+            assert.is.equal(ffi.C.memcmp(read_vec.data, vec.data, vec.length * ffi.sizeof(vec.data_type)), 0)
+        end
+
+        check_pipe(p11, vec1)
+        check_pipe(p12, vec1)
+        check_pipe(p2, vec2)
+        check_pipe(p31, vec3)
+        check_pipe(p32, vec3)
+        check_pipe(p33, vec3)
+    end)
+
+    it("PipeMux write object multiple", function ()
+        local p11 = pipe.Pipe()
+        p11.get_data_type = function () return FooType end
+        p11:initialize()
+
+        local p21 = pipe.Pipe()
+        p21.get_data_type = function () return BarType end
+        p21:initialize()
+
+        local p22 = pipe.Pipe()
+        p22.get_data_type = function () return BarType end
+        p22:initialize()
+
+        local pipe_mux = pipe.PipeMux({}, {{p11}, {p21, p22}})
+
+        local vec1 = random_foo_vector(4)
+        local vec2 = random_bar_vector(7)
+
+        local eof, eof_pipe = pipe_mux:write({vec1, vec2})
+        assert.is_false(eof)
+        assert.is_nil(eof_pipe)
+
+        function check_pipe(p, vec)
+            local read_vec = p:read()
+            assert.is.equal(read_vec.data_type, vec.data_type)
+            assert.is.equal(read_vec.length, vec.length)
+            for i = 0, vec.length-1 do
+                assert.are.same(read_vec.data[i], vec.data[i])
+            end
+        end
+
+        check_pipe(p11, vec1)
+        check_pipe(p21, vec2)
+        check_pipe(p22, vec2)
+    end)
+
+    it("PipeMux write single eof", function ()
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        local pipe_mux = pipe.PipeMux({}, {{p}})
+
+        local vec = random_complexfloat32_vector(128)
+
+        local eof, eof_pipe = pipe_mux:write({vec})
+        assert.is_false(eof)
+        assert.is_nil(eof_pipe)
+
+        p:read()
+        p:close_input()
+
+        local eof, eof_pipe = pipe_mux:write({vec})
+        assert.is_true(eof)
+        assert.is.equal(eof_pipe, p)
+    end)
+
+    it("PipeMux write multiple eof", function ()
+        local p1 = pipe.Pipe()
+        p1.get_data_type = function () return radio.types.Byte end
+        p1:initialize()
+
+        local p21 = pipe.Pipe()
+        p21.get_data_type = function () return radio.types.Float32 end
+        p21:initialize()
+
+        local p22 = pipe.Pipe()
+        p22.get_data_type = function () return radio.types.Float32 end
+        p22:initialize()
+
+        local p31 = pipe.Pipe()
+        p31.get_data_type = function () return radio.types.ComplexFloat32 end
+        p31:initialize()
+
+        local p32 = pipe.Pipe()
+        p32.get_data_type = function () return radio.types.ComplexFloat32 end
+        p32:initialize()
+
+        local p33 = pipe.Pipe()
+        p33.get_data_type = function () return radio.types.ComplexFloat32 end
+        p33:initialize()
+
+        local pipe_mux = pipe.PipeMux({}, {{p1}, {p21, p22}, {p31, p32, p33}})
+
+        local vec1 = random_byte_vector(11)
+        local vec2 = random_float32_vector(7)
+        local vec3 = random_complexfloat32_vector(17)
+
+        local eof, eof_pipe = pipe_mux:write({vec1, vec2, vec3})
+        assert.is_false(eof)
+        assert.is_nil(eof_pipe)
+
+        p1:read()
+        p21:read()
+        p22:read()
+        p31:read()
+        p32:read()
+        p33:read()
+
+        p22:close_input()
+
+        local eof, eof_pipe = pipe_mux:write({vec1, vec2, vec3})
+        assert.is_true(eof)
+        assert.is.equal(eof_pipe, p22)
     end)
 
     it("write and read synchronous", function ()

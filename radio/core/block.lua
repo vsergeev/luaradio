@@ -3,9 +3,12 @@
 --
 -- @module radio.block
 
+local ffi = require('ffi')
+
 local class = require('radio.core.class')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
+local debug = require('radio.core.debug')
 
 ---
 -- Block input port descriptor. This contains the name and data type of a block
@@ -623,6 +626,8 @@ function Block:run()
             end
         end
     end
+
+    debug.printf("[%s] Block pid %d terminating...\n", self.name, ffi.C.getpid())
 
     -- Clean up
     self:cleanup()

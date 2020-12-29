@@ -510,13 +510,13 @@ function Block:run_once()
     end
 
     -- Create pipe mux
-    local pipe_mux = pipe.PipeMux(input_pipes, output_pipes)
+    local pipe_mux = pipe.PipeMux(input_pipes, output_pipes, self.control_socket)
 
     -- Read inputs
-    local data_in, eof = pipe_mux:read()
+    local data_in, eof, shutdown = pipe_mux:read()
 
-    -- Check for upstream EOF
-    if eof then
+    -- Check for upstream EOF or control socket shutdown
+    if eof or shutdown then
         return nil
     end
 
@@ -529,10 +529,12 @@ function Block:run_once()
     end
 
     -- Write outputs
-    local eof, eof_pipe = pipe_mux:write(data_out)
+    local eof, eof_pipe, shutdown = pipe_mux:write(data_out)
 
-    -- Check for downstream EOF
-    if eof then
+    -- Check for downstream EOF or control socket shutdown
+    if shutdown then
+        return nil
+    elseif eof then
         error(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
     end
 
@@ -568,14 +570,14 @@ function Block:run()
     end
 
     -- Create pipe mux
-    local pipe_mux = pipe.PipeMux(input_pipes, output_pipes)
+    local pipe_mux = pipe.PipeMux(input_pipes, output_pipes, self.control_socket)
 
     while true do
         -- Read inputs
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
 
-        -- Check for upstream EOF
-        if eof then
+        -- Check for upstream EOF or control socket shutdown
+        if eof or shutdown then
             break
         end
 
@@ -588,10 +590,12 @@ function Block:run()
         end
 
         -- Write outputs
-        local eof, eof_pipe = pipe_mux:write(data_out)
+        local eof, eof_pipe, shutdown = pipe_mux:write(data_out)
 
-        -- Check for downstream EOF
-        if eof then
+        -- Check for downstream EOF or control socket shutdown
+        if shutdown then
+            break
+        elseif eof then
             io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
             break
         end

@@ -444,6 +444,12 @@ function CompositeBlock:_prepare_to_run()
     -- Determine global block evaluation order
     local evaluation_order = build_evaluation_order(build_dependency_graph(all_connections))
 
+    -- Create and initialize control sockets
+    for _, block in ipairs(evaluation_order) do
+        block.control_socket = pipe.ControlSocket()
+        block.control_socket:initialize()
+    end
+
     -- Initialize all pipes
     for input, output in pairs(all_connections) do
         input.pipe:initialize()
@@ -570,6 +576,9 @@ function CompositeBlock:start(multiprocess)
 
                 -- Ignore SIGPIPE, handle with error from write()
                 ffi.C.signal(ffi.C.SIGPIPE, ffi.cast("sighandler_t", ffi.C.SIG_IGN))
+
+                -- Save control socket block fd
+                save_fds[block.control_socket:fileno_block()] = true
 
                 -- Save input pipe fds
                 for i = 1, #block.inputs do

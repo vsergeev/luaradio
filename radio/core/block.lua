@@ -485,65 +485,61 @@ function Block:cleanup()
 end
 
 ---
--- Run block once.
+-- Run block once. Currently used for unit testing.
 --
 -- @internal
 -- @function Block:run_once
--- @treturn bool New samples produced
+-- @treturn bool|nil New samples produced or nil on EOF
 function Block:run_once()
-    local data_out
+    -- FIXME input pipes, output pipes, and pipe mux should really only be
+    -- built once, but currently this method is only in unit testing.
+
+    -- Gather input pipes
+    local input_pipes = {}
+    for i=1, #self.inputs do
+        input_pipes[i] = self.inputs[i].pipe
+    end
+
+    -- Gather output pipes
+    local output_pipes = {}
+    for i=1, #self.outputs do
+        output_pipes[i] = {}
+        for j=1, #self.outputs[i].pipes do
+            output_pipes[i][j] = self.outputs[i].pipes[j]
+        end
+    end
+
+    -- Create pipe mux
+    local pipe_mux = pipe.PipeMux(input_pipes, output_pipes)
+
+    -- Read inputs
+    local data_in, eof = pipe_mux:read()
+
+    -- Check for upstream EOF
+    if eof then
+        return nil
+    end
 
     -- Process inputs into outputs
-    if #self.inputs == 0 then
-        -- No inputs (source)
+    local data_out = {self:process(unpack(data_in))}
 
-        -- Process
-        data_out = {self:process()}
+    -- Check for block generated EOF
+    if #data_out ~= #self.outputs then
+        return nil
+    end
 
-        -- Check for EOF
-        if #data_out == 0 then
-            return nil
-        end
-    elseif #self.inputs == 1 then
-        -- One input
+    -- Write outputs
+    local eof, eof_pipe = pipe_mux:write(data_out)
 
-        -- Read input
-        local data_in = self.inputs[1].pipe:read()
-
-        -- Check for EOF
-        if data_in == nil then
-            return nil
-        end
-
-        -- Process
-        data_out = {self:process(data_in)}
-    else
-        -- Multiple inputs
-
-        -- Gather input pipes
-        local pipes = {}
-        for i=1, #self.inputs do
-            pipes[i] = self.inputs[i].pipe
-        end
-
-        -- Synchronous read across all inputs
-        local data_in = pipe.read_synchronous(pipes)
-        -- Check for EOF
-        if data_in == nil then
-            return nil
-        end
-
-        -- Process
-        data_out = {self:process(unpack(data_in))}
+    -- Check for downstream EOF
+    if eof then
+        error(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
     end
 
     -- Write outputs to pipes
     local new_samples = false
     for i=1, #self.outputs do
         new_samples = new_samples or data_out[i].length > 0
-        for j=1, #self.outputs[i].pipes do
-            self.outputs[i].pipes[j]:write(data_out[i])
-        end
     end
 
     -- Return true or false if new samples were produced
@@ -556,74 +552,48 @@ end
 -- @internal
 -- @function Block:run
 function Block:run()
-    if #self.inputs == 0 then
-        -- No inputs (source)
+    -- Gather input pipes
+    local input_pipes = {}
+    for i=1, #self.inputs do
+        input_pipes[i] = self.inputs[i].pipe
+    end
 
-        while true do
-            -- Process
-            data_out = {self:process()}
-
-            -- Check for EOF
-            if #data_out == 0 then
-                break
-            end
-
-            -- Write outputs to pipes
-            for i=1, #self.outputs do
-                for j=1, #self.outputs[i].pipes do
-                    self.outputs[i].pipes[j]:write(data_out[i])
-                end
-            end
+    -- Gather output pipes
+    local output_pipes = {}
+    for i=1, #self.outputs do
+        output_pipes[i] = {}
+        for j=1, #self.outputs[i].pipes do
+            output_pipes[i][j] = self.outputs[i].pipes[j]
         end
-    elseif #self.inputs == 1 then
-        -- One input
+    end
 
-        while true do
-            -- Read input
-            local data_in = self.inputs[1].pipe:read()
+    -- Create pipe mux
+    local pipe_mux = pipe.PipeMux(input_pipes, output_pipes)
 
-            -- Check for EOF
-            if data_in == nil then
-                break
-            end
+    while true do
+        -- Read inputs
+        local data_in, eof = pipe_mux:read()
 
-            -- Process
-            data_out = {self:process(data_in)}
-
-            -- Write outputs to pipes
-            for i=1, #self.outputs do
-                for j=1, #self.outputs[i].pipes do
-                    self.outputs[i].pipes[j]:write(data_out[i])
-                end
-            end
-        end
-    else
-        -- Multiple inputs
-
-        -- Gather input pipes
-        local input_pipes = {}
-        for i=1, #self.inputs do
-            input_pipes[i] = self.inputs[i].pipe
+        -- Check for upstream EOF
+        if eof then
+            break
         end
 
-        while true do
-            -- Synchronous read across all inputs
-            local data_in = pipe.read_synchronous(input_pipes)
+        -- Process inputs into outputs
+        local data_out = {self:process(unpack(data_in))}
 
-            -- Check for EOF
-            if data_in == nil then
-                break
-            end
+        -- Check for block generated EOF
+        if #data_out ~= #self.outputs then
+            break
+        end
 
-            -- Process
-            data_out = {self:process(unpack(data_in))}
+        -- Write outputs
+        local eof, eof_pipe = pipe_mux:write(data_out)
 
-            -- Write outputs to pipes
-            for i=1, #self.outputs do
-                for j=1, #self.outputs[i].pipes do
-                    self.outputs[i].pipes[j]:write(data_out[i])
-                end
-            end
+        -- Check for downstream EOF
+        if eof then
+            io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
+            break
         end
     end
 

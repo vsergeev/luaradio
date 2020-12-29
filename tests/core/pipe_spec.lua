@@ -287,9 +287,10 @@ describe("pipe", function ()
     it("PipeMux read none", function ()
         local pipe_mux = pipe.PipeMux({}, {})
 
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is.same(data_in, {})
         assert.is_false(eof)
+        assert.is_false(shutdown)
     end)
 
     it("PipeMux read cstruct single", function ()
@@ -302,8 +303,9 @@ describe("pipe", function ()
         local vec = random_complexfloat32_vector(128)
         p:write(vec)
 
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 1)
         assert.is.equal(data_in[1].data_type, vec.data_type)
         assert.is.equal(data_in[1].length, vec.length)
@@ -320,8 +322,9 @@ describe("pipe", function ()
         local vec = random_foo_vector(12)
         p:write(vec)
 
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 1)
         assert.is.equal(data_in[1].data_type, vec.data_type)
         assert.is.equal(data_in[1].length, vec.length)
@@ -354,8 +357,9 @@ describe("pipe", function ()
         p3:write(vec3)
 
         -- Read 7 elements from all three input pipes
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 3)
 
         assert.is.equal(data_in[1].data_type, radio.types.Byte)
@@ -376,8 +380,9 @@ describe("pipe", function ()
         p1:write(vec11)
 
         -- Read 4 elements from all three input pipes
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 3)
 
         assert.is.equal(data_in[1].data_type, radio.types.Byte)
@@ -401,8 +406,9 @@ describe("pipe", function ()
         p2:write(vec22)
 
         -- Read 6 elements from all three input pipes
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 3)
 
         assert.is.equal(data_in[1].data_type, radio.types.Byte)
@@ -436,8 +442,9 @@ describe("pipe", function ()
         p2:write(vec2)
 
         -- Read 7 elements from both input pipes
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 2)
 
         assert.is.equal(data_in[1].data_type, FooType)
@@ -458,8 +465,9 @@ describe("pipe", function ()
         p1:write(vec11)
 
         -- Read 4 elements from both input pipes
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 2)
 
         assert.is.equal(data_in[1].data_type, FooType)
@@ -485,14 +493,16 @@ describe("pipe", function ()
         local vec = random_complexfloat32_vector(128)
         p:write(vec)
 
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 1)
         assert.is.equal(data_in[1].length, vec.length)
 
         p:close_output()
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_true(eof)
+        assert.is_false(shutdown)
         assert.is.same(data_in, {})
     end)
 
@@ -520,8 +530,9 @@ describe("pipe", function ()
         p3:write(vec3)
 
         -- Read 7
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_false(eof)
+        assert.is_false(shutdown)
         assert.is.equal(#data_in, 3)
         assert.is.equal(data_in[1].length, 7)
         assert.is.equal(data_in[1].length, 7)
@@ -529,17 +540,59 @@ describe("pipe", function ()
 
         -- Close p2
         p2:close_output()
-        local data_in, eof = pipe_mux:read()
+        local data_in, eof, shutdown = pipe_mux:read()
         assert.is_true(eof)
+        assert.is_false(shutdown)
+        assert.is.same(data_in, {})
+    end)
+
+    it("PipeMux read single shutdown", function ()
+        local cs = pipe.ControlSocket()
+        cs:initialize()
+
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        local pipe_mux = pipe.PipeMux({p}, {}, cs)
+
+        local vec = random_complexfloat32_vector(128)
+        p:write(vec)
+
+        local data_in, eof, shutdown = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is_false(shutdown)
+        assert.is.equal(#data_in, 1)
+        assert.is.equal(data_in[1].length, vec.length)
+
+        cs:close_host()
+        local data_in, eof, shutdown = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is_true(shutdown)
+        assert.is.same(data_in, {})
+    end)
+
+    it("PipeMux read control only shutdown", function ()
+        local cs = pipe.ControlSocket()
+        cs:initialize()
+
+        local pipe_mux = pipe.PipeMux({}, {}, cs)
+
+        cs:close_host()
+
+        local data_in, eof, shutdown = pipe_mux:read()
+        assert.is_false(eof)
+        assert.is_true(shutdown)
         assert.is.same(data_in, {})
     end)
 
     it("PipeMux write none", function ()
         local pipe_mux = pipe.PipeMux({}, {})
 
-        local eof, eof_pipe = pipe_mux:write({})
+        local eof, eof_pipe, shutdown = pipe_mux:write({})
         assert.is.equal(eof, false)
         assert.is_nil(eof_pipe)
+        assert.is_false(shutdown)
     end)
 
     it("PipeMux write cstruct single", function ()
@@ -551,9 +604,10 @@ describe("pipe", function ()
 
         local vec = random_complexfloat32_vector(128)
 
-        local eof, eof_pipe = pipe_mux:write({vec})
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec})
         assert.is_false(eof)
         assert.is_nil(eof_pipe)
+        assert.is_false(shutdown)
 
         local read_vec = p:read()
         assert.is.equal(read_vec.data_type, vec.data_type)
@@ -570,9 +624,10 @@ describe("pipe", function ()
 
         local vec = random_foo_vector(12)
 
-        local eof, eof_pipe = pipe_mux:write({vec})
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec})
         assert.is_false(eof)
         assert.is_nil(eof_pipe)
+        assert.is_false(shutdown)
 
         local read_vec = p:read()
         assert.is.equal(read_vec.data_type, vec.data_type)
@@ -613,9 +668,10 @@ describe("pipe", function ()
         local vec2 = random_float32_vector(7)
         local vec3 = random_complexfloat32_vector(17)
 
-        local eof, eof_pipe = pipe_mux:write({vec1, vec2, vec3})
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec1, vec2, vec3})
         assert.is_false(eof)
         assert.is_nil(eof_pipe)
+        assert.is_false(shutdown)
 
         function check_pipe(p, vec)
             local read_vec = p:read()
@@ -650,9 +706,10 @@ describe("pipe", function ()
         local vec1 = random_foo_vector(4)
         local vec2 = random_bar_vector(7)
 
-        local eof, eof_pipe = pipe_mux:write({vec1, vec2})
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec1, vec2})
         assert.is_false(eof)
         assert.is_nil(eof_pipe)
+        assert.is_false(shutdown)
 
         function check_pipe(p, vec)
             local read_vec = p:read()
@@ -677,16 +734,18 @@ describe("pipe", function ()
 
         local vec = random_complexfloat32_vector(128)
 
-        local eof, eof_pipe = pipe_mux:write({vec})
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec})
         assert.is_false(eof)
         assert.is_nil(eof_pipe)
+        assert.is_false(shutdown)
 
         p:read()
         p:close_input()
 
-        local eof, eof_pipe = pipe_mux:write({vec})
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec})
         assert.is_true(eof)
         assert.is.equal(eof_pipe, p)
+        assert.is_false(shutdown)
     end)
 
     it("PipeMux write multiple eof", function ()
@@ -720,9 +779,10 @@ describe("pipe", function ()
         local vec2 = random_float32_vector(7)
         local vec3 = random_complexfloat32_vector(17)
 
-        local eof, eof_pipe = pipe_mux:write({vec1, vec2, vec3})
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec1, vec2, vec3})
         assert.is_false(eof)
         assert.is_nil(eof_pipe)
+        assert.is_false(shutdown)
 
         p1:read()
         p21:read()
@@ -733,9 +793,36 @@ describe("pipe", function ()
 
         p22:close_input()
 
-        local eof, eof_pipe = pipe_mux:write({vec1, vec2, vec3})
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec1, vec2, vec3})
         assert.is_true(eof)
         assert.is.equal(eof_pipe, p22)
+        assert.is_false(shutdown)
+    end)
+
+    it("PipeMux write single shutdown", function ()
+        local cs = pipe.ControlSocket()
+        cs:initialize()
+
+        local p = pipe.Pipe()
+        p.get_data_type = function () return radio.types.ComplexFloat32 end
+        p:initialize()
+
+        local pipe_mux = pipe.PipeMux({}, {{p}}, cs)
+
+        local vec = random_complexfloat32_vector(128)
+
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec})
+        assert.is_false(eof)
+        assert.is_nil(eof_pipe)
+        assert.is_false(shutdown)
+
+        p:read()
+        cs:close_host()
+
+        local eof, eof_pipe, shutdown = pipe_mux:write({vec})
+        assert.is_false(eof)
+        assert.is_nil(eof_pipe)
+        assert.is_true(shutdown)
     end)
 
     it("get rate", function ()

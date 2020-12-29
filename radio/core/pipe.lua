@@ -407,9 +407,10 @@ local POLL_EOF_EVENTS = ffi.C.POLLHUP
 -- @class
 -- @tparam array input_pipes Input pipes
 -- @tparam array output_pipes Output pipes
+-- @tparam ControlSocket control_socket Control socket
 local PipeMux = class.factory()
 
-function PipeMux.new(input_pipes, output_pipes)
+function PipeMux.new(input_pipes, output_pipes, control_socket)
     local self = setmetatable({}, PipeMux)
 
     -- Save input pipes
@@ -419,15 +420,22 @@ function PipeMux.new(input_pipes, output_pipes)
     self.output_pipes = output_pipes
     self.output_pipes_flat = util.array_flatten(output_pipes, 1)
 
+    -- Save control socket
+    self.control_socket = control_socket
+
     -- Initialize input pollfds
-    self.input_pollfds = ffi.new("struct pollfd[?]", #self.input_pipes)
+    self.input_pollfds = ffi.new("struct pollfd[?]", #self.input_pipes + 1)
+    self.input_pollfds[0].fd = self.control_socket and self.control_socket:fileno_block() or -1
+    self.input_pollfds[0].events = POLL_EOF_EVENTS
     for i=1, #self.input_pipes do
-        self.input_pollfds[i-1].fd = input_pipes[i]:fileno_input()
-        self.input_pollfds[i-1].events = POLL_READ_EVENTS
+        self.input_pollfds[i].fd = input_pipes[i]:fileno_input()
+        self.input_pollfds[i].events = POLL_READ_EVENTS
     end
 
     -- Differentiate read() method
-    if #self.input_pipes == 0 then
+    if #self.input_pipes == 0 and #self.output_pipes == 0 and control_socket then
+        self.read = self._read_control
+    elseif #self.input_pipes == 0 then
         self.read = self._read_none
     elseif #self.input_pipes == 1 then
         self.read = self._read_single
@@ -436,10 +444,12 @@ function PipeMux.new(input_pipes, output_pipes)
     end
 
     -- Initialize output pollfds
-    self.output_pollfds = ffi.new("struct pollfd[?]", #self.output_pipes_flat)
+    self.output_pollfds = ffi.new("struct pollfd[?]", #self.output_pipes_flat + 1)
+    self.output_pollfds[0].fd = self.control_socket and self.control_socket:fileno_block() or -1
+    self.output_pollfds[0].events = POLL_EOF_EVENTS
     for i=1, #self.output_pipes_flat do
-        self.output_pollfds[i-1].fd = self.output_pipes_flat[i]:fileno_output()
-        self.output_pollfds[i-1].events = POLL_WRITE_EVENTS
+        self.output_pollfds[i].fd = self.output_pipes_flat[i]:fileno_output()
+        self.output_pollfds[i].events = POLL_WRITE_EVENTS
     end
 
     -- Differentiate write() method
@@ -455,10 +465,10 @@ function PipeMux.new(input_pipes, output_pipes)
 end
 
 function PipeMux:_read_none()
-    return {}, false
+    return {}, false, false
 end
 
-function PipeMux:_read_single()
+function PipeMux:_read_control()
     local num_elems
 
     while true do
@@ -468,6 +478,32 @@ function PipeMux:_read_single()
             error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
 
+        -- Check control socket
+        if self.input_pollfds[0].revents ~= 0 then
+            -- Shutdown encountered
+            return {}, false, true
+        end
+    end
+
+    return {}, false, false
+end
+
+function PipeMux:_read_single()
+    local num_elems
+
+    while true do
+        -- Poll (blocking)
+        local ret = ffi.C.poll(self.input_pollfds, 2, -1)
+        if ret < 0 then
+            error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+
+        -- Check control socket
+        if self.input_pollfds[0].revents ~= 0 then
+            -- Shutdown encountered
+            return {}, false, true
+        end
+
         -- Update pipe internal read buffer
         self.input_pipes[1]:_read_buffer_update()
 
@@ -475,7 +511,7 @@ function PipeMux:_read_single()
         local count = self.input_pipes[1]:_read_buffer_count()
         if count == nil then
             -- EOF encountered
-            return {}, true
+            return {}, true, false
         elseif count > 0 then
             num_elems = count
             break
@@ -483,7 +519,7 @@ function PipeMux:_read_single()
     end
 
     -- Read input vector
-    return {self.input_pipes[1]:_read_buffer_deserialize(num_elems)}, false
+    return {self.input_pipes[1]:_read_buffer_deserialize(num_elems)}, false, false
 end
 
 function PipeMux:_read_multiple()
@@ -492,11 +528,11 @@ function PipeMux:_read_multiple()
     while true do
         -- Update pollfd structures
         for i=1, #self.input_pipes do
-            self.input_pollfds[i-1].events = not self.input_pipes[i]:_read_buffer_full() and POLL_READ_EVENTS or POLL_EOF_EVENTS
+            self.input_pollfds[i].events = not self.input_pipes[i]:_read_buffer_full() and POLL_READ_EVENTS or POLL_EOF_EVENTS
         end
 
         -- Poll (blocking)
-        local ret = ffi.C.poll(self.input_pollfds, #self.input_pipes, -1)
+        local ret = ffi.C.poll(self.input_pollfds, #self.input_pipes + 1, -1)
         if ret < 0 then
             error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
@@ -504,9 +540,15 @@ function PipeMux:_read_multiple()
         -- Initialize available item count to maximum
         num_elems = math.huge
 
+        -- Check control socket
+        if self.input_pollfds[0].revents ~= 0 then
+            -- Shutdown encountered
+            return {}, false, true
+        end
+
         -- Check each input pipe
         for i=1, #self.input_pipes do
-            if self.input_pollfds[i-1].revents ~= 0 then
+            if self.input_pollfds[i].revents ~= 0 then
                 -- Update pipe internal read buffer
                 self.input_pipes[i]:_read_buffer_update()
             end
@@ -515,7 +557,7 @@ function PipeMux:_read_multiple()
             local count = self.input_pipes[i]:_read_buffer_count()
             if count == nil then
                 -- EOF encountered
-                return {}, true
+                return {}, true, false
             else
                 num_elems = (count < num_elems) and count or num_elems
             end
@@ -533,11 +575,11 @@ function PipeMux:_read_multiple()
         data_in[i] = self.input_pipes[i]:_read_buffer_deserialize(num_elems)
     end
 
-    return data_in, false
+    return data_in, false, false
 end
 
 function PipeMux:_write_none(vecs)
-    return false, nil
+    return false, nil, false
 end
 
 function PipeMux:_write_single(vecs)
@@ -546,14 +588,20 @@ function PipeMux:_write_single(vecs)
 
     while true do
         -- Poll (blocking)
-        local ret = ffi.C.poll(self.output_pollfds, 1, -1)
+        local ret = ffi.C.poll(self.output_pollfds, 2, -1)
         if ret < 0 then
             error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
 
+        -- Check control socket
+        if self.output_pollfds[0].revents ~= 0 then
+            -- Shutdown encountered
+            return false, nil, true
+        end
+
         -- Update pipe internal write buffer
         if self.output_pipes_flat[1]:_write_buffer_update() == nil then
-            return true, self.output_pipes_flat[1]
+            return true, self.output_pipes_flat[1], false
         end
 
         if self.output_pipes_flat[1]:_write_buffer_empty() then
@@ -561,7 +609,7 @@ function PipeMux:_write_single(vecs)
         end
     end
 
-    return false, nil
+    return false, nil, false
 end
 
 function PipeMux:_write_multiple(vecs)
@@ -575,23 +623,29 @@ function PipeMux:_write_multiple(vecs)
     while true do
         -- Update pollfd structures
         for i=1, #self.output_pipes_flat do
-            self.output_pollfds[i-1].events = not self.output_pipes_flat[i]:_write_buffer_empty() and POLL_WRITE_EVENTS or POLL_EOF_EVENTS
+            self.output_pollfds[i].events = not self.output_pipes_flat[i]:_write_buffer_empty() and POLL_WRITE_EVENTS or POLL_EOF_EVENTS
         end
 
         -- Poll (blocking)
-        local ret = ffi.C.poll(self.output_pollfds, #self.output_pipes_flat, -1)
+        local ret = ffi.C.poll(self.output_pollfds, #self.output_pipes_flat + 1, -1)
         if ret < 0 then
             error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+
+        -- Check control socket
+        if self.output_pollfds[0].revents ~= 0 then
+            -- Shutdown encountered
+            return false, nil, true
         end
 
         local all_written = true
 
         -- Check each output pipe
         for i=1, #self.output_pipes_flat do
-            if self.output_pollfds[i-1].revents ~= 0 then
+            if self.output_pollfds[i].revents ~= 0 then
                 -- Update pipe internal write buffer
                 if self.output_pipes_flat[i]:_write_buffer_update() == nil then
-                    return true, self.output_pipes_flat[i]
+                    return true, self.output_pipes_flat[i], false
                 end
 
                 -- Update all written check
@@ -604,7 +658,7 @@ function PipeMux:_write_multiple(vecs)
         end
     end
 
-    return false, nil
+    return false, nil, false
 end
 
 ---
@@ -614,6 +668,7 @@ end
 -- @function PipeMux:read
 -- @treturn array Array of sample vectors
 -- @treturn bool EOF encountered
+-- @treturn bool Shutdown encountered
 function PipeMux:read()
     -- Differentiated at runtime to _read_single() or _read_multiple()
 end
@@ -626,6 +681,7 @@ end
 -- @tparam array vecs Array of sample vectors
 -- @treturn bool EOF encountered
 -- @treturn Pipe|nil Pipe that caused EOF
+-- @treturn bool Shutdown encountered
 function PipeMux:write(vecs)
     -- Differentiated at runtime to _write_single() or _write_multiple()
 end

@@ -310,6 +310,88 @@ function Pipe:fileno_output()
 end
 
 --------------------------------------------------------------------------------
+-- ControlSocket
+--------------------------------------------------------------------------------
+
+---
+-- ControlSocket. This class implements an out-of-band, asynchronous control
+-- interface to blocks.
+--
+-- @internal
+-- @class
+-- @tparam Block block Block
+local ControlSocket = class.factory()
+
+function ControlSocket.new(block)
+    local self = setmetatable({}, ControlSocket)
+    self.block = block
+    return self
+end
+
+---
+-- Initialize the pipe.
+--
+-- @internal
+-- @function ControlSocket:initialize
+function ControlSocket:initialize()
+    -- Create UNIX socket pair
+    local socket_fds = ffi.new("int[2]")
+    if ffi.C.socketpair(ffi.C.AF_UNIX, ffi.C.SOCK_STREAM, 0, socket_fds) ~= 0 then
+        error("socketpair(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+    self._host_fd = socket_fds[0]
+    self._block_fd = socket_fds[1]
+end
+
+---
+-- Close the block side of the control socket.
+--
+-- @internal
+-- @function ControlSocket:close_block
+function ControlSocket:close_block()
+    if self._block_fd then
+        if ffi.C.close(self._block_fd) ~= 0 then
+            error("close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+        self._block_fd = nil
+    end
+end
+
+---
+-- Close the host side of the control socket.
+--
+-- @internal
+-- @function ControlSocket:close_host
+function ControlSocket:close_host()
+    if self._host_fd then
+        if ffi.C.close(self._host_fd) ~= 0 then
+            error("close(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+        self._host_fd = nil
+    end
+end
+
+---
+-- Get the file descriptor of the block side of the ControlSocket.
+--
+-- @internal
+-- @function ControlSocket:fileno_block
+-- @treturn int File descriptor
+function ControlSocket:fileno_block()
+    return self._block_fd
+end
+
+---
+-- Get the file descriptor of the host side of the ControlSocket.
+--
+-- @internal
+-- @function ControlSocket:fileno_host
+-- @treturn int File descriptor
+function ControlSocket:fileno_host()
+    return self._host_fd
+end
+
+--------------------------------------------------------------------------------
 -- PipeMux
 --------------------------------------------------------------------------------
 
@@ -549,4 +631,4 @@ function PipeMux:write(vecs)
 end
 
 -- Exported module
-return {Pipe = Pipe, PipeMux = PipeMux}
+return {Pipe = Pipe, ControlSocket = ControlSocket, PipeMux = PipeMux}

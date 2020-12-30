@@ -793,11 +793,9 @@ function CompositeBlock:stop()
         return
     end
 
-    -- Kill source blocks
+    -- Close control sockets to shutdown blocks
     for block, pid in pairs(self._pids) do
-        if #block.inputs == 0 then
-            ffi.C.kill(pid, ffi.C.SIGTERM)
-        end
+        block.control_socket:close_host()
     end
 
     -- Reap child processes

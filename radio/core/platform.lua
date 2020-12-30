@@ -170,8 +170,11 @@ ffi.cdef[[
         uint8_t set[128];
     } sigset_t;
 
+    typedef struct siginfo siginfo_t;
+
     sighandler_t signal(int signum, sighandler_t handler);
     int sigwait(const sigset_t *set, int *sig);
+    int sigtimedwait(const sigset_t *restrict set, siginfo_t *restrict info, const struct timespec *restrict timeout);
     int sigprocmask(int how, const sigset_t *restrict set, sigset_t *restrict oset);
     int sigpending(sigset_t *set);
 

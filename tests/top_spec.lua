@@ -77,6 +77,20 @@ describe("top level test", function ()
     end)
 
     it("flow graph stop()", function ()
+        -- Build and start flow graph
+        local top = radio.CompositeBlock():connect(
+            radio.UniformRandomSource(radio.types.ComplexFloat32, 1e6),
+            radio.DelayBlock(10),
+            radio.NopSink()
+        ):start()
+
+        ffi.C.usleep(1000)
+
+        -- Stop flow graph
+        top:stop()
+    end)
+
+    it("flow graph stop() unresponsive", function ()
         -- Create a pipe
         local pipe_fds = ffi.new("int[2]")
         assert(ffi.C.pipe(pipe_fds) == 0)

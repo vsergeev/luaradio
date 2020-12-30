@@ -708,31 +708,56 @@ function CompositeBlock:start(multiprocess)
 end
 
 -- Reap child processes, consume SIGCHLD, and unblock signals
-function CompositeBlock:_reap()
-    -- Wait for all children to exit
-    for _, pid in pairs(self._pids) do
-        -- If the process exists
-        if ffi.C.kill(pid, 0) == 0 then
-            -- Reap the process
-            if ffi.C.waitpid(pid, nil, 0) == -1 then
-                error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+function CompositeBlock:_reap(timeout)
+    -- Build signal set with SIGCHLD
+    local sigset = ffi.new("sigset_t[1]")
+    ffi.C.sigemptyset(sigset)
+    ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
+
+    -- Build timeout timespec
+    local timespec = ffi.new("struct timespec[1]")
+    timespec[0].tv_sec = 0
+    timespec[0].tv_nsec = (timeout or 0.100) * 1e9
+
+    local timed_out = false
+
+    -- Loop waiting on all child processes to exit, killing them with SIGTERM
+    -- if they don't exit on their own after a timeout
+    while true do
+        local all_exited = true
+
+        for block, pid in pairs(self._pids) do
+            -- If the process exists
+            if ffi.C.kill(pid, 0) == 0 then
+                -- Reap process
+                local ret = ffi.C.waitpid(pid, nil, ffi.C.WNOHANG)
+                if ret == 0 then
+                    -- Process is still running
+                    all_exited = false
+
+                    -- If waiting for SIGCHLD timed out, kill the process
+                    if timed_out then
+                        debug.printf("[CompositeBlock] Killing unresponsive block %s pid %d\n", block.name, pid)
+                        ret = ffi.C.kill(pid, ffi.C.SIGTERM)
+                        if ret < 0 then
+                            error("kill(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                        end
+                    end
+                elseif ret < 0 then
+                    error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+                end
             end
         end
-    end
 
-    -- Check pending signals
-    local sigset = ffi.new("sigset_t[1]")
-    if ffi.C.sigpending(sigset) ~= 0 then
-        error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
+        if all_exited then
+            break
+        end
 
-    -- Consume pending SIGCHLD signal
-    if ffi.C.sigismember(sigset, ffi.C.SIGCHLD) == 1 then
-        local sig = ffi.new("int[1]")
-        ffi.C.sigemptyset(sigset)
-        ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
-        if ffi.C.sigwait(sigset, sig) ~= 0 then
-            error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        -- Wait for SIGCHLD with timeout
+        local ret = ffi.C.sigtimedwait(sigset, nil, timespec)
+        timed_out = ret < 0 and ffi.errno() == ffi.C.EAGAIN
+        if ret < 0 and not timed_out then
+            error("sigtimedwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
         end
     end
 

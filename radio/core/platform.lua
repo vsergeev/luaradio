@@ -41,7 +41,7 @@ if ffi.os == "Linux" then
         /* open() and fcntl() file access mode flags */
         enum { O_NONBLOCK = 0x800 };
         /* errno values */
-        enum { ENOENT = 2, EPIPE = 32, ECONNRESET = 104, ECONNREFUSED = 111, EINPROGRESS = 115 };
+        enum { ENOENT = 2, EAGAIN = 11, EPIPE = 32, ECONNRESET = 104, ECONNREFUSED = 111, EINPROGRESS = 115 };
     ]]
 elseif ffi.os == "BSD" or ffi.os == "OSX" then
     ffi.cdef[[
@@ -62,7 +62,7 @@ elseif ffi.os == "BSD" or ffi.os == "OSX" then
         /* open() and fcntl() file access mode flags */
         enum { O_NONBLOCK = 0x0004 };
         /* errno values */
-        enum { ENOENT = 2, EPIPE = 32, ECONNRESET = 54, ECONNREFUSED = 61, EINPROGRESS = 36 };
+        enum { ENOENT = 2, EAGAIN = 35, EPIPE = 32, ECONNRESET = 54, ECONNREFUSED = 61, EINPROGRESS = 36 };
     ]]
 end
 

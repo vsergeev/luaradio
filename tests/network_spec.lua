@@ -64,11 +64,10 @@ describe("network tests", function ()
         )
 
         top_server:start()
-        ffi.C.usleep(10000)
         top_client:start()
 
-        top_server:_reap()
-        top_client:_reap()
+        top_client:wait()
+        top_server:wait()
 
         buffer.rewind(snk_fd)
         local buf = buffer.read(snk_fd, #test_vector_float*2)
@@ -88,11 +87,10 @@ describe("network tests", function ()
         )
 
         top_server:start()
-        ffi.C.usleep(10000)
         top_client:start()
 
-        top_server:_reap()
-        top_client:_reap()
+        top_client:wait()
+        top_server:wait()
 
         buffer.rewind(snk_fd)
         local buf = buffer.read(snk_fd, #test_vector_float*2)
@@ -112,11 +110,10 @@ describe("network tests", function ()
         )
 
         top_server:start()
-        ffi.C.usleep(10000)
         top_client:start()
 
-        top_server:_reap()
-        top_client:_reap()
+        top_client:wait()
+        top_server:wait()
 
         buffer.rewind(snk_fd)
         local buf = buffer.read(snk_fd, #test_vector_cstruct*2)
@@ -136,11 +133,10 @@ describe("network tests", function ()
         )
 
         top_server:start()
-        ffi.C.usleep(10000)
         top_client:start()
 
-        top_server:_reap()
-        top_client:_reap()
+        top_client:wait()
+        top_server:wait()
 
         buffer.rewind(snk_fd)
         local buf = buffer.read(snk_fd, #test_vector_object*2)
@@ -165,11 +161,10 @@ describe("network tests", function ()
         )
 
         top_server:start()
-        ffi.C.usleep(10000)
         top_client:start()
 
-        top_server:_reap()
-        top_client:_reap()
+        top_server:wait()
+        top_client:wait()
 
         buffer.rewind(snk_fd)
         local buf = buffer.read(snk_fd, #test_vector_float*2)
@@ -189,11 +184,10 @@ describe("network tests", function ()
         )
 
         top_server:start()
-        ffi.C.usleep(10000)
         top_client:start()
 
-        top_server:_reap()
-        top_client:_reap()
+        top_server:wait()
+        top_client:wait()
 
         buffer.rewind(snk_fd)
         local buf = buffer.read(snk_fd, #test_vector_float*2)
@@ -213,11 +207,10 @@ describe("network tests", function ()
         )
 
         top_server:start()
-        ffi.C.usleep(10000)
         top_client:start()
 
-        top_server:_reap()
-        top_client:_reap()
+        top_server:wait()
+        top_client:wait()
 
         buffer.rewind(snk_fd)
         local buf = buffer.read(snk_fd, #test_vector_cstruct*2)
@@ -237,11 +230,10 @@ describe("network tests", function ()
         )
 
         top_server:start()
-        ffi.C.usleep(10000)
         top_client:start()
 
-        top_server:_reap()
-        top_client:_reap()
+        top_server:wait()
+        top_client:wait()
 
         buffer.rewind(snk_fd)
         local buf = buffer.read(snk_fd, #test_vector_object*2)

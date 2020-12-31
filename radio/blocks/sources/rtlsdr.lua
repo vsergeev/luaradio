@@ -31,9 +31,9 @@ local ffi = require('ffi')
 
 local block = require('radio.core.block')
 local platform = require('radio.core.platform')
+local pipe = require('radio.core.pipe')
 local types = require('radio.types')
 local debug = require('radio.core.debug')
-local async = require('radio.core.async')
 
 local RtlSdrSource = block.factory("RtlSdrSource")
 
@@ -236,26 +236,17 @@ function RtlSdrSource:initialize_rtlsdr()
     end
 end
 
-local function sigterm_handler_factory(dev)
-    local ffi = require('ffi')
+function RtlSdrSource:run()
+    -- Initialize the rtlsdr in our own running process
+    self:initialize_rtlsdr()
 
-    ffi.cdef[[
-        typedef struct rtlsdr_dev rtlsdr_dev_t;
-        int rtlsdr_cancel_async(rtlsdr_dev_t *dev);
-    ]]
-    local librtlsdr = ffi.load('rtlsdr')
-
-    local function sigterm_handler(sig)
-        librtlsdr.rtlsdr_cancel_async(ffi.cast('rtlsdr_dev_t *', dev))
-    end
-
-    return ffi.cast('void (*)(int)', sigterm_handler)
-end
-
-local function read_callback_factory(pipes)
+    -- Create output vector
     local out = types.ComplexFloat32.vector()
 
-    local function read_callback(buf, len, ctx)
+    -- Create pipe mux
+    local pipe_mux = pipe.PipeMux({}, {self.outputs[1].pipes}, self.control_socket)
+
+    local read_callback = function (buf, len, ctx)
         -- Resize output vector
         out:resize(len/2)
 
@@ -266,26 +257,19 @@ local function read_callback_factory(pipes)
         end
 
         -- Write output vector to output pipes
-        for i=1, #pipes do
-            pipes[i]:write(out)
+        local eof, eof_pipe, shutdown = pipe_mux:write({out})
+
+        -- Check for downstream EOF or control socket shutdown
+        if eof or shutdown then
+            librtlsdr.rtlsdr_cancel_async(self.dev[0])
+            if eof then
+                io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
+            end
         end
     end
 
-    return read_callback
-end
-
-function RtlSdrSource:run()
-    -- Initialize the rtlsdr in our own running process
-    self:initialize_rtlsdr()
-
-    -- Register SIGTERM signal handler
-    local handler, handler_state = async.callback(sigterm_handler_factory, tonumber(ffi.cast("intptr_t", self.dev[0])))
-    ffi.C.signal(ffi.C.SIGTERM, handler)
-
-    local ret
-
-    -- Start asynchronous read
-    ret = librtlsdr.rtlsdr_read_async(self.dev[0], read_callback_factory(self.outputs[1].pipes), nil, 0, 32768)
+    -- Start asynchronous read (blocking)
+    local ret = librtlsdr.rtlsdr_read_async(self.dev[0], read_callback, nil, 0, 32768)
     if ret ~= 0 then
         error("rtlsdr_read_async(): " .. tostring(ret))
     end

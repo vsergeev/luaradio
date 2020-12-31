@@ -33,7 +33,7 @@ Pull requests are always welcome.
 
 ### Testing
 
-[Travis CI](https://travis-ci.org/vsergeev/luaradio) will run all pull requests
+[Travis CI](https://travis-ci.com/vsergeev/luaradio) will run all pull requests
 through the unit tests, but it's a good idea to run them locally first.  See
 the [tests](tests/) folder for instructions on running the unit tests locally.
 

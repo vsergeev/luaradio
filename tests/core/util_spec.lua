@@ -15,6 +15,20 @@ describe("table and array utilities", function ()
         assert.is.same(y, x)
     end)
 
+    it("array_flatten()", function ()
+        assert.is.same(util.array_flatten({}), {})
+        assert.is.same(util.array_flatten({1, 2, 3}), {1, 2, 3})
+        assert.is.same(util.array_flatten({1, {2, {3}}}), {1, 2, 3})
+        assert.is.same(util.array_flatten({1, {2}, {3, {{{{4}}}}, 5, {6, 7, {8}}}}), {1, 2, 3, 4, 5, 6, 7, 8})
+
+        -- Test depth
+        assert.is.same(util.array_flatten({1, {2, {3}}}, 0), {1, {2, {3}}})
+        assert.is.same(util.array_flatten({1, {2, {3}}}, 1), {1, 2, {3}})
+        assert.is.same(util.array_flatten({1, {2, {3}}}, 2), {1, 2, 3})
+        assert.is.same(util.array_flatten({1, {2, {3}}}, 3), {1, 2, 3})
+        assert.is.same(util.array_flatten({1, {2}, {3, {4, {5}}}}, 1), {1, 2, 3, {4, {5}}})
+    end)
+
     it("array_exists()", function ()
         local x = {'bar', 'foo', 123, true}
 

@@ -34,6 +34,32 @@ local function table_copy(table)
 end
 
 ---
+-- Flatten an array.
+--
+-- @internal
+-- @function array_flatten
+-- @tparam array array Array
+-- @tparam int|nil depth Depth to flatten or nil for no limit
+-- @treturn array Flattened array
+local function array_flatten(array, depth)
+    if depth and depth == 0 then
+        return array
+    end
+
+    local flattened = {}
+    for _, v in pairs(array) do
+        if type(v) == "table" then
+            for _, w in pairs(array_flatten(v, depth and depth - 1)) do
+                flattened[#flattened + 1] = w
+            end
+        else
+            flattened[#flattened + 1] = v
+        end
+    end
+    return flattened
+end
+
+---
 -- Test if elem exists in array.
 --
 -- @internal
@@ -124,4 +150,4 @@ local function array_find(array, elem)
     return nil
 end
 
-return {table_length = table_length, table_copy = table_copy, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find}
+return {table_length = table_length, table_copy = table_copy, array_flatten = array_flatten, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find}

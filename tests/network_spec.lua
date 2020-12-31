@@ -42,7 +42,7 @@ describe("network tests", function ()
         return self
     end
     local test_vector_object = ""
-    for i = 0, 4096-1 do
+    for i = 0, 1024-1 do
         test_vector_object = test_vector_object .. MyObjectType(math.random(0, 1023), math.random(0, 1023)):to_json() .. "\n"
     end
 

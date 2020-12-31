@@ -842,6 +842,13 @@ function CompositeBlock:wait()
         return
     end
 
+    -- Check if all child processes already exited
+    local all_exited = util.array_all(self._pids, function (pid) return ffi.C.waitpid(pid, nil, ffi.C.WNOHANG) > 0 end)
+    if all_exited then
+        self:_reap()
+        return
+    end
+
     -- Build signal set with SIGINT and SIGCHLD
     local sigset = ffi.new("sigset_t[1]")
     ffi.C.sigemptyset(sigset)

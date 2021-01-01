@@ -37,16 +37,6 @@ function Pipe:get_rate()
     return self.output.owner:get_rate()
 end
 
----
--- Get data type of pipe.
---
--- @internal
--- @function Pipe:get_data_type
--- @treturn data_type Data type
-function Pipe:get_data_type()
-    return self.output.data_type
-end
-
 ffi.cdef[[
     int socketpair(int domain, int type, int protocol, int socket_vector[2]);
 ]]

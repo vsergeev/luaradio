@@ -279,18 +279,6 @@ describe("block", function ()
             return block.Block.get_rate(self)/2
         end
 
-        -- Mock pipe class
-
-        local MockPipe = class.factory()
-
-        function MockPipe.new(src, dst)
-            return setmetatable({src = src, dst = dst}, MockPipe)
-        end
-
-        function MockPipe:get_rate()
-            return self.src:get_rate()
-        end
-
         -- Build pipeline
         --  TestSource -> TestRateTripler -> TestBlock -> TestRateHalver -> TestBlock
 
@@ -311,7 +299,7 @@ describe("block", function ()
         -- Connect pipes
         for _, blks in ipairs({{b0, b1}, {b1, b2}, {b2, b3}, {b3, b4}}) do
             local src, dst = unpack(blks)
-            local p = MockPipe(src, dst)
+            local p = pipe.Pipe(src.outputs[1], dst.inputs[1])
             src.outputs[1].pipes = {p}
             dst.inputs[1].pipe = p
         end

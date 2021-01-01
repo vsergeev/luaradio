@@ -34,6 +34,7 @@ local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
 local async = require('radio.core.async')
+local pipe = require('radio.core.pipe')
 
 local AirspyHFSource = block.factory("AirspyHFSource")
 
@@ -239,9 +240,20 @@ end
 
 local function read_callback_factory(...)
     local ffi = require('ffi')
-    local radio = require('radio')
 
-    local fds = {...}
+    local radio = require('radio')
+    local pipe = require('radio.core.pipe')
+    local vector = require('radio.core.vector')
+
+    -- Convert fds on stack to Pipe objects
+    local output_pipes = {}
+    for i, fd in ipairs({...}) do
+        output_pipes[i] = pipe.Pipe()
+        output_pipes[i]:initialize(radio.types.ComplexFloat32, nil, fd)
+    end
+
+    -- Create pipe mux for write multiplexing
+    local pipe_mux = pipe.PipeMux({}, {output_pipes})
 
     local function read_callback(transfer)
         -- Check for dropped samples
@@ -252,17 +264,10 @@ local function read_callback_factory(...)
         -- Calculate size of samples in bytes
         local size = transfer.sample_count*ffi.sizeof("airspyhf_complex_float_t")
 
-        -- Write to each output fd
-        for i = 1, #fds do
-            local total_bytes_written = 0
-            while total_bytes_written < size do
-                local bytes_written = tonumber(ffi.C.write(fds[i], ffi.cast("uint8_t *", transfer.samples) + total_bytes_written, size - total_bytes_written))
-                if bytes_written <= 0 then
-                    error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-                end
-
-                total_bytes_written = total_bytes_written + bytes_written
-            end
+        -- Write to output pipes
+        local eof, eof_pipe = pipe_mux:write({vector.Vector.cast(radio.types.ComplexFloat32, transfer.samples, size)})
+        if eof then
+            io.stderr:write("[AirspyHFSource] Downstream block terminated unexpectedly.\n")
         end
 
         return 0
@@ -275,15 +280,8 @@ function AirspyHFSource:run()
     -- Initialize the airspyhf in our own running process
     self:initialize_airspyhf()
 
-    -- Build signal set with SIGTERM
-    local sigset = ffi.new("sigset_t[1]")
-    ffi.C.sigemptyset(sigset)
-    ffi.C.sigaddset(sigset, ffi.C.SIGTERM)
-
-    -- Block handling of SIGTERM
-    if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
-        error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
+    -- Create pipe mux for control socket
+    local pipe_mux = pipe.PipeMux({}, {}, self.control_socket)
 
     -- Start receiving
     local read_callback, read_callback_state = async.callback(read_callback_factory, unpack(self.outputs[1]:filenos()))
@@ -292,10 +290,13 @@ function AirspyHFSource:run()
         error("airspyhf_start(): " .. ret)
     end
 
-    -- Wait for SIGTERM
-    local sig = ffi.new("int[1]")
-    if ffi.C.sigwait(sigset, sig) ~= 0 then
-        error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    -- Wait for shutdown from control socket
+    while true do
+        -- Read control socket
+        local _, _, shutdown = pipe_mux:read()
+        if shutdown then
+            break
+        end
     end
 
     -- Stop receiving

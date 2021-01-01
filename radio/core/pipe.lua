@@ -48,32 +48,43 @@ ffi.cdef[[
 -- @internal
 -- @function Pipe:initialize
 -- @tparam[opt] data_type data_type Data type
-function Pipe:initialize(data_type)
+-- @tparam[opt] int read_fd Read file descriptor
+-- @tparam[opt] int write_fd Write file descriptor
+function Pipe:initialize(data_type, read_fd, write_fd)
     self.data_type = data_type or self.output.data_type
 
     assert(self.data_type, "Unknown data type")
 
-    -- Create UNIX socket pair
-    local socket_fds = ffi.new("int[2]")
-    if ffi.C.socketpair(ffi.C.AF_UNIX, ffi.C.SOCK_STREAM, 0, socket_fds) ~= 0 then
-        error("socketpair(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    if not read_fd and not write_fd then
+        -- Create UNIX socket pair
+        local socket_fds = ffi.new("int[2]")
+        if ffi.C.socketpair(ffi.C.AF_UNIX, ffi.C.SOCK_STREAM, 0, socket_fds) ~= 0 then
+            error("socketpair(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+        self._rfd = socket_fds[0]
+        self._wfd = socket_fds[1]
+    else
+        self._rfd = read_fd or nil
+        self._wfd = write_fd or nil
     end
-    self._rfd = socket_fds[0]
-    self._wfd = socket_fds[1]
-    self._eof = false
 
     -- Read buffer
-    self._rbuf_capacity = 1048576
-    self._rbuf_anchor = platform.alloc(self._rbuf_capacity)
-    self._rbuf = ffi.cast("char *", self._rbuf_anchor)
-    self._rbuf_size = 0
-    self._rbuf_offset = 0
+    if self._rfd then
+        self._rbuf_capacity = 1048576
+        self._rbuf_anchor = platform.alloc(self._rbuf_capacity)
+        self._rbuf = ffi.cast("char *", self._rbuf_anchor)
+        self._rbuf_size = 0
+        self._rbuf_offset = 0
+        self._eof = false
+    end
 
     -- Write buffer
-    self._wbuf_anchor = nil
-    self._wbuf = nil
-    self._wbuf_size = 0
-    self._wbuf_offset = 0
+    if self._wfd then
+        self._wbuf_anchor = nil
+        self._wbuf = nil
+        self._wbuf_size = 0
+        self._wbuf_offset = 0
+    end
 end
 
 --------------------------------------------------------------------------------

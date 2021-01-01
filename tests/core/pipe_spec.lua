@@ -5,6 +5,8 @@ local block = require('radio.core.block')
 local pipe = require('radio.core.pipe')
 local util = require('radio.core.util')
 
+local buffer = require('tests.buffer')
+
 describe("pipe", function ()
     local FooType = radio.types.ObjectType.factory()
 
@@ -143,6 +145,22 @@ describe("pipe", function ()
         p:close_input()
         assert.is.equal(p:_write_buffer_serialize(random_complexfloat32_vector(128)), nil)
         assert.is.equal(p:_write_buffer_update(), nil)
+    end)
+
+    it("initialize from fd", function ()
+        local buffer_fd = buffer.open()
+
+        local p = pipe.Pipe()
+        p:initialize(radio.types.ComplexFloat32, buffer_fd, buffer_fd)
+
+        local write_vec = random_complexfloat32_vector(128)
+        p:write(write_vec)
+
+        buffer.rewind(buffer_fd)
+
+        local read_vec = p:read(write_vec.length)
+        assert.is.equal(read_vec.length, write_vec.length)
+        assert.is_true(ffi.C.memcmp(read_vec.data, write_vec.data, write_vec.size) == 0)
     end)
 
     for type_name, _ in pairs(cstruct_types) do

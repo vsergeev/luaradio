@@ -30,6 +30,7 @@ local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
 local async = require('radio.core.async')
+local pipe = require('radio.core.pipe')
 
 local SDRplaySource = block.factory("SDRplaySource")
 
@@ -161,32 +162,37 @@ end
 
 local function stream_callback_factory(...)
     local ffi = require('ffi')
+
     local radio = require('radio')
+    local pipe = require('radio.core.pipe')
 
-    local fds = {...}
+    -- Convert fds on stack to Pipe objects
+    local output_pipes = {}
+    for i, fd in ipairs({...}) do
+        output_pipes[i] = pipe.Pipe()
+        output_pipes[i]:initialize(radio.types.ComplexFloat32, nil, fd)
+    end
 
+    -- Create PipeMux for write multiplexing
+    local pipe_mux = pipe.PipeMux({}, {output_pipes})
+
+    -- Create output vector
     local out = radio.types.ComplexFloat32.vector()
 
     local function stream_callback(xi, xq, firstSampleNum, grChanged, rfChanged, fsChanged, numSamples, reset, hwRemoved, cbContext)
+        -- Resize output vector
         out:resize(numSamples)
 
-        -- Convert raw samples to complex float32 samples
+        -- Convert raw int16 samples to complex float32 samples
         for i = 0, out.length-1 do
             out.data[i].real = xi[i]*1.0/32767.5
             out.data[i].imag = xq[i]*1.0/32767.5
         end
 
-        -- Write to each output fd
-        for i = 1, #fds do
-            local total_bytes_written = 0
-            while total_bytes_written < out.size do
-                local bytes_written = tonumber(ffi.C.write(fds[i], ffi.cast("uint8_t *", out.data) + total_bytes_written, out.size - total_bytes_written))
-                if bytes_written <= 0 then
-                    error("write(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-                end
-
-                total_bytes_written = total_bytes_written + bytes_written
-            end
+        -- Write to output pipes
+        local eof, eof_pipe = pipe_mux:write({out})
+        if eof then
+            io.stderr:write("[SDRplaySource] Downstream block terminated unexpectedly.\n")
         end
     end
 
@@ -231,15 +237,8 @@ function SDRplaySource:run()
     debug.printf("[SDRplaySource] Frequency: %u Hz, Sample rate: %u Hz\n", self.frequency, self.rate)
     debug.printf("[SDRplaySource] Requested Bandwidth: %u Hz, Actual Bandwidth: %u Hz\n", (self.bandwidth or api_bandwidth)*1e3, api_bandwidth*1e3)
 
-    -- Build signal set with SIGTERM
-    local sigset = ffi.new("sigset_t[1]")
-    ffi.C.sigemptyset(sigset)
-    ffi.C.sigaddset(sigset, ffi.C.SIGTERM)
-
-    -- Block handling of SIGTERM
-    if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
-        error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
+    -- Create pipe mux for control socket
+    local pipe_mux = pipe.PipeMux({}, {}, self.control_socket)
 
     -- Initialize device and start receiving
     local stream_callback, stream_callback_state = async.callback(stream_callback_factory, unpack(self.outputs[1]:filenos()))
@@ -252,10 +251,13 @@ function SDRplaySource:run()
         error("mir_sdr_Init(): " .. libmirsdrapi_strerror(ret))
     end
 
-    -- Wait for SIGTERM
-    local sig = ffi.new("int[1]")
-    if ffi.C.sigwait(sigset, sig) ~= 0 then
-        error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    -- Wait for shutdown from control socket
+    while true do
+        -- Read control socket
+        local _, _, shutdown = pipe_mux:read()
+        if shutdown then
+            break
+        end
     end
 
     -- Stop stream

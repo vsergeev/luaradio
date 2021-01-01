@@ -34,6 +34,7 @@ end
 -- @function Pipe:get_rate
 -- @treturn number Sample rate
 function Pipe:get_rate()
+    assert(self.output, "Sample rate unavailable for anonymous pipes")
     return self.output.owner:get_rate()
 end
 

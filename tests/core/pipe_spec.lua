@@ -67,8 +67,7 @@ describe("pipe", function ()
 
     it("read buffer", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         assert.is.equal(p:_read_buffer_count(), 0)
         assert.is_false(p:_read_buffer_full())
@@ -105,8 +104,7 @@ describe("pipe", function ()
 
     it("read buffer eof", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         assert.is.equal(p:_read_buffer_count(), 0)
         assert.is_false(p:_read_buffer_full())
@@ -119,8 +117,7 @@ describe("pipe", function ()
 
     it("write buffer", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         assert.is_true(p:_write_buffer_empty(), true)
 
@@ -138,8 +135,7 @@ describe("pipe", function ()
 
     it ("write buffer eof", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         -- Ignore SIGPIPE, handle with error from write()
         ffi.C.signal(ffi.C.SIGPIPE, ffi.cast("sighandler_t", ffi.C.SIG_IGN))
@@ -157,8 +153,7 @@ describe("pipe", function ()
             for _, write_num in ipairs({1, 123, test_vector.length}) do
                 for _, read_num in ipairs({1, 123, test_vector.length}) do
                     local p = pipe.Pipe()
-                    p.get_data_type = function () return data_type end
-                    p:initialize()
+                    p:initialize(data_type)
 
                     -- Write and read offsets into test vector
                     local write_offset = 0
@@ -222,8 +217,7 @@ describe("pipe", function ()
         for _, write_num in ipairs({1, 123, test_vector.length}) do
             for _, read_num in ipairs({1, 123, test_vector.length}) do
                 local p = pipe.Pipe()
-                p.get_data_type = function () return FooType end
-                p:initialize()
+                p:initialize(FooType)
 
                 -- Write and read counts of test vector
                 local write_count = 0
@@ -295,8 +289,7 @@ describe("pipe", function ()
 
     it("PipeMux read cstruct single", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({p}, {})
 
@@ -314,8 +307,7 @@ describe("pipe", function ()
 
     it("PipeMux read object single", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return FooType end
-        p:initialize()
+        p:initialize(FooType)
 
         local pipe_mux = pipe.PipeMux({p}, {})
 
@@ -335,16 +327,13 @@ describe("pipe", function ()
 
     it("PipeMux read cstruct multiple", function ()
         local p1 = pipe.Pipe()
-        p1.get_data_type = function () return radio.types.Byte end
-        p1:initialize()
+        p1:initialize(radio.types.Byte)
 
         local p2 = pipe.Pipe()
-        p2.get_data_type = function () return radio.types.Float32 end
-        p2:initialize()
+        p2:initialize(radio.types.Float32)
 
         local p3 = pipe.Pipe()
-        p3.get_data_type = function () return radio.types.ComplexFloat32 end
-        p3:initialize()
+        p3:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({p1, p2, p3}, {})
 
@@ -426,12 +415,10 @@ describe("pipe", function ()
 
     it("PipeMux read object multiple", function ()
         local p1 = pipe.Pipe()
-        p1.get_data_type = function () return FooType end
-        p1:initialize()
+        p1:initialize(FooType)
 
         local p2 = pipe.Pipe()
-        p2.get_data_type = function () return BarType end
-        p2:initialize()
+        p2:initialize(BarType)
 
         local pipe_mux = pipe.PipeMux({p1, p2}, {})
 
@@ -485,8 +472,7 @@ describe("pipe", function ()
 
     it("PipeMux read single eof", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({p}, {})
 
@@ -508,16 +494,13 @@ describe("pipe", function ()
 
     it("PipeMux read multiple eof", function ()
         local p1 = pipe.Pipe()
-        p1.get_data_type = function () return radio.types.Byte end
-        p1:initialize()
+        p1:initialize(radio.types.Byte)
 
         local p2 = pipe.Pipe()
-        p2.get_data_type = function () return radio.types.Float32 end
-        p2:initialize()
+        p2:initialize(radio.types.Float32)
 
         local p3 = pipe.Pipe()
-        p3.get_data_type = function () return radio.types.ComplexFloat32 end
-        p3:initialize()
+        p3:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({p1, p2, p3}, {})
 
@@ -551,8 +534,7 @@ describe("pipe", function ()
         cs:initialize()
 
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({p}, {}, cs)
 
@@ -597,8 +579,7 @@ describe("pipe", function ()
 
     it("PipeMux write cstruct single", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({}, {{p}})
 
@@ -617,8 +598,7 @@ describe("pipe", function ()
 
     it("PipeMux write object single", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return FooType end
-        p:initialize()
+        p:initialize(FooType)
 
         local pipe_mux = pipe.PipeMux({}, {{p}})
 
@@ -639,28 +619,22 @@ describe("pipe", function ()
 
     it("PipeMux write cstruct multiple", function ()
         local p11 = pipe.Pipe()
-        p11.get_data_type = function () return radio.types.Byte end
-        p11:initialize()
+        p11:initialize(radio.types.Byte)
 
         local p12 = pipe.Pipe()
-        p12.get_data_type = function () return radio.types.Byte end
-        p12:initialize()
+        p12:initialize(radio.types.Byte)
 
         local p2 = pipe.Pipe()
-        p2.get_data_type = function () return radio.types.Float32 end
-        p2:initialize()
+        p2:initialize(radio.types.Float32)
 
         local p31 = pipe.Pipe()
-        p31.get_data_type = function () return radio.types.ComplexFloat32 end
-        p31:initialize()
+        p31:initialize(radio.types.ComplexFloat32)
 
         local p32 = pipe.Pipe()
-        p32.get_data_type = function () return radio.types.ComplexFloat32 end
-        p32:initialize()
+        p32:initialize(radio.types.ComplexFloat32)
 
         local p33 = pipe.Pipe()
-        p33.get_data_type = function () return radio.types.ComplexFloat32 end
-        p33:initialize()
+        p33:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({}, {{p11, p12}, {p2}, {p31, p32, p33}})
 
@@ -690,16 +664,13 @@ describe("pipe", function ()
 
     it("PipeMux write object multiple", function ()
         local p11 = pipe.Pipe()
-        p11.get_data_type = function () return FooType end
-        p11:initialize()
+        p11:initialize(FooType)
 
         local p21 = pipe.Pipe()
-        p21.get_data_type = function () return BarType end
-        p21:initialize()
+        p21:initialize(BarType)
 
         local p22 = pipe.Pipe()
-        p22.get_data_type = function () return BarType end
-        p22:initialize()
+        p22:initialize(BarType)
 
         local pipe_mux = pipe.PipeMux({}, {{p11}, {p21, p22}})
 
@@ -727,8 +698,7 @@ describe("pipe", function ()
 
     it("PipeMux write single eof", function ()
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({}, {{p}})
 
@@ -750,28 +720,22 @@ describe("pipe", function ()
 
     it("PipeMux write multiple eof", function ()
         local p1 = pipe.Pipe()
-        p1.get_data_type = function () return radio.types.Byte end
-        p1:initialize()
+        p1:initialize(radio.types.Byte)
 
         local p21 = pipe.Pipe()
-        p21.get_data_type = function () return radio.types.Float32 end
-        p21:initialize()
+        p21:initialize(radio.types.Float32)
 
         local p22 = pipe.Pipe()
-        p22.get_data_type = function () return radio.types.Float32 end
-        p22:initialize()
+        p22:initialize(radio.types.Float32)
 
         local p31 = pipe.Pipe()
-        p31.get_data_type = function () return radio.types.ComplexFloat32 end
-        p31:initialize()
+        p31:initialize(radio.types.ComplexFloat32)
 
         local p32 = pipe.Pipe()
-        p32.get_data_type = function () return radio.types.ComplexFloat32 end
-        p32:initialize()
+        p32:initialize(radio.types.ComplexFloat32)
 
         local p33 = pipe.Pipe()
-        p33.get_data_type = function () return radio.types.ComplexFloat32 end
-        p33:initialize()
+        p33:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({}, {{p1}, {p21, p22}, {p31, p32, p33}})
 
@@ -804,8 +768,7 @@ describe("pipe", function ()
         cs:initialize()
 
         local p = pipe.Pipe()
-        p.get_data_type = function () return radio.types.ComplexFloat32 end
-        p:initialize()
+        p:initialize(radio.types.ComplexFloat32)
 
         local pipe_mux = pipe.PipeMux({}, {{p}}, cs)
 

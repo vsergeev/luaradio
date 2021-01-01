@@ -56,9 +56,11 @@ ffi.cdef[[
 --
 -- @internal
 -- @function Pipe:initialize
-function Pipe:initialize()
-    -- Look up our data type
-    self.data_type = self:get_data_type()
+-- @tparam[opt] data_type data_type Data type
+function Pipe:initialize(data_type)
+    self.data_type = data_type or self.output.data_type
+
+    assert(self.data_type, "Unknown data type")
 
     -- Create UNIX socket pair
     local socket_fds = ffi.new("int[2]")

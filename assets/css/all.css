@@ -869,133 +869,6 @@ body {
   border-top: 7px solid #3498db;
 }
 
-/******************************************************************************/
-
-/* Scrolling Toc Container */
-
-.scroll-toc {
-  visibility: hidden;
-  height: 0;
-}
-
-.scroll-toc div.toc-header {
-  width: 75%;
-  max-width: 242px;
-  border-bottom: dotted #ddd;
-  border-width: 1px 0;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.scroll-toc div.toc-header .links {
-  display: table;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media (min-width: 550px) {
-  /* Only show scrolling toc in grid layout */
-  .is-position-fixed {
-    visibility: visible;
-    position: fixed !important;
-    height: 100%;
-    top: 1.7rem;
-    left: 1.7rem;
-    max-width: 15%;
-  }
-}
-
-@media (min-width: 750px) {
-  .is-position-fixed {
-    top: 3.2rem;
-    left: 3.2rem;
-    max-width: 20%;
-  }
-}
-
-@media (min-width: 1000px) {
-  .is-position-fixed {
-    max-width: 25%;
-  }
-}
-
-@media (min-width: 1400px) {
-  .is-position-fixed {
-    left: 12.5%;
-  }
-}
-
-/* Scroll support */
-
-.scroll-toc div.toc {
-  padding-top: 1.1rem;
-  padding-bottom: 0.5rem;
-}
-
-@media (min-width: 550px) {
-  .scroll-toc div.toc {
-    height: 80%;
-  }
-  .scroll-toc div.toc div.js-toc {
-    max-height: 80%;
-  }
-}
-
-.scroll-toc div.toc div.js-toc {
-  overflow: auto;
-  white-space: nowrap;
-}
-
-.scroll-toc div.toc>ul {
-  position: relative;
-}
-
-/* Collapse support */
-
-.is-collapsible {
-  max-height: 1000px;
-  overflow: hidden;
-  transition: all 300ms ease-in-out;
-}
-
-.is-collapsed {
-  max-height: 0;
-}
-
-/* Toc List container inside Scrolling Toc */
-
-.toc-list {
-  margin: 0;
-  padding-left: 1.6rem;
-}
-
-.toc .toc-list ul li {
-  margin-top: 0.2rem;
-  margin-bottom: 0;
-}
-
-a.toc-link {
-  color: currentColor;
-  height: 100%;
-}
-
-.toc-link::before {
-  content: ' ';
-  margin-left: -1.2em;
-  float: left;
-}
-
-.is-active-link {
-  font-weight: 700
-}
-
-.is-active-link::before {
-  content: '\25ba';
-  color: #3498db;
-}
-
-/******************************************************************************/
-
 /* Block element margins */
 
 p, blockquote, ul, ol, dl, table, pre {
@@ -1025,10 +898,6 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   line-height: 1.4;
   margin-bottom: 1.6rem;
-}
-
-h2, h3, h4, h5, h6 {
-  margin-top: 1.6rem;
 }
 
 h1 {
@@ -1108,8 +977,6 @@ a:visited {
 
 img {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 /* Figures */
@@ -1165,49 +1032,6 @@ pre.benchmark-platform {
 
 /******************************************************************************/
 
-/* Reference Manual formatting */
-
-.reference-manual hr {
-  margin-top: 2.0rem;
-  margin-bottom: 1.5rem;
-}
-
-.reference-manual h4 {
-  margin-bottom: 1.0rem;
-}
-
-.reference-manual h5 {
-  font-size: 1.8rem;
-  margin-top: 0;
-  padding-top: 0.25rem;
-  margin-bottom: 1.0rem;
-}
-
-.reference-manual .class p, .reference-manual .class ul, .reference-manual .class pre, .reference-manual .class h6,
-.reference-manual .block p, .reference-manual .block ul, .reference-manual .block pre, .reference-manual .block h6,
-.reference-manual .field p, .reference-manual .field ul, .reference-manual .field pre, .reference-manual .field h6,
-.reference-manual .function p, .reference-manual .function ul, .reference-manual .function pre, .reference-manual .function h6 {
-  margin-bottom: 0.75rem;
-  margin-left: 2.0rem;
-}
-
-.reference-manual .class h5 code {
-  margin-left: 0rem;
-}
-
-.reference-manual .block h5 code {
-  margin-left: 1.4rem;
-}
-
-.reference-manual h6 {
-  color: #999;
-  font-size: 1.5rem;
-  margin-top: 1.0rem;
-  margin-bottom: 0.8rem;
-}
-
-/******************************************************************************/
-
 /* Content Pane */
 
 .content {
@@ -1232,32 +1056,42 @@ pre.benchmark-platform {
   padding-top: 2.5rem;
 }
 
-@media (min-width: 550px) {
-  .sidebar {
-    padding-top: 2.0rem;
-  }
+/******************************************************************************/
+
+/* Footer Formatting */
+
+.footer {
+  width: 100%;
+  color: #666;
+  border-top: 4px solid #eee;
+  overflow: hidden;
+  padding-top: 0.5rem;
 }
 
-@media (min-width: 750px) {
-  .sidebar {
-    padding-top: 2.5rem;
-  }
+.disclaimer p {
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 /******************************************************************************/
 
 /* Navigation Formatting */
 
-.menu div.toc {
+.menu .toc {
+  margin-top: 1.0rem;
   margin-bottom: 1.0rem;
   border: dotted #ddd;
   border-width: 1px 0;
   padding-top: 0.9rem;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.9rem;
 }
 
 nav .title {
   text-align: center;
+  font-size: 3.2rem;
+  padding: 0;
+  margin-bottom: 1.0rem;
+  border-bottom: none;
 }
 
 nav .title a {
@@ -1267,6 +1101,12 @@ nav .title a {
 
 nav .title a:hover {
   text-decoration: none;
+}
+
+nav .contact {
+  display: block;
+  text-align: center;
+  font-size: 1.4rem;
 }
 
 nav .links {
@@ -1282,40 +1122,29 @@ nav .version {
   letter-spacing: -0.075rem;
 }
 
-nav h1, nav h2, nav h5 {
-  text-align: center;
-  padding: 0;
-  margin-bottom: 1.0rem;
-  border-bottom: none;
-}
-
-nav h1 {
-  font-size: 3.2rem;
-}
-
 nav ul {
   padding: 0;
   margin-left: 1.6rem;
-  margin-top: 0;
   margin-bottom: 0;
-  margin-right: 0;
   list-style-type: none;
 }
 
 nav ul li {
   margin-top: 0.4rem;
-  margin-bottom: 0.4rem;
   line-height: 2.2rem;
   font-size: 1.6rem;
 }
 
 nav ul ul {
   margin-left: 2.0rem;
-  list-style-type: none;
 }
 
 nav ul ul li {
   font-size: 1.4rem;
+}
+
+nav ul ul ul {
+  margin-left: 3.0rem;
 }
 
 nav .toc a {
@@ -1328,20 +1157,165 @@ nav .toc a:visited {
 
 /******************************************************************************/
 
-/* Footer Formatting */
+/* Scrolling Toc Container */
 
-.footer {
-  width: 100%;
-  font-size: 80%;
-  color: #666;
-  border-top: 4px solid #eee;
-  overflow: hidden;
+.scroll-toc {
+  visibility: hidden;
+  height: 0;
+  width: 25%;
+  max-width: 242px;
 }
 
-.disclaimer p {
-  margin-top: 0.5rem;
-  font-size: 1.1rem;
-  text-align: center;
+@media (min-width: 550px) {
+  /* Only show scrolling toc in grid layout */
+  .is-position-fixed {
+    visibility: visible;
+    position: fixed !important;
+    height: 100%;
+    top: 2.5rem;
+  }
+}
+
+.scroll-toc .toc {
+  border-top: dotted #ddd;
+  border-width: 1px 0;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+}
+
+@media (min-width: 550px) {
+  .scroll-toc .toc {
+    height: 80%;
+    margin-left: 1.6rem;
+  }
+  .scroll-toc .toc .js-toc {
+    max-height: 80%;
+    overflow: auto;
+  }
+}
+
+.scroll-toc .toc .toc-list ul {
+  padding-left: 1.6rem;
+  margin: 0;
+}
+
+.scroll-toc .toc .toc-list ul li {
+  margin-top: 0.2rem;
+}
+
+.toc-link::before {
+  content: ' ';
+  margin-left: -1.2em;
+  float: left;
+}
+
+.is-active-link {
+  font-weight: 700
+}
+
+.is-active-link::before {
+  content: '\25ba';
+  color: #3498db;
+}
+
+.is-collapsible {
+  max-height: 1000px;
+  overflow: hidden;
+  transition: all 300ms ease-in-out;
+}
+
+.is-collapsed {
+  max-height: 0;
+}
+
+/******************************************************************************/
+
+/* Reference Manual Layout */
+
+.reference-manual-sidebar {
+  position: fixed;
+  width: 20%;
+  max-width: 350px; /* usually 242px */
+  top: 0;
+  padding-top: 1.25rem;
+  height: 100%;
+  z-index: 1;
+  border-top: 7px solid #3498db;
+  visibility: hidden;
+}
+
+@media (min-width: 550px) {
+  .reference-manual-sidebar {
+    visibility: visible;
+  }
+}
+
+.reference-manual-sidebar .menu {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.reference-manual-sidebar .toc {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.reference-manual-sidebar .contact {
+  margin-bottom: 3rem;
+}
+
+.reference-manual .container {
+  max-width: initial;
+}
+
+.reference-manual .sidebar {
+  max-width: 350px;
+}
+
+.reference-manual .content {
+  width: 75%;
+  max-width: 815px;
+  margin-left: -1%;
+}
+
+/* Reference Manual formatting */
+
+.reference-manual hr {
+  margin-top: 2.0rem;
+  margin-bottom: 1.5rem;
+}
+
+.reference-manual h4 {
+  margin-bottom: 1.0rem;
+}
+
+.reference-manual h5 {
+  font-size: 1.8rem;
+  padding-top: 0.25rem;
+  margin-bottom: 1.0rem;
+}
+
+.reference-manual .class p, .reference-manual .class ul, .reference-manual .class pre, .reference-manual .class h6,
+.reference-manual .block p, .reference-manual .block ul, .reference-manual .block pre, .reference-manual .block h6,
+.reference-manual .field p, .reference-manual .field ul, .reference-manual .field pre, .reference-manual .field h6,
+.reference-manual .function p, .reference-manual .function ul, .reference-manual .function pre, .reference-manual .function h6 {
+  margin-bottom: 0.75rem;
+  margin-left: 2.0rem;
+}
+
+.reference-manual .class h5 code {
+  margin-left: 0;
+}
+
+.reference-manual .block h5 code {
+  margin-left: 1.4rem;
+}
+
+.reference-manual h6 {
+  color: #999;
+  font-size: 1.5rem;
+  margin-top: 1.0rem;
 }
 
 .highlight .hll { background-color: #ffffcc }

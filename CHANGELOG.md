@@ -1,3 +1,30 @@
+* v0.9.0 - 01/04/2021
+    * Block additions
+        * PulseMatchedFilterBlock
+        * PulseAmplitudeModulatorBlock
+        * QuadratureAmplitudeModulatorBlock
+        * BladeRFSource
+        * BladeRFSink
+    * Block changes
+        * Fix support for Lua file handles with PrintSink and BenchmarkSink.
+        * Add support for optional reporting title to PrintSink and
+          BenchmarkSink.
+    * Core changes
+        * Refactor read and write multiplexing of Pipes into the PipeMux class.
+        * Add control sockets to blocks to implement graceful shutdown and to
+          support an asynchronous control interface in the future.
+        * Reimplement flow graph stop with control sockets for faster and more
+          graceful shutdown.
+        * Add automatic termination of unresponsive block processes to flow
+          graph stop.
+        * Fix blocking in flow graph wait when flow graph has already
+          terminated or when running multiple flow graphs.
+    * Documentation changes
+        * Add BladeRF and PortAudio to Supported Hardware document.
+    * Website changes
+        * Improve reference manual layout and navigation.
+        * Improve sidebar position and layout.
+
 * v0.8.0 - 10/22/2020
     * Block additions
         * FrequencyModulatorBlock

@@ -583,82 +583,52 @@ function PipeMux:_write_none(vecs)
 end
 
 function PipeMux:_write_single(vecs)
-    -- Serialize output vector to pipe write buffer
-    self.output_pipes_flat[1]:_write_buffer_serialize(vecs[1])
-
-    while true do
-        -- Poll (blocking)
-        local ret = ffi.C.poll(self.output_pollfds, 2, -1)
-        if ret < 0 then
-            error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-
-        -- Check control socket
-        if self.output_pollfds[0].revents ~= 0 then
-            -- Shutdown encountered
-            return false, nil, true
-        end
-
-        -- Update pipe internal write buffer
-        if self.output_pipes_flat[1]:_write_buffer_update() == nil then
-            return true, self.output_pipes_flat[1], false
-        end
-
-        if self.output_pipes_flat[1]:_write_buffer_empty() then
-            break
-        end
+    -- Serialize output vectors to pipe write buffers
+    local eof, eof_pipe = false, nil
+    if not self.output_pipes_flat[1]:write(vecs[1]) then
+        eof, eof_pipe = true, self.output_pipes_flat[1]
     end
 
-    return false, nil, false
+    -- Poll (blocking)
+    local ret = ffi.C.poll(self.output_pollfds, 1, 0)
+    if ret < 0 then
+        error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    -- Check control socket
+    if self.output_pollfds[0].revents ~= 0 then
+        -- Shutdown encountered
+        return eof, eof_pipe, true
+    end
+
+    return eof, eof_pipe, false
 end
 
 function PipeMux:_write_multiple(vecs)
     -- Serialize output vectors to pipe write buffers
+    local eof, eof_pipe = false, nil
     for i=1, #self.output_pipes do
         for j=1, #self.output_pipes[i] do
-            self.output_pipes[i][j]:_write_buffer_serialize(vecs[i])
-        end
-    end
-
-    while true do
-        -- Update pollfd structures
-        for i=1, #self.output_pipes_flat do
-            self.output_pollfds[i].events = not self.output_pipes_flat[i]:_write_buffer_empty() and POLL_WRITE_EVENTS or POLL_EOF_EVENTS
-        end
-
-        -- Poll (blocking)
-        local ret = ffi.C.poll(self.output_pollfds, #self.output_pipes_flat + 1, -1)
-        if ret < 0 then
-            error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
-
-        -- Check control socket
-        if self.output_pollfds[0].revents ~= 0 then
-            -- Shutdown encountered
-            return false, nil, true
-        end
-
-        local all_written = true
-
-        -- Check each output pipe
-        for i=1, #self.output_pipes_flat do
-            if self.output_pollfds[i].revents ~= 0 then
-                -- Update pipe internal write buffer
-                if self.output_pipes_flat[i]:_write_buffer_update() == nil then
-                    return true, self.output_pipes_flat[i], false
-                end
-
-                -- Update all written check
-                all_written = all_written and self.output_pipes_flat[i]:_write_buffer_empty()
+            if not self.output_pipes[i][j]:write(vecs[i]) then
+                eof, eof_pipe = true, self.output_pipes[i][j]
+                break
             end
         end
-
-        if all_written then
-            break
-        end
     end
 
-    return false, nil, false
+    -- Poll (blocking)
+    local ret = ffi.C.poll(self.output_pollfds, 1, 0)
+    if ret < 0 then
+        error("poll(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    -- Check control socket
+    if self.output_pollfds[0].revents ~= 0 then
+        -- Shutdown encountered
+        return eof, eof_pipe, true
+    end
+
+    return eof, eof_pipe, false
 end
 
 ---

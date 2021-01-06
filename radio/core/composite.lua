@@ -707,18 +707,68 @@ function CompositeBlock:start(multiprocess)
     return self
 end
 
+local function sigwait_timeout(sig, timeout)
+    if ffi.os ~= "OSX" then
+        -- Use sigtimedwait()
+
+        -- Build signal set with signal
+        local sigset = ffi.new("sigset_t[1]")
+        ffi.C.sigemptyset(sigset)
+        ffi.C.sigaddset(sigset, sig)
+
+        -- Build timeout timespec
+        local timespec = ffi.new("struct timespec[1]")
+        timespec[0].tv_sec = 0
+        timespec[0].tv_nsec = timeout * 1e9
+
+        local ret = ffi.C.sigtimedwait(sigset, nil, timespec)
+        if ret < 0 and ffi.errno() == ffi.C.EAGAIN then
+            return false
+        elseif ret < 0 then
+            error("sigtimedwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+
+        return true
+    else
+        -- Mac OS X doesn't have sigtimedwait(), so poll sigpending() with
+        -- timeout
+
+        local tic = platform.time_us()
+        local sigset = ffi.new("sigset_t[1]")
+
+        while true do
+            -- Read pending signals
+            if ffi.C.sigpending(sigset) ~= 0 then
+                error("sigpending(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+            end
+
+            -- Check if signal is pending
+            if ffi.C.sigismember(sigset, sig) == 1 then
+                break
+            end
+
+            -- Check timeout
+            if (platform.time_us() - tic) > timeout then
+                return false
+            end
+
+            ffi.C.usleep(math.floor(timeout / 100 * 1e6))
+        end
+
+        -- Consume the signal
+        ffi.C.sigemptyset(sigset)
+        ffi.C.sigaddset(sigset, sig)
+        local sig_ret = ffi.new("int[1]")
+        if ffi.C.sigwait(sigset, sig_ret) ~= 0 then
+            error("sigwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+        end
+
+        return true
+    end
+end
+
 -- Reap child processes, consume SIGCHLD, and unblock signals
 function CompositeBlock:_reap(timeout)
-    -- Build signal set with SIGCHLD
-    local sigset = ffi.new("sigset_t[1]")
-    ffi.C.sigemptyset(sigset)
-    ffi.C.sigaddset(sigset, ffi.C.SIGCHLD)
-
-    -- Build timeout timespec
-    local timespec = ffi.new("struct timespec[1]")
-    timespec[0].tv_sec = 0
-    timespec[0].tv_nsec = (timeout or 0.100) * 1e9
-
     local timed_out = false
 
     -- Loop waiting on all child processes to exit, killing them with SIGTERM
@@ -754,11 +804,7 @@ function CompositeBlock:_reap(timeout)
         end
 
         -- Wait for SIGCHLD with timeout
-        local ret = ffi.C.sigtimedwait(sigset, nil, timespec)
-        timed_out = ret < 0 and ffi.errno() == ffi.C.EAGAIN
-        if ret < 0 and not timed_out then
-            error("sigtimedwait(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-        end
+        timed_out = not sigwait_timeout(ffi.C.SIGCHLD, timeout or 0.100)
     end
 
     -- Restore SIGCHLD handler

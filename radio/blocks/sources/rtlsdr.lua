@@ -260,11 +260,11 @@ function RtlSdrSource:run()
         local eof, eof_pipe, shutdown = pipe_mux:write({out})
 
         -- Check for downstream EOF or control socket shutdown
-        if eof or shutdown then
+        if shutdown then
             librtlsdr.rtlsdr_cancel_async(self.dev[0])
-            if eof then
-                io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
-            end
+        elseif eof then
+            librtlsdr.rtlsdr_cancel_async(self.dev[0])
+            io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
         end
     end
 

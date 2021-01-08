@@ -248,7 +248,7 @@ end
 -- @internal
 -- @function Pipe:write
 -- @tparam Vector vec Sample vector
--- @teturn bool Success
+-- @treturn bool Success
 function Pipe:write(vec)
     self:_write_buffer_serialize(vec)
 

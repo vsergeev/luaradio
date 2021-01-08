@@ -1,3 +1,11 @@
+* v0.9.1 - 01/08/2021
+    * Block changes
+        * Fix spurious warning about downstream block termination on shutdown
+          in RtlSdrSource.
+    * Core changes
+        * Fix flow graph shutdown handling on Mac OS X due to missing
+          `sigtimedwait()`.
+
 * v0.9.0 - 01/04/2021
     * Block additions
         * PulseMatchedFilterBlock

@@ -43,7 +43,7 @@ end
 --
 -- @class Output
 -- @tparam string name Name
--- @tparam type data_type|str Data type, e.g. `radio.types.ComplexFloat32`, or "copy" to copy input data type
+-- @tparam type|str data_type Data type, e.g. `radio.types.ComplexFloat32`, or "copy" to copy input data type
 -- @usage
 -- local inputs = {...}
 -- local outputs = {radio.block.Output("out", radio.types.ComplexFloat32)}

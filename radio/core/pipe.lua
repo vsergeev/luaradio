@@ -176,6 +176,11 @@ end
 -- @tparam[opt=nil] int count Number of elements to read
 -- @treturn Vector|nil Sample vector or nil on EOF
 function Pipe:read(count)
+    -- Check if count is already available without updating read buffer
+    if count and self:_read_buffer_count() >= count then
+        return self:_read_buffer_deserialize(count)
+    end
+
     -- Update our read buffer
     if self:_read_buffer_update() == nil then
         -- Return nil on EOF

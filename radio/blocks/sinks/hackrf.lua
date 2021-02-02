@@ -33,6 +33,7 @@ local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
 local async = require('radio.core.async')
+local pipe = require('radio.core.pipe')
 
 local HackRFSink = block.factory("HackRFSink")
 
@@ -203,35 +204,30 @@ end
 
 local function write_callback_factory(fd)
     local ffi = require('ffi')
-    local radio = require('radio')
 
-    local vec = radio.types.ComplexFloat32.vector()
+    local radio = require('radio')
+    local pipe = require('radio.core.pipe')
+
+    -- Convert fd on stack to Pipe object
+    local input_pipe = pipe.Pipe()
+    input_pipe:initialize(radio.types.ComplexFloat32, fd, nil)
+
+    -- Create pipe mux for reading
+    local pipe_mux = pipe.PipeMux({input_pipe}, {})
 
     local function write_callback(transfer)
-        -- Resize vector
-        vec:resize(transfer.valid_length/2)
+        -- Read input up to requested transfer length
+        local data_in, eof, shutdown = pipe_mux:read(transfer.valid_length/2)
 
-        -- Read fd into vector
-        local total_bytes_read = 0
-        while total_bytes_read < vec.size do
-            local bytes_read = tonumber(ffi.C.read(fd, ffi.cast("uint8_t *", vec.data) + total_bytes_read, vec.size - total_bytes_read))
-            if bytes_read < 0 then
-                error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-            elseif bytes_read == 0 and total_bytes_read == 0 then
-                -- EOF and no bytes read into vec
-                return -1
-            elseif bytes_read == 0 then
-                -- Zero out remainder of vec
-                ffi.fill(ffi.cast("uint8_t *", vec.data) + total_bytes_read, vec.size - total_bytes_read)
-                break
-            end
-            total_bytes_read = total_bytes_read + bytes_read
+        -- Check for upstream EOF or control socket shutdown
+        if eof or shutdown then
+            return -1
         end
 
         -- Convert complex floats in vector to complex s8 in buffer
-        for i = 0, vec.length-1 do
-            ffi.cast("int8_t *", transfer.buffer)[2*i] = vec.data[i].real*127.5
-            ffi.cast("int8_t *", transfer.buffer)[2*i+1] = vec.data[i].imag*127.5
+        for i = 0, data_in[1].length-1 do
+            ffi.cast("int8_t *", transfer.buffer)[2*i] = data_in[1].data[i].real*127.5
+            ffi.cast("int8_t *", transfer.buffer)[2*i+1] = data_in[1].data[i].imag*127.5
         end
 
         return 0
@@ -244,15 +240,8 @@ function HackRFSink:run()
     -- Initialize the hackrf in our own running process
     self:initialize_hackrf()
 
-    -- Build signal set with SIGTERM
-    local sigset = ffi.new("sigset_t[1]")
-    ffi.C.sigemptyset(sigset)
-    ffi.C.sigaddset(sigset, ffi.C.SIGTERM)
-
-    -- Block handling of SIGTERM
-    if ffi.C.sigprocmask(ffi.C.SIG_BLOCK, sigset, nil) ~= 0 then
-        error("sigprocmask(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
-    end
+    -- Create pipe mux for control socket
+    local pipe_mux = pipe.PipeMux({}, {}, self.control_socket)
 
     -- Start transmitting
     local write_callback, write_callback_state = async.callback(write_callback_factory, self.inputs[1]:filenos()[1])
@@ -261,9 +250,13 @@ function HackRFSink:run()
         error("hackrf_start_tx(): " .. ffi.string(libhackrf.hackrf_error_name(ret)))
     end
 
-    -- While it's still transmitting
-    while libhackrf.hackrf_is_streaming(self.dev[0]) == 1 do
-        ffi.C.usleep(500000)
+    -- Wait for shutdown from control socket
+    while true do
+        -- Read control socket
+        local _, _, shutdown = pipe_mux:read()
+        if shutdown then
+            break
+        end
     end
 
     -- Stop transmitting

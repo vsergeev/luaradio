@@ -341,6 +341,40 @@ describe("pipe", function ()
         end
     end)
 
+    it("PipeMux read cstruct single with count", function ()
+        local p = pipe.Pipe()
+        p:initialize(radio.types.ComplexFloat32)
+
+        local pipe_mux = pipe.PipeMux({p}, {})
+
+        local vec = random_complexfloat32_vector(128)
+        p:write(vec)
+
+        local data_in, eof, shutdown = pipe_mux:read(5)
+        assert.is_false(eof)
+        assert.is_false(shutdown)
+        assert.is.equal(#data_in, 1)
+        assert.is.equal(data_in[1].data_type, vec.data_type)
+        assert.is.equal(data_in[1].length, 5)
+        assert.is.equal(ffi.C.memcmp(data_in[1].data, vec.data, 5 * ffi.sizeof(radio.types.ComplexFloat32)), 0)
+
+        local data_in, eof, shutdown = pipe_mux:read(3)
+        assert.is_false(eof)
+        assert.is_false(shutdown)
+        assert.is.equal(#data_in, 1)
+        assert.is.equal(data_in[1].data_type, vec.data_type)
+        assert.is.equal(data_in[1].length, 3)
+        assert.is.equal(ffi.C.memcmp(data_in[1].data, vec.data[5], 3 * ffi.sizeof(radio.types.ComplexFloat32)), 0)
+
+        local data_in, eof, shutdown = pipe_mux:read(120)
+        assert.is_false(eof)
+        assert.is_false(shutdown)
+        assert.is.equal(#data_in, 1)
+        assert.is.equal(data_in[1].data_type, vec.data_type)
+        assert.is.equal(data_in[1].length, 120)
+        assert.is.equal(ffi.C.memcmp(data_in[1].data, vec.data[8], 120 * ffi.sizeof(radio.types.ComplexFloat32)), 0)
+    end)
+
     it("PipeMux read cstruct multiple", function ()
         local p1 = pipe.Pipe()
         p1:initialize(radio.types.Byte)
@@ -484,6 +518,22 @@ describe("pipe", function ()
         for i = 7, 10 do
             assert.are.same(data_in[2].data[i - 7], vec2.data[i])
         end
+    end)
+
+    it("PipeMux read cstruct multiple with count", function ()
+        local p1 = pipe.Pipe()
+        p1:initialize(radio.types.Byte)
+
+        local p2 = pipe.Pipe()
+        p2:initialize(radio.types.Float32)
+
+        local p3 = pipe.Pipe()
+        p3:initialize(radio.types.ComplexFloat32)
+
+        local pipe_mux = pipe.PipeMux({p1, p2, p3}, {})
+
+        -- Currently unsupported
+        assert.has_error(function () pipe_mux:read(1) end)
     end)
 
     it("PipeMux read single eof", function ()

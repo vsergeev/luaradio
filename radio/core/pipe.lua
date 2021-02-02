@@ -468,11 +468,11 @@ function PipeMux.new(input_pipes, output_pipes, control_socket)
     return self
 end
 
-function PipeMux:_read_none()
+function PipeMux:_read_none(count)
     return {}, false, false
 end
 
-function PipeMux:_read_control()
+function PipeMux:_read_control(count)
     local num_elems
 
     while true do
@@ -492,8 +492,14 @@ function PipeMux:_read_control()
     return {}, false, false
 end
 
-function PipeMux:_read_single()
+function PipeMux:_read_single(count)
     local num_elems
+
+    -- Check if count is already available without updating read buffer
+    if count and self.input_pipes[1]:_read_buffer_count() >= count then
+        -- Read input vector
+        return {self.input_pipes[1]:_read_buffer_deserialize(count)}, false, false
+    end
 
     while true do
         -- Poll (blocking)
@@ -515,9 +521,9 @@ function PipeMux:_read_single()
         end
 
         -- Check available item count
-        local count = self.input_pipes[1]:_read_buffer_count()
-        if count > 0 then
-            num_elems = count
+        local available = self.input_pipes[1]:_read_buffer_count()
+        if (not count and available > 0) or (count and available >= count) then
+            num_elems = count or available
             break
         end
     end
@@ -526,8 +532,10 @@ function PipeMux:_read_single()
     return {self.input_pipes[1]:_read_buffer_deserialize(num_elems)}, false, false
 end
 
-function PipeMux:_read_multiple()
+function PipeMux:_read_multiple(count)
     local num_elems
+
+    assert(not count, "Count currently unsupported for reads from multiple pipes.")
 
     while true do
         -- Update pollfd structures
@@ -561,8 +569,8 @@ function PipeMux:_read_multiple()
             end
 
              -- Update available item count
-            local count = self.input_pipes[i]:_read_buffer_count()
-            num_elems = (count < num_elems) and count or num_elems
+            local available = self.input_pipes[i]:_read_buffer_count()
+            num_elems = (available < num_elems) and available or num_elems
         end
 
         -- If we have a non-zero, non-inf available item count
@@ -638,10 +646,11 @@ end
 --
 -- @internal
 -- @function PipeMux:read
+-- @tparam[opt=nil] int count Number of elements to read
 -- @treturn array Array of sample vectors
 -- @treturn bool EOF encountered
 -- @treturn bool Shutdown encountered
-function PipeMux:read()
+function PipeMux:read(count)
     -- Differentiated at runtime to _read_single() or _read_multiple()
 end
 

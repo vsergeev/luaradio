@@ -75,7 +75,7 @@ function Pipe:initialize(data_type, read_fd, write_fd)
         self._rbuf = ffi.cast("char *", self._rbuf_anchor)
         self._rbuf_size = 0
         self._rbuf_offset = 0
-        self._eof = false
+        self._rbuf_count = 0
     end
 
     -- Write buffer
@@ -109,13 +109,15 @@ function Pipe:_read_buffer_update()
     if bytes_read < 0 then
         error("read(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
     elseif unread_length == 0 and bytes_read == 0 then
-        self._eof = true
         return nil
     end
 
     -- Update size and reset unread offset
     self._rbuf_size = unread_length + bytes_read
     self._rbuf_offset = 0
+
+    -- Update element count
+    self._rbuf_count = self.data_type.deserialize_count(self._rbuf + self._rbuf_offset, self._rbuf_size - self._rbuf_offset)
 
     return bytes_read
 end
@@ -127,13 +129,7 @@ end
 -- @function Pipe:_read_buffer_count
 -- @treturn int Count
 function Pipe:_read_buffer_count()
-    -- Return nil on EOF
-    if self._eof then
-        return nil
-    end
-
-    -- Return item count in read buffer
-    return self.data_type.deserialize_count(self._rbuf + self._rbuf_offset, self._rbuf_size - self._rbuf_offset)
+    return self._rbuf_count
 end
 
 ---
@@ -167,6 +163,7 @@ function Pipe:_read_buffer_deserialize(num)
 
     -- Update read offset
     self._rbuf_offset = self._rbuf_offset + size
+    self._rbuf_count = self._rbuf_count - num
 
     return vec
 end

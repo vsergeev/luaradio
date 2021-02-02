@@ -113,7 +113,7 @@ describe("pipe", function ()
 
         p:close_output()
         assert.is.equal(p:_read_buffer_update(), nil)
-        assert.is.equal(p:_read_buffer_count(), nil)
+        assert.is.equal(p:_read_buffer_count(), 0)
         assert.is_false(p:_read_buffer_full())
     end)
 
@@ -221,9 +221,8 @@ describe("pipe", function ()
                     end
 
                     -- Update pipe read buffer
-                    p:_read_buffer_update()
-                    -- Get buffer item is EOF / nil
-                    assert.is_true(p:_read_buffer_count() == nil)
+                    assert.is_equal(p:_read_buffer_update(), nil)
+                    assert.is_equal(p:_read_buffer_count(), 0)
                 end
             end
         end)
@@ -289,9 +288,8 @@ describe("pipe", function ()
                 end
 
                 -- Update pipe read buffer
-                p:_read_buffer_update()
-                -- Get buffer item is EOF / nil
-                assert.is_true(p:_read_buffer_count() == nil)
+                assert.is_equal(p:_read_buffer_update(), nil)
+                assert.is_equal(p:_read_buffer_count(), 0)
             end
         end
     end)

@@ -538,7 +538,7 @@ function Block:run_once()
         error(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
     end
 
-    -- Write outputs to pipes
+    -- Check if new samples were created
     local new_samples = false
     for i=1, #self.outputs do
         new_samples = new_samples or data_out[i].length > 0

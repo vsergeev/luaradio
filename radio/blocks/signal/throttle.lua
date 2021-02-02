@@ -16,6 +16,7 @@ local ffi = require('ffi')
 
 local block = require('radio.core.block')
 local class = require('radio.core.class')
+local pipe = require('radio.core.pipe')
 local platform = require('radio.core.platform')
 local debug = require('radio.core.debug')
 local types = require('radio.types')
@@ -41,23 +42,46 @@ function ThrottleBlock:run()
     local samples_written = 0
     local tic = platform.time_us()
 
+    -- Gather input pipes
+    local input_pipes = {self.inputs[1].pipe}
+
+    -- Gather output pipes
+    local output_pipes = {}
+    for i=1, #self.outputs do
+        output_pipes[i] = {}
+        for j=1, #self.outputs[i].pipes do
+            output_pipes[i][j] = self.outputs[i].pipes[j]
+        end
+    end
+
+    -- Create pipe mux
+    local pipe_mux = pipe.PipeMux(input_pipes, output_pipes, self.control_socket)
+
     while true do
         -- Read input up to chunk size
-        local vec = self.inputs[1].pipe:read(self.chunk_size)
-        if vec == nil then
+        local data_in, eof, shutdown = pipe_mux:read(self.chunk_size)
+
+        -- Check for upstream EOF or control socket shutdown
+        if eof or shutdown then
             break
         end
 
-        -- Write output to pipes
-        for j=1, #self.outputs[1].pipes do
-            self.outputs[1].pipes[j]:write(vec)
+        -- Write outputs
+        local eof, eof_pipe, shutdown = pipe_mux:write(data_in)
+
+        -- Check for downstream EOF or control socket shutdown
+        if shutdown then
+            break
+        elseif eof then
+            io.stderr:write(string.format("[%s] Downstream block %s terminated unexpectedly.\n", self.name, eof_pipe.input.owner.name))
+            break
         end
 
         -- Sleep for this batch of samples
         ffi.C.usleep(math.floor(self.sleep_time*1e6))
 
         -- Update samples written
-        samples_written = samples_written + vec.length
+        samples_written = samples_written + data_in[1].length
 
         local toc = platform.time_us()
 

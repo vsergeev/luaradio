@@ -180,15 +180,13 @@ end
 -- @treturn Vector|nil Sample vector or nil on EOF
 function Pipe:read(count)
     -- Update our read buffer
-    self:_read_buffer_update()
+    if self:_read_buffer_update() == nil then
+        -- Return nil on EOF
+        return nil
+    end
 
     -- Get available item count
     local available = self:_read_buffer_count()
-
-    -- Return nil on EOF
-    if available == nil then
-        return nil
-    end
 
     return self:_read_buffer_deserialize(count and math.min(available, count) or available)
 end
@@ -509,14 +507,14 @@ function PipeMux:_read_single()
         end
 
         -- Update pipe internal read buffer
-        self.input_pipes[1]:_read_buffer_update()
+        if self.input_pipes[1]:_read_buffer_update() == nil then
+            -- EOF encountered
+            return {}, true, false
+        end
 
         -- Check available item count
         local count = self.input_pipes[1]:_read_buffer_count()
-        if count == nil then
-            -- EOF encountered
-            return {}, true, false
-        elseif count > 0 then
+        if count > 0 then
             num_elems = count
             break
         end
@@ -554,17 +552,15 @@ function PipeMux:_read_multiple()
         for i=1, #self.input_pipes do
             if self.input_pollfds[i].revents ~= 0 then
                 -- Update pipe internal read buffer
-                self.input_pipes[i]:_read_buffer_update()
+                if self.input_pipes[i]:_read_buffer_update() == nil then
+                    -- EOF encountered
+                    return {}, true, false
+                end
             end
 
              -- Update available item count
             local count = self.input_pipes[i]:_read_buffer_count()
-            if count == nil then
-                -- EOF encountered
-                return {}, true, false
-            else
-                num_elems = (count < num_elems) and count or num_elems
-            end
+            num_elems = (count < num_elems) and count or num_elems
         end
 
         -- If we have a non-zero, non-inf available item count

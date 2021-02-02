@@ -98,7 +98,7 @@ describe("pipe", function ()
         while not p:_read_buffer_full() do
             local write_vec = random_complexfloat32_vector(128)
             p:write(write_vec)
-            p:_read_buffer_update()
+            assert.is_not_nil(p:_read_buffer_update())
         end
 
         assert.is.equal(p:_read_buffer_count(), p._rbuf_capacity / ffi.sizeof(radio.types.ComplexFloat32))
@@ -197,7 +197,7 @@ describe("pipe", function ()
                         end
 
                         -- Update pipe read buffer
-                        p:_read_buffer_update()
+                        assert.is_not_nil(p:_read_buffer_update())
                         -- Get buffer item count
                         local num_elems = p:_read_buffer_count()
                         assert.is.equal(write_offset - read_offset, num_elems*ffi.sizeof(data_type))
@@ -264,7 +264,7 @@ describe("pipe", function ()
                     end
 
                     -- Update pipe read buffer
-                    p:_read_buffer_update()
+                    assert.is_not_nil(p:_read_buffer_update())
                     -- Get buffer item count
                     local num_elems = p:_read_buffer_count()
 

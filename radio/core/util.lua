@@ -150,4 +150,64 @@ local function array_find(array, elem)
     return nil
 end
 
-return {table_length = table_length, table_copy = table_copy, array_flatten = array_flatten, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find}
+---
+-- Parse command-line options from arguments.
+--
+-- Options specification format:
+-- {
+--     {<long name (string)>, <optional short name (string)>, <has argument (bool)>, <description (string)>},
+--     ...
+-- }
+--
+-- @internal
+-- @function parse_args
+-- @tparam array args Array of arguments
+-- @tparam table options Option specifications
+-- @treturn table Parsed options
+local function parse_args(args, options)
+    local parsed_options = {}
+
+    local i = 1
+    while i <= #args do
+        if string.sub(args[i], 1, 1) == "-" and #args[i] > 1 then
+            -- Option is a long option
+            local opt_is_long = string.sub(args[i], 1, 2) == "--"
+            -- Extract option name
+            local opt_name = string.sub(args[i], opt_is_long and 3 or 2)
+
+            -- Search for option specification
+            local spec = array_search(options, function (opt) return opt[opt_is_long and 1 or 2] == opt_name end)
+            if not spec then
+                -- Treat unknown option as start of positional arguments
+               break
+            end
+
+            -- If the option has an argument
+            if spec[3] then
+                if i == #args then
+                    error({msg = string.format("Missing argument for option %s.", spec[1])})
+                end
+
+                -- Extract argument for parsed option
+                parsed_options[spec[1]] = args[i + 1]
+                i = i + 2
+            else
+                -- Store true for parsed option
+                parsed_options[spec[1]] = true
+                i = i + 1
+            end
+        else
+            -- Positional
+            break
+        end
+    end
+
+    -- Absorb remaining arguments as positionals
+    for j=0, #args - i do
+        parsed_options[j + 1] = args[i + j]
+    end
+
+    return parsed_options
+end
+
+return {table_length = table_length, table_copy = table_copy, array_flatten = array_flatten, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args}

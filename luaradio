@@ -22,25 +22,36 @@ local radio = require('radio')
 -- Option handlers
 --------------------------------------------------------------------------------
 
-local function print_usage()
-    local usage =
-        "Usage: %s [options] <script> [args]\n" ..
-        "\n" ..
-        "Options:\n" ..
-        "   -h, --help      Print help and exit\n" ..
-        "   --version       Print version and exit\n" ..
-        "   --platform      Dump platform and exit\n" ..
-        "   -v, --verbose   Enable debug verbosity"
+local util = require('radio.core.util')
 
-    print(string.format(usage, arg[0]))
-    os.exit(0)
+local options = {
+    {"help", "h", false, "Print help and exit"},
+    {"version", nil, false, "Print version and exit"},
+    {"platform", nil, false, "Dump platform and exit"},
+    {"verbose", "v", false, "Enable debug verbosity"},
+}
+
+local function print_usage(program_name)
+    local usage = string.format("Usage: %s [options] <script> [args]\n", program_name)
+
+    usage = usage .. "\nOptions:\n"
+    local lines = {}
+    for _, opt in ipairs(options) do
+        if opt[2] then
+            lines[#lines + 1] = string.format("%-19s%s", string.format("  -%s, --%s", opt[2], opt[1]), opt[4])
+        else
+            lines[#lines + 1] = string.format("%-19s%s", string.format("  --%s", opt[1]), opt[4])
+        end
+    end
+    usage = usage .. table.concat(lines, "\n")
+
+    print(usage)
 end
 
 local function print_version()
     local version = "LuaRadio %s - Vanya A. Sergeev. https://luaradio.io"
 
     print(string.format(version, radio.version))
-    os.exit(0)
 end
 
 local function print_platform()
@@ -64,44 +75,46 @@ local function print_platform()
     end
 
     print(table.concat(lines, "\n"))
-    os.exit(0)
 end
 
 local function enable_verbose()
     radio.debug.enabled = true
 end
 
-local options_table = {
-    ["-h"]          = print_usage,
-    ["--help"]      = print_usage,
-    ["--version"]   = print_version,
-    ["--platform"]  = print_platform,
-    ["-v"]          = enable_verbose,
-    ["--verbose"]   = enable_verbose,
-}
-
 --------------------------------------------------------------------------------
 -- Process arguments
 --------------------------------------------------------------------------------
 
--- Extract and handle options
-while #arg >= 1 do
-    if options_table[arg[1]] then
-        options_table[arg[1]]()
-    else
-        break
-    end
-    table.remove(arg, 1)
+local program_name = arg[0]
+local parse_success, parsed_args = pcall(util.parse_args, arg, options)
+
+if not parse_success then
+    print(string.format("Error: %s\n", parsed_args.msg))
+    print_usage(program_name)
+    os.exit(1)
+elseif parsed_args.help then
+    print_usage(program_name)
+    os.exit(0)
+elseif parsed_args.version then
+    print_version()
+    os.exit(0)
+elseif parsed_args.platform then
+    print_platform()
+    os.exit(0)
+elseif parsed_args.verbose then
+    enable_verbose()
 end
 
-if #arg < 1 then
-    print_usage()
+if #parsed_args < 1 then
+    print_usage(program_name)
+    os.exit(0)
 end
 
--- Shift args down so script filename is arg[0]
-arg[-2] = arg[-1]
-arg[-1] = arg[0]
-arg[0] = table.remove(arg, 1)
+-- Shift args down to script filename is arg[0]
+arg = {}
+for i = 1, #parsed_args do
+    arg[i - 1] = parsed_args[i]
+end
 
 -- Run script
 if arg[0] == "-" then

@@ -35,15 +35,7 @@ local function print_usage(program_name)
     local usage = string.format("Usage: %s [options] <script> [args]\n", program_name)
 
     usage = usage .. "\nOptions:\n"
-    local lines = {}
-    for _, opt in ipairs(options) do
-        if opt[2] then
-            lines[#lines + 1] = string.format("%-19s%s", string.format("  -%s, --%s", opt[2], opt[1]), opt[4])
-        else
-            lines[#lines + 1] = string.format("%-19s%s", string.format("  --%s", opt[1]), opt[4])
-        end
-    end
-    usage = usage .. table.concat(lines, "\n")
+    usage = usage .. util.format_options(options)
 
     print(usage)
 end

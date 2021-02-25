@@ -210,4 +210,24 @@ local function parse_args(args, options)
     return parsed_options
 end
 
-return {table_length = table_length, table_copy = table_copy, array_flatten = array_flatten, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args}
+---
+-- Format command-line options.
+--
+-- @internal
+-- @function format_options
+-- @tparam table options Option specifications
+-- @treturn string Formatted options
+local function format_options(options)
+    local lines = {}
+    for _, opt in ipairs(options) do
+        if opt[2] then
+            lines[#lines + 1] = string.format("%-24s%s", string.format("  -%s, --%s", opt[2], opt[1]), opt[4])
+        else
+            lines[#lines + 1] = string.format("%-24s%s", string.format("  --%s", opt[1]), opt[4])
+        end
+    end
+
+    return table.concat(lines, "\n")
+end
+
+return {table_length = table_length, table_copy = table_copy, array_flatten = array_flatten, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}

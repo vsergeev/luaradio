@@ -79,6 +79,22 @@ local function array_flatten(array, depth)
 end
 
 ---
+-- Apply a function to an array.
+--
+-- @internal
+-- @function array_map
+-- @tparam array array Array
+-- @tparam function func Function
+-- @treturn array Mapped array
+local function array_map(array, func)
+    local mapped = {}
+    for i, v in ipairs(array) do
+        mapped[i] = func(v)
+    end
+    return mapped
+end
+
+---
 -- Test if elem exists in array.
 --
 -- @internal
@@ -249,4 +265,4 @@ local function format_options(options)
     return table.concat(lines, "\n")
 end
 
-return {table_length = table_length, table_copy = table_copy, array_concat = array_concat, array_flatten = array_flatten, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}
+return {table_length = table_length, table_copy = table_copy, array_concat = array_concat, array_flatten = array_flatten, array_map = array_map, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}

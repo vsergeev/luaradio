@@ -36,6 +36,13 @@ describe("table and array utilities", function ()
         assert.is.same(util.array_flatten({1, {2}, {3, {4, {5}}}}, 1), {1, 2, 3, {4, {5}}})
     end)
 
+    it("array_map()", function ()
+        assert.is.same(util.array_map({1, 2, 3}, function (e) return e end), {1, 2, 3})
+        assert.is.same(util.array_map({1, 2, 3}, function (e) return 0 end), {0, 0, 0})
+        assert.is.same(util.array_map({1, 2, 3}, function (e) return e * e end), {1, 4, 9})
+        assert.is.same(util.array_map({"a", "b", "c"}, function (e) return e .. e end), {"aa", "bb", "cc"})
+    end)
+
     it("array_exists()", function ()
         local x = {'bar', 'foo', 123, true}
 

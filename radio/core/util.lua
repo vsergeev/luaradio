@@ -34,6 +34,25 @@ local function table_copy(table)
 end
 
 ---
+-- Concatenate two arrays.
+--
+-- @internal
+-- @function array_concat
+-- @tparam array arr1 Array 1
+-- @tparam array arr2 Array 2
+-- @treturn array Concatenated array
+local function array_concat(arr1, arr2)
+    local concat = {}
+    for _, v in ipairs(arr1) do
+        concat[#concat + 1] = v
+    end
+    for _, v in ipairs(arr2) do
+        concat[#concat + 1] = v
+    end
+    return concat
+end
+
+---
 -- Flatten an array.
 --
 -- @internal
@@ -230,4 +249,4 @@ local function format_options(options)
     return table.concat(lines, "\n")
 end
 
-return {table_length = table_length, table_copy = table_copy, array_flatten = array_flatten, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}
+return {table_length = table_length, table_copy = table_copy, array_concat = array_concat, array_flatten = array_flatten, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}

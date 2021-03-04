@@ -15,6 +15,13 @@ describe("table and array utilities", function ()
         assert.is.same(y, x)
     end)
 
+    it("array_concat()", function ()
+        assert.is.same(util.array_concat({}, {}), {})
+        assert.is.same(util.array_concat({1, 2}, {}), {1, 2})
+        assert.is.same(util.array_concat({}, {1, 2}), {1, 2})
+        assert.is.same(util.array_concat({1, 2}, {3, 4}), {1, 2, 3, 4})
+    end)
+
     it("array_flatten()", function ()
         assert.is.same(util.array_flatten({}), {})
         assert.is.same(util.array_flatten({1, 2, 3}), {1, 2, 3})

@@ -47,9 +47,9 @@ local function array_flatten(array, depth)
     end
 
     local flattened = {}
-    for _, v in pairs(array) do
+    for _, v in ipairs(array) do
         if type(v) == "table" then
-            for _, w in pairs(array_flatten(v, depth and depth - 1)) do
+            for _, w in ipairs(array_flatten(v, depth and depth - 1)) do
                 flattened[#flattened + 1] = w
             end
         else
@@ -68,7 +68,7 @@ end
 -- @tparam object elem Element
 -- @treturn bool Result
 local function array_exists(array, elem)
-    for _, v in pairs(array) do
+    for _, v in ipairs(array) do
         if v == elem then
             return true
         end
@@ -85,7 +85,7 @@ end
 -- @tparam function predicate Predicate function
 -- @return Element or nil
 local function array_search(array, predicate)
-    for _, v in pairs(array) do
+    for _, v in ipairs(array) do
         if predicate(v) then
             return v
         end
@@ -102,7 +102,7 @@ end
 -- @tparam function predicate Predicate function
 -- @treturn bool Result
 local function array_all(array, predicate)
-    for _, v in pairs(array) do
+    for _, v in ipairs(array) do
         if not predicate(v) then
             return false
         end

@@ -34,6 +34,22 @@ local function table_copy(table)
 end
 
 ---
+-- Extend a table with another table.
+--
+-- @internal
+-- @function table_extend
+-- @tparam table table1 Table 1
+-- @tparam table table2 Table 2
+-- @treturn table Extended table
+local function table_extend(table1, table2)
+    local extended = table_copy(table1)
+    for k, v in pairs(table2) do
+        extended[k] = v
+    end
+    return extended
+end
+
+---
 -- Concatenate two arrays.
 --
 -- @internal
@@ -265,4 +281,4 @@ local function format_options(options)
     return table.concat(lines, "\n")
 end
 
-return {table_length = table_length, table_copy = table_copy, array_concat = array_concat, array_flatten = array_flatten, array_map = array_map, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}
+return {table_length = table_length, table_copy = table_copy, table_extend = table_extend, array_concat = array_concat, array_flatten = array_flatten, array_map = array_map, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}

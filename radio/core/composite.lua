@@ -889,7 +889,7 @@ function CompositeBlock:wait()
     end
 
     -- Check if all child processes already exited
-    local all_exited = util.array_all(self._pids, function (pid) return ffi.C.waitpid(pid, nil, ffi.C.WNOHANG) > 0 end)
+    local all_exited = util.array_all(util.table_values(self._pids), function (pid) return ffi.C.waitpid(pid, nil, ffi.C.WNOHANG) > 0 end)
     if all_exited then
         self:_reap()
         return

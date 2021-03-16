@@ -78,6 +78,7 @@
 -- @tparam table data Data payload table, as outlined above
 
 local bit = require('bit')
+local json = require('radio.thirdparty.json')
 
 local block = require('radio.core.block')
 local types = require('radio.types')
@@ -93,6 +94,12 @@ function RDSPacketType.new(header, data)
     self.header = header
     self.data = data
     return self
+end
+
+function RDSPacketType:__tostring()
+    return string.format("RDSPacket<pi_code=0x%04x, group_code=%u, group_version=%u, tp_code=%u, pty_code=%u, payload=%s>",
+                         self.header.pi_code, self.header.group_code, self.header.group_version, self.header.tp_code, self.header.pty_code,
+                         json.encode(self.data))
 end
 
 -- RDS Frame Decoders

@@ -63,6 +63,15 @@ function AX25FrameType.new(addresses, control, pid, payload)
     return self
 end
 
+function AX25FrameType:__tostring()
+    local addresses = {}
+    for i, address in ipairs(self.addreses) do
+        local address_type = i == 1 and "dst" or i == 2 and "src" or "rptr"
+        addresses[#addresses + 1] = string.format("%s <callsign=\"%s\", ssid=0x%02x>", address_type, address.callsign, address.ssid)
+    end
+    return string.format("AX25Frame<addresses=[%s], control=0x%02x, pid=0x%02x, payload=\"%s\">", table.concat(addresses, ", "), self.control, self.pid, self.payload)
+end
+
 -- AX25 Framer Block
 
 local AX25FramerBlock = block.factory("AX25FramerBlock")

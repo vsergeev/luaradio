@@ -19,6 +19,21 @@ local function table_length(table)
 end
 
 ---
+-- Get the keys of a table.
+--
+-- @internal
+-- @function table_keys
+-- @tparam table table Table
+-- @treturn array Keys of table
+local function table_keys(table)
+    local keys = {}
+    for k, _ in pairs(table) do
+        keys[#keys + 1] = k
+    end
+    return keys
+end
+
+---
 -- Make a shallow clone of a table.
 --
 -- @internal
@@ -281,4 +296,4 @@ local function format_options(options)
     return table.concat(lines, "\n")
 end
 
-return {table_length = table_length, table_copy = table_copy, table_extend = table_extend, array_concat = array_concat, array_flatten = array_flatten, array_map = array_map, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}
+return {table_length = table_length, table_keys = table_keys, table_copy = table_copy, table_extend = table_extend, array_concat = array_concat, array_flatten = array_flatten, array_map = array_map, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}

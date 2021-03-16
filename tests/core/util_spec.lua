@@ -19,6 +19,18 @@ describe("table and array utilities", function ()
         assert.is.same(keys, {"a", "b", "c"})
     end)
 
+    it("table_values()", function ()
+        assert.is.same(util.table_values({}), {})
+
+        local values = util.table_values({[4] = "abc", [5] = "def", [6] = "ghi"})
+        table.sort(values)
+        assert.is.same(values, {"abc", "def", "ghi"})
+
+        local values = util.table_values({a = 4, b = 5, c = 6})
+        table.sort(values)
+        assert.is.same(values, {4, 5, 6})
+    end)
+
     it("table_copy()", function ()
         local x = {foo = 'bar', bar = nil, abc = true, def = 1}
         local y = util.table_copy(x)

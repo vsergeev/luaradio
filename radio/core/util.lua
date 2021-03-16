@@ -34,6 +34,21 @@ local function table_keys(table)
 end
 
 ---
+-- Get the values of a table.
+--
+-- @internal
+-- @function table_values
+-- @tparam table table Table
+-- @treturn array values of table
+local function table_values(table)
+    local values = {}
+    for _, v in pairs(table) do
+        values[#values + 1] = v
+    end
+    return values
+end
+
+---
 -- Make a shallow clone of a table.
 --
 -- @internal
@@ -296,4 +311,4 @@ local function format_options(options)
     return table.concat(lines, "\n")
 end
 
-return {table_length = table_length, table_keys = table_keys, table_copy = table_copy, table_extend = table_extend, array_concat = array_concat, array_flatten = array_flatten, array_map = array_map, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}
+return {table_length = table_length, table_keys = table_keys, table_values = table_values, table_copy = table_copy, table_extend = table_extend, array_concat = array_concat, array_flatten = array_flatten, array_map = array_map, array_exists = array_exists, array_search = array_search, array_all = array_all, array_equals = array_equals, array_find = array_find, parse_args = parse_args, format_options = format_options}

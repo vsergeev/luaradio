@@ -60,6 +60,13 @@ function POCSAGMessageType.new(address, func, alphanumeric, numeric)
     return self
 end
 
+function POCSAGMessageType:__tostring()
+    local payload = {}
+    payload[#payload + 1] = self.alphanumeric and string.format("alphanumeric=\"%s\"", self.alphanumeric) or nil
+    payload[#payload + 1] = self.numeric and string.format("numeric=\"%s\"", self.numeric) or nil
+    return string.format("POCSAGMessage<address=0x%06x, function=%u, %s>", self.address, self.func, table.concat(payload, ", "))
+end
+
 -- POCSAG Decode Block
 
 local POCSAGDecoderBlock = block.factory("POCSAGDecoderBlock")

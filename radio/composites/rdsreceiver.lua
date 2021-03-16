@@ -5,13 +5,12 @@
 -- @category Receivers
 -- @block RDSReceiver
 --
--- @signature in:ComplexFloat32 > out:RDSFrameType
+-- @signature in:ComplexFloat32 > out:RDSPacketType
 --
 -- @usage
 -- local receiver = radio.RDSReceiver()
--- local decoder = radio.RDSDecoderBlock()
 -- local snk = radio.JSONSink()
--- top:connect(src, receiver, decoder, snk)
+-- top:connect(src, receiver, snk)
 
 local block = require('radio.core.block')
 local types = require('radio.types')
@@ -39,6 +38,7 @@ function RDSReceiver:instantiate()
     local bit_decoder = blocks.ManchesterDecoderBlock()
     local bit_diff_decoder = blocks.DifferentialDecoderBlock()
     local framer = blocks.RDSFramerBlock()
+    local decoder = blocks.RDSDecoderBlock()
 
     self:connect(fm_demod, hilbert, mixer_delay)
     self:connect(hilbert, pilot_filter, pll_baseband)
@@ -48,11 +48,11 @@ function RDSReceiver:instantiate()
     self:connect(phase_corrector, clock_demod, clock_recoverer)
     self:connect(phase_corrector, 'out', sampler, 'data')
     self:connect(clock_recoverer, 'out', sampler, 'clock')
-    self:connect(sampler, bit_demod, bit_slicer, bit_decoder, bit_diff_decoder, framer)
+    self:connect(sampler, bit_demod, bit_slicer, bit_decoder, bit_diff_decoder, framer, decoder)
 
-    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", blocks.RDSFramerBlock.RDSFrameType)})
+    self:add_type_signature({block.Input("in", types.ComplexFloat32)}, {block.Output("out", blocks.RDSDecoderBlock.RDSPacketType)})
     self:connect(self, "in", fm_demod, "in")
-    self:connect(self, "out", framer, "out")
+    self:connect(self, "out", decoder, "out")
 end
 
 return RDSReceiver

@@ -6,7 +6,8 @@
 -- @category Sinks
 -- @block PrintSink
 -- @tparam[opt=io.stdout] string|file|int file Filename, file object, or file descriptor
--- @tparam[opt=""] string title Title in reporting
+-- @tparam[opt={}] table options Additional options, specifying:
+--                            * `title` (string, default nil)
 --
 -- @signature in:supported >
 --
@@ -21,7 +22,7 @@ local block = require('radio.core.block')
 
 local PrintSink = block.factory("PrintSink")
 
-function PrintSink:instantiate(file, title)
+function PrintSink:instantiate(file, options)
     if type(file) == "number" then
         self.fd = file
     elseif type(file) == "string" then
@@ -33,7 +34,9 @@ function PrintSink:instantiate(file, title)
         self.file = io.stdout
     end
 
-    self.title = title
+    options = options or {}
+
+    self.title = options.title
 
     -- Accept all input types that implement __tostring()
     self:add_type_signature({block.Input("in", function (type) return type.__tostring ~= nil end)}, {})

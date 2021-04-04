@@ -8,6 +8,7 @@
 -- @tparam[opt=io.stdout] string|file|int file Filename, file object, or file descriptor
 -- @tparam[opt={}] table options Additional options, specifying:
 --                            * `title` (string, default nil)
+--                            * `timestamp` (bool, default false)
 --
 -- @signature in:supported >
 --
@@ -37,6 +38,7 @@ function PrintSink:instantiate(file, options)
     options = options or {}
 
     self.title = options.title
+    self.timestamp = options.timestamp or false
 
     -- Accept all input types that implement __tostring()
     self:add_type_signature({block.Input("in", function (type) return type.__tostring ~= nil end)}, {})
@@ -64,7 +66,9 @@ end
 
 function PrintSink:process(x)
     for i = 0, x.length-1 do
-        local s = self.title .. tostring(x.data[i]) .. "\n"
+        local timestamp = self.timestamp and os.date("![%Y-%m-%dT%TZ] ") or ""
+
+        local s = timestamp .. self.title .. tostring(x.data[i]) .. "\n"
 
         -- Write to file
         if ffi.C.fwrite(s, 1, #s, self.file) ~= #s then

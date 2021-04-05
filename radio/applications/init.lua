@@ -11,6 +11,7 @@ local applications = {
     require('radio.applications.rx_ax25'),
     require('radio.applications.rx_pocsag'),
     require('radio.applications.rx_ert'),
+    require('radio.applications.iq_converter'),
 }
 
 -- Supported inputs

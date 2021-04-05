@@ -10,8 +10,8 @@
 --      * `biastee` (bool, default false)
 --      * `direct_sampling` (string, default "disabled", choice of "disabled", "i", "q")
 --      * `bandwidth` (number, default equal to sample rate)
---      * `autogain` (bool, default false)
---      * `rf_gain` (number, default closest supported to 10.0 dB)
+--      * `autogain` (bool, default true if manual gain is nil)
+--      * `rf_gain` (number in dB, manual gain, default nil)
 --      * `freq_correction` PPM (number, default 0.0)
 --      * `device_index` (integer, default 0)
 --
@@ -45,8 +45,8 @@ function RtlSdrSource:instantiate(frequency, rate, options)
     self.biastee = self.options.biastee or false
     self.direct_sampling = self.options.direct_sampling or "disabled"
     self.bandwidth = self.options.bandwidth or 0.0
-    self.autogain = self.options.autogain or false
     self.rf_gain = self.options.rf_gain or nil
+    self.autogain = (self.rf_gain == nil) and true or self.options.autogain
     self.freq_correction = self.options.freq_correction or 0.0
     self.device_index = self.options.device_index or 0
 
@@ -144,31 +144,6 @@ function RtlSdrSource:initialize_rtlsdr()
         if ret ~= 0 then
             error("rtlsdr_set_direct_sampling(): " .. tostring(ret))
         end
-    end
-
-    -- Pick a default gain value if one wasn't specified
-    if not self.rf_gain and not self.autogain then
-        -- Look up number of supported gains
-        local num_gains = librtlsdr.rtlsdr_get_tuner_gains(self.dev[0], nil)
-        if num_gains < 0 then
-            error("rtlsdr_get_tuner_gains(): " .. tostring(ret))
-        end
-
-        -- Look up supported gains
-        local supported_gains = ffi.new("int[?]", num_gains)
-        ret = librtlsdr.rtlsdr_get_tuner_gains(self.dev[0], supported_gains)
-        if ret < 0 then
-            error("rtlsdr_get_tuner_gains(): " .. tostring(ret))
-        end
-
-        -- Pick closest gain to 10 dB
-        local closest = math.huge
-        for i = 0, num_gains-1 do
-            if math.abs(supported_gains[i] - 100) < math.abs(closest - 100) then
-                closest = supported_gains[i]
-            end
-        end
-        self.rf_gain = closest/10
     end
 
     if self.autogain then

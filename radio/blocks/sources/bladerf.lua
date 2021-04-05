@@ -361,6 +361,9 @@ function BladeRFSource:initialize_bladerf()
     else
         -- Set manual gain
         ret = libbladerf.bladerf_set_gain_mode(self.dev[0], channel, ffi.C.BLADERF_GAIN_MGC)
+        if ret ~= 0 then
+            error("bladerf_set_gain_mode(): " .. ffi.string(libbladerf.bladerf_strerror(ret)))
+        end
 
         ret = libbladerf.bladerf_set_gain(self.dev[0], channel, self.gain)
         if ret ~= 0 then

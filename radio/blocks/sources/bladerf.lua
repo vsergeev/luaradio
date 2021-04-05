@@ -375,7 +375,7 @@ function BladeRFSource:initialize_bladerf()
             local actual_gain = ffi.new("bladerf_gain [1]")
             ret = libbladerf.bladerf_get_gain(self.dev[0], channel, actual_gain)
             if ret ~= 0 then
-                error("bladerf_set_gain(): " .. ffi.string(libbladerf.bladerf_strerror(ret)))
+                error("bladerf_get_gain(): " .. ffi.string(libbladerf.bladerf_strerror(ret)))
             end
 
             debug.printf("[BladeRFSource] Requested gain: %u dB, Actual gain: %u dB\n", self.gain, actual_gain[0])

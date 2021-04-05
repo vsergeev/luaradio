@@ -4,6 +4,7 @@ local radio = require('radio')
 local applications = {
     require('radio.applications.rx_raw'),
     require('radio.applications.rx_wbfm'),
+    require('radio.applications.rx_nbfm'),
 }
 
 -- Supported inputs

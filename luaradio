@@ -18,6 +18,8 @@ package.preload['radio'] = require('radio')
 
 local radio = require('radio')
 
+local applications = require('radio.applications')
+
 --------------------------------------------------------------------------------
 -- Option handlers
 --------------------------------------------------------------------------------
@@ -29,6 +31,7 @@ local options = {
     {"version", nil, false, "Print version and exit"},
     {"platform", nil, false, "Dump platform and exit"},
     {"verbose", "v", false, "Enable debug verbosity"},
+    {"application", "a", true, "Run built-in application"},
 }
 
 local function print_usage(program_name)
@@ -37,7 +40,9 @@ local function print_usage(program_name)
     usage = usage .. "\nOptions:\n"
     usage = usage .. util.format_options(options)
 
-    print(usage)
+    print(usage .. "\n")
+
+    applications.print_usage(program_name)
 end
 
 local function print_version()
@@ -84,7 +89,7 @@ if not parse_success then
     print(string.format("Error: %s\n", parsed_args.msg))
     print_usage(program_name)
     os.exit(1)
-elseif parsed_args.help then
+elseif not parsed_args.application and parsed_args.help then
     print_usage(program_name)
     os.exit(0)
 elseif parsed_args.version then
@@ -97,7 +102,7 @@ elseif parsed_args.verbose then
     enable_verbose()
 end
 
-if #parsed_args < 1 then
+if not parsed_args.application and #parsed_args < 1 then
     print_usage(program_name)
     os.exit(0)
 end
@@ -108,8 +113,10 @@ for i = 1, #parsed_args do
     arg[i - 1] = parsed_args[i]
 end
 
--- Run script
-if arg[0] == "-" then
+-- Run application or script
+if parsed_args.application then
+    applications.run(program_name, parsed_args.application, parsed_args)
+elseif arg[0] == "-" then
     dofile()
 else
     dofile(arg[0])

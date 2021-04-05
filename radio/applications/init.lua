@@ -2,6 +2,7 @@ local radio = require('radio')
 
 -- Supported applications
 local applications = {
+    require('radio.applications.rx_raw'),
 }
 
 -- Supported inputs

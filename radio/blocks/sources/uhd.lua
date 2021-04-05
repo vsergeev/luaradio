@@ -9,10 +9,10 @@
 -- @tparam number rate Sample rate in Hz
 -- @tparam[opt={}] table options Additional options, specifying:
 --      * `channel` (int, default 0)
---      * `gain` (number in dB, overall gain, default 15.0 dB)
+--      * `gain` (number in dB, manual overall gain, default nil)
 --      * `bandwidth` (number in Hz)
 --      * `antenna` (string)
---      * `autogain` (bool, default false)
+--      * `autogain` (bool, default true if manual gain is nil)
 --      * `gains` (table, gain element name to value in dB)
 --
 -- @signature > out:ComplexFloat32
@@ -46,11 +46,11 @@ function UHDSource:instantiate(device_address, frequency, rate, options)
 
     self.options = options or {}
     self.channel = self.options.channel or 0
-    self.gain = self.options.gain or 15.0
+    self.gain = self.options.gain or nil
     self.bandwidth = self.options.bandwidth
     self.antenna = self.options.antenna
     self.gains = self.options.gains
-    self.autogain = self.options.autogain or false
+    self.autogain = (self.gain == nil) and true or self.options.autogain
 
     self:add_type_signature({}, {block.Output("out", types.ComplexFloat32)})
 end

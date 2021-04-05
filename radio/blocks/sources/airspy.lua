@@ -325,8 +325,8 @@ local function read_callback_factory(...)
         local size = transfer.sample_count*ffi.sizeof("float")*2
 
         -- Write to output pipes
-        local eof, eof_pipe = pipe_mux:write({vector.Vector.cast(radio.types.ComplexFloat32, transfer.samples, size)})
-        if eof then
+        local eof, eof_pipe, shutdown = pipe_mux:write({vector.Vector.cast(radio.types.ComplexFloat32, transfer.samples, size)})
+        if not shutdown and eof then
             io.stderr:write("[AirspySource] Downstream block terminated unexpectedly.\n")
         end
 

@@ -9,6 +9,7 @@ local applications = {
     require('radio.applications.rx_ssb'),
     require('radio.applications.rx_rds'),
     require('radio.applications.rx_ax25'),
+    require('radio.applications.rx_pocsag'),
 }
 
 -- Supported inputs

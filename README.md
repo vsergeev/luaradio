@@ -49,6 +49,42 @@ radio.CompositeBlock():connect(
 
 Check out some more [examples](examples) of what you can build with LuaRadio.
 
+## Built-in Applications
+
+LuaRadio comes with a collection of built-in command-line applications. These
+applications include radio receivers that are compatible with all SDR sources
+supported by the framework, as well as file and network sources:
+
+```
+$ luaradio
+Usage: luaradio [options] <script> [args]
+
+Options:
+  -h, --help            Print help and exit
+  --version             Print version and exit
+  --platform            Dump platform and exit
+  -v, --verbose         Enable debug verbosity
+  -a, --application     Run built-in application
+
+Application Usage: ./luaradio -a <application> [args]
+
+Built-in Applications:
+  rx_raw                Raw Receiver
+  rx_wbfm               Wideband FM Receiver
+  rx_nbfm               Narrowband FM Receiver
+  rx_am                 AM Receiver
+  rx_ssb                SSB Receiver
+  rx_rds                RDS Receiver
+  rx_ax25               AX.25 Receiver
+  rx_pocsag             POCSAG Receiver
+  rx_ert                ERT Receiver (IDM, SCM, SCM+)
+  iq_converter          IQ File Converter
+$ 
+```
+
+See the [Applications](docs/8.applications.md) documentation for more
+information on running built-in applications.
+
 ## Quickstart
 
 With LuaJIT installed, LuaRadio can be run directly from the repository:

@@ -28,12 +28,12 @@
     <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <div class="links">
-      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.9.1</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.10.0</code></a><br />
       <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
       <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
   </div>
   <div class="toc">
-    <ul class="section-nav">
+    <ul id="toc" class="section-nav">
 <li class="toc-entry toc-h2"><a href="#example">Example</a></li>
 <li class="toc-entry toc-h2"><a href="#running">Running</a>
 <ul>
@@ -284,7 +284,7 @@
     <div class="nine columns content">
         <h1 id="luaradio-reference-manual">LuaRadio Reference Manual</h1>
 
-<p>Generated from LuaRadio <code class="language-plaintext highlighter-rouge">v0.9.1</code>.</p>
+<p>Generated from LuaRadio <code class="language-plaintext highlighter-rouge">v0.10.0</code>.</p>
 
 <h2 id="example">Example</h2>
 
@@ -1151,8 +1151,8 @@ the librtlsdr library.</p>
         <li><code class="language-plaintext highlighter-rouge">biastee</code> (bool, default false)</li>
         <li><code class="language-plaintext highlighter-rouge">direct_sampling</code> (string, default “disabled”, choice of “disabled”, “i”, “q”)</li>
         <li><code class="language-plaintext highlighter-rouge">bandwidth</code> (number, default equal to sample rate)</li>
-        <li><code class="language-plaintext highlighter-rouge">autogain</code> (bool, default false)</li>
-        <li><code class="language-plaintext highlighter-rouge">rf_gain</code> (number, default closest supported to 10.0 dB)</li>
+        <li><code class="language-plaintext highlighter-rouge">autogain</code> (bool, default true if manual gain is nil)</li>
+        <li><code class="language-plaintext highlighter-rouge">rf_gain</code> (number in dB, manual gain, default nil)</li>
         <li><code class="language-plaintext highlighter-rouge">freq_correction</code> PPM (number, default 0.0)</li>
         <li><code class="language-plaintext highlighter-rouge">device_index</code> (integer, default 0)</li>
       </ul>
@@ -1183,8 +1183,8 @@ the librtlsdr library.</p>
 <div class="block">
   <h4 id="sdrplaysource">SDRplaySource</h4>
 
-  <p>Source a complex-valued signal from an SDRplay RSP. This source requires the
-libmirsdrapi-rsp library.</p>
+  <p>Source a complex-valued signal from an SDRplay RSP (1, 1A, 2, Duo, or Dx).
+This source requires the libsdrplay_api or libmirsdrapi-rsp library.</p>
 
   <h5 id="radiosdrplaysourcefrequency-rate-options"><code class="language-plaintext highlighter-rouge">radio.SDRplaySource(frequency, rate[, options={}])</code></h5>
 
@@ -1195,7 +1195,7 @@ libmirsdrapi-rsp library.</p>
     <li><code class="language-plaintext highlighter-rouge">rate</code> (<em>number</em>): Sample rate in Hz</li>
     <li><code class="language-plaintext highlighter-rouge">options</code> (<em>table</em>): Additional options, specifying:
       <ul>
-        <li><code class="language-plaintext highlighter-rouge">gain_reduction</code> (int, default 80 dB, range of 0 to 102 dB)</li>
+        <li><code class="language-plaintext highlighter-rouge">gain_reduction</code> (int, default 40 dB, range of 20 to 59 dB)</li>
         <li><code class="language-plaintext highlighter-rouge">bandwidth</code> (number, default closest, choice of 0.200 MHz, 0.300 MHz,
 0.600 MHz, 1.536 MHz, 5.000 MHz, 6.000 MHz, 7.000 MHz, 8.000 MHz)</li>
       </ul>
@@ -1216,8 +1216,8 @@ libmirsdrapi-rsp library.</p>
 <span class="c1">-- Source samples from 144.390 MHz sampled at 4 MHz, with 0.6 MHz bandwidth</span>
 <span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SDRplaySource</span><span class="p">(</span><span class="mi">144</span><span class="p">.</span><span class="mf">390e6</span><span class="p">,</span> <span class="mf">4e6</span><span class="p">,</span> <span class="p">{</span><span class="n">bandwidth</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mf">6e6</span><span class="p">})</span>
 
-<span class="c1">-- Source samples from 15 MHz sampled at 10 MHz, with 75 dB gain reduction</span>
-<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SDRplaySource</span><span class="p">(</span><span class="mf">15e6</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain_reduction</span> <span class="o">=</span> <span class="mi">75</span><span class="p">})</span>
+<span class="c1">-- Source samples from 15 MHz sampled at 10 MHz, with 30 dB gain reduction</span>
+<span class="kd">local</span> <span class="n">src</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">SDRplaySource</span><span class="p">(</span><span class="mf">15e6</span><span class="p">,</span> <span class="mf">10e6</span><span class="p">,</span> <span class="p">{</span><span class="n">gain_reduction</span> <span class="o">=</span> <span class="mi">30</span><span class="p">})</span>
 </code></pre></div>  </div>
 
 </div>
@@ -1342,10 +1342,10 @@ library.</p>
     <li><code class="language-plaintext highlighter-rouge">options</code> (<em>table</em>): Additional options, specifying:
       <ul>
         <li><code class="language-plaintext highlighter-rouge">channel</code> (int, default 0)</li>
-        <li><code class="language-plaintext highlighter-rouge">gain</code> (number in dB, overall gain, default 15.0 dB)</li>
+        <li><code class="language-plaintext highlighter-rouge">gain</code> (number in dB, manual overall gain, default nil)</li>
         <li><code class="language-plaintext highlighter-rouge">bandwidth</code> (number in Hz)</li>
         <li><code class="language-plaintext highlighter-rouge">antenna</code> (string)</li>
-        <li><code class="language-plaintext highlighter-rouge">autogain</code> (bool, default false)</li>
+        <li><code class="language-plaintext highlighter-rouge">autogain</code> (bool, default true if manual gain is nil)</li>
         <li><code class="language-plaintext highlighter-rouge">gains</code> (table, gain element name to value in dB)</li>
       </ul>
     </li>
@@ -2100,13 +2100,18 @@ PortAudio. This sink requires the PortAudio library.</p>
 individually and newline delimited. This sink accepts any data type that
 implements <code class="language-plaintext highlighter-rouge">__tostring()</code>.</p>
 
-  <h5 id="radioprintsinkfileiostdout-title"><code class="language-plaintext highlighter-rouge">radio.PrintSink([file=io.stdout, title=""])</code></h5>
+  <h5 id="radioprintsinkfileiostdout-options"><code class="language-plaintext highlighter-rouge">radio.PrintSink([file=io.stdout, options={}])</code></h5>
 
   <h6 id="arguments-33">Arguments</h6>
 
   <ul>
     <li><code class="language-plaintext highlighter-rouge">file</code> (<em>string</em>|<em>file</em>|<em>int</em>): Filename, file object, or file descriptor</li>
-    <li><code class="language-plaintext highlighter-rouge">title</code> (<em>string</em>): Title in reporting</li>
+    <li><code class="language-plaintext highlighter-rouge">options</code> (<em>table</em>): Additional options, specifying:
+      <ul>
+        <li><code class="language-plaintext highlighter-rouge">title</code> (string, default nil)</li>
+        <li><code class="language-plaintext highlighter-rouge">timestamp</code> (bool, default false)</li>
+      </ul>
+    </li>
   </ul>
 
   <h6 id="type-signatures-33">Type Signatures</h6>
@@ -5108,15 +5113,14 @@ modulated complex-valued signal.</p>
   <h6 id="type-signatures-117">Type Signatures</h6>
 
   <ul>
-    <li><code class="language-plaintext highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="language-plaintext highlighter-rouge">out</code> <em>RDSFrameType</em></li>
+    <li><code class="language-plaintext highlighter-rouge">in</code> <em>ComplexFloat32</em> ➔❑➔ <code class="language-plaintext highlighter-rouge">out</code> <em>RDSPacketType</em></li>
   </ul>
 
   <h6 id="example-122">Example</h6>
 
   <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">local</span> <span class="n">receiver</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RDSReceiver</span><span class="p">()</span>
-<span class="kd">local</span> <span class="n">decoder</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RDSDecoderBlock</span><span class="p">()</span>
 <span class="kd">local</span> <span class="n">snk</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">JSONSink</span><span class="p">()</span>
-<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">decoder</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>
+<span class="n">top</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">snk</span><span class="p">)</span>
 </code></pre></div>  </div>
 
 </div>
@@ -6732,7 +6736,7 @@ input port.</p>
 <div class="class">
   <h4 id="output">Output</h4>
 
-  <h5 id="radioblockoutputname-datatypestr"><code class="language-plaintext highlighter-rouge">radio.block.Output(name, data_type|str)</code></h5>
+  <h5 id="radioblockoutputname-datatype"><code class="language-plaintext highlighter-rouge">radio.block.Output(name, data_type)</code></h5>
 
   <p>Block output port descriptor. This contains the name and data type of
 a block output port.</p>
@@ -6741,7 +6745,7 @@ a block output port.</p>
 
   <ul>
     <li><code class="language-plaintext highlighter-rouge">name</code> (<em>string</em>): Name</li>
-    <li><code class="language-plaintext highlighter-rouge">data_type|str</code> (<em>type</em>): Data type, e.g. <code class="language-plaintext highlighter-rouge">radio.types.ComplexFloat32</code>, or “copy” to copy input data type</li>
+    <li><code class="language-plaintext highlighter-rouge">data_type</code> (<em>type</em>|<em>str</em>): Data type, e.g. <code class="language-plaintext highlighter-rouge">radio.types.ComplexFloat32</code>, or “copy” to copy input data type</li>
   </ul>
 
   <h6 id="example-143">Example</h6>

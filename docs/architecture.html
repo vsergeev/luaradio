@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <div class="links">
-      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.9.1</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.10.0</code></a><br />
       <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
       <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
   </div>
@@ -44,6 +44,7 @@
                 <li><a href="../docs/architecture.html">Architecture</a></li>
                 <li><a href="../docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
                 <li><a href="../docs/supported-hardware.html">Supported Hardware</a></li>
+                <li><a href="../docs/applications.html">Built-in Applications</a></li>
             </ul>
         </li>
         <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
@@ -72,7 +73,7 @@
         <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <div class="links">
-    <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.9.1</code></a><br />
+    <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.10.0</code></a><br />
     <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
     <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
   </div>
@@ -551,28 +552,44 @@ block inputs, but every block input only has one <code class="language-plaintext
 
 <p>The <code class="language-plaintext highlighter-rouge">Pipe</code> object provides an interface for the serialization and
 deserialization of sample vectors between blocks.  The <code class="language-plaintext highlighter-rouge">read()</code> method reads a
-vector from the pipe. The <code class="language-plaintext highlighter-rouge">write()</code> method writes a vector to the pipe.</p>
+sample vector from the pipe. The <code class="language-plaintext highlighter-rouge">write()</code> method writes a sample vector to the
+pipe.</p>
+
+<p>Each block also has a <code class="language-plaintext highlighter-rouge">ControlSocket</code> object, which provides an out-of-band
+interface for block shutdown by the parent process, and in the future, will
+allow the block to receive asynchronous control messages.</p>
+
+<p>Both <code class="language-plaintext highlighter-rouge">Pipe</code> and <code class="language-plaintext highlighter-rouge">ControlSocket</code> objects use <code class="language-plaintext highlighter-rouge">socketpair()</code> for IPC.</p>
 
 <p>A block is run with its <code class="language-plaintext highlighter-rouge">run()</code> method, which is a loop that repeatedly reads
 input pipes into an array of vectors, calls <code class="language-plaintext highlighter-rouge">process(...)</code> with these input
 vectors, and writes the resulting array of vectors to the output pipes.</p>
 
-<p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/block.lua">Block class</a>.</p>
+<p>The <code class="language-plaintext highlighter-rouge">run()</code> method uses a <code class="language-plaintext highlighter-rouge">PipeMux</code> object to handle polling and reading from
+all input pipes and from the <code class="language-plaintext highlighter-rouge">ControlSocket</code>. The <code class="language-plaintext highlighter-rouge">PipeMux</code> <code class="language-plaintext highlighter-rouge">read()</code> method
+uses the <code class="language-plaintext highlighter-rouge">poll()</code> system call to wait for new data at the block’s inputs, and
+then reads and returns an array of deserialized sample vectors. It also detects
+EOF on any input pipes, indicating flow graph collapse, or EOF on the
+<code class="language-plaintext highlighter-rouge">ControlSocket</code>, indicating a shutdown event.</p>
+
+<p>Code reference: <a href="https://github.com/vsergeev/luaradio/tree/master/radio/core/block.lua">Block class</a>, <a href="../radio/core/pipe.lua">PipeMux class</a>.</p>
 
 <h4 id="termination">Termination</h4>
 
-<p>A block runs indefinitely in its <code class="language-plaintext highlighter-rouge">run()</code> method, until a <code class="language-plaintext highlighter-rouge">read()</code> on one of the
-input <code class="language-plaintext highlighter-rouge">Pipe</code> objects returns <code class="language-plaintext highlighter-rouge">nil</code>. This indicates that the upstream block
-closed its output <code class="language-plaintext highlighter-rouge">Pipe</code> and that the flow graph is collapsing.</p>
+<p>A block runs indefinitely in its <code class="language-plaintext highlighter-rouge">run()</code> method, until one of the input <code class="language-plaintext highlighter-rouge">Pipe</code>
+objects reads EOF, indicating that the upstream block closed its output <code class="language-plaintext highlighter-rouge">Pipe</code>
+and that the flow graph is collapsing, or until the <code class="language-plaintext highlighter-rouge">ControlSocket</code> reads EOF,
+indicating that the parent process closed its end of the <code class="language-plaintext highlighter-rouge">ControlSocket</code> and
+the flow graph is shutting down.</p>
 
-<p>When an input <code class="language-plaintext highlighter-rouge">Pipe</code> returns <code class="language-plaintext highlighter-rouge">nil</code>, the block breaks its main run loop, calls
-<code class="language-plaintext highlighter-rouge">cleanup()</code>, and then closes its output pipes. This causes the downstream
-blocks to terminate similarly.</p>
+<p>When a read from <code class="language-plaintext highlighter-rouge">PipeMux</code> returns an EOF or shutdown event, the block breaks
+its main run loop, calls <code class="language-plaintext highlighter-rouge">cleanup()</code>, and then closes its output pipes.  This
+causes the downstream blocks to terminate similarly.</p>
 
 <p>Sources that produce a finite number of samples will exit naturally after they
 have produced all of their samples, triggering the collapse of the flow graph.
-Sources that run indefinitely, on the other hand, can only be shutdown by the
-framework forcibly by the <code class="language-plaintext highlighter-rouge">SIGINT</code> signal.</p>
+Sources that run indefinitely, on the other hand, can only be shutdown when the
+parent process closes their <code class="language-plaintext highlighter-rouge">ControlSocket</code> to the source.</p>
 
 <p>A block shutdown does not mean samples are lost. Samples are buffered in the
 underlying implementation of the <code class="language-plaintext highlighter-rouge">Pipe</code>, even after the producing block has
@@ -680,6 +697,10 @@ rate, so <code class="language-plaintext highlighter-rouge">initialize()</code> 
 hierarchical blocks, to carry out any block-specific initialization before
 running.</p>
 
+<p>Each block is then assigned a <code class="language-plaintext highlighter-rouge">ControlSocket</code> object, which provides an
+out-of-band mechanism for the parent process to shutdown blocks, and in the
+near future, an asynchronous control interface to each block.</p>
+
 <p>Finally, all of the <code class="language-plaintext highlighter-rouge">Pipe</code> objects that connect the <code class="language-plaintext highlighter-rouge">OutputPort</code> and
 <code class="language-plaintext highlighter-rouge">InputPort</code> of the blocks in the flow graph are initialized. Each <code class="language-plaintext highlighter-rouge">Pipe</code>
 creates an anonymous UNIX socket pair and pre-allocates a read buffer.</p>
@@ -708,7 +729,7 @@ and exits with exit code 1.</p>
 
 <p>The parent process closes all file descriptors associated with the <code class="language-plaintext highlighter-rouge">Pipe</code>
 objects it built, so that the blocks are the only owners of these connected
-files, and can close them to signal block termination.</p>
+files, and can close them to signal flow graph collapse.</p>
 
 <p>The parent returns back to the top-level script, where it can use <code class="language-plaintext highlighter-rouge">status()</code> to
 get the running status of the flow graph, <code class="language-plaintext highlighter-rouge">wait()</code> to wait for the flow graph
@@ -725,10 +746,12 @@ user requested exit, it calls <code class="language-plaintext highlighter-rouge"
 with <code class="language-plaintext highlighter-rouge">waitpid()</code> until the flow graph has fully collapsed, and then unblocks
 the <code class="language-plaintext highlighter-rouge">SIGINT</code> and <code class="language-plaintext highlighter-rouge">SIGCHLD</code> signals.</p>
 
-<p>The <a href="reference-manual.html#compositeblockstop"><code class="language-plaintext highlighter-rouge">stop()</code></a> method kills all
-source blocks with <code class="language-plaintext highlighter-rouge">SIGTERM</code>, waits on each block PID with <code class="language-plaintext highlighter-rouge">waitpid()</code> until
-the flow graph has fully collapsed, and then unblocks the <code class="language-plaintext highlighter-rouge">SIGINT</code> and
-<code class="language-plaintext highlighter-rouge">SIGCHLD</code> signals.</p>
+<p>The <a href="reference-manual.html#compositeblockstop"><code class="language-plaintext highlighter-rouge">stop()</code></a> method shuts down all
+blocks in the flow graph by closing every block’s <code class="language-plaintext highlighter-rouge">ControlSocket</code>, and waits on
+each block PID with <code class="language-plaintext highlighter-rouge">waitpid()</code> until the flow graph has fully collapsed, and
+then unblocks the <code class="language-plaintext highlighter-rouge">SIGINT</code> and <code class="language-plaintext highlighter-rouge">SIGCHLD</code> signals. If a block process does not
+shutdown within a timeout (100ms), it is forcibly killed with a <code class="language-plaintext highlighter-rouge">SIGTERM</code>
+signal.</p>
 
 <p>The <a href="reference-manual.html#compositeblockstatus"><code class="language-plaintext highlighter-rouge">status()</code></a> method checks if
 any block is still running with <code class="language-plaintext highlighter-rouge">kill(&lt;pid&gt;, 0)</code>.  If all blocks have exited,

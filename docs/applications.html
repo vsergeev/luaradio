@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>LuaRadio - Built-in Applications</title>
+  
+  <meta name="author" content="Vanya A. Sergeev" />
+  <meta name="description" content="LuaRadio" />
+  <link rel="canonical" href="https://luaradio.io/docs/applications.html" />
+  <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+
+  <link rel="stylesheet" href="../assets/css/all.css">
+  <script type="text/javascript" src="../assets/js/tocbot.min.js"></script>
+  <script type="text/javascript" src="../assets/js/toc.js"></script>
+
+  
+  
+</head>
+<body id="top">
+  <div class="container">
+    <div class="row">
+      <div class="three columns sidebar">
+        <nav class="menu">
+  <h1 class="title"><a href="..">LuaRadio</a></h1>
+  <div class="links">
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.10.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+      <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
+  <div class="toc">
+    <ul>
+        <li><a href="../new-to-sdr.html">New to SDR?</a></li>
+        <li><a href="../docs/">Documentation</a>
+            <ul>
+                <li><a href="../docs/installation.html">Installation</a></li>
+                <li><a href="../docs/getting-started.html">Getting Started</a></li>
+                <li><a href="../docs/creating-blocks.html">Creating Blocks</a></li>
+                <li><a href="../docs/embedding-luaradio.html">Embedding LuaRadio</a></li>
+                <li><a href="../docs/architecture.html">Architecture</a></li>
+                <li><a href="../docs/comparison-gnuradio.html">Comparison to GNU Radio</a></li>
+                <li><a href="../docs/supported-hardware.html">Supported Hardware</a></li>
+                <li><a href="../docs/applications.html">Built-in Applications</a></li>
+            </ul>
+        </li>
+        <li><a href="../docs/reference-manual.html">Reference Manual</a></li>
+        <li><a href="https://github.com/vsergeev/luaradio/wiki#project-roadmap">Project Roadmap</a></li>
+        <li><a href="../examples/">Examples</a>
+            <ul>
+                <li><a href="../examples/rtlsdr-wbfm-mono.html">WBFM Mono</a></li>
+                <li><a href="../examples/rtlsdr-wbfm-stereo.html">WBFM Stereo</a></li>
+                <li><a href="../examples/rtlsdr-nbfm.html">NBFM</a></li>
+                <li><a href="../examples/rtlsdr-ax25.html">AX.25</a></li>
+                <li><a href="../examples/rtlsdr-pocsag.html">POCSAG</a></li>
+                <li><a href="../examples/rtlsdr-rds.html">RDS</a></li>
+                <li><a href="../examples/rtlsdr-am-envelope.html">AM (Envelope)</a></li>
+                <li><a href="../examples/rtlsdr-am-synchronous.html">AM (Synchronous)</a></li>
+                <li><a href="../examples/rtlsdr-ssb.html">SSB</a></li>
+                <li><a href="../examples/wavfile-ssb-modulator.html">WAV SSB Modulator</a></li>
+                <li><a href="../examples/iqfile-converter.html">IQ File Converter</a></li>
+            </ul>
+        </li>
+        <li><a href="../benchmarks.html">Benchmarks</a></li>
+    </ul>
+  </div>
+  <a class="contact" href="mailto:v@sergeev.io"><i class="fa fa-envelope-o" aria-hidden="true"></i> v@sergeev.io</a>
+</nav>
+
+        <nav class="scroll-toc">
+  <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
+  <div class="links">
+    <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.10.0</code></a><br />
+    <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
+    <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
+  </div>
+  <div class="toc">
+    <span class="page-title"><a data-scroll href="#top">Built-in Applications</a></span>
+    <div class="js-toc">
+    </div>
+  </div>
+</nav>
+
+      </div>
+      <div class="nine columns content">
+        
+<h1 id="applications">Applications</h1>
+
+<p>LuaRadio comes with a collection of built-in command-line applications,
+including analog radio receivers like AM and Narrowband FM, digital radio
+receivers like AX.25 and POCSAG, and utilities like an IQ file converter. The
+applications accept a variety of inputs, including all the SDR sources
+supported by the framework, as well as IQ file and network sources. The
+applications also support a variety of outputs, like audio and WAV file for
+analog receivers, or text and JSON for digital receivers.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>Built-in applications can be selected using the <code class="language-plaintext highlighter-rouge">-a</code> option with the <code class="language-plaintext highlighter-rouge">luaradio</code>
+runner:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ luaradio
+Usage: luaradio [options] &lt;script&gt; [args]
+
+Options:
+  -h, --help            Print help and exit
+  --version             Print version and exit
+  --platform            Dump platform and exit
+  -v, --verbose         Enable debug verbosity
+  -a, --application     Run built-in application
+
+Application Usage: ./luaradio -a &lt;application&gt; [args]
+
+Built-in Applications:
+  rx_raw                Raw Receiver
+  rx_wbfm               Wideband FM Receiver
+  rx_nbfm               Narrowband FM Receiver
+  rx_am                 AM Receiver
+  rx_ssb                SSB Receiver
+  rx_rds                RDS Receiver
+  rx_ax25               AX.25 Receiver
+  rx_pocsag             POCSAG Receiver
+  rx_ert                ERT Receiver (IDM, SCM, SCM+)
+  iq_converter          IQ File Converter
+$
+</code></pre></div></div>
+
+<p>For example, to run the <code class="language-plaintext highlighter-rouge">rx_wbfm</code> application:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio -a rx_wbfm
+</code></pre></div></div>
+
+<h2 id="application-options">Application Options</h2>
+
+<p>Most applications require specifying an input (e.g. an SDR source) with the
+<code class="language-plaintext highlighter-rouge">-i</code> option, sometimes an output with the <code class="language-plaintext highlighter-rouge">-o</code> option, and positional arguments
+like frequency or sample rate. By default, the first supported output will be
+used if one is not specified.</p>
+
+<p>Check the application usage to get a list of supported inputs, outputs, and
+other application-specific options:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ luaradio -a rx_wbfm
+Usage: luaradio -a rx_wbfm -i &lt;input&gt; [-o &lt;output&gt;] [options] &lt;frequency&gt;
+
+Wideband FM Receiver
+
+Supported Inputs:
+  rtlsdr                rtlsdr
+  airspy                airspy
+  airspyhf              airspyhf
+  bladerf               bladerf
+  hackrf                hackrf
+  sdrplay               sdrplay
+  uhd                   uhd:&lt;device&gt;
+  soapysdr              soapysdr:&lt;driver&gt;,&lt;rate&gt;
+  networkclient         networkclient:&lt;rate&gt;,&lt;format&gt;,&lt;tcp/unix&gt;,&lt;address&gt;
+  networkserver         networkserver:&lt;rate&gt;,&lt;format&gt;,&lt;tcp/unix&gt;,&lt;address&gt;
+  iqfile                iqfile:&lt;filename&gt;,&lt;format&gt;,&lt;rate&gt;
+
+Supported Outputs:
+  pulseaudio            pulseaudio
+  portaudio             portaudio
+  wavfile               wavfile:&lt;filename&gt;
+
+Options:
+  -h, --help            Print application help and exit
+  -i, --input           Input, in format &lt;input&gt;[:&lt;options&gt;]
+  -o, --output          Output, in format &lt;output&gt;[:&lt;options&gt;]
+  --mono                Mono receiver (default stereo)
+
+Arguments:
+  frequency             Station frequency in Hz, e.g. 104.3e6
+
+Options for inputs and outputs can be specified
+with comma delimited key-value pairs. Example:
+
+  rtlsdr:biastee=true,freq_correction=10
+$ 
+</code></pre></div></div>
+
+<p>For example, to run the Wideband FM receiver application with the <code class="language-plaintext highlighter-rouge">rtlsdr</code>
+input and the default <code class="language-plaintext highlighter-rouge">pulseaudio</code> output, tuned to 105.3 MHz:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio -a rx_wbfm -i rtlsdr 105.3e6
+</code></pre></div></div>
+
+<p>For example, to run the POCSAG receiver application with the <code class="language-plaintext highlighter-rouge">rtlsdr</code> source
+and the <code class="language-plaintext highlighter-rouge">json</code> output, tuned to 152.840 MHz:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>luaradio -a rx_pocsag -i rtlsdr -o json 152.840e6
+</code></pre></div></div>
+
+<h2 id="input-and-output-options">Input and Output Options</h2>
+
+<p>Input and output options can be specified with the following syntax:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;name&gt;:&lt;arg 1&gt;,&lt;arg 2&gt;,...,&lt;key 1&gt;=&lt;value&gt;,&lt;key 2&gt;=&lt;value&gt;,...
+</code></pre></div></div>
+
+<p>Supported positional arguments will be documented in the application usage.</p>
+
+<p>For example, to specify the <code class="language-plaintext highlighter-rouge">networkclient</code> source with the positional
+arguments of <code class="language-plaintext highlighter-rouge">&lt;rate&gt;,&lt;format&gt;,&lt;tcp/unix&gt;,&lt;address&gt;</code> for 1 MHz sample rate,
+unsigned 8-bit samples, a TCP connection, and the address <code class="language-plaintext highlighter-rouge">192.168.1.100:1234</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>networkclient:1e6,u8,tcp,192.168.1.100:1234
+</code></pre></div></div>
+
+<p>For example, to specify the <code class="language-plaintext highlighter-rouge">iqfile</code> source with the positional arguments of
+<code class="language-plaintext highlighter-rouge">&lt;filename&gt;,&lt;format&gt;,&lt;rate&gt;</code> for file <code class="language-plaintext highlighter-rouge">test.iq</code>, little endian 32-bit float
+samples, and 1 MHz sample rate:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>iqfile:test.iq,f32le,1e6
+</code></pre></div></div>
+
+<h2 id="key-value-pair-options">Key-Value Pair Options</h2>
+
+<p>Key-value pair options can be used to specify additional source-specific
+options that are available in the underlying LuaRadio source block. For
+example, to specify the <code class="language-plaintext highlighter-rouge">biastee</code> and <code class="language-plaintext highlighter-rouge">freq_corection</code> options for the <code class="language-plaintext highlighter-rouge">rtlsdr</code>
+input available with the <a href="reference-manual.html#rtlsdrsource">RtlSdrSource</a>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rtlsdr:biastee=true,freq_correction=10
+</code></pre></div></div>
+
+
+
+        <div class="footer">
+          <div class="disclaimer">
+  <p>
+    © Vanya A. Sergeev, 2016-2021 &mdash; built with <a href="http://jekyllrb.com/">Jekyll</a>, theme based on <a href="https://github.com/swanson/lagom">Lagom</a>
+  </p>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

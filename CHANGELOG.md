@@ -1,3 +1,35 @@
+* v0.10.0 - 06/09/2021
+    * Application changes
+        * Add built-in applications with rx_raw, rx_wbfm, rx_nbfm, rx_am,
+          rx_ssb, rx_rds, rx_ax25, rx_pocsag, rx_ert, and iq_converter.
+    * Block changes
+        * Refactor to use PipeMux in ThrottleBlock and HackRFSink.
+        * Add support for v3 API (libsdrplay_api) to SDRplaySource.
+        * Refactor title option into options table and add timestamp option for
+          PrintSink.
+        * Implement `tostring()` for AX25FrameType, POCSAGMessageType,
+          and RDSPacketType types.
+        * Fix spurious warning about block terminated on shutdown for
+          AirspySource.
+        * Fix missing error check for set gain mode and fix typo in set gain
+          error message in BladeRFSource.
+        * Default to autogain if no manual gain specified in RtlSdrSource and
+          UHDSource.
+    * Composite changes
+        * Add RDSDecoderBlock to flow graph of RDSReceiver.
+    * Runner changes
+        * Add built-in application support.
+    * Core changes
+        * Add optional count argument to `read()` in PipeMux.
+        * Add new helper functions `parse_args()`, `format_options()`,
+          `array_concat()`, `array_map()`, `table_extend()`, `table_keys()`,
+          and `table_values()`.
+        * Add built-in application framework.
+    * Documentation changes
+        * Fix minor typos in a few docstrings.
+        * Add PipeMux and ControlSocket description to Architecture document.
+        * Add Applications document.
+
 * v0.9.1 - 01/08/2021
     * Block changes
         * Fix spurious warning about downstream block termination on shutdown

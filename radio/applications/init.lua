@@ -133,7 +133,7 @@ local outputs = {
     wavfile = {
         factory = function (options)
             return function (num_channels)
-                return radio.WAVFileSink(options[1], channels)
+                return radio.WAVFileSink(options[1], num_channels)
             end
         end,
         args = {"filename"},

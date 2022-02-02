@@ -125,7 +125,7 @@ local outputs = {
     portaudio = {
         factory = function (options)
             return function (num_channels)
-                return radio.PulseAudioSink(num_channels)
+                return radio.PortAudioSink(num_channels)
             end
         end,
         args = {},

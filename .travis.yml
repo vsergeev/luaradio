@@ -18,7 +18,7 @@ install:
     - sudo make install
     - cd ../
     - sudo apt-get install fftw3 fftw3-dev
-    - git clone git://github.com/jgaeddert/liquid-dsp.git
+    - git clone https://github.com/jgaeddert/liquid-dsp.git
     - cd liquid-dsp
     - git checkout $LIQUID_TAG
     - ./bootstrap.sh

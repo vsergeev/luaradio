@@ -167,7 +167,7 @@ int luaradio_status(luaradio_t *radio, bool *running) {
     return 0;
 }
 
-int luaradio_wait(luaradio_t *radio) {
+int luaradio_wait(luaradio_t *radio, bool *success) {
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
         strncpy(radio->errmsg, "No LuaRadio flow graph found to wait on.", sizeof(radio->errmsg));
@@ -178,20 +178,24 @@ int luaradio_wait(luaradio_t *radio) {
     lua_pushcfunction(radio->L, _luaradio_traceback);
     lua_getfield(radio->L, -2, "wait");
     lua_pushvalue(radio->L, -3);
-    if (lua_pcall(radio->L, 1, 0, 2) != 0) {
+    if (lua_pcall(radio->L, 1, 1, 2) != 0) {
         /* Copy error message into context */
         strncpy(radio->errmsg, lua_tostring(radio->L, -1), sizeof(radio->errmsg));
         /* Pop error and error handler off of stack */
         lua_pop(radio->L, 2);
         return -1;
     }
-    /* Pop error handler */
-    lua_remove(radio->L, 2);
+
+    /* Populate success */
+    if (success) *success = lua_toboolean(radio->L, -1);
+
+    /* Pop error handler and result */
+    lua_pop(radio->L, 2);
 
     return 0;
 }
 
-int luaradio_stop(luaradio_t *radio) {
+int luaradio_stop(luaradio_t *radio, bool *success) {
     /* Check instance of top element is CompositeBlock */
     if (!lua_iscompositeblock(radio->L)) {
         strncpy(radio->errmsg, "No LuaRadio flow graph found to stop.", sizeof(radio->errmsg));
@@ -202,15 +206,19 @@ int luaradio_stop(luaradio_t *radio) {
     lua_pushcfunction(radio->L, _luaradio_traceback);
     lua_getfield(radio->L, -2, "stop");
     lua_pushvalue(radio->L, -3);
-    if (lua_pcall(radio->L, 1, 0, 2) != 0) {
+    if (lua_pcall(radio->L, 1, 1, 2) != 0) {
         /* Copy error message into context */
         strncpy(radio->errmsg, lua_tostring(radio->L, -1), sizeof(radio->errmsg));
         /* Pop error and error handler off of stack */
         lua_pop(radio->L, 2);
         return -1;
     }
-    /* Pop error handler */
-    lua_remove(radio->L, 2);
+
+    /* Populate success */
+    if (success) *success = lua_toboolean(radio->L, -1);
+
+    /* Pop error handler and result */
+    lua_pop(radio->L, 2);
 
     return 0;
 }

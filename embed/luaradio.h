@@ -53,17 +53,19 @@ int luaradio_status(luaradio_t *radio, bool *running);
  *
  * Wait for a LuaRadio flow graph to finish. On failure, use
  * luaradio_strerror() to get a human readable error string.
+ * Sets success to true on successful termination, otherwise false.
  */
-int luaradio_wait(luaradio_t *radio);
+int luaradio_wait(luaradio_t *radio, bool *success);
 
 /**
  * @brief Stop a LuaRadio flow graph.
  * @return 0 on success, -1 on failure
  *
  * Stop a running LuaRadio flow graph. On failure, use luaradio_strerror() to
- * get a human readable error string.
+ * get a human readable error string. Sets success to true on successful
+ * termination, otherwise false.
  */
-int luaradio_stop(luaradio_t *radio);
+int luaradio_stop(luaradio_t *radio, bool *success);
 
 /**
  * @brief Free a LuaRadio context.

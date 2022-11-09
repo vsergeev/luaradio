@@ -22,8 +22,8 @@ void test_context(void) {
     /* Flow graph operations should fail, since no composite block is loaded */
     passert(luaradio_start(radio) < 0);
     passert(luaradio_status(radio, NULL) < 0);
-    passert(luaradio_wait(radio) < 0);
-    passert(luaradio_stop(radio) < 0);
+    passert(luaradio_wait(radio, NULL) < 0);
+    passert(luaradio_stop(radio, NULL) < 0);
 
     luaradio_free(radio);
 }
@@ -107,7 +107,9 @@ void test_flowgraph1(void) {
     }
 
     /* Wait should return immediately */
-    passert(luaradio_wait(radio) == 0);
+    bool success;
+    passert(luaradio_wait(radio, &success) == 0);
+    passert(success == true);
 
     luaradio_free(radio);
 }
@@ -156,7 +158,9 @@ void test_flowgraph2(void) {
     passert(close(sink_pipe[1]) == 0);
 
     /* Wait for flow graph termination */
-    passert(luaradio_wait(radio) == 0);
+    bool success;
+    passert(luaradio_wait(radio, &success) == 0);
+    passert(success == true);
 
     /* Check script status */
     bool running;

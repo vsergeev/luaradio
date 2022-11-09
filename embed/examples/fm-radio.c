@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Wait until completion */
-    if (luaradio_wait(radio) < 0) {
+    if (luaradio_wait(radio, NULL) < 0) {
         fprintf(stderr, "Error waiting for flow graph: %s\n", luaradio_strerror(radio));
         return -1;
     }

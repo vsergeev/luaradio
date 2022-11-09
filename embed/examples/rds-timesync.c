@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
     }
 
     /* Stop flow graph */
-    if (luaradio_stop(radio) < 0) {
+    if (luaradio_stop(radio, NULL) < 0) {
         fprintf(stderr, "Error stopping flow graph: %s\n", luaradio_strerror(radio));
         return -1;
     }

@@ -70,10 +70,39 @@ describe("top level test", function ()
         assert(ffi.C.close(pipe_fds[1]) == 0)
 
         -- Wait for flow graph to finish
-        top:wait()
+        local success = top:wait()
 
         -- Close read end of pipe
         assert(ffi.C.close(pipe_fds[0]) == 0)
+
+        -- Assert flow graph exited successfully
+        assert.is.equal(success, true)
+    end)
+
+    it("flow graph wait() with unsuccessful exit", function ()
+        local TerminatingSource = radio.block.factory("TerminatingSource")
+
+        function TerminatingSource:instantiate(data_type, rate)
+            self:add_type_signature({}, {radio.block.Output("out", radio.types.ComplexFloat32)})
+        end
+        function TerminatingSource:get_rate()
+            return 1
+        end
+        function TerminatingSource:process()
+            error("Terminating with error")
+        end
+
+        -- Build and start flow graph
+        local top = radio.CompositeBlock():connect(
+            TerminatingSource(),
+            radio.PrintSink()
+        ):start()
+
+        -- Wait for flow graph to finish
+        local success = top:wait()
+
+        -- Assert flow graph exited unsuccessfully
+        assert.is.equal(success, false)
     end)
 
     it("flow graph stop()", function ()
@@ -87,7 +116,10 @@ describe("top level test", function ()
         ffi.C.usleep(1000)
 
         -- Stop flow graph
-        top:stop()
+        local success = top:stop()
+
+        -- Assert flow graph exited successfully
+        assert.is.equal(success, true)
     end)
 
     it("flow graph stop() unresponsive", function ()
@@ -103,7 +135,10 @@ describe("top level test", function ()
         ):start()
 
         -- Stop flow graph
-        top:stop()
+        local success = top:stop()
+
+        -- Assert flow graph exited unsuccessfully
+        assert.is.equal(success, false)
 
         -- Close pipe
         assert(ffi.C.close(pipe_fds[1]) == 0)

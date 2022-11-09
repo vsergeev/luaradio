@@ -23,6 +23,7 @@ local CompositeBlock = block.factory("CompositeBlock")
 
 function CompositeBlock:instantiate()
     self._running = false
+    self._success = true
     self._connections = {}
     self._blocks = {}
     self._evaluation_order = nil
@@ -642,6 +643,7 @@ function CompositeBlock:start(multiprocess)
 
         -- Mark ourselves as running
         self._running = true
+        self._success = true
     else
         -- Build a skip set, containing the set of blocks to skip for each
         -- block, if it produces no new samples.
@@ -767,6 +769,30 @@ local function sigwait_timeout(sig, timeout)
     end
 end
 
+-- Check if a child is running and track exit status
+function CompositeBlock:_check_pid(pid)
+    -- Check if process exists
+    if ffi.C.kill(pid, 0) ~= 0 then
+        return false
+    end
+
+    -- Check process status
+    local status = ffi.new("int[1]")
+    local ret = ffi.C.waitpid(pid, status, ffi.C.WNOHANG)
+    if ret == 0 then
+        return true
+    elseif ret < 0 then
+        error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
+    end
+
+    -- Check if process was terminated by non-zero status or by signal
+    if bit.band(status[0], 0xff7f) ~= 0 then
+        self._success = false
+    end
+
+    return false
+end
+
 -- Reap child processes, consume SIGCHLD, and unblock signals
 function CompositeBlock:_reap(timeout)
     local timed_out = false
@@ -780,8 +806,7 @@ function CompositeBlock:_reap(timeout)
             -- If the process exists
             if ffi.C.kill(pid, 0) == 0 then
                 -- Reap process
-                local ret = ffi.C.waitpid(pid, nil, ffi.C.WNOHANG)
-                if ret == 0 then
+                if self:_check_pid(pid) then
                     -- Process is still running
                     all_exited = false
 
@@ -793,8 +818,6 @@ function CompositeBlock:_reap(timeout)
                             error("kill(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
                         end
                     end
-                elseif ret < 0 then
-                    error("waitpid(): " .. ffi.string(ffi.C.strerror(ffi.errno())))
                 end
             end
         end
@@ -839,7 +862,7 @@ function CompositeBlock:status()
 
     -- Check if any children are still running
     for _, pid in pairs(self._pids) do
-        if ffi.C.waitpid(pid, nil, ffi.C.WNOHANG) == 0 then
+        if self:_check_pid(pid) then
             return {running = true}
         end
     end
@@ -854,6 +877,7 @@ end
 -- Stop a top-level block and wait until it has finished.
 --
 -- @function CompositeBlock:stop
+-- @treturn bool Successful exit
 -- @usage
 -- -- Start a top-level block
 -- top:start()
@@ -861,7 +885,7 @@ end
 -- top:stop()
 function CompositeBlock:stop()
     if not self._running then
-        return
+        return self._success
     end
 
     -- Close control sockets to shutdown blocks
@@ -871,6 +895,8 @@ function CompositeBlock:stop()
 
     -- Reap child processes
     self:_reap()
+
+    return self._success
 end
 
 ---
@@ -878,21 +904,22 @@ end
 -- `SIGINT`.
 --
 -- @function CompositeBlock:wait
+-- @treturn bool Successful exit
 -- @usage
 -- -- Start a top-level block
 -- top:start()
 -- -- Wait for the top-level block to finish
--- top:wait()
+-- local success = top:wait()
 function CompositeBlock:wait()
     if not self._running then
-        return
+        return self._success
     end
 
     -- Check if all child processes already exited
-    local all_exited = util.array_all(util.table_values(self._pids), function (pid) return ffi.C.waitpid(pid, nil, ffi.C.WNOHANG) > 0 end)
+    local all_exited = util.array_all(util.table_values(self._pids), function (pid) return not self:_check_pid(pid) end)
     if all_exited then
         self:_reap()
-        return
+        return self._success
     end
 
     -- Build signal set with SIGINT and SIGCHLD
@@ -918,6 +945,8 @@ function CompositeBlock:wait()
         -- Reap child processes
         self:_reap()
     end
+
+    return self._success
 end
 
 return {CompositeBlock = CompositeBlock, _crawl_connections = crawl_connections, _build_dependency_graph = build_dependency_graph, _build_reverse_dependency_graph = build_reverse_dependency_graph, _build_evaluation_order = build_evaluation_order, _build_skip_set = build_skip_set}

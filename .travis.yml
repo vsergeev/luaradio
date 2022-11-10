@@ -10,7 +10,7 @@ env:
 
 install:
     - sudo apt-get install lua5.1 luarocks
-    - sudo luarocks install busted
+    - sudo luarocks install busted 2.0.0-1
     - git clone https://github.com/LuaJIT/LuaJIT.git
     - cd LuaJIT
     - git checkout $LUAJIT_TAG

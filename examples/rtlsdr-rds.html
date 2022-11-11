@@ -28,7 +28,7 @@
         <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <div class="links">
-      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.10.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.11.0</code></a><br />
       <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
       <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
   </div>
@@ -73,7 +73,7 @@
         <nav class="scroll-toc">
   <h1 class="title"><a data-scroll href="#top">LuaRadio</a></h1>
   <div class="links">
-    <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.10.0</code></a><br />
+    <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.11.0</code></a><br />
     <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
     <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
   </div>
@@ -127,9 +127,11 @@ examples.</p>
 
 <span class="kd">local</span> <span class="n">frequency</span> <span class="o">=</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">arg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="kd">local</span> <span class="n">tune_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mf">250e3</span>
+<span class="kd">local</span> <span class="n">tune_offset</span> <span class="o">=</span> <span class="mi">0</span>
 
 <span class="c1">-- Blocks</span>
-<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">RtlSdrSource</span><span class="p">(</span><span class="n">frequency</span> <span class="o">+</span> <span class="n">tune_offset</span><span class="p">,</span> <span class="mi">1102500</span><span class="p">)</span>
+<span class="c1">--local source = radio.RtlSdrSource(frequency + tune_offset, 1102500)</span>
+<span class="kd">local</span> <span class="n">source</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">IQFileSource</span><span class="p">(</span><span class="s1">'sample.iq'</span><span class="p">,</span> <span class="s1">'u8'</span><span class="p">,</span> <span class="mi">1102500</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">tuner</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">TunerBlock</span><span class="p">(</span><span class="n">tune_offset</span><span class="p">,</span> <span class="mf">200e3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">fm_demod</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">FrequencyDiscriminatorBlock</span><span class="p">(</span><span class="mi">1</span><span class="p">.</span><span class="mi">25</span><span class="p">)</span>
 <span class="kd">local</span> <span class="n">hilbert</span> <span class="o">=</span> <span class="n">radio</span><span class="p">.</span><span class="n">HilbertTransformBlock</span><span class="p">(</span><span class="mi">129</span><span class="p">)</span>

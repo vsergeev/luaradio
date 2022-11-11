@@ -28,7 +28,7 @@
     <nav class="menu">
   <h1 class="title"><a href="..">LuaRadio</a></h1>
   <div class="links">
-      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.10.0</code></a><br />
+      <a href="https://github.com/vsergeev/luaradio/blob/master/CHANGELOG.md"><i class="fa fa-link fa-fw" aria-hidden="true"></i> <code class="version">v0.11.0</code></a><br />
       <a href="https://github.com/vsergeev/luaradio"><i class="fa fa-github fa-fw" aria-hidden="true"></i> GitHub</a><br />
       <a href="https://groups.io/g/luaradio"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> Mailing List</a>
   </div>
@@ -284,7 +284,7 @@
     <div class="nine columns content">
         <h1 id="luaradio-reference-manual">LuaRadio Reference Manual</h1>
 
-<p>Generated from LuaRadio <code class="language-plaintext highlighter-rouge">v0.10.0</code>.</p>
+<p>Generated from LuaRadio <code class="language-plaintext highlighter-rouge">v0.11.0</code>.</p>
 
 <h2 id="example">Example</h2>
 
@@ -536,6 +536,12 @@ connecting the boundary inputs and outputs of a hierarchical block.</p>
 
     <p>Stop a top-level block and wait until it has finished.</p>
 
+    <h6 id="returns-4">Returns</h6>
+
+    <ul>
+      <li>Successful exit (<em>bool</em>)</li>
+    </ul>
+
     <h6 id="example-3">Example</h6>
 
     <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Start a top-level block</span>
@@ -551,12 +557,18 @@ connecting the boundary inputs and outputs of a hierarchical block.</p>
     <p>Wait for a top-level block to finish, either by natural termination or by
 <code class="language-plaintext highlighter-rouge">SIGINT</code>.</p>
 
+    <h6 id="returns-5">Returns</h6>
+
+    <ul>
+      <li>Successful exit (<em>bool</em>)</li>
+    </ul>
+
     <h6 id="example-4">Example</h6>
 
     <div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Start a top-level block</span>
 <span class="n">top</span><span class="p">:</span><span class="n">start</span><span class="p">()</span>
 <span class="c1">-- Wait for the top-level block to finish</span>
-<span class="n">top</span><span class="p">:</span><span class="n">wait</span><span class="p">()</span>
+<span class="kd">local</span> <span class="n">success</span> <span class="o">=</span> <span class="n">top</span><span class="p">:</span><span class="n">wait</span><span class="p">()</span>
 </code></pre></div>    </div>
 
   </div>
@@ -5229,7 +5241,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
     </ul>
 
-    <h6 id="returns-4">Returns</h6>
+    <h6 id="returns-6">Returns</h6>
 
     <ul>
       <li>ComplexFloat32 vector (<em>Vector</em>)</li>
@@ -5252,7 +5264,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
     </ul>
 
-    <h6 id="returns-5">Returns</h6>
+    <h6 id="returns-7">Returns</h6>
 
     <ul>
       <li>ComplexFloat32 vector (<em>Vector</em>)</li>
@@ -5275,7 +5287,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-6">Returns</h6>
+    <h6 id="returns-8">Returns</h6>
 
     <ul>
       <li>Result (<em>ComplexFloat32</em>)</li>
@@ -5293,7 +5305,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-7">Returns</h6>
+    <h6 id="returns-9">Returns</h6>
 
     <ul>
       <li>Result (<em>ComplexFloat32</em>)</li>
@@ -5311,7 +5323,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-8">Returns</h6>
+    <h6 id="returns-10">Returns</h6>
 
     <ul>
       <li>Result (<em>ComplexFloat32</em>)</li>
@@ -5329,7 +5341,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-9">Returns</h6>
+    <h6 id="returns-11">Returns</h6>
 
     <ul>
       <li>Result (<em>ComplexFloat32</em>)</li>
@@ -5347,7 +5359,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Other ComplexFloat32</li>
     </ul>
 
-    <h6 id="returns-10">Returns</h6>
+    <h6 id="returns-12">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5365,7 +5377,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Other ComplexFloat32</li>
     </ul>
 
-    <h6 id="returns-11">Returns</h6>
+    <h6 id="returns-13">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5383,7 +5395,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>ComplexFloat32</em>): Other ComplexFloat32</li>
     </ul>
 
-    <h6 id="returns-12">Returns</h6>
+    <h6 id="returns-14">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5401,7 +5413,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>number</em>): Scalar</li>
     </ul>
 
-    <h6 id="returns-13">Returns</h6>
+    <h6 id="returns-15">Returns</h6>
 
     <ul>
       <li>Result (<em>ComplexFloat32</em>)</li>
@@ -5419,7 +5431,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>number</em>): Scalar</li>
     </ul>
 
-    <h6 id="returns-14">Returns</h6>
+    <h6 id="returns-16">Returns</h6>
 
     <ul>
       <li>Result (<em>ComplexFloat32</em>)</li>
@@ -5433,7 +5445,7 @@ modulated complex-valued signal.</p>
 
 \[\angle z = \text{atan2}(\text{Im}(z), \text{Re}(z))\]
 
-    <h6 id="returns-15">Returns</h6>
+    <h6 id="returns-17">Returns</h6>
 
     <ul>
       <li>Result (<em>number</em>)</li>
@@ -5447,7 +5459,7 @@ modulated complex-valued signal.</p>
 
 \[|z| = \sqrt{\text{Re}(z)^2 + \text{Im}(z)^2}\]
 
-    <h6 id="returns-16">Returns</h6>
+    <h6 id="returns-18">Returns</h6>
 
     <ul>
       <li>Result (<em>number</em>)</li>
@@ -5461,7 +5473,7 @@ modulated complex-valued signal.</p>
 
 \[|z|^2 = \text{Re}(z)^2 + \text{Im}(z)^2\]
 
-    <h6 id="returns-17">Returns</h6>
+    <h6 id="returns-19">Returns</h6>
 
     <ul>
       <li>Result (<em>number</em>)</li>
@@ -5473,7 +5485,7 @@ modulated complex-valued signal.</p>
 
     <p>Get the complex conjugate.</p>
 
-    <h6 id="returns-18">Returns</h6>
+    <h6 id="returns-20">Returns</h6>
 
     <ul>
       <li>Result (<em>ComplexFloat32</em>)</li>
@@ -5493,7 +5505,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">epsilon</code> (<em>number</em>): Epsilon</li>
     </ul>
 
-    <h6 id="returns-19">Returns</h6>
+    <h6 id="returns-21">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5505,7 +5517,7 @@ modulated complex-valued signal.</p>
 
     <p>Get a string representation.</p>
 
-    <h6 id="returns-20">Returns</h6>
+    <h6 id="returns-22">Returns</h6>
 
     <ul>
       <li>String representation (<em>string</em>)</li>
@@ -5523,7 +5535,7 @@ modulated complex-valued signal.</p>
 
     <p>Type name of ComplexFloat32.</p>
 
-    <h6 id="returns-21">Returns</h6>
+    <h6 id="returns-23">Returns</h6>
 
     <ul>
       <li>Type name (<em>string</em>)</li>
@@ -5567,7 +5579,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
     </ul>
 
-    <h6 id="returns-22">Returns</h6>
+    <h6 id="returns-24">Returns</h6>
 
     <ul>
       <li>Float32 vector (<em>Vector</em>)</li>
@@ -5590,7 +5602,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
     </ul>
 
-    <h6 id="returns-23">Returns</h6>
+    <h6 id="returns-25">Returns</h6>
 
     <ul>
       <li>Float32 vector (<em>Vector</em>)</li>
@@ -5613,7 +5625,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Float32</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-24">Returns</h6>
+    <h6 id="returns-26">Returns</h6>
 
     <ul>
       <li>Result (<em>Float32</em>)</li>
@@ -5631,7 +5643,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Float32</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-25">Returns</h6>
+    <h6 id="returns-27">Returns</h6>
 
     <ul>
       <li>Result (<em>Float32</em>)</li>
@@ -5649,7 +5661,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Float32</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-26">Returns</h6>
+    <h6 id="returns-28">Returns</h6>
 
     <ul>
       <li>Result (<em>Float32</em>)</li>
@@ -5667,7 +5679,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Float32</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-27">Returns</h6>
+    <h6 id="returns-29">Returns</h6>
 
     <ul>
       <li>Result (<em>Float32</em>)</li>
@@ -5685,7 +5697,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Float32</em>): Other Float32</li>
     </ul>
 
-    <h6 id="returns-28">Returns</h6>
+    <h6 id="returns-30">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5703,7 +5715,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Float32</em>): Other Float32</li>
     </ul>
 
-    <h6 id="returns-29">Returns</h6>
+    <h6 id="returns-31">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5721,7 +5733,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Float32</em>): Other Float32</li>
     </ul>
 
-    <h6 id="returns-30">Returns</h6>
+    <h6 id="returns-32">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5741,7 +5753,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">epsilon</code> (<em>number</em>): Epsilon</li>
     </ul>
 
-    <h6 id="returns-31">Returns</h6>
+    <h6 id="returns-33">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5753,7 +5765,7 @@ modulated complex-valued signal.</p>
 
     <p>Get a string representation.</p>
 
-    <h6 id="returns-32">Returns</h6>
+    <h6 id="returns-34">Returns</h6>
 
     <ul>
       <li>String representation (<em>string</em>)</li>
@@ -5771,7 +5783,7 @@ modulated complex-valued signal.</p>
 
     <p>Type name of Float32.</p>
 
-    <h6 id="returns-33">Returns</h6>
+    <h6 id="returns-35">Returns</h6>
 
     <ul>
       <li>Type name (<em>string</em>)</li>
@@ -5815,7 +5827,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
     </ul>
 
-    <h6 id="returns-34">Returns</h6>
+    <h6 id="returns-36">Returns</h6>
 
     <ul>
       <li>Bit vector (<em>Vector</em>)</li>
@@ -5838,7 +5850,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
     </ul>
 
-    <h6 id="returns-35">Returns</h6>
+    <h6 id="returns-37">Returns</h6>
 
     <ul>
       <li>Bit vector (<em>Vector</em>)</li>
@@ -5861,7 +5873,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-36">Returns</h6>
+    <h6 id="returns-38">Returns</h6>
 
     <ul>
       <li>Result (<em>Bit</em>)</li>
@@ -5879,7 +5891,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-37">Returns</h6>
+    <h6 id="returns-39">Returns</h6>
 
     <ul>
       <li>Result (<em>Bit</em>)</li>
@@ -5897,7 +5909,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-38">Returns</h6>
+    <h6 id="returns-40">Returns</h6>
 
     <ul>
       <li>Result (<em>Bit</em>)</li>
@@ -5909,7 +5921,7 @@ modulated complex-valued signal.</p>
 
     <p>Bitwise-NOT a Bit.</p>
 
-    <h6 id="returns-39">Returns</h6>
+    <h6 id="returns-41">Returns</h6>
 
     <ul>
       <li>Result (<em>Bit</em>)</li>
@@ -5927,7 +5939,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Other bit</li>
     </ul>
 
-    <h6 id="returns-40">Returns</h6>
+    <h6 id="returns-42">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -5939,7 +5951,7 @@ modulated complex-valued signal.</p>
 
     <p>Get a string representation.</p>
 
-    <h6 id="returns-41">Returns</h6>
+    <h6 id="returns-43">Returns</h6>
 
     <ul>
       <li>String representation (<em>string</em>)</li>
@@ -5957,7 +5969,7 @@ modulated complex-valued signal.</p>
 
     <p>Type name of Bit.</p>
 
-    <h6 id="returns-42">Returns</h6>
+    <h6 id="returns-44">Returns</h6>
 
     <ul>
       <li>Type name (<em>string</em>)</li>
@@ -5983,7 +5995,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">order</code> (<em>string</em>): Bit order. Choice of “msb” or “lsb”.</li>
     </ul>
 
-    <h6 id="returns-43">Returns</h6>
+    <h6 id="returns-45">Returns</h6>
 
     <ul>
       <li>Extracted number (<em>number</em>)</li>
@@ -6012,7 +6024,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">length</code> (<em>int</em>): Length in bits</li>
     </ul>
 
-    <h6 id="returns-44">Returns</h6>
+    <h6 id="returns-46">Returns</h6>
 
     <ul>
       <li>Extracted bytes (<em>string</em>)</li>
@@ -6038,7 +6050,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">length</code> (<em>int</em>): Length in bits</li>
     </ul>
 
-    <h6 id="returns-45">Returns</h6>
+    <h6 id="returns-47">Returns</h6>
 
     <ul>
       <li>Formatted bit string (<em>string</em>)</li>
@@ -6084,7 +6096,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
     </ul>
 
-    <h6 id="returns-46">Returns</h6>
+    <h6 id="returns-48">Returns</h6>
 
     <ul>
       <li>Byte vector (<em>Vector</em>)</li>
@@ -6107,7 +6119,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
     </ul>
 
-    <h6 id="returns-47">Returns</h6>
+    <h6 id="returns-49">Returns</h6>
 
     <ul>
       <li>Byte vector (<em>Vector</em>)</li>
@@ -6130,7 +6142,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-48">Returns</h6>
+    <h6 id="returns-50">Returns</h6>
 
     <ul>
       <li>Result (<em>Byte</em>)</li>
@@ -6148,7 +6160,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-49">Returns</h6>
+    <h6 id="returns-51">Returns</h6>
 
     <ul>
       <li>Result (<em>Byte</em>)</li>
@@ -6166,7 +6178,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-50">Returns</h6>
+    <h6 id="returns-52">Returns</h6>
 
     <ul>
       <li>Result (<em>Byte</em>)</li>
@@ -6184,7 +6196,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Operand</li>
     </ul>
 
-    <h6 id="returns-51">Returns</h6>
+    <h6 id="returns-53">Returns</h6>
 
     <ul>
       <li>Result (<em>Byte</em>)</li>
@@ -6202,7 +6214,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Other byte</li>
     </ul>
 
-    <h6 id="returns-52">Returns</h6>
+    <h6 id="returns-54">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -6220,7 +6232,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Other byte</li>
     </ul>
 
-    <h6 id="returns-53">Returns</h6>
+    <h6 id="returns-55">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -6238,7 +6250,7 @@ modulated complex-valued signal.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>Bit</em>): Other byte</li>
     </ul>
 
-    <h6 id="returns-54">Returns</h6>
+    <h6 id="returns-56">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -6250,7 +6262,7 @@ modulated complex-valued signal.</p>
 
     <p>Get a string representation.</p>
 
-    <h6 id="returns-55">Returns</h6>
+    <h6 id="returns-57">Returns</h6>
 
     <ul>
       <li>String representation (<em>string</em>)</li>
@@ -6268,7 +6280,7 @@ modulated complex-valued signal.</p>
 
     <p>Type name of Byte.</p>
 
-    <h6 id="returns-56">Returns</h6>
+    <h6 id="returns-58">Returns</h6>
 
     <ul>
       <li>Type name (<em>string</em>)</li>
@@ -6305,7 +6317,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">methods</code> (<em>table</em>): Table of methods and metamethods</li>
     </ul>
 
-    <h6 id="returns-57">Returns</h6>
+    <h6 id="returns-59">Returns</h6>
 
     <ul>
       <li>Data type (<em>class</em>)</li>
@@ -6335,7 +6347,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
     </ul>
 
-    <h6 id="returns-58">Returns</h6>
+    <h6 id="returns-60">Returns</h6>
 
     <ul>
       <li>Vector (<em>Vector</em>)</li>
@@ -6353,7 +6365,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
     </ul>
 
-    <h6 id="returns-59">Returns</h6>
+    <h6 id="returns-61">Returns</h6>
 
     <ul>
       <li>Vector (<em>Vector</em>)</li>
@@ -6371,7 +6383,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>CStructType</em>): Other instance</li>
     </ul>
 
-    <h6 id="returns-60">Returns</h6>
+    <h6 id="returns-62">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -6383,7 +6395,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Type name of this CStructType.</p>
 
-    <h6 id="returns-61">Returns</h6>
+    <h6 id="returns-63">Returns</h6>
 
     <ul>
       <li>Type name (<em>string</em>)</li>
@@ -6414,7 +6426,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">methods</code> (<em>table</em>): Table of methods and metamethods</li>
     </ul>
 
-    <h6 id="returns-62">Returns</h6>
+    <h6 id="returns-64">Returns</h6>
 
     <ul>
       <li>Data type (<em>class</em>)</li>
@@ -6432,7 +6444,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">num</code> (<em>int</em>): Number of elements in the vector</li>
     </ul>
 
-    <h6 id="returns-63">Returns</h6>
+    <h6 id="returns-65">Returns</h6>
 
     <ul>
       <li>Vector (<em>ObjectVector</em>)</li>
@@ -6450,7 +6462,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">arr</code> (<em>array</em>): Array with element initializers</li>
     </ul>
 
-    <h6 id="returns-64">Returns</h6>
+    <h6 id="returns-66">Returns</h6>
 
     <ul>
       <li>Vector (<em>ObjectVector</em>)</li>
@@ -6462,7 +6474,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Serialize this object with MessagePack.</p>
 
-    <h6 id="returns-65">Returns</h6>
+    <h6 id="returns-67">Returns</h6>
 
     <ul>
       <li>MessagePack serialized object (<em>string</em>)</li>
@@ -6474,7 +6486,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Serialize this object with JSON.</p>
 
-    <h6 id="returns-66">Returns</h6>
+    <h6 id="returns-68">Returns</h6>
 
     <ul>
       <li>JSON serialized object (<em>string</em>)</li>
@@ -6492,7 +6504,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">str</code> (<em>string</em>): MessagePack serialized object</li>
     </ul>
 
-    <h6 id="returns-67">Returns</h6>
+    <h6 id="returns-69">Returns</h6>
 
     <ul>
       <li>Deserialized object (<em>ObjectType</em>)</li>
@@ -6510,7 +6522,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">str</code> (<em>string</em>): JSON serialized object</li>
     </ul>
 
-    <h6 id="returns-68">Returns</h6>
+    <h6 id="returns-70">Returns</h6>
 
     <ul>
       <li>Deserialized object (<em>ObjectType</em>)</li>
@@ -6522,7 +6534,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Type name of this ObjectType.</p>
 
-    <h6 id="returns-69">Returns</h6>
+    <h6 id="returns-71">Returns</h6>
 
     <ul>
       <li>Type name (<em>string</em>)</li>
@@ -6561,7 +6573,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">other</code> (<em>vector</em>): Other vector</li>
     </ul>
 
-    <h6 id="returns-70">Returns</h6>
+    <h6 id="returns-72">Returns</h6>
 
     <ul>
       <li>Result (<em>bool</em>)</li>
@@ -6573,7 +6585,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Get a string representation.</p>
 
-    <h6 id="returns-71">Returns</h6>
+    <h6 id="returns-73">Returns</h6>
 
     <ul>
       <li>String representation (<em>string</em>)</li>
@@ -6591,7 +6603,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">num</code> (<em>int</em>): New length</li>
     </ul>
 
-    <h6 id="returns-72">Returns</h6>
+    <h6 id="returns-74">Returns</h6>
 
     <ul>
       <li>self (<em>Vector</em>)</li>
@@ -6609,7 +6621,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">elem</code>: Element</li>
     </ul>
 
-    <h6 id="returns-73">Returns</h6>
+    <h6 id="returns-75">Returns</h6>
 
     <ul>
       <li>self (<em>Vector</em>)</li>
@@ -6627,7 +6639,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">elem</code>: Element</li>
     </ul>
 
-    <h6 id="returns-74">Returns</h6>
+    <h6 id="returns-76">Returns</h6>
 
     <ul>
       <li>self (<em>Vector</em>)</li>
@@ -6656,7 +6668,7 @@ serializable between blocks in a flow graph.</p>
 
     <p>Get a string representation.</p>
 
-    <h6 id="returns-75">Returns</h6>
+    <h6 id="returns-77">Returns</h6>
 
     <ul>
       <li>String representation (<em>string</em>)</li>
@@ -6674,7 +6686,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">num</code> (<em>int</em>): New length</li>
     </ul>
 
-    <h6 id="returns-76">Returns</h6>
+    <h6 id="returns-78">Returns</h6>
 
     <ul>
       <li>self (<em>Vector</em>)</li>
@@ -6692,7 +6704,7 @@ serializable between blocks in a flow graph.</p>
       <li><code class="language-plaintext highlighter-rouge">elem</code>: Element</li>
     </ul>
 
-    <h6 id="returns-77">Returns</h6>
+    <h6 id="returns-79">Returns</h6>
 
     <ul>
       <li>self (<em>Vector</em>)</li>
@@ -6825,7 +6837,7 @@ a block output port.</p>
       <li><code class="language-plaintext highlighter-rouge">index</code> (<em>int</em>): Index of input, starting at 1</li>
     </ul>
 
-    <h6 id="returns-78">Returns</h6>
+    <h6 id="returns-80">Returns</h6>
 
     <ul>
       <li>Array of data types (<em>array</em>)</li>
@@ -6849,7 +6861,7 @@ a block output port.</p>
       <li><code class="language-plaintext highlighter-rouge">index</code> (<em>int</em>): Index of output, starting at 1</li>
     </ul>
 
-    <h6 id="returns-79">Returns</h6>
+    <h6 id="returns-81">Returns</h6>
 
     <ul>
       <li>Data type (<em>data_type</em>)</li>
@@ -6867,7 +6879,7 @@ a block output port.</p>
 
     <p>Get the block rate.</p>
 
-    <h6 id="returns-80">Returns</h6>
+    <h6 id="returns-82">Returns</h6>
 
     <ul>
       <li>Block rate in samples per second (<em>number</em>)</li>
@@ -6885,7 +6897,7 @@ a block output port.</p>
 
     <p>Get a string representation with the block name and port connectivity.</p>
 
-    <h6 id="returns-81">Returns</h6>
+    <h6 id="returns-83">Returns</h6>
 
     <ul>
       <li>String representation (<em>string</em>)</li>

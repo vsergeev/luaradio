@@ -1,3 +1,23 @@
+* v0.11.0 - 11/11/2022
+    * Application changes
+        * Fix wavfile output instantiation error caused by undefined channel
+          count.
+        * Fix portaudio output instantiation error caused by undefined channel
+          count.
+    * Core changes
+        * Add successful exit return value to `stop()` and `wait()` methods of
+          CompositeBlock.
+    * C API changes
+        * Add successful exit return parameter to `luaradio_stop()` and
+          `luaradio_wait()` functions.
+    * Documentation changes
+        * Update Ubuntu and Debian/Raspbian prerequisites in installation
+          guide.
+    * Contributors
+        * @abutcher-gh - 8c56329
+        * Jay Sissom (@jsissom) - 6519586
+        * Mark Hills (@hills) - eabf21c
+
 * v0.10.0 - 06/09/2021
     * Application changes
         * Add built-in applications with rx_raw, rx_wbfm, rx_nbfm, rx_am,

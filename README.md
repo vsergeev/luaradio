@@ -118,7 +118,7 @@ marked `true` in the platform information:
 * Arch Linux: `sudo pacman -S liquid-dsp libvolk fftw`
 * macOS (Homebrew): `brew install liquid-dsp fftw`
 * macOS (MacPorts): `sudo port install liquid-dsp volk fftw-3`
-* Ubuntu/Debian/Raspbian: `sudo apt-get install libliquid-dev libvolk1-dev libfftw3-dev`
+* Ubuntu/Debian/Raspbian: `sudo apt-get install libliquid-dev libvolk2-dev libfftw3-dev`
 * Fedora/CentOS: `sudo yum install liquid-dsp fftw`
 
 Try out one of the [examples](examples) with an

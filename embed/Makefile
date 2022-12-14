@@ -60,15 +60,15 @@ VERSION_MINOR := $(shell cd ../; $(LUAJIT) -e "package.path = './?/init.lua;' ..
 VERSION_PATCH := $(shell cd ../; $(LUAJIT) -e "package.path = './?/init.lua;' .. package.path; print(require('radio').version_info.patch)" 2>/dev/null)
 VERSION_COMMIT := $(shell git describe --abbrev --always --tags --dirty 2>/dev/null || echo "")
 
-CFLAGS = -std=c99 -D_DEFAULT_SOURCE
-CFLAGS += $(shell pkg-config --cflags luajit)
-CFLAGS += -fPIC
-CFLAGS += $(OPT) $(DEBUG) $(INCLUDES)
-CFLAGS += -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_PATCH=$(VERSION_PATCH)
-CFLAGS += -DVERSION_COMMIT=\"$(VERSION_COMMIT)\"
-CFLAGS += -Wall -Wextra -Wcast-align -Wcast-qual -Wimplicit
-CFLAGS += -Wpointer-arith -Wswitch -Wredundant-decls -Wreturn-type
-CFLAGS += -Wshadow -Wunused -Wno-unused-parameter
+override CFLAGS += -std=c99 -D_DEFAULT_SOURCE
+override CFLAGS += $(shell pkg-config --cflags luajit)
+override CFLAGS += -fPIC
+override CFLAGS += $(OPT) $(DEBUG) $(INCLUDES)
+override CFLAGS += -DVERSION_MAJOR=$(VERSION_MAJOR) -DVERSION_MINOR=$(VERSION_MINOR) -DVERSION_PATCH=$(VERSION_PATCH)
+override CFLAGS += -DVERSION_COMMIT=\"$(VERSION_COMMIT)\"
+override CFLAGS += -Wall -Wextra -Wcast-align -Wcast-qual -Wimplicit
+override CFLAGS += -Wpointer-arith -Wswitch -Wredundant-decls -Wreturn-type
+override CFLAGS += -Wshadow -Wunused -Wno-unused-parameter
 
 LIBFLAGS = $(shell pkg-config --libs luajit)
 

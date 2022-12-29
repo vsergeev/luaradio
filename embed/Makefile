@@ -115,39 +115,33 @@ install-lmod:
 	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
 	install -m644 ../LICENSE $(DESTDIR)$(PREFIX)/share/licenses/luaradio/LICENSE
 
-ifneq ($(shell uname -s),Darwin)
-.PHONY: install
-install: $(STATIC_LIB) $(SHARED_LIB)
+.PHONY: install install-data install-exec
+install: install-exec install-data
+
+install-data:
+	install -d $(DESTDIR)$(PREFIX)/include
+	install -m644 luaradio.h $(DESTDIR)$(PREFIX)/include/luaradio.h
+	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
+	install -m644 ../LICENSE $(DESTDIR)$(PREFIX)/share/licenses/luaradio/LICENSE
+
+install-exec: $(STATIC_LIB) $(SHARED_LIB)
 	install -d $(DESTDIR)$(PREFIX)/lib
+	install -d $(DESTDIR)$(INSTALL_CMOD)
+ifneq ($(shell uname -s),Darwin)
 	install -m755 $(STATIC_LIB) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).a
 	install -m755 $(SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
 	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR)
 	ln -sf lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).so
-	install -d $(DESTDIR)$(PREFIX)/include
-	install -m644 luaradio.h $(DESTDIR)$(PREFIX)/include/luaradio.h
-	install -d $(DESTDIR)$(INSTALL_CMOD)
 	ln -sf $(PREFIX)/lib/lib$(LIBNAME).so.$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH) $(DESTDIR)$(INSTALL_CMOD)/radio.so
-	install -d $(DESTDIR)$(PREFIX)/bin
-	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
-	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
-	install -m644 ../LICENSE $(DESTDIR)$(PREFIX)/share/licenses/luaradio/LICENSE
 else
-# Mac OS X install
-.PHONY: install
-install: $(STATIC_LIB) $(SHARED_LIB)
-	install -d $(DESTDIR)$(PREFIX)/lib
+	# Mac OS X install
 	install -m755 $(STATIC_LIB) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).a
 	install -m755 $(SHARED_LIB) $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).$(VERSION_MAJOR).dylib
 	ln -sf lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(PREFIX)/lib/lib$(LIBNAME).dylib
-	install -d $(DESTDIR)$(PREFIX)/include
-	install -m644 luaradio.h $(DESTDIR)$(PREFIX)/include/luaradio.h
-	install -d $(DESTDIR)$(INSTALL_CMOD)
 	ln -sf $(PREFIX)/lib/lib$(LIBNAME).$(VERSION_MAJOR).dylib $(DESTDIR)$(INSTALL_CMOD)/radio.so
+endif
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m755 ../luaradio $(DESTDIR)$(PREFIX)/bin/luaradio
-	install -d $(DESTDIR)$(PREFIX)/share/licenses/luaradio
-	install -m644 ../LICENSE $(DESTDIR)$(PREFIX)/share/licenses/luaradio/LICENSE
-endif
 
 .PHONY: clean
 clean:

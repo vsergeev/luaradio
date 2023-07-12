@@ -1,0 +1,107 @@
+name: Tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  tests:
+    env:
+      LUAJIT_TAG: "v2.0.5"
+      LIQUID_DSP_TAG: "v1.3.2"
+      VOLK_TAG: "v2.1.0"
+
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Cache LuaJIT Build
+      id: cache-luajit
+      uses: actions/cache@v3
+      with:
+        path: LuaJIT
+        key: ${{ runner.os }}-${{ env.LUAJIT_TAG }}-luajit
+
+    - name: Cache liquid-dsp Build
+      id: cache-liquid-dsp
+      uses: actions/cache@v3
+      with:
+        path: liquid-dsp
+        key: ${{ runner.os }}-${{ env.LIQUID_DSP_TAG }}-liquid-dsp
+
+    - name: Cache VOLK Build
+      id: cache-volk
+      uses: actions/cache@v3
+      with:
+        path: volk
+        key: ${{ runner.os }}-${{ env.VOLK_TAG }}-volk
+
+    - name: Build LuaJIT
+      if: steps.cache-luajit.outputs.cache-hit != 'true'
+      run: |
+        git clone https://github.com/LuaJIT/LuaJIT.git
+        cd LuaJIT
+        git checkout $LUAJIT_TAG
+        make
+
+    - name: Build liquid-dsp
+      if: steps.cache-liquid-dsp.outputs.cache-hit != 'true'
+      run: |
+        git clone https://github.com/jgaeddert/liquid-dsp.git
+        cd liquid-dsp
+        git checkout $LIQUID_DSP_TAG
+        ./bootstrap.sh
+        ./configure
+        make
+
+    - name: Build VOLK
+      if: steps.cache-volk.outputs.cache-hit != 'true'
+      run: |
+        sudo apt-get install libboost-all-dev python3-mako
+        git clone https://github.com/gnuradio/volk.git
+        cd volk
+        git checkout $VOLK_TAG
+        mkdir build
+        cd build
+        cmake ..
+        make
+
+    - name: Install Lua 5.1 and Busted
+      run: |
+        sudo apt-get install lua5.1 luarocks
+        sudo luarocks install busted 2.0.0-1
+
+    - name: Install LuaJIT
+      working-directory: LuaJIT
+      run: sudo make install
+
+    - name: Install fftw3
+      run: sudo apt-get install fftw3 fftw3-dev
+
+    - name: Install liquid-dsp
+      working-directory: liquid-dsp
+      run: sudo make install
+
+    - name: Install VOLK
+      working-directory: volk/build
+      run: |
+        sudo make install
+        sudo ldconfig
+
+    - name: Run Tests
+      run: |
+        ./luaradio --platform
+        echo "assert(require('radio').platform.features.volk)" | ./luaradio -
+        echo "assert(require('radio').platform.features.liquid)" | ./luaradio -
+        echo "assert(require('radio').platform.features.fftw3f)" | ./luaradio -
+        LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=0 busted
+        LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=1 busted
+        LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=0 busted
+        LUARADIO_DISABLE_VOLK=0 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted
+        LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=0 busted
+        LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=0 LUARADIO_DISABLE_FFTW3F=1 busted
+        LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=0 busted
+        LUARADIO_DISABLE_VOLK=1 LUARADIO_DISABLE_LIQUID=1 LUARADIO_DISABLE_FFTW3F=1 busted
+        cd embed; make && make runtests

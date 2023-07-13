@@ -91,7 +91,7 @@ function WAVFileSource:instantiate(file, num_channels, repeat_on_eof)
 end
 
 function WAVFileSource:get_rate()
-    return self.rate
+    return self.rate or 1
 end
 
 -- Header endianness conversion

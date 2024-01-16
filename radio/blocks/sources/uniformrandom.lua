@@ -41,14 +41,14 @@ local random_generator_table = {
         function (a, b)
             a, b = a or -1.0, b or 1.0
             return function ()
-                return types.ComplexFloat32((b-a)*math.random()-b, (b-a)*math.random()-b)
+                return types.ComplexFloat32(a+(b-a)*math.random(), a+(b-a)*math.random())
             end
         end,
     [types.Float32] =
         function (a, b)
             a, b = a or -1.0, b or 1.0
             return function ()
-                return types.Float32((b-a)*math.random()-b)
+                return types.Float32(a+(b-a)*math.random())
             end
         end,
     [types.Byte] =

@@ -85,15 +85,14 @@ function UniformRandomSource:get_rate()
 end
 
 function UniformRandomSource:initialize()
-    if self.seed then
-        math.randomseed(self.seed)
-    end
-
     self.out = self.data_type.vector(self.chunk_size)
 end
 
 function UniformRandomSource:process()
     local out = self.out
+
+    -- Only run once in each block instance, as math.randomseed() returns nil
+    self.seed = self.seed and math.randomseed(self.seed)
 
     for i=0, out.length-1 do
         out.data[i] = self.generator()

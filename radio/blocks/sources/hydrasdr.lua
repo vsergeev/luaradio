@@ -5,8 +5,7 @@
 -- @category Sources
 -- @block HydraSDRSource
 -- @tparam number frequency Tuning frequency in Hz
--- @tparam number rate Sample rate in Hz (3 MHz or 6 MHz for HydraSDR Mini,
---                                        2.5 MHz or 10 MHz for HydraSDR R2)
+-- @tparam number rate Sample rate in Hz (2.5 MHz, 5 MHz or 10 MHz for HydraSDR RFOne)
 -- @tparam[opt={}] table options Additional options, specifying:
 --      * `gain_mode` (string, default "linearity", choice of "custom", "linearity", "sensitivity")
 --      * `lna_gain` (int, default 5 dB, for custom gain mode, range 0 to 15 dB)
@@ -15,7 +14,7 @@
 --      * `lna_agc` (bool, default false, for custom gain mode)
 --      * `mixer_agc` (bool, default false, for custom gain mode)
 --      * `linearity_gain` (int, default 10, for linearity gain mode, range 0 to 21)
---      * `sensitivity_gain` (int, default 10, for sensitivity gain mode, range 0 to 21)
+--      * `sensitivity_gain` (int, default 9, for sensitivity gain mode, range 0 to 21 but max for better use is 9 maximum to avoid spurs)
 --      * `biastee_enable` (bool, default false)
 --
 -- @signature > out:ComplexFloat32
@@ -65,7 +64,7 @@ function HydraSDRSource:instantiate(frequency, rate, options)
     elseif self.gain_mode == "linearity" then
         self.linearity_gain = self.options.linearity_gain or 10
     elseif self.gain_mode == "sensitivity" then
-        self.sensitivity_gain = self.options.sensitivity_gain or 10
+        self.sensitivity_gain = self.options.sensitivity_gain or 9
     else
         error(string.format("Unsupported gain mode \"%s\".", self.gain_mode))
     end

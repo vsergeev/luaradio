@@ -9,6 +9,7 @@ local application = {
         {"airspyhf", defaults = {_rate = 768000}},
         {"bladerf", defaults = {_rate = 1102500}},
         {"hackrf", defaults = {_rate = 8820000}},
+	{"hydrasdr", defaults = {_rate = 10000000}},
         {"sdrplay", defaults = {_rate = 2205000}},
         {"uhd", defaults = {_rate = 1102500}},
         {"soapysdr"},
@@ -28,6 +29,8 @@ local application = {
         {"mono", nil, false, "Mono receiver (default stereo)"},
     },
 }
+
+local zeplot = radio.GnuplotSpectrumSink()
 
 function application.run(input, output, args)
     local tune_offset = input.options._tune_offset or -250e3
@@ -62,6 +65,7 @@ function application.run(input, output, args)
         top:connect(demod, 'right', r_downsampler, 'in')
         top:connect(l_downsampler, 'out', sink, 'in1')
         top:connect(r_downsampler, 'out', sink, 'in2')
+	top:connect(source, zeplot)
     end
 
     top:run()

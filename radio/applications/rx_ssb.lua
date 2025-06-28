@@ -9,6 +9,7 @@ local application = {
         {"airspyhf", defaults = {_rate = 768000}},
         {"bladerf", defaults = {_rate = 1102500}},
         {"hackrf", defaults = {_rate = 8820000}},
+	{"hydrasdr", defaults = {_rate = 10000000}},
         {"sdrplay", defaults = {_rate = 2205000}},
         {"uhd", defaults = {_rate = 1102500}},
         {"soapysdr"},

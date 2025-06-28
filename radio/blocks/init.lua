@@ -16,6 +16,7 @@ return {
     AirspySource = require('radio.blocks.sources.airspy'),
     AirspyHFSource = require('radio.blocks.sources.airspyhf'),
     HackRFSource = require('radio.blocks.sources.hackrf'),
+    HydraSDRSource = require('radio.blocks.sources.hydrasdr'),
     SDRplaySource = require('radio.blocks.sources.sdrplay'),
     PulseAudioSource = require('radio.blocks.sources.pulseaudio'),
     PortAudioSource = require('radio.blocks.sources.portaudio'),

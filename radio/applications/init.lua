@@ -57,6 +57,14 @@ local inputs = {
         end,
         args = {},
     },
+    hydrasdr = {
+        factory = function (options)
+            return function (frequency, rate)
+                return radio.HydraSDRSource(frequency, rate, options)
+            end
+        end,
+        args = {},
+    },
     sdrplay = {
         factory = function (options)
             return function (frequency, rate)

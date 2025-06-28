@@ -9,6 +9,7 @@ local application = {
         {"airspyhf"},
         {"bladerf"},
         {"hackrf"},
+        {"hydrasdr"},
         {"sdrplay"},
         {"uhd"},
         {"soapysdr"},
